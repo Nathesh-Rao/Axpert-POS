@@ -54,3 +54,9 @@ Files (all under `lib/`):
 2. Add `ClockController` as a permanent controller now (heading clock): OK?
 3. 10k dataset switch via `--dart-define=LARGE_DATASET=true`, debug builds only: OK?
 4. Chrome-hang probes are run first as step 0 (I did not run them in plan mode): OK?
+
+
+## As built (2026-10-08)
+- S3.a `ee6006b`, S3.b `21b7218`, S3.c `de12638`, S3.d (this commit). Step 0 (Chrome hang) was skipped on request: already fixed by DEC-080.
+- Deviations from this plan: `CartSelectionController` and `CatalogController` are permanent (DEC-082, DEC-083); `CartActionsController` and `ClockController` added; the stacked cart line (<= 1700 px) is not built (KG-097, S7.a).
+- Decisions DEC-081 to DEC-090, gaps KG-090 to KG-102.

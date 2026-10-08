@@ -33,14 +33,19 @@ class ProductsController extends GetxController {
   String searchKey(Product product) =>
       _searchKey[product.id] ?? '${product.name} ${product.code}'.toLowerCase();
 
-  /// Flips the favourite flag and persists.
-  Future<void> toggleFavourite(int id) async {
-    final next = <Product>[
-      for (final p in products)
-        p.id == id ? p.copyWith(favourite: !p.favourite) : p,
-    ];
-    _index(next);
-    await _repository.save(next);
+  /// Flips the favourite flag: the list and lookup maps change at once (only
+  /// that product, no reindex), then the new list is persisted.
+  Future<void> toggleFavourite(int id) {
+    final index = products.indexWhere((p) => p.id == id);
+    if (index < 0) return Future<void>.value();
+    final updated = products[index].copyWith(
+      favourite: !products[index].favourite,
+    );
+    _byId[id] = updated;
+    _byBarcode[updated.barcode] = updated;
+    _byCode[updated.code.toLowerCase()] = updated;
+    products[index] = updated;
+    return _repository.save(products.toList());
   }
 
   void _index(List<Product> list) {

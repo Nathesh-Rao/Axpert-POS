@@ -112,4 +112,6 @@ Rows KG-060..063 are placeholders; each phase 2/3 step adds concrete component r
 | KG-098 | Clicking a cart line selects it on pointer down (React: on click); the trash button does not select | deviation (minor) |
 | KG-099 | Unverified visually: cart line states (selected, highlight animation, hover on qty buttons and trash, remove state of the minus button), confirm dialog, toast stack over the cart, scrollbar of the table, stat tile sizes other than the reference viewport (only the one-line screenshot exists), dark mode | unverified |
 | KG-100 | Number inputs allow `0-9 . -` only (React type=number also allows `e`); empty text commits nothing and resets on leaving the field (React resets it on the next render) | deviation (minor) |
+| KG-101 | Every favourite toggle persists the whole product list as JSON (32 ms for 10,000 products, on the UI thread) because the mock repository has one key per list; a real local database (Phase B) writes the single row | deviation (mock) |
+| KG-102 | Shared widgets built in S3 (`AppChip`, `SegmentedToggle`, `SearchTextField`, `ProductCard`, `ProductImage`, `StarIcon`, `HoldToRepeatButton`, `QuantityField`, `NumberField`, `ActionButton`, `StatTile`, `ConfirmDialog`) have no standalone goldens (KG-081); the tooltip with shortcut hint is not built yet (S3 tooltips are plain titles) | accepted |
 

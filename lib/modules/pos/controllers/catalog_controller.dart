@@ -74,6 +74,13 @@ class CatalogController extends GetxController {
 
   void onFilterChanged(String value) => pageFilter.set(value);
 
+  /// Applies [value] now, without the debounce (tests, timing).
+  void onFilterChangedNow(String value) {
+    pageFilter.set(value);
+    _appliedFilter = value;
+    _recompute();
+  }
+
   void clearFilter() {
     pageFilter.clear();
     _appliedFilter = '';

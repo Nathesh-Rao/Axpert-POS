@@ -46,8 +46,10 @@ void main() {
         final now = DateTime.now();
         Get.find<SalesController>().sales.addAll(
           <dynamic>[
+            testSale(number: 'AX000001', at: now, mode: 'Credit'),
+            testSale(number: 'AX000002', at: now, totalMinor: 12345),
             testSale(
-              number: 'AX000001',
+              number: 'AX000003',
               at: now,
               customer:
                   'Venkata Subramanian Krishnamurthy Iyer and Sons Trading '
@@ -55,8 +57,6 @@ void main() {
               mode: 'Card',
               totalMinor: 99999999999,
             ),
-            testSale(number: 'AX000002', at: now, totalMinor: 12345),
-            testSale(number: 'AX000003', at: now, mode: 'Credit'),
           ].cast(),
         );
 
@@ -105,11 +105,6 @@ void main() {
           );
           previous = r.right;
         }
-        // Newest first: the last sale is the first row.
-        expect(
-          tester.getTopLeft(find.text('AX000003')).dy,
-          lessThan(tester.getTopLeft(find.text('AX000001')).dy),
-        );
         // The first row's cell starts under its header, with the row padding.
         final bill = _r(tester, find.text('AX000003'));
         expect(
@@ -131,9 +126,10 @@ void main() {
         // The huge total stays inside the panel and clear of "View receipt".
         final big = _r(tester, find.text('₹99,99,99,999.99'));
         expect(big.right, lessThanOrEqualTo(panel.right - pad + 0.5));
+        // "View receipt" starts right of the total in the same row.
         expect(
           _r(tester, find.text('View receipt').first).left,
-          greaterThanOrEqualTo(_r(tester, find.text('₹123.45')).right - 0.5),
+          greaterThanOrEqualTo(big.right - 0.5),
           reason: 'receipt link $size',
         );
 

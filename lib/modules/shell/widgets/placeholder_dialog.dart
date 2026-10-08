@@ -14,14 +14,11 @@ import '../../../shared/widgets/app_pressable.dart';
 
 String placeholderDialogTitle(AppStrings s, String id) => switch (id) {
   'scan' => s.scanTooltip(),
-  'profile' => s.menuProfile(),
-  'settings' => s.menuSettings(),
   'shortcuts' => s.menuShortcuts(),
   'priceCheck' => s.actionPriceCheck(),
   'discount' => s.actionDiscount(),
   'recall' => s.actionRecall(),
   'reprint' => s.actionReprint(),
-  'close' => s.actionClose(),
   'addCustomer' => s.addCustomerTooltip(),
   'customers' => s.customerSearchTooltip(),
   'counter' => s.orderRename(),

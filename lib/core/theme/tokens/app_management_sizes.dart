@@ -43,4 +43,34 @@ abstract final class AppManagementSizes {
   static const double chartLabelWidth = 50.0;
   static const double chartValueMinWidth = 100.0;
   static const double chartTrackHeight = 30.0;
+
+  /// `.settings-content` max-width
+  static const double settingsMaxWidth = 600.0;
+
+  /// `.avatar.large`: size, font and margin-bottom
+  static const double avatarLarge = 65.0;
+  static const double avatarLargeFont = 32.0;
+  static const double avatarLargeMarginBottom = 20.0;
+  static const double avatarBorder = 2.0;
+
+  /// `.modal-symbol` power icon of the shift-close dialog
+  static const double closeSymbolIcon = 29.0;
+
+  /// `.sign-card`: padding, title size, margins; brand mark width and font
+  static const double signCardPad = 50.0;
+  static const double signTitleFont = 29.0;
+  static const double signTitleMarginBottom = 13.0;
+  static const double signBodyMarginBottom = 25.0;
+  static const double signMarkMarginBottom = 25.0;
+  static const double signMarkWidth = 63.0;
+  static const double signMarkFont = 42.0;
+
+  /// Sales table min-content widths (the longest unbreakable word at the
+  /// 14 px table font, measured once; the columns never go below them)
+  static const double salesMinBill = 52.0;
+  static const double salesMinDate = 78.0;
+  static const double salesMinCustomer = 46.0;
+  static const double salesMinMode = 40.0;
+  static const double salesMinTotal = 60.0;
+  static const double salesMinAction = 42.0;
 }

@@ -12,6 +12,8 @@ import 'core/services/storage/shared_prefs_local_store.dart';
 import 'core/theme/app_theme.dart';
 import 'modules/shell/controllers/settings_controller.dart';
 import 'modules/shell/widgets/dialog_layer.dart';
+import 'modules/shift/controllers/shift_controller.dart';
+import 'modules/shift/widgets/signed_out_layer.dart';
 import 'shared/widgets/toast_layer.dart';
 
 Future<void> main() async {
@@ -43,15 +45,32 @@ class PosApp extends StatelessWidget {
         builder: (context, child) => ResponsiveLayout(
           child: Stack(
             children: <Widget>[
-              Positioned.fill(child: AppShortcuts(child: child!)),
+              Positioned.fill(
+                child: AppShortcuts(child: SignedOutLayer(child: child!)),
+              ),
               const DialogLayer(),
-              const ToastLayer(),
+              const _ToastsUnlessSignedOut(),
             ],
           ),
         ),
         getPages: AppPages.pages,
         unknownRoute: AppPages.unknown,
       ),
+    );
+  }
+}
+
+/// The prototype draws the toasts inside the app, so none shows on the
+/// "Counter closed" screen.
+class _ToastsUnlessSignedOut extends StatelessWidget {
+  const _ToastsUnlessSignedOut();
+
+  @override
+  Widget build(BuildContext context) {
+    final shift = Get.find<ShiftController>();
+    return Obx(
+      () =>
+          shift.signedOut.value ? const SizedBox.shrink() : const ToastLayer(),
     );
   }
 }

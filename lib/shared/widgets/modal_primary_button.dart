@@ -18,6 +18,7 @@ class ModalPrimaryButton extends StatelessWidget {
     this.icon,
     this.marginTop = 0,
     this.iconSize = AppCheckoutSizes.primaryPlusIcon,
+    this.focusNode,
     super.key,
   });
 
@@ -26,6 +27,7 @@ class ModalPrimaryButton extends StatelessWidget {
   final IconData? icon;
   final double marginTop;
   final double iconSize;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,7 @@ class ModalPrimaryButton extends StatelessWidget {
       child: AppPressable(
         borderRadius: AppRadii.r8,
         semanticLabel: label,
+        focusNode: focusNode,
         onTap: onTap,
         builder: (context, hovered) => Container(
           constraints: const BoxConstraints(

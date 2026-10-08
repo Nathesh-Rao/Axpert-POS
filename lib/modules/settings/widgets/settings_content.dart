@@ -3,23 +3,25 @@ import 'package:get/get.dart';
 
 import '../../../core/constants/app_strings_x.dart';
 import '../../../core/theme/theme_x.dart';
+import '../../../core/theme/tokens/app_management_sizes.dart';
 import '../../../core/theme/tokens/app_spacing.dart';
 import '../../../core/theme/tokens/app_typography.dart';
-import '../controllers/settings_controller.dart';
+import '../../shell/controllers/settings_controller.dart';
 import '../../../core/theme/tokens/app_icons.dart';
 
-/// The prototype's two Settings rows (dark mode, scan beep). The full
-/// Settings page is built in S5; the toggles live here so the dark theme can
-/// be switched and persisted from S2 on.
-class SettingsToggles extends StatelessWidget {
-  const SettingsToggles({super.key});
+/// `SettingsContent`: the prototype's two Settings rows (dark mode, scan
+/// beep), shared by the Settings page and the Settings dialog.
+class SettingsContent extends StatelessWidget {
+  const SettingsContent({super.key});
 
   @override
   Widget build(BuildContext context) {
     final s = context.strings;
     final settings = Get.find<SettingsController>();
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 600),
+      constraints: const BoxConstraints(
+        maxWidth: AppManagementSizes.settingsMaxWidth,
+      ),
       child: Obx(
         () => Column(
           children: <Widget>[

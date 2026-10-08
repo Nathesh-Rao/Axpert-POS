@@ -10,6 +10,7 @@ import '../../modules/reports/bindings/reports_binding.dart';
 import '../../modules/reports/views/reports_view.dart';
 import '../../modules/sales/bindings/sales_binding.dart';
 import '../../modules/sales/views/sales_view.dart';
+import '../../modules/settings/views/settings_view.dart';
 import '../../modules/shell/views/page_placeholder.dart';
 import 'app_routes.dart';
 
@@ -32,6 +33,7 @@ abstract final class AppPages {
           AppPage.customers => const CustomersView(),
           AppPage.sales => const SalesView(),
           AppPage.reports => const ReportsView(),
+          AppPage.more => const SettingsView(),
           _ => PagePlaceholder(page: page),
         },
         binding: switch (page) {

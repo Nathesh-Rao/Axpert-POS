@@ -104,7 +104,12 @@ class InitialBinding extends Bindings {
     );
     _put<SalesController>(SalesController(Get.find()));
     _put<ShiftController>(
-      ShiftController(sales: Get.find(), clock: Get.find()),
+      ShiftController(
+        sales: Get.find(),
+        clock: Get.find(),
+        overlay: Get.find(),
+        search: Get.find(),
+      ),
     );
     _put<HeldBillsController>(HeldBillsController(Get.find()));
     _put<ForexController>(ForexController(Get.find()));

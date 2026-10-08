@@ -66,7 +66,7 @@ void main() {
     await _boot(tester);
     final overlay = Get.find<OverlayController>();
     final chrome = Get.find<ShellChromeController>();
-    overlay.open('profile');
+    overlay.open('unregistered');
     await tester.pumpAndSettle();
     expect(find.text('This screen arrives in a later step.'), findsOneWidget);
 
@@ -85,7 +85,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(chrome.online.value, isTrue);
     expect(overlay.modal.value, isNull);
-    overlay.open('profile');
+    overlay.open('unregistered');
     await tester.pumpAndSettle();
 
     // Clicking the scrim closes the dialog and refocuses the search field.
@@ -102,7 +102,7 @@ void main() {
   ) async {
     await _boot(tester);
     final overlay = Get.find<OverlayController>();
-    overlay.open('profile'); // a placeholder dialog has a Close button
+    overlay.open('unregistered'); // a placeholder dialog has a Close button
     await tester.pumpAndSettle();
     await tester.tap(find.text('Close'));
     await tester.pumpAndSettle();

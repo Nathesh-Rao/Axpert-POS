@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../core/constants/app_strings_x.dart';
@@ -14,11 +16,17 @@ class TableColumnSpec {
     required this.label,
     required this.flex,
     this.alignEnd = false,
+    this.minContent = 0,
   });
 
   final String label;
   final int flex;
   final bool alignEnd;
+
+  /// The narrowest content width (the longest unbreakable word, CSS
+  /// `min-content`) the column keeps before the other columns give way; 0
+  /// shares the width by [flex] only.
+  final double minContent;
 }
 
 /// `.data-table` as slivers: the header (secondary fill, muted 12 px) and a
@@ -53,75 +61,121 @@ class AppDataTable extends StatelessWidget {
         .copyWith(color: c.muted);
     return SliverPadding(
       padding: padding,
-      sliver: SliverMainAxisGroup(
-        slivers: <Widget>[
-          SliverToBoxAdapter(
-            child: ColoredBox(
-              color: c.secondary,
+      sliver: SliverLayoutBuilder(
+        builder: (context, constraints) =>
+            _build(context, _widths(constraints.crossAxisExtent), head),
+      ),
+    );
+  }
+
+  /// The column widths: [TableColumnSpec.flex] shares of [available], but no
+  /// column below its minimum (`minContent` plus the cell padding); the
+  /// columns above their minimum give way in proportion to what they have
+  /// above it, as an auto-layout table shrinks to its min-content widths.
+  List<double> _widths(double available) {
+    final total = columns.fold<double>(0, (sum, c) => sum + c.flex);
+    const pad = 2 * AppManagementSizes.cellPadX;
+    final mins = <double>[
+      for (final c in columns) c.minContent == 0 ? 0 : c.minContent + pad,
+    ];
+    final widths = <double>[
+      for (var i = 0; i < columns.length; i++)
+        math.max(mins[i], available * columns[i].flex / total),
+    ];
+    final excess = widths.fold<double>(0, (a, b) => a + b) - available;
+    if (excess > 0) {
+      var spare = 0.0;
+      for (var i = 0; i < widths.length; i++) {
+        spare += widths[i] - mins[i];
+      }
+      if (spare > 0) {
+        final keep = math.max(0, 1 - excess / spare);
+        for (var i = 0; i < widths.length; i++) {
+          widths[i] = mins[i] + (widths[i] - mins[i]) * keep;
+        }
+      }
+    }
+    // Even the minimums do not fit (a very narrow window): every column
+    // gives way in proportion; the cells then scale down (KG-149).
+    final sum = widths.fold<double>(0, (a, b) => a + b);
+    if (sum > available) {
+      for (var i = 0; i < widths.length; i++) {
+        widths[i] = widths[i] * available / sum;
+      }
+    }
+    return widths;
+  }
+
+  Widget _build(BuildContext context, List<double> widths, TextStyle head) {
+    final c = context.colors;
+    return SliverMainAxisGroup(
+      slivers: <Widget>[
+        SliverToBoxAdapter(
+          child: ColoredBox(
+            color: c.secondary,
+            child: Row(
+              children: <Widget>[
+                for (var i = 0; i < columns.length; i++)
+                  SizedBox(
+                    width: widths[i],
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppManagementSizes.thPadY,
+                        horizontal: AppManagementSizes.cellPadX,
+                      ),
+                      // One line; scales down where the column is too narrow
+                      // (KG-149).
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: columns[i].alignEnd
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
+                        child: Text(
+                          columns[i].label,
+                          maxLines: 1,
+                          softWrap: false,
+                          style: head,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        SliverList.builder(
+          itemCount: rowCount,
+          itemBuilder: (context, index) {
+            final cells = cellsOf(context, index);
+            return DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: c.border)),
+              ),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  for (final col in columns)
-                    Expanded(
-                      flex: col.flex,
+                  for (var i = 0; i < columns.length; i++)
+                    SizedBox(
+                      width: widths[i],
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                          vertical: AppManagementSizes.thPadY,
+                          vertical: AppManagementSizes.tdPadY,
                           horizontal: AppManagementSizes.cellPadX,
                         ),
-                        // One line; scales down where the column is too narrow
-                        // (KG-149).
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: col.alignEnd
+                        child: Align(
+                          alignment: columns[i].alignEnd
                               ? Alignment.centerRight
                               : Alignment.centerLeft,
-                          child: Text(
-                            col.label,
-                            maxLines: 1,
-                            softWrap: false,
-                            style: head,
-                          ),
+                          child: cells[i],
                         ),
                       ),
                     ),
                 ],
               ),
-            ),
-          ),
-          SliverList.builder(
-            itemCount: rowCount,
-            itemBuilder: (context, index) {
-              final cells = cellsOf(context, index);
-              return DecoratedBox(
-                decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: c.border)),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    for (var i = 0; i < columns.length; i++)
-                      Expanded(
-                        flex: columns[i].flex,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppManagementSizes.tdPadY,
-                            horizontal: AppManagementSizes.cellPadX,
-                          ),
-                          child: Align(
-                            alignment: columns[i].alignEnd
-                                ? Alignment.centerRight
-                                : Alignment.centerLeft,
-                            child: cells[i],
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+            );
+          },
+        ),
+      ],
     );
   }
 }

@@ -304,4 +304,17 @@ abstract class AppStrings {
   String reportsAverageBill();
   String reportsByMode();
   String reportsBasedOn(String date);
+  String closeTitle();
+  String closeIntro();
+  String closeTotalSales();
+  String closeBills();
+  String closeNote();
+  String closeConfirm();
+  String signedOutTitle();
+  String signedOutBody();
+  String signedOutStart();
+  String profileRole(String store);
+  String profileCounter();
+  String profileShiftSales();
+  String profileStatus();
 }

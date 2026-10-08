@@ -42,12 +42,36 @@ class SalesView extends GetView<SalesPageController> {
             return AppDataTable(
               padding: EdgeInsets.symmetric(horizontal: pad),
               columns: <TableColumnSpec>[
-                TableColumnSpec(label: s.colBill(), flex: 206),
-                TableColumnSpec(label: s.colDate(), flex: 240),
-                TableColumnSpec(label: s.colCustomer(), flex: 374),
-                TableColumnSpec(label: s.colMode(), flex: 267),
-                TableColumnSpec(label: s.colTotal(), flex: 190),
-                const TableColumnSpec(label: '', flex: 181),
+                TableColumnSpec(
+                  label: s.colBill(),
+                  flex: 206,
+                  minContent: AppManagementSizes.salesMinBill,
+                ),
+                TableColumnSpec(
+                  label: s.colDate(),
+                  flex: 240,
+                  minContent: AppManagementSizes.salesMinDate,
+                ),
+                TableColumnSpec(
+                  label: s.colCustomer(),
+                  flex: 374,
+                  minContent: AppManagementSizes.salesMinCustomer,
+                ),
+                TableColumnSpec(
+                  label: s.colMode(),
+                  flex: 267,
+                  minContent: AppManagementSizes.salesMinMode,
+                ),
+                TableColumnSpec(
+                  label: s.colTotal(),
+                  flex: 190,
+                  minContent: AppManagementSizes.salesMinTotal,
+                ),
+                const TableColumnSpec(
+                  label: '',
+                  flex: 181,
+                  minContent: AppManagementSizes.salesMinAction,
+                ),
               ],
               rowCount: rows.length,
               cellsOf: (context, i) {
@@ -58,10 +82,9 @@ class SalesView extends GetView<SalesPageController> {
                     DateFormatter.dateTimeComma(
                       DateTime.parse(sale.date).toLocal(),
                     ),
-                    oneLine: true,
                   ),
                   TableText(sale.customer),
-                  TableText(sale.mode, oneLine: true),
+                  TableText(sale.mode),
                   TableText(
                     MoneyFormatter.format(sale.totals.total),
                     oneLine: true,
@@ -96,17 +119,11 @@ class _ViewReceipt extends StatelessWidget {
     return AppPressable(
       borderRadius: 4,
       onTap: () => Get.find<OverlayController>().open('receipt', payload: sale),
-      builder: (context, hovered) => FittedBox(
-        fit: BoxFit.scaleDown,
-        alignment: Alignment.centerLeft,
-        child: Text(
-          context.strings.salesViewReceipt(),
-          maxLines: 1,
-          softWrap: false,
-          style: context.text
-              .fluid(AppManagementSizes.tdFont, height: AppLineHeight.base)
-              .copyWith(color: c.blue),
-        ),
+      builder: (context, hovered) => Text(
+        context.strings.salesViewReceipt(),
+        style: context.text
+            .fluid(AppManagementSizes.tdFont, height: AppLineHeight.base)
+            .copyWith(color: c.blue),
       ),
     );
   }

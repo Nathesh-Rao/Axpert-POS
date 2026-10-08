@@ -843,4 +843,43 @@ class EnAppStrings extends AppStrings {
 
   @override
   String reportsBasedOn(String date) => 'Based on completed bills for $date.';
+
+  @override
+  String closeTitle() => 'Close counter';
+
+  @override
+  String closeIntro() => 'Your shift at a glance.';
+
+  @override
+  String closeTotalSales() => 'Total sales';
+
+  @override
+  String closeBills() => 'Number of bills';
+
+  @override
+  String closeNote() => 'Current cart and held bills will remain saved.';
+
+  @override
+  String closeConfirm() => 'Confirm & close counter';
+
+  @override
+  String signedOutTitle() => 'Counter closed';
+
+  @override
+  String signedOutBody() => 'Your sales are saved. See you next shift.';
+
+  @override
+  String signedOutStart() => 'Start new shift';
+
+  @override
+  String profileRole(String store) => 'Cashier · $store';
+
+  @override
+  String profileCounter() => 'Counter';
+
+  @override
+  String profileShiftSales() => 'Shift sales';
+
+  @override
+  String profileStatus() => 'Status';
 }

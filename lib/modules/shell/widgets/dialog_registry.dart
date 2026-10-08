@@ -9,6 +9,9 @@ import '../../pos/widgets/dialogs/scan_dialog.dart';
 import '../../pos/widgets/dialogs/text_dialog.dart';
 import '../../sales/widgets/receipt_dialog.dart';
 import '../../sales/widgets/reprint_dialog.dart';
+import '../../settings/widgets/profile_dialog.dart';
+import '../../settings/widgets/settings_dialog.dart';
+import '../../shift/widgets/shift_close_dialog.dart';
 import 'shortcuts_dialog.dart';
 
 /// Dialog id (the prototype's `modal` string) to the widget it shows. Ids
@@ -29,6 +32,9 @@ abstract final class DialogRegistry {
         'addCustomer': () => const AddCustomerDialog(),
         'recall': () => const RecallDialog(),
         'discount': () => const DiscountDrawer(),
+        'settings': () => const SettingsDialog(),
+        'profile': () => const ProfileDialog(),
+        'close': () => const ShiftCloseDialog(),
       };
 
   static Widget? build(String id) => builders[id]?.call();

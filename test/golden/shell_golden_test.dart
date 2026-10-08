@@ -60,7 +60,12 @@ Future<void> _pump(
   );
   Get.delete<ShiftController>(force: true);
   Get.put<ShiftController>(
-    ShiftController(sales: Get.find(), clock: Get.find()),
+    ShiftController(
+      sales: Get.find(),
+      clock: Get.find(),
+      overlay: Get.find(),
+      search: Get.find(),
+    ),
     permanent: true,
   );
   if (dark) {
@@ -145,10 +150,39 @@ void main() {
     route: AppRoutes.reports,
   );
   golden(
+    'Settings page light (unverified visually)',
+    'shell_settings_light',
+    route: AppRoutes.more,
+  );
+  golden(
+    'Profile dialog light (unverified visually)',
+    'dialog_profile_light',
+    after: (tester) async {
+      Get.find<OverlayController>().open('profile');
+      await tester.pumpAndSettle();
+    },
+  );
+  golden(
+    'Shift close dialog light (unverified visually)',
+    'dialog_shift_close_light',
+    after: (tester) async {
+      Get.find<OverlayController>().open('close');
+      await tester.pumpAndSettle();
+    },
+  );
+  golden(
+    'Counter closed light (unverified visually)',
+    'shell_signed_out_light',
+    after: (tester) async {
+      Get.find<ShiftController>().closeCounter();
+      await tester.pumpAndSettle();
+    },
+  );
+  golden(
     'Dialog and toast over POS (unverified visually)',
     'shell_dialog_toast',
     after: (tester) async {
-      Get.find<OverlayController>().open('profile');
+      Get.find<OverlayController>().open('unregistered');
       Get.find<ToastController>().show('Store switched');
       await tester.pumpAndSettle();
     },

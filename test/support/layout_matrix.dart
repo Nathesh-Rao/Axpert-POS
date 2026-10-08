@@ -6,6 +6,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const List<double> matrixWidths = <double>[
+  900,
+  950,
   1000,
   1100,
   1101,
@@ -18,7 +20,16 @@ const List<double> matrixWidths = <double>[
   1900,
 ];
 
-const List<double> matrixHeights = <double>[600, 719, 720, 820, 900, 960, 1000];
+const List<double> matrixHeights = <double>[
+  600,
+  719,
+  720,
+  733,
+  820,
+  900,
+  960,
+  1000,
+];
 
 /// The paragraph that renders [finder]'s first match.
 RenderParagraph paragraphOf(WidgetTester tester, Finder finder) {
@@ -79,5 +90,98 @@ void expectReadable(
     rect.right,
     lessThanOrEqualTo(window.width + 0.5),
     reason: 'right: $why',
+  );
+}
+
+/// Global paint rect of [box] (scale transforms such as `FittedBox` included).
+Rect globalRect(RenderBox box) =>
+    MatrixUtils.transformRect(box.getTransformTo(null), Offset.zero & box.size);
+
+/// Rects of everything under [root] that paints something visible: text,
+/// editable text and decorated boxes. [skip] leaves out the card's own
+/// decoration.
+List<Rect> paintRects(Element root, {RenderObject? skip}) {
+  final rects = <Rect>[];
+  void visit(Element e) {
+    final ro = e.renderObject;
+    if (ro is RenderBox &&
+        ro != skip &&
+        ro.hasSize &&
+        (ro is RenderParagraph ||
+            ro is RenderEditable ||
+            ro is RenderDecoratedBox) &&
+        ro.size.width > 0 &&
+        ro.size.height > 0) {
+      rects.add(globalRect(ro));
+    }
+    e.visitChildren(visit);
+  }
+
+  visit(root);
+  return rects;
+}
+
+/// The bounding box of the visible content of [card] (a widget with a
+/// `SummaryCard` inside): everything except the card's own decoration.
+Rect cardContentRect(WidgetTester tester, Finder card, Type summaryCard) {
+  final inner = find.descendant(of: card, matching: find.byType(summaryCard));
+  final cardElement = (inner.evaluate().isNotEmpty ? inner : card)
+      .evaluate()
+      .first;
+  RenderDecoratedBox? own;
+  void findOwn(Element e) {
+    if (own != null) return;
+    if (e.renderObject is RenderDecoratedBox) {
+      own = e.renderObject! as RenderDecoratedBox;
+      return;
+    }
+    e.visitChildren(findOwn);
+  }
+
+  findOwn(cardElement);
+  final rects = paintRects(cardElement, skip: own);
+  var union = rects.first;
+  for (final r in rects.skip(1)) {
+    union = union.expandToInclude(r);
+  }
+  return union;
+}
+
+/// Every side of [content] is at least [min] inside [card].
+void expectInset(
+  Rect card,
+  Rect content,
+  double min, {
+  required String reason,
+}) {
+  const tol = 0.01;
+  expect(
+    content.left - card.left,
+    greaterThanOrEqualTo(min - tol),
+    reason: 'left: $reason',
+  );
+  expect(
+    content.top - card.top,
+    greaterThanOrEqualTo(min - tol),
+    reason: 'top: $reason',
+  );
+  expect(
+    card.right - content.right,
+    greaterThanOrEqualTo(min - tol),
+    reason: 'right: $reason',
+  );
+  expect(
+    card.bottom - content.bottom,
+    greaterThanOrEqualTo(min - tol),
+    reason: 'bottom: $reason',
+  );
+}
+
+/// The vertical gap from [upper]'s bottom to [lower]'s top is at least [min].
+void expectGap(Rect upper, Rect lower, double min, {required String reason}) {
+  expect(
+    lower.top - upper.bottom,
+    greaterThanOrEqualTo(min - 0.01),
+    reason: 'gap $upper -> $lower: $reason',
   );
 }

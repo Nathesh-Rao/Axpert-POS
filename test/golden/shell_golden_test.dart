@@ -136,7 +136,11 @@ void main() {
     'pos_one_line_light',
     after: addLays,
   );
-  for (final size in const <Size>[Size(1440, 900), Size(1100, 700)]) {
+  for (final size in const <Size>[
+    Size(1440, 900),
+    Size(1100, 700),
+    Size(950, 733),
+  ]) {
     final w = size.width.toInt();
     golden(
       'POS with one line at ${w}x${size.height.toInt()} '

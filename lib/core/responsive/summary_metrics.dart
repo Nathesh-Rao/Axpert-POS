@@ -71,6 +71,18 @@ class SummaryMetrics {
     return line > rateLabelHeight ? line : rateLabelHeight;
   }
 
+  /// Smallest padding between a card's border and its content, the smallest
+  /// gap between a label and its input, the smallest gap between two rows
+  /// inside a card and the smallest clearance between an input's text and its
+  /// focus ring (user-approved deviations from the tight and compact media
+  /// rules, DEC-100).
+  static const double minCardInset = 8;
+  static const double minLabelGap = 4;
+  static const double minRowGap = 4;
+  static const double minRingClearance = 4;
+
+  static double _atLeast(double value, double min) => value < min ? min : value;
+
   /// Smallest gap between two cards (and the quick actions) and the largest
   /// one free height is spread to before it collects between the member card
   /// and the checkout section (user-approved deviation from the media rules,
@@ -91,7 +103,7 @@ class SummaryMetrics {
           gap: c.vh(8, .75, 12),
           titleHeight: 24,
           titleFont: c.vw(18, 1.25, 22),
-          cardPad: c.vh(6, .8, 10),
+          cardPad: _atLeast(c.vh(6, .8, 10), minCardInset),
           rowHeight: c.vh(28, 3.2, 34),
           rowFont: 13,
           rowValueFont: c.vw(13, .95, 16),
@@ -135,7 +147,7 @@ class SummaryMetrics {
           gap: 4,
           titleHeight: 22,
           titleFont: 18,
-          cardPad: 6,
+          cardPad: minCardInset,
           rowHeight: c.vh(24, 3.1, 28),
           rowFont: 13,
           rowValueFont: c.vw(13, .95, 16),
@@ -147,7 +159,7 @@ class SummaryMetrics {
           currencyRowFont: 13,
           rateLabelHeight: 12,
           membershipGap: 6,
-          membershipLabelGap: 3,
+          membershipLabelGap: minLabelGap,
           membershipInputHeight: 28,
           membershipFont: 12,
           applyDiscountHeight: 32,
@@ -155,7 +167,7 @@ class SummaryMetrics {
           applyDiscountFont: c.vw(11, .8, 14),
           checkoutPad: 8,
           checkoutGap: 8,
-          paymentButtonHeight: 46,
+          paymentButtonHeight: 40,
           paymentButtonFont: c.vw(16, 1.1, 20),
           inlineGap: 4,
           inlineAmountHeight: 22,
@@ -165,12 +177,12 @@ class SummaryMetrics {
           rateFont: 12,
           quickAmountHeight: 28,
           quickAmountFont: 13,
-          completeHeight: 36,
+          completeHeight: 34,
           completeFont: 14,
           terminalHeight: 68,
           declineHeight: 46,
           quickActionsGap: 10,
-          quickActionSize: 44,
+          quickActionSize: 40,
         );
       case SummaryDensity.tight:
         return SummaryMetrics(
@@ -179,7 +191,7 @@ class SummaryMetrics {
           gap: 3,
           titleHeight: 20,
           titleFont: 17,
-          cardPad: 4,
+          cardPad: minCardInset,
           rowHeight: 21,
           rowFont: 12,
           rowValueFont: 13,
@@ -190,31 +202,31 @@ class SummaryMetrics {
           currencyRowHeight: 28,
           currencyRowFont: 12,
           rateLabelHeight: 12,
-          membershipGap: 6,
-          membershipLabelGap: 2,
+          membershipGap: minRowGap,
+          membershipLabelGap: minLabelGap,
           membershipInputHeight: 22,
           membershipFont: 12,
           applyDiscountHeight: 27,
           applyDiscountMarginBottom: 4,
           applyDiscountFont: 11,
-          checkoutPad: 6,
+          checkoutPad: minCardInset,
           checkoutGap: 6,
-          paymentButtonHeight: 46,
+          paymentButtonHeight: 30,
           paymentButtonFont: c.vw(16, 1.1, 20),
-          inlineGap: 3,
+          inlineGap: minRowGap,
           inlineAmountHeight: 20,
-          tenderedHeight: 32,
+          tenderedHeight: 30,
           tenderedPadY: 4,
-          tenderedFont: _tenderedFont(32, 4, c),
+          tenderedFont: _tenderedFont(30, 4, c),
           rateFont: 10,
-          quickAmountHeight: 26,
+          quickAmountHeight: 24,
           quickAmountFont: 12,
-          completeHeight: 34,
+          completeHeight: 28,
           completeFont: 13,
           terminalHeight: 64,
           declineHeight: 40,
-          quickActionsGap: 8,
-          quickActionSize: 44,
+          quickActionsGap: minRowGap,
+          quickActionSize: 30,
         );
     }
   }
@@ -275,8 +287,8 @@ class MemberCardMetrics {
   const MemberCardMetrics._();
 
   static const double compactMinHeight = 34;
-  static const double compactPadY = 4;
-  static const double compactPadX = 6;
+  static const double compactPadY = SummaryMetrics.minCardInset;
+  static const double compactPadX = SummaryMetrics.minCardInset;
   static const double compactGap = 6;
   static const double compactFont = 12;
   static const double floatingPad = 16;

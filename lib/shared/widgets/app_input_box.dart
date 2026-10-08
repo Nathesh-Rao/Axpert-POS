@@ -83,6 +83,10 @@ class _AppInputBoxState extends State<AppInputBox> {
       readOnly: widget.readOnly,
       textAlign: widget.textAlign,
       textAlignVertical: TextAlignVertical.center,
+      strutStyle: StrutStyle.fromTextStyle(
+        widget.style,
+        forceStrutHeight: true,
+      ),
       expands: true,
       maxLines: null,
       minLines: null,
@@ -120,11 +124,6 @@ class _AppInputBoxState extends State<AppInputBox> {
       },
       child: field,
     );
-    input = FocusOutline(
-      focusNode: _focus,
-      borderRadius: widget.radius,
-      child: input,
-    );
     final box = Container(
       height: widget.height,
       padding: widget.padding,
@@ -145,12 +144,19 @@ class _AppInputBoxState extends State<AppInputBox> {
               ],
             ),
     );
+    // The outline surrounds the whole box (border included), as the
+    // prototype's `outline` on the `input` does, so it never touches the text.
+    final outlined = FocusOutline(
+      focusNode: _focus,
+      borderRadius: widget.radius,
+      child: box,
+    );
     return Semantics(
       label: widget.semanticLabel,
       textField: true,
       child: widget.opacity == 1
-          ? box
-          : Opacity(opacity: widget.opacity, child: box),
+          ? outlined
+          : Opacity(opacity: widget.opacity, child: outlined),
     );
   }
 }

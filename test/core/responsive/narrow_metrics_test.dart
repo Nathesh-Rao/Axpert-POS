@@ -213,7 +213,7 @@ void main() {
       expect(s.gap, 4);
       expect(s.titleHeight, 22);
       expect(s.titleFont, 18);
-      expect(s.cardPad, 6);
+      expect(s.cardPad, 8); // CSS 6, DEC-100
       expect(s.rowHeight, closeTo(27.9, 0.01));
       expect(s.invoiceHeight, closeTo(49.5, 0.01));
       expect(s.invoicePad, 6);
@@ -225,16 +225,16 @@ void main() {
       expect(s.membershipFont, 12);
       expect(s.checkoutPad, 8);
       expect(s.checkoutGap, 8);
-      expect(s.paymentButtonHeight, 46);
+      expect(s.paymentButtonHeight, 40); // CSS 46, DEC-100
       expect(s.inlineGap, 4);
       expect(s.inlineAmountHeight, 22);
       expect(s.tenderedHeight, 34);
       expect(s.quickAmountHeight, 28);
-      expect(s.completeHeight, 36);
+      expect(s.completeHeight, 34); // CSS 36, DEC-100
       expect(s.completeFont, 14);
       expect(s.terminalHeight, 68);
       expect(s.declineHeight, 46);
-      expect(s.quickActionSize, 44);
+      expect(s.quickActionSize, 40); // CSS 44, DEC-100
     });
 
     test('tight (height 780)', () {
@@ -243,7 +243,7 @@ void main() {
       expect(s.gap, 3);
       expect(s.titleHeight, 20);
       expect(s.titleFont, 17);
-      expect(s.cardPad, 4);
+      expect(s.cardPad, 8); // CSS 4, DEC-100
       expect(s.rowHeight, 21);
       expect(s.rowFont, 12);
       expect(s.rowValueFont, 13);
@@ -252,23 +252,68 @@ void main() {
       expect(s.invoiceTotalFont, 24);
       expect(s.currencyRowHeight, 28);
       expect(s.membershipInputHeight, 22);
-      expect(s.membershipLabelGap, 2);
+      expect(s.membershipLabelGap, 4); // CSS 2, DEC-100
       expect(s.applyDiscountHeight, 27);
       expect(s.applyDiscountMarginBottom, 4);
       expect(s.applyDiscountFont, 11);
-      expect(s.checkoutPad, 6);
+      expect(s.checkoutPad, 8); // CSS 6, DEC-100
       expect(s.checkoutGap, 6);
-      expect(s.paymentButtonHeight, 46);
-      expect(s.inlineGap, 3);
+      expect(s.paymentButtonHeight, 30); // CSS 46, DEC-100
+      expect(s.inlineGap, 4); // CSS 3, DEC-100
       expect(s.inlineAmountHeight, 20);
-      expect(s.tenderedHeight, 32);
-      expect(s.quickAmountHeight, 26);
+      expect(s.tenderedHeight, 30); // CSS 32, DEC-100
+      expect(s.quickAmountHeight, 24); // CSS 26, DEC-100
       expect(s.quickAmountFont, 12);
-      expect(s.completeHeight, 34);
+      expect(s.completeHeight, 28); // CSS 34, DEC-100
       expect(s.completeFont, 13);
       expect(s.terminalHeight, 64);
       expect(s.declineHeight, 40);
-      expect(s.quickActionsGap, 8);
+      expect(s.quickActionsGap, 4); // CSS 8, DEC-100
+      expect(s.quickActionSize, 30); // CSS 44, DEC-100
+      expect(s.membershipGap, 4); // CSS 6, DEC-100
+    });
+
+    test('inner padding tokens hold at every density and height (DEC-100)', () {
+      for (final h in <double>[600, 719, 733, 820, 900, 960, 961, 1000, 1035]) {
+        final s = _at(1900, h).summary;
+        final why = 'height $h';
+        expect(
+          s.cardPad,
+          greaterThanOrEqualTo(SummaryMetrics.minCardInset),
+          reason: why,
+        );
+        expect(
+          s.checkoutPad,
+          greaterThanOrEqualTo(SummaryMetrics.minCardInset),
+          reason: why,
+        );
+        expect(
+          s.membershipLabelGap,
+          greaterThanOrEqualTo(SummaryMetrics.minLabelGap),
+          reason: why,
+        );
+        expect(
+          s.inlineGap,
+          greaterThanOrEqualTo(SummaryMetrics.minRowGap),
+          reason: why,
+        );
+        expect(
+          s.membershipGap,
+          greaterThanOrEqualTo(SummaryMetrics.minRowGap),
+          reason: why,
+        );
+        expect(
+          s.quickActionsGap,
+          greaterThanOrEqualTo(SummaryMetrics.minRowGap),
+          reason: why,
+        );
+      }
+      // Normal density stays the CSS one at the reference viewport.
+      final ref = _at(1868, 1035).summary;
+      expect(ref.cardPad, closeTo(8.28, 0.01));
+      expect(ref.paymentButtonHeight, 56);
+      expect(ref.completeHeight, 48);
+      expect(ref.quickActionSize, 52);
     });
 
     test('collapsed member card values (height <= 719)', () {

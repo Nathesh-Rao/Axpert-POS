@@ -169,54 +169,137 @@ class _LineContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return context.metrics.lineStacked
+        ? _StackedLine(line: line, index: index)
+        : _WideLine(line: line, index: index);
+  }
+}
+
+/// Fields shared by both layouts.
+mixin _LineParts {
+  Widget numberText(BuildContext context, int index) {
     final c = context.colors;
-    final s = context.strings;
-    final text = context.text;
-    final cart = Get.find<CartController>();
-    final actions = Get.find<CartActionsController>();
+    return Text(
+      context.strings.lineNumber(index + 1),
+      textAlign: TextAlign.center,
+      style: context.text
+          .fluid(context.metrics.lineNumberFont, height: AppLineHeight.base)
+          .copyWith(color: c.text),
+    );
+  }
+
+  Widget productBlock(BuildContext context, CartLine line) {
+    final m = context.metrics;
     final product = line.product;
-    final id = product.id;
-    final gap = const SizedBox(width: AppSizes.cartLineGap);
-    final inputStyle = text
-        .of(AppFontSize.s14, height: AppLineHeight.base)
-        .copyWith(color: c.text);
+    return Row(
+      children: <Widget>[
+        if (product.hasImage && m.showLineImage) ...<Widget>[
+          SizedBox(
+            width: AppSizes.cartLineImage,
+            height: AppSizes.cartLineImage,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(AppSizes.cartLineImageRadius),
+              child: ProductImage(
+                image: product.image,
+                name: product.name,
+                beverage: product.category == 'Beverages',
+              ),
+            ),
+          ),
+          const SizedBox(width: AppSizes.cartLineGap),
+        ],
+        Expanded(child: _Names(line: line)),
+      ],
+    );
+  }
+
+  Widget priceField(BuildContext context, CartLine line) {
+    final cart = Get.find<CartController>();
+    return _boxField(
+      context,
+      value: line.price.minor,
+      scale: line.price.currency.exponent,
+      label: context.strings.priceInputLabel(line.product.name),
+      onValue: (v) =>
+          cart.setPrice(line.product.id, Money(v, line.price.currency)),
+    );
+  }
+
+  Widget discountField(BuildContext context, CartLine line) {
+    final cart = Get.find<CartController>();
+    return _boxField(
+      context,
+      value: line.discount.value,
+      scale: 2,
+      label: context.strings.discountInputLabel(line.product.name),
+      onValue: (v) => cart.setLineDiscount(line.product.id, Bp(v)),
+    );
+  }
+
+  Widget _boxField(
+    BuildContext context, {
+    required int value,
+    required int scale,
+    required String label,
+    required ValueChanged<int> onValue,
+  }) {
+    final c = context.colors;
+    final m = context.metrics;
+    return NumberField(
+      value: value,
+      scale: scale,
+      height: m.lineEditHeight,
+      fillColor: c.secondary,
+      borderColor: c.lineEditBorder,
+      radius: AppRadii.r8,
+      style: context.text
+          .fluid(m.lineEditFont, height: AppLineHeight.base)
+          .copyWith(color: c.text),
+      semanticLabel: label,
+      onValue: onValue,
+    );
+  }
+
+  Widget totalText(BuildContext context, CartLine line) {
+    return Text(
+      MoneyFormatter.format(LineMath.lineTotal(line)),
+      maxLines: 1,
+      softWrap: false,
+      style: context.text
+          .of(
+            AppFontSize.s16,
+            weight: AppFontWeight.bold,
+            height: AppLineHeight.base,
+          )
+          .copyWith(color: context.colors.text),
+    );
+  }
+
+  Widget trash(BuildContext context, CartLine line) =>
+      _TrashButton(onTap: () => Get.find<CartActionsController>().remove(line));
+}
+
+/// Single-row line (window wider than 1700 px): the columns of
+/// [CartHeaderColumns.wide], so header and rows always align.
+class _WideLine extends StatelessWidget with _LineParts {
+  const _WideLine({required this.line, required this.index});
+
+  final CartLine line;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    const gap = SizedBox(width: AppSizes.cartLineGap);
     return Row(
       children: <Widget>[
         SizedBox(
           width: AppSizes.cartLineCheckbox,
-          child: Text(
-            s.lineNumber(index + 1),
-            textAlign: TextAlign.center,
-            style: text
-                .of(AppFontSize.s13, height: AppLineHeight.base)
-                .copyWith(color: c.text),
-          ),
+          child: numberText(context, index),
         ),
         gap,
         Expanded(
           flex: CartColumns.itemFlex,
-          child: Row(
-            children: <Widget>[
-              if (product.hasImage) ...<Widget>[
-                SizedBox(
-                  width: AppSizes.cartLineImage,
-                  height: AppSizes.cartLineImage,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(
-                      AppSizes.cartLineImageRadius,
-                    ),
-                    child: ProductImage(
-                      image: product.image,
-                      name: product.name,
-                      beverage: product.category == 'Beverages',
-                    ),
-                  ),
-                ),
-                const SizedBox(width: AppSizes.cartLineGap),
-              ],
-              Expanded(child: _Names(line: line)),
-            ],
-          ),
+          child: productBlock(context, line),
         ),
         gap,
         SizedBox(
@@ -226,50 +309,154 @@ class _LineContent extends StatelessWidget {
         gap,
         SizedBox(
           width: AppSizes.lineEditWidth,
-          child: _EditBox(
-            child: NumberField(
-              value: line.price.minor,
-              scale: line.price.currency.exponent,
-              style: inputStyle,
-              semanticLabel: s.priceInputLabel(product.name),
-              onValue: (v) => cart.setPrice(id, Money(v, line.price.currency)),
-            ),
-          ),
+          child: priceField(context, line),
         ),
         gap,
         SizedBox(
           width: AppSizes.lineEditWidth,
-          child: _EditBox(
-            child: NumberField(
-              value: line.discount.value,
-              scale: 2,
-              style: inputStyle,
-              semanticLabel: s.discountInputLabel(product.name),
-              onValue: (v) => cart.setLineDiscount(id, Bp(v)),
-            ),
-          ),
+          child: discountField(context, line),
         ),
         gap,
         Expanded(
           flex: CartColumns.totalFlex,
           child: Align(
             alignment: Alignment.centerRight,
-            child: Text(
-              MoneyFormatter.format(LineMath.lineTotal(line)),
-              maxLines: 1,
-              softWrap: false,
-              style: text
-                  .of(
-                    AppFontSize.s16,
-                    weight: AppFontWeight.bold,
-                    height: AppLineHeight.base,
-                  )
-                  .copyWith(color: c.text),
-            ),
+            child: totalText(context, line),
           ),
         ),
         gap,
-        _TrashButton(onTap: () => actions.remove(line)),
+        trash(context, line),
+      ],
+    );
+  }
+}
+
+/// Stacked line (width <= 1700): product on top, quantity, price and discount
+/// below with labels; number, total and trash are placed absolutely.
+class _StackedLine extends StatelessWidget with _LineParts {
+  const _StackedLine({required this.line, required this.index});
+
+  final CartLine line;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    final s = context.strings;
+    // Offsets are CSS offsets from the padding box minus the 12 px padding.
+    const inset = AppSizes.cartPad;
+    return Stack(
+      children: <Widget>[
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Container(
+              constraints: const BoxConstraints(
+                minHeight: AppSizes.stackedRow1MinHeight,
+              ),
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.only(
+                left: AppSizes.stackedProductPadLeft,
+                right: AppSizes.stackedProductPadRight,
+              ),
+              child: productBlock(context, line),
+            ),
+            const SizedBox(height: AppSizes.stackedRowGap),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                SizedBox(
+                  width: AppSizes.qtyControlStackedWidth,
+                  child: _Labeled(
+                    label: s.cartTableQty(),
+                    color: c.muted,
+                    child: _QtyControl(line: line),
+                  ),
+                ),
+                const SizedBox(width: AppSizes.stackedColumnGap),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: AppSizes.lineEditStackedMaxWidth,
+                      ),
+                      child: _Labeled(
+                        label: s.cartTablePrice(),
+                        color: c.muted,
+                        child: priceField(context, line),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: AppSizes.stackedColumnGap),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxWidth: AppSizes.lineEditStackedMaxWidth,
+                      ),
+                      child: _Labeled(
+                        label: s.cartTableDiscount(),
+                        color: c.muted,
+                        child: discountField(context, line),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        Positioned(
+          left: AppSizes.stackedNumberLeft - inset,
+          top: AppSizes.stackedNumberTop - inset,
+          child: numberText(context, index),
+        ),
+        Positioned(
+          right: AppSizes.stackedTotalRight - inset,
+          top: AppSizes.stackedTotalTop - inset,
+          child: totalText(context, line),
+        ),
+        Positioned(
+          right: AppSizes.stackedTrashRight - inset,
+          top: AppSizes.stackedTrashTop - inset,
+          child: trash(context, line),
+        ),
+      ],
+    );
+  }
+}
+
+/// `.control-label` over a stacked control: 12 px muted, line 14, margin 4.
+class _Labeled extends StatelessWidget {
+  const _Labeled({
+    required this.label,
+    required this.color,
+    required this.child,
+  });
+
+  final String label;
+  final Color color;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          label,
+          maxLines: 1,
+          style: context.text
+              .of(AppFontSize.s12, height: AppSizes.controlLabelLineHeight / 12)
+              .copyWith(color: color),
+        ),
+        const SizedBox(height: AppSizes.controlLabelGap),
+        child,
       ],
     );
   }
@@ -306,34 +493,13 @@ class _Names extends StatelessWidget {
               .copyWith(color: c.text),
         ),
         const SizedBox(height: AppSpacing.s4),
-        Text(product.barcode, style: small),
+        if (context.metrics.showLineBarcode)
+          Text(product.barcode, style: small),
         Text(
           s.gstLabel(DecimalText.scaled(product.gst.value, 2)),
           style: small,
         ),
       ],
-    );
-  }
-}
-
-class _EditBox extends StatelessWidget {
-  const _EditBox({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    return Container(
-      height: AppSizes.lineEditHeight,
-      padding: const EdgeInsets.all(AppSpacing.s4),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: c.secondary,
-        borderRadius: BorderRadius.circular(AppRadii.r8),
-        border: Border.all(color: c.lineEditBorder),
-      ),
-      child: child,
     );
   }
 }
@@ -357,9 +523,11 @@ class _QtyControl extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.colors;
     final s = context.strings;
+    final m = context.metrics;
+    final radius = BorderRadius.circular(AppRadii.r22);
     return SizedBox(
-      width: AppSizes.qtyControlWidth,
-      height: AppSizes.qtyControlHeight,
+      width: m.qtyControlWidth,
+      height: m.qtyControlHeight,
       child: Stack(
         children: <Widget>[
           // `inset 0 0 0 1px #dbe5f3` on a card-colored pill, under the buttons.
@@ -367,43 +535,51 @@ class _QtyControl extends StatelessWidget {
             child: DecoratedBox(
               decoration: BoxDecoration(
                 color: c.card,
-                borderRadius: BorderRadius.circular(AppRadii.r22),
+                borderRadius: radius,
                 border: Border.all(color: c.qtyRing),
               ),
             ),
           ),
-          Row(
-            children: <Widget>[
-              _QtyButton(
-                icon: AppIcons.minus,
-                tooltip: s.decreaseQtyTooltip(),
-                remove: line.qty <= _one,
-                onAction: () => _step(-_one.milli),
-              ),
-              Expanded(
-                child: QuantityField(
-                  value: line.qty,
-                  semanticLabel: s.qtyInputLabel(line.product.name),
-                  style: context.text
-                      .of(
-                        AppFontSize.s16,
-                        weight: AppFontWeight.bold,
-                        height: AppLineHeight.base,
-                      )
-                      .copyWith(color: c.text),
-                  onValue: (qty) => Get.find<CartActionsController>().changeQty(
-                    Get.find<CartController>().lineOf(line.product.id) ?? line,
-                    qty,
+          // `.qty-control{overflow:hidden}` also clips the input's focus ring.
+          ClipRRect(
+            borderRadius: radius,
+            child: Row(
+              children: <Widget>[
+                _QtyButton(
+                  icon: AppIcons.minus,
+                  tooltip: s.decreaseQtyTooltip(),
+                  remove: line.qty <= _one,
+                  size: m.qtyButtonSize,
+                  onAction: () => _step(-_one.milli),
+                ),
+                Expanded(
+                  child: QuantityField(
+                    value: line.qty,
+                    semanticLabel: s.qtyInputLabel(line.product.name),
+                    style: context.text
+                        .of(
+                          AppFontSize.s16,
+                          weight: AppFontWeight.bold,
+                          height: AppLineHeight.base,
+                        )
+                        .copyWith(color: c.text),
+                    onValue: (qty) =>
+                        Get.find<CartActionsController>().changeQty(
+                          Get.find<CartController>().lineOf(line.product.id) ??
+                              line,
+                          qty,
+                        ),
                   ),
                 ),
-              ),
-              _QtyButton(
-                icon: AppIcons.plus,
-                tooltip: s.increaseQtyTooltip(),
-                remove: false,
-                onAction: () => _step(_one.milli),
-              ),
-            ],
+                _QtyButton(
+                  icon: AppIcons.plus,
+                  tooltip: s.increaseQtyTooltip(),
+                  remove: false,
+                  size: m.qtyButtonSize,
+                  onAction: () => _step(_one.milli),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -416,12 +592,14 @@ class _QtyButton extends StatelessWidget {
     required this.icon,
     required this.tooltip,
     required this.remove,
+    required this.size,
     required this.onAction,
   });
 
   final IconData icon;
   final String tooltip;
   final bool remove;
+  final double size;
   final VoidCallback onAction;
 
   @override
@@ -429,7 +607,7 @@ class _QtyButton extends StatelessWidget {
     final c = context.colors;
     return HoldToRepeatButton(
       tooltip: tooltip,
-      borderRadius: AppSizes.qtyButtonSize / 2,
+      borderRadius: size / 2,
       onAction: onAction,
       builder: (context, hovered) {
         final bg = remove
@@ -443,8 +621,8 @@ class _QtyButton extends StatelessWidget {
             ? c.qtyButtonHoverFg
             : c.qtyButtonFg;
         return Container(
-          width: AppSizes.qtyButtonSize,
-          height: AppSizes.qtyButtonSize,
+          width: size,
+          height: size,
           decoration: BoxDecoration(shape: BoxShape.circle, color: bg),
           child: Icon(icon, size: AppSizes.qtyButtonIcon, color: fg),
         );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/theme_x.dart';
 import '../../core/theme/tokens/app_radii.dart';
+import '../../core/theme/tokens/app_sizes.dart';
 import '../../core/theme/tokens/app_spacing.dart';
 import '../../core/theme/tokens/app_typography.dart';
 import 'app_pressable.dart';
@@ -18,6 +19,7 @@ class ActionButton extends StatelessWidget {
     required this.height,
     required this.iconSize,
     required this.fontSize,
+    this.stacked = false,
     super.key,
   });
 
@@ -28,6 +30,9 @@ class ActionButton extends StatelessWidget {
   final double height;
   final double iconSize;
   final double fontSize;
+
+  /// Width <= 1700: the icon sits above the label.
+  final bool stacked;
 
   @override
   Widget build(BuildContext context) {
@@ -49,25 +54,42 @@ class ActionButton extends StatelessWidget {
           color: bg,
           borderRadius: BorderRadius.circular(AppRadii.r10),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Icon(icon, size: iconSize, color: fg),
-            const SizedBox(width: AppSpacing.s6),
-            Flexible(
-              child: Text(
-                label,
-                maxLines: 1,
-                softWrap: false,
-                overflow: TextOverflow.ellipsis,
-                style: context.text
-                    .fluid(fontSize, height: AppLineHeight.base)
-                    .copyWith(color: fg),
-              ),
-            ),
-          ],
-        ),
+        child: _content(context, fg),
       ),
     );
+  }
+
+  Widget _content(BuildContext context, Color fg) {
+    final labelText = Flexible(
+      child: Text(
+        label,
+        maxLines: 1,
+        softWrap: false,
+        overflow: TextOverflow.ellipsis,
+        style: context.text
+            .fluid(fontSize, height: AppLineHeight.base)
+            .copyWith(color: fg),
+      ),
+    );
+    final iconWidget = Icon(icon, size: iconSize, color: fg);
+    // Stacked: the content (about 40 px) may be taller than the padded box,
+    // which CSS lets overflow unseen; here it is simply centered.
+    return stacked
+        ? Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              iconWidget,
+              const SizedBox(height: AppSizes.cartActionStackedIconGap),
+              labelText,
+            ],
+          )
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              iconWidget,
+              const SizedBox(width: AppSpacing.s6),
+              labelText,
+            ],
+          );
   }
 }

@@ -1,11 +1,16 @@
-// usage: node cdp.mjs <url> <outPrefix> '<json actions>'
+// usage: node --experimental-websocket cdp.mjs <url> <outPrefix> '<json actions>' [width height]
+// extra actions: {"dump":"file.json"} writes localStorage, {"load":"file.json"} restores it and reloads
+// (use it to start with the same cart at every window size).
+// width/height: CSS px of the viewport (default 2124 x 1180).
 // actions: {"wait":ms} {"click":[x,y]} {"type":"text"} {"key":"Enter"} {"shot":"name"} {"move":[x,y]}
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
-const [url, out, actionsJson = '[]'] = process.argv.slice(2);
+const [url, out, actionsJson = '[]', widthArg = '2124', heightArg = '1180'] = process.argv.slice(2);
+const width = Number(widthArg);
+const height = Number(heightArg);
 const CH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const port = 9300 + Math.floor(Math.random() * 500);
-const proc = spawn(CH, ['--headless=new', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', `--remote-debugging-port=${port}`, '--window-size=2124,1180', '--user-data-dir=/tmp/cdp-prof-' + port, 'about:blank'], { stdio: 'ignore' });
+const proc = spawn(CH, ['--headless=new', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', `--remote-debugging-port=${port}`, `--window-size=${width},${height}`, '--user-data-dir=/tmp/cdp-prof-' + port, 'about:blank'], { stdio: 'ignore' });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let targets;
 for (let i = 0; i < 50; i++) { try { targets = await (await fetch(`http://127.0.0.1:${port}/json`)).json(); if (targets.length) break; } catch {} await sleep(200); }
@@ -20,16 +25,20 @@ ws.onmessage = (m) => { const d = JSON.parse(m.data);
   else if (d.method === 'Log.entryAdded') logs.push(`log.${d.params.entry.level}: ${d.params.entry.text} ${d.params.entry.url ?? ''}`); };
 const send = (method, params = {}) => new Promise((r) => { const i = ++id; pending.set(i, r); ws.send(JSON.stringify({ id: i, method, params })); });
 await send('Runtime.enable'); await send('Log.enable'); await send('Page.enable');
-await send('Emulation.setDeviceMetricsOverride', { width: 2124, height: 1180, deviceScaleFactor: 1, mobile: false });
+await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
 await send('Page.navigate', { url });
 const shot = async (name) => { const r = await send('Page.captureScreenshot', { format: 'png' }); fs.writeFileSync(`${out}_${name}.png`, Buffer.from(r.data, 'base64')); };
 for (const a of JSON.parse(actionsJson)) {
   if (a.wait) await sleep(a.wait);
   else if (a.shot) await shot(a.shot);
+  else if (a.dump) { const r = await send('Runtime.evaluate', { expression: 'JSON.stringify(Object.fromEntries(Object.entries(localStorage)))', returnByValue: true }); fs.writeFileSync(a.dump, r.result.value); }
+  else if (a.load) { const data = fs.readFileSync(a.load, 'utf8'); await send('Runtime.evaluate', { expression: `(() => { const d = ${data}; for (const k in d) localStorage.setItem(k, d[k]); })()` }); await send('Page.reload'); }
   else if (a.move) await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: a.move[0], y: a.move[1] });
   else if (a.click) { const [x, y] = a.click; await send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: 1 }); await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', clickCount: 1 }); }
   else if (a.type) await send('Input.insertText', { text: a.type });
   else if (a.key) { await send('Input.dispatchKeyEvent', { type: 'keyDown', key: a.key, code: a.key, windowsVirtualKeyCode: a.vk ?? 0 }); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: a.key, code: a.key, windowsVirtualKeyCode: a.vk ?? 0 }); }
 }
-console.log(logs.filter((l) => !/service worker|CPU-only|Injecting|Installing|Activated/.test(l)).join('\n') || '(no console output besides bootstrap)');
+const shown = logs.filter((l) => !/service worker|CPU-only|Injecting|Installing|Activated|GL Driver|dart.developer.log/.test(l));
+console.log(shown.join('\n') || '(no console output besides bootstrap)');
+console.log(`overflow errors: ${logs.filter((l) => /overflowed/i.test(l)).length}`);
 ws.close(); proc.kill();

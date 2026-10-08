@@ -501,6 +501,61 @@ Computed from the formulas. "max"/"min" = saturated (identical for any larger/sm
 | print | receipt only (80 mm, 5 mm padding, 11 px) |
 | prefers-reduced-motion | animations and transitions off |
 
+## 13. Narrow-window cart rules and summary density (resolved in file order, S4.0)
+
+Resolved with a small cascade script (later rule wins at equal specificity, `!important` first; media blocks evaluated for the window). Unverified visually (no screenshots, KG-040..045). Code: `AppMetrics` getters (`lineStacked`, `cartHeaderColumns`, ...), `SummaryMetrics`, `MemberCardMetrics`.
+
+### Cart line and table header
+| Property | width > 1700 | width <= 1700 | width <= 1100 (on top) |
+|---|---|---|---|
+| `.cart-table-head` columns, gap | `20 1.6fr 144 76 76 .8fr 40`, 8 | `18 1.4fr 1.3fr .8fr .8fr 1fr 0`, 4 | same |
+| `.cart-line` columns, rows, gap | same as the header | `152 1fr 1fr`, `minmax(52,auto) auto`, `12 8` | same |
+| line number | in column 1, 13 | absolute left 12 top 18, 12 | same |
+| `.line-product` | one cell, padding 0 | spans the row, padding-left 20, padding-right 120 | same |
+| image, barcode | shown | shown | hidden (GST stays) |
+| `.qty-control`, buttons | 144 x 40, 40 | 152 x 44, 44 | same |
+| `.line-edit input` | 36 high, font 14 | 44 high, max-width 76, labels shown (12 px, lh 14, mb 4) | font 13 |
+| `.line-total` | column 6, right aligned, 16 | absolute right 60 top 23 | same |
+| `.trash` | column 7 | absolute right 12 top 12 | same |
+| dead rules | `.line-product img{display:none}` and `small:not(.gst){display:none}` at <= 1280 are overridden by later `display:block` rules | | |
+
+The header and the stacked lines do NOT line up in the prototype (decorative strip); the port replicates that (KG-104).
+
+### Other narrow rules in the cart and catalog
+| Rule | Value |
+|---|---|
+| `.cart-heading` (<= 1280) | gap 5; clock `order:5; flex:1 0 100%; padding:2px 0` (own row) |
+| `.cart-heading` (<= 1100) | counter 16, icon 19 |
+| `.cart-heading` (height <= 820) | min-height 30 |
+| `.cart-actions .action` (<= 1700) | column, icon above label, gap 3 (height 44 unchanged) |
+| `.stat-tiles` (<= 1700) | tile padding 14 x 5, tile gap 5, icon 21, value `clamp(18,1.5vw,24)` |
+| `.stat-tiles` (<= 1100) | container padding 8, gap 8; tile padding 12 x 5, column, left aligned, icon hidden; value 16 is dead |
+| `.has-cart .product-grid` (<= 1280) | exactly 2 columns (not in list view) |
+| `.product-bottom > b`, `.product-stepper` (<= 1100) | price 11, stepper gap 2 |
+
+### Summary density (heights), cascade-resolved
+`normal` = base block with `clamp(vh/vw)`; `compact` = height <= 960; `tight` = height <= 820. Values in px; `c(min,k,max)` = `clamp(min, k vh|vw, max)`.
+
+| Property | normal | compact | tight |
+|---|---|---|---|
+| panel padding / gap | c(14,1.6vh,20) / c(8,.75vh,12) | 14 / 4 | 14 / 3 |
+| title height / font | 24 / c(18,1.25vw,22) | 22 / 18 | 20 / 17 |
+| card padding | c(6,.8vh,10) | 6 | 4 |
+| row height / font / value font | c(28,3.2vh,34) / 13 / c(13,.95vw,16) | c(24,3.1vh,28) / 13 / same | 21 / 12 / 13 |
+| invoice height / padding / total font | c(52,5.6vh,68) / 8 / c(25,2.5vh,32) | c(44,5.5vh,52) / 6 / 25 | 42 / 5 / 24 |
+| currency row height / font | 40 / 13 | 32 / 13 | 28 / 12 |
+| rate label height | 14 | 12 | 12 |
+| membership gap / label gap / input height / font | 10 / 4 / 38 / 13 | 6 / 3 / 28 / 12 | 6 / 2 / 22 / 12 |
+| apply discount height / margin-bottom / font | 32 / 12 / c(11,.8vw,14) | same | 27 / 4 / 11 |
+| checkout section padding / gap | c(10,1.3vh,16) / 10 | 8 / 8 | 6 / 6 |
+| payment button height | c(46,6.5vh,56) | 46 | 46 |
+| inline gap / amount height | c(8,.75vh,12) / 24 | 4 / 22 | 3 / 20 |
+| tendered / quick amount / complete | 44 / 36 (13) / 48 (15) | 34 / 28 (13) / 36 (14) | 32 / 26 (12) / 34 (13) |
+| terminal / decline | 90 / 54 | 68 / 46 | 64 / 40 |
+| quick actions gap / size | 10 / c(44,5.2vh,52) | 10 / 44 | 8 / 44 |
+
+Height <= 719: member card collapses to a one-line header (min-height 34, padding 4 x 6, gap 6, font 12); the open form floats (right 24, top c(100,22vh,180), width summary - 36, padding 16, input 38). The earlier `checkoutGap` guess (c(8,.75vh,12)) was the inline-payment gap; the `.checkout-section` gap is 10 (corrected in S4.0).
+
 ## 12. Golden comparison limits
 
 Golden vs screenshot compares colors and type only at the reference viewport in light mode; known limits: text anti-aliasing and sub-pixel positioning differ between Chrome/macOS and Flutter's renderer, shadow blur differs slightly, `backdrop-filter`, native `select` and scrollbars cannot be matched pixel for pixel (KG-051). Dark mode and other sizes are regression-only.

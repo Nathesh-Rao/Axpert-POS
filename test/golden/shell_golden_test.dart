@@ -121,19 +121,31 @@ void main() {
       await tester.pumpAndSettle();
     },
   );
+  Future<void> addLays(WidgetTester tester) async {
+    final lays = Get.find<ProductsController>().byId(5)!;
+    Get.find<CartActionsController>().add(lays);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 2)); // highlight ends
+    Get.find<ToastController>().toasts.clear();
+    await tester.pumpAndSettle();
+    await settleImages(tester);
+  }
+
   golden(
     'POS with one line (Lays Classic), reference viewport',
     'pos_one_line_light',
-    after: (tester) async {
-      final lays = Get.find<ProductsController>().byId(5)!;
-      Get.find<CartActionsController>().add(lays);
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 2)); // highlight ends
-      Get.find<ToastController>().toasts.clear();
-      await tester.pumpAndSettle();
-      await settleImages(tester);
-    },
+    after: addLays,
   );
+  for (final size in const <Size>[Size(1440, 900), Size(1100, 700)]) {
+    final w = size.width.toInt();
+    golden(
+      'POS with one line at ${w}x${size.height.toInt()} '
+          '(regression, unverified visually)',
+      'pos_one_line_light_$w',
+      size: size,
+      after: addLays,
+    );
+  }
   golden('POS dark (unverified visually)', 'shell_pos_dark', dark: true);
   for (final size in const <Size>[
     Size(1700, 960),

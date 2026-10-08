@@ -54,7 +54,12 @@ class _SearchTextFieldState extends State<SearchTextField> {
         colors: <Color>[c.secondary, c.card],
         borderRadius: BorderRadius.circular(AppRadii.r7),
         border: Border.all(color: c.border),
-        padding: EdgeInsets.symmetric(horizontal: m.fieldPadX),
+        // CssGradientBox draws the border over its box: add the 1 px the CSS
+        // border takes from the content box.
+        padding: EdgeInsets.symmetric(
+          horizontal: m.fieldPadX + AppSizes.borderWidth,
+          vertical: AppSizes.borderWidth,
+        ),
         child: Row(
           children: <Widget>[
             Icon(
@@ -70,11 +75,17 @@ class _SearchTextFieldState extends State<SearchTextField> {
                   controller: widget.controller,
                   focusNode: _focus,
                   style: style,
+                  // The input fills the field (`input{height:100%}`), so the
+                  // focus ring has the height React draws.
+                  expands: true,
+                  maxLines: null,
+                  textAlignVertical: TextAlignVertical.center,
                   cursorColor: c.searchFieldFg,
                   onChanged: widget.onChanged,
                   decoration: InputDecoration(
                     isCollapsed: true,
                     border: InputBorder.none,
+                    hintMaxLines: 1,
                     hintText: widget.hint,
                     hintStyle: style.copyWith(color: c.placeholder),
                     contentPadding: EdgeInsets.zero,

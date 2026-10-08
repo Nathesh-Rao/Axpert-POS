@@ -22,3 +22,12 @@ void useReferenceViewport(WidgetTester tester) {
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
 }
+
+/// Sets the test window to a [logical] size at device pixel ratio 1.
+void useLogicalViewport(WidgetTester tester, Size logical) {
+  tester.view
+    ..devicePixelRatio = 1
+    ..physicalSize = logical;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+}

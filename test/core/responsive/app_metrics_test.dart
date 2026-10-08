@@ -66,7 +66,7 @@ void main() {
       'invoiceLabelFont': (ref.invoiceLabelFont, 16.82),
       'invoiceTotalFont': (ref.invoiceTotalFont, 25.87),
       'checkoutSectionPad': (ref.checkoutSectionPad, 13.45),
-      'checkoutGap': (ref.checkoutGap, 8.00),
+      'checkoutGap': (ref.checkoutGap, 10.00),
       'paymentButtonHeight': (ref.paymentButtonHeight, 56.00),
       'paymentButtonFont': (ref.paymentButtonFont, 20.00),
       'tenderedFont': (ref.tenderedFont, 22.00),

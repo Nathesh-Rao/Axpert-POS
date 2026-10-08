@@ -37,6 +37,7 @@ class CartActionsBar extends StatelessWidget {
         height: AppSizes.cartActionHeight,
         iconSize: m.cartActionIcon,
         fontSize: AppFontSize.s12.px,
+        stacked: m.cartActionsStacked,
       ),
     );
     const gap = SizedBox(width: AppSizes.cartActionsGap);

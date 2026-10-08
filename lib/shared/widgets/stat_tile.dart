@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/theme_x.dart';
 import '../../core/theme/tokens/app_radii.dart';
-import '../../core/theme/tokens/app_sizes.dart';
 import '../../core/theme/tokens/app_spacing.dart';
 import '../../core/theme/tokens/app_typography.dart';
 import 'css_gradient.dart';
@@ -17,6 +16,11 @@ class StatTile extends StatelessWidget {
     required this.label,
     required this.value,
     required this.valueFontSize,
+    required this.padY,
+    required this.padX,
+    required this.gap,
+    this.showIcon = true,
+    this.vertical = false,
     super.key,
   });
 
@@ -26,6 +30,15 @@ class StatTile extends StatelessWidget {
   final String label;
   final String value;
   final double valueFontSize;
+  final double padY;
+  final double padX;
+  final double gap;
+
+  /// False at width <= 1100 (the icon is hidden).
+  final bool showIcon;
+
+  /// Width <= 1100: column direction, content left aligned.
+  final bool vertical;
 
   @override
   Widget build(BuildContext context) {
@@ -35,15 +48,16 @@ class StatTile extends StatelessWidget {
       angleDeg: 130,
       colors: <Color>[c.secondary, c.background],
       borderRadius: BorderRadius.circular(AppRadii.r8),
-      padding: const EdgeInsets.symmetric(
-        vertical: AppSizes.statTilePadY,
-        horizontal: AppSizes.statTilePadX,
-      ),
+      padding: EdgeInsets.symmetric(vertical: padY, horizontal: padX),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: vertical
+            ? MainAxisAlignment.start
+            : MainAxisAlignment.center,
         children: <Widget>[
-          Icon(icon, size: iconSize, color: iconColor),
-          const SizedBox(width: AppSizes.statTileGap),
+          if (showIcon) ...<Widget>[
+            Icon(icon, size: iconSize, color: iconColor),
+            SizedBox(width: gap),
+          ],
           Flexible(
             child: Column(
               mainAxisSize: MainAxisSize.min,

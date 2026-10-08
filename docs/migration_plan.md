@@ -2,7 +2,7 @@
 
 React prototype (`reference_react/`) -> Flutter (`pos_application/`). Phase A = one-time port replicating behavior as-is. Phase B = production development in Flutter only (known gaps fixed). Rules: `CLAUDE.md`. Decisions: `decisions.md`. Gaps: `known_gaps.md`. Prototype inventory: `react_audit.md`. Current detailed plan: `plan_s1_s2.md`.
 
-Status: 7 large steps (DEC-069, 2026-10-08). Done: S1 Money, S2 Shell, S3 POS core (S3.a-d, see `plan_s3.md`). Next: S4 POS checkout (not started).
+Status: 7 large steps (DEC-069, 2026-10-08). Done: S1 Money, S2 Shell, S3 POS core (S3.a-d, see `plan_s3.md`). S4.0 Narrow-window cart layout and density (see `plan_s4_0.md`). Next: S4 POS checkout (not started).
 
 ## How we work
 - Each STEP is planned in Plan mode and approved once. Checkpoints inside an approved step need no extra approval; each ends with a short report and a commit (message proposed, committed after the user's OK).

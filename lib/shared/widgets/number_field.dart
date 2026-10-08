@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../core/services/pricing/decimal_parser.dart';
 import '../../core/theme/theme_x.dart';
+import '../../core/theme/tokens/app_spacing.dart';
 import '../../core/utils/decimal_text.dart';
 import 'focus_outline.dart';
 
@@ -17,6 +18,10 @@ class NumberField extends StatefulWidget {
     required this.onValue,
     required this.style,
     required this.semanticLabel,
+    required this.height,
+    required this.fillColor,
+    required this.borderColor,
+    required this.radius,
     super.key,
   });
 
@@ -25,6 +30,12 @@ class NumberField extends StatefulWidget {
   final ValueChanged<int> onValue;
   final TextStyle style;
   final String semanticLabel;
+
+  /// The input is the box (`.line-edit input`): height, fill, border, radius.
+  final double height;
+  final Color fillColor;
+  final Color borderColor;
+  final double radius;
 
   @override
   State<NumberField> createState() => _NumberFieldState();
@@ -83,27 +94,42 @@ class _NumberFieldState extends State<NumberField> {
 
   @override
   Widget build(BuildContext context) {
+    // The focus ring goes around the whole box, as the outline of the input.
     return FocusOutline(
       focusNode: _focus,
-      child: Semantics(
-        label: widget.semanticLabel,
-        textField: true,
-        child: TextField(
-          controller: _controller,
-          focusNode: _focus,
-          textAlign: TextAlign.center,
-          style: widget.style,
-          cursorColor: context.colors.text,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          inputFormatters: <TextInputFormatter>[
-            FilteringTextInputFormatter.allow(RegExp(r'[0-9.\-]')),
-          ],
-          onChanged: _changed,
-          onSubmitted: (_) => _focus.unfocus(),
-          decoration: const InputDecoration(
-            isCollapsed: true,
-            border: InputBorder.none,
-            contentPadding: EdgeInsets.zero,
+      borderRadius: widget.radius,
+      child: Container(
+        height: widget.height,
+        padding: const EdgeInsets.all(AppSpacing.s4),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: widget.fillColor,
+          borderRadius: BorderRadius.circular(widget.radius),
+          border: Border.all(color: widget.borderColor),
+        ),
+        child: Semantics(
+          label: widget.semanticLabel,
+          textField: true,
+          child: TextField(
+            controller: _controller,
+            focusNode: _focus,
+            textAlign: TextAlign.center,
+            textAlignVertical: TextAlignVertical.center,
+            expands: true,
+            maxLines: null,
+            style: widget.style,
+            cursorColor: context.colors.text,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9.\-]')),
+            ],
+            onChanged: _changed,
+            onSubmitted: (_) => _focus.unfocus(),
+            decoration: const InputDecoration(
+              isCollapsed: true,
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
+            ),
           ),
         ),
       ),

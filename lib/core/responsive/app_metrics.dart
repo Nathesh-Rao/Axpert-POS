@@ -3,10 +3,45 @@ import 'dart:ui' show Size;
 import '../theme/tokens/app_sizes.dart';
 import 'breakpoints.dart';
 import 'clamp_rule.dart';
+import 'summary_metrics.dart';
 
-enum SummaryDensity { normal, compact, tight }
+export 'summary_metrics.dart' show SummaryDensity;
 
 enum CartLineLayout { single, stacked }
+
+/// One column of the cart table: a fixed [width] or a flexible share [flex]
+/// (`minmax(0, N fr)` is [flex] = 10 x N).
+typedef CartColumn = ({double? width, int flex});
+
+/// Header columns and gap (`.cart-table-head` grid).
+class CartHeaderColumns {
+  const CartHeaderColumns(this.columns, this.gap);
+
+  /// `20px 1.6fr 144px 76px 76px .8fr 40px`, gap 8.
+  static const CartHeaderColumns wide = CartHeaderColumns(<CartColumn>[
+    (width: 20, flex: 0),
+    (width: null, flex: 16),
+    (width: 144, flex: 0),
+    (width: 76, flex: 0),
+    (width: 76, flex: 0),
+    (width: null, flex: 8),
+    (width: 40, flex: 0),
+  ], 8);
+
+  /// `18px 1.4fr 1.3fr .8fr .8fr 1fr 0`, gap 4 (width <= 1700).
+  static const CartHeaderColumns stacked = CartHeaderColumns(<CartColumn>[
+    (width: 18, flex: 0),
+    (width: null, flex: 14),
+    (width: null, flex: 13),
+    (width: null, flex: 8),
+    (width: null, flex: 8),
+    (width: null, flex: 10),
+    (width: 0, flex: 0),
+  ], 4);
+
+  final List<CartColumn> columns;
+  final double gap;
+}
 
 /// The prototype's `clamp()/vw/vh` rules and media queries as explicit values
 /// for one window size (docs/css_metrics.md section 10 and 11). Pure Dart, no
@@ -107,7 +142,8 @@ class AppMetrics {
   double get productGridGap => _c.vw(6, .65, 11);
   double get productCardPad => _c.vw(7, .6, 11);
   double get productImageHeight => _c.vh(70, 9.6, 84);
-  double get productPriceFont => _c.vw(12, .85, 15);
+  double get productPriceFont => atMost1100 ? 11 : _c.vw(12, .85, 15);
+  double get productStepperGap => atMost1100 ? 2 : 3;
   double get productStepperButton => _c.vw(23, 1.8, 30);
   double get productStepperFirst => _c.vw(20, 1.6, 25);
 
@@ -143,20 +179,87 @@ class AppMetrics {
 
   /// `.product-list .product-card` height, `clamp(72px,9vh,90px)`.
   double get productListCardHeight => _c.vh(72, 9, 90);
-  double get cartHeadingMinHeight => _c.vh(32, 4.5, 44);
-  double get cartHeadingGap => _c.vw(5, .5, 9);
-  double get cartHeadingFont => _c.vw(17, 1.25, 22);
-  double get cartHeadingIcon => _c.vw(21, 1.7, 26);
+
+  /// `.cart-heading` min-height: 30 at height <= 820 (the later rule wins).
+  double get cartHeadingMinHeight => heightAtMost820 ? 30 : _c.vh(32, 4.5, 44);
+
+  /// 5 at width <= 1280.
+  double get cartHeadingGap => atMost1280 ? 5 : _c.vw(5, .5, 9);
+
+  /// Counter and icon: 16 / 19 at width <= 1100.
+  double get cartHeadingFont => atMost1100 ? 16 : _c.vw(17, 1.25, 22);
+  double get cartHeadingIcon => atMost1100 ? 19 : _c.vw(21, 1.7, 26);
+
+  /// At width <= 1280 the clock wraps to its own full-width row
+  /// (`order:5; flex:1 0 100%; padding:2px 0`).
+  bool get cartTimeOnOwnRow => atMost1280;
   double get customerLabelMarginTop => _c.vh(7, 1, 12);
   double get cartTableMarginTop => _c.vh(8, 1.2, 13);
   double get cartLineMinHeight => _c.vh(84, 10, 96);
-  double get statTileValueFont => _c.vw(20, 1.45, 28);
+
+  /// Value font of a stat tile: `clamp(20,1.45vw,28)`, and
+  /// `clamp(18,1.5vw,24)` at width <= 1700 (the <= 1100 16 px rule is dead).
+  double get statTileValueFont =>
+      atMost1700 ? _c.vw(18, 1.5, 24) : _c.vw(20, 1.45, 28);
 
   /// `.cart-actions .action svg`, `clamp(14px,1.2vw,19px)`.
   double get cartActionIcon => _c.vw(14, 1.2, 19);
 
   /// `.stat-tiles svg`, `clamp(19px,1.8vw,26px)` (the later block wins over 25).
-  double get statTileIcon => _c.vw(19, 1.8, 26);
+  double get statTileIcon => atMost1700 ? 21 : _c.vw(19, 1.8, 26);
+
+  /// Stat tiles at width <= 1100: no icon, vertical tiles.
+  bool get showStatTileIcon => !atMost1100;
+  bool get statTilesVertical => atMost1100;
+  double get statTilesPad => atMost1100 ? 8 : 12;
+  double get statTilesGap => atMost1100 ? 8 : 12;
+  double get statTilePadY => atMost1100 ? 12 : (atMost1700 ? 14 : 16);
+  double get statTilePadX => atMost1700 ? 5 : 8;
+  double get statTileGap => atMost1700 ? 5 : 8;
+
+  /// Cart actions at width <= 1700: icon above the label, gap 3.
+  bool get cartActionsStacked => atMost1700;
+  double get cartActionsStackedGap => 3;
+
+  /// Cart line (see [CartLineLayout]): quantity control and inputs.
+  bool get lineStacked => cartLineLayout == CartLineLayout.stacked;
+  double get qtyControlWidth =>
+      lineStacked ? AppSizes.qtyControlStackedWidth : AppSizes.qtyControlWidth;
+  double get qtyControlHeight => lineStacked
+      ? AppSizes.qtyControlStackedHeight
+      : AppSizes.qtyControlHeight;
+  double get qtyButtonSize =>
+      lineStacked ? AppSizes.qtyControlStackedHeight : AppSizes.qtyButtonSize;
+  double get lineEditHeight =>
+      lineStacked ? AppSizes.lineEditStackedHeight : AppSizes.lineEditHeight;
+
+  /// Price and discount text: 14, 13 at width <= 1100.
+  double get lineEditFont => atMost1100 ? 13 : 14;
+
+  /// Line number text: 13, 12 when stacked.
+  double get lineNumberFont => lineStacked ? 12 : 13;
+
+  /// Product image and barcode hide at width <= 1100 (the <= 1280 rules are
+  /// overridden by later ones); the GST line always stays.
+  bool get showLineImage => !atMost1100;
+  bool get showLineBarcode => !atMost1100;
+
+  /// Table header columns for the current layout (`.cart-table-head`). In the
+  /// wide layout they equal the line's columns; at width <= 1700 the header
+  /// keeps its own six columns while lines stack, as in the prototype.
+  CartHeaderColumns get cartHeaderColumns =>
+      lineStacked ? CartHeaderColumns.stacked : CartHeaderColumns.wide;
+
+  /// Height <= 719: the member card collapses.
+  bool get memberCollapsed => heightAtMost719;
+
+  /// Bill Summary values for the current density (used from S4.a).
+  SummaryMetrics get summary => SummaryMetrics.of(summaryDensity, _c);
+
+  /// With the cart open and width <= 1280 the catalog grid has exactly 2
+  /// columns (`repeat(2, minmax(0,1fr))`); otherwise auto-fill.
+  int? catalogFixedColumns({required bool cartOpen, required bool list}) =>
+      atMost1280 && cartOpen && !list ? 2 : null;
 
   /// `.cart-line` min-height in the single-row layout, `clamp(84px,10vh,96px)`
   /// (already `cartLineMinHeight`).
@@ -164,19 +267,19 @@ class AppMetrics {
   double get cartTimeFont => 12;
 
   // --- bill summary (consumed from S4) --------------------------------------------
-  double get billSummaryPad => _c.vh(14, 1.6, 20);
-  double get billSummaryGap => _c.vh(8, .75, 12);
-  double get billSummaryTitleFont => _c.vw(18, 1.25, 22);
-  double get summaryCardPad => _c.vh(6, .8, 10);
-  double get summaryRowHeight => _c.vh(28, 3.2, 34);
-  double get summaryRowValueFont => _c.vw(13, .95, 16);
-  double get invoiceHeight => _c.vh(52, 5.6, 68);
-  double get invoiceLabelFont => _c.vw(14, .9, 17);
-  double get invoiceTotalFont => _c.vh(25, 2.5, 32);
-  double get checkoutSectionPad => _c.vh(10, 1.3, 16);
-  double get checkoutGap => _c.vh(8, .75, 12);
-  double get paymentButtonHeight => _c.vh(46, 6.5, 56);
-  double get paymentButtonFont => _c.vw(16, 1.1, 20);
+  double get billSummaryPad => summary.panelPad;
+  double get billSummaryGap => summary.gap;
+  double get billSummaryTitleFont => summary.titleFont;
+  double get summaryCardPad => summary.cardPad;
+  double get summaryRowHeight => summary.rowHeight;
+  double get summaryRowValueFont => summary.rowValueFont;
+  double get invoiceHeight => summary.invoiceHeight;
+  double get invoiceLabelFont => summary.invoiceLabelFont;
+  double get invoiceTotalFont => summary.invoiceTotalFont;
+  double get checkoutSectionPad => summary.checkoutPad;
+  double get checkoutGap => summary.checkoutGap;
+  double get paymentButtonHeight => summary.paymentButtonHeight;
+  double get paymentButtonFont => summary.paymentButtonFont;
   double get tenderedFont => _c.vw(18, 1.25, 22);
-  double get quickActionTile => _c.vh(44, 5.2, 52);
+  double get quickActionTile => summary.quickActionSize;
 }

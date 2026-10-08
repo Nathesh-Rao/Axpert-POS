@@ -243,6 +243,34 @@ abstract final class AppSizes {
   static const double cartActionsGap = 10.0;
   static const double cartActionsMarginTop = 12.0;
 
+  /// Stacked cart line (width <= 1700): quantity control 152 x 44, inputs 44.
+  static const double qtyControlStackedWidth = 152.0;
+  static const double qtyControlStackedHeight = 44.0;
+  static const double lineEditStackedHeight = 44.0;
+  static const double lineEditStackedMaxWidth = 76.0;
+
+  /// Stacked line geometry: first row min height, row and column gaps, the
+  /// product block's side paddings, and the absolutely placed number, total
+  /// and trash (offsets from the line's padding box).
+  static const double stackedRow1MinHeight = 52.0;
+  static const double stackedRowGap = 12.0;
+  static const double stackedColumnGap = 8.0;
+  static const double stackedProductPadLeft = 20.0;
+  static const double stackedProductPadRight = 120.0;
+  static const double stackedNumberLeft = 12.0;
+  static const double stackedNumberTop = 18.0;
+  static const double stackedTotalRight = 60.0;
+  static const double stackedTotalTop = 23.0;
+  static const double stackedTrashRight = 12.0;
+  static const double stackedTrashTop = 12.0;
+
+  /// `.control-label` above the stacked controls: 12 px, line 14, margin 4.
+  static const double controlLabelLineHeight = 14.0;
+  static const double controlLabelGap = 4.0;
+
+  /// Stacked cart actions: icon above the label, height unchanged.
+  static const double cartActionStackedIconGap = 3.0;
+
   /// All values by name, for the css_metrics tests.
   static const Map<String, num> all = <String, num>{
     'topbarHeight': topbarHeight,

@@ -15,3 +15,8 @@ Actions: `wait` (ms), `move` / `click` `[x, y]` (CSS px of the 2124 x 1180
 viewport), `type` (text), `key`, `shot` (name; writes `<out>_<name>.png`).
 The console (errors, exceptions, logs) is printed at the end. WebGL runs on
 SwiftShader; without it headless Chrome draws no images.
+
+Window size: pass `width height` (CSS px) after the actions, e.g. `... '[...]' 1100 700`.
+The release build prints no "overflowed" errors; for those use the debug build
+(`flutter run -d web-server --web-port=8097`) and the same script on port 8097:
+the script prints how many overflow errors the console showed.

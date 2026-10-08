@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/app_strings_x.dart';
+import '../../../core/responsive/app_metrics_scope.dart';
 import '../../../core/theme/theme_x.dart';
 import '../../../core/theme/tokens/app_motion.dart';
 import '../../../core/theme/tokens/app_radii.dart';
@@ -94,6 +95,7 @@ class _TableHead extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.colors;
     final s = context.strings;
+    final header = context.metrics.cartHeaderColumns;
     final style = context.text
         .of(
           AppFontSize.s12,
@@ -101,9 +103,34 @@ class _TableHead extends StatelessWidget {
           height: AppLineHeight.base,
         )
         .copyWith(color: c.text);
-    Widget cell(String label, {TextAlign align = TextAlign.center}) =>
-        Text(label, textAlign: align, maxLines: 1, style: style);
-    const gap = SizedBox(width: AppSizes.cartLineGap);
+    final labels = <String>[
+      s.cartTableNumber(),
+      s.cartTableItem(),
+      s.cartTableQty(),
+      s.cartTablePrice(),
+      s.cartTableDiscount(),
+      s.cartTableTotal(),
+      '',
+    ];
+    final children = <Widget>[];
+    for (var i = 0; i < header.columns.length; i++) {
+      if (i > 0) children.add(SizedBox(width: header.gap));
+      final column = header.columns[i];
+      // The first two cells are left aligned, the others centered.
+      final cell = Text(
+        labels[i],
+        textAlign: i < 2 ? TextAlign.start : TextAlign.center,
+        maxLines: 1,
+        overflow: TextOverflow.clip,
+        softWrap: false,
+        style: style,
+      );
+      children.add(
+        column.width != null
+            ? SizedBox(width: column.width, child: cell)
+            : Expanded(flex: column.flex, child: cell),
+      );
+    }
     return DecoratedBox(
       decoration: BoxDecoration(
         color: c.secondary,
@@ -114,41 +141,7 @@ class _TableHead extends StatelessWidget {
           vertical: AppSizes.cartHeadPadY,
           horizontal: AppSizes.cartPad,
         ),
-        child: Row(
-          children: <Widget>[
-            SizedBox(
-              width: AppSizes.cartLineCheckbox,
-              child: cell(s.cartTableNumber(), align: TextAlign.start),
-            ),
-            gap,
-            Expanded(
-              flex: CartColumns.itemFlex,
-              child: cell(s.cartTableItem(), align: TextAlign.start),
-            ),
-            gap,
-            SizedBox(
-              width: AppSizes.qtyControlWidth,
-              child: cell(s.cartTableQty()),
-            ),
-            gap,
-            SizedBox(
-              width: AppSizes.lineEditWidth,
-              child: cell(s.cartTablePrice()),
-            ),
-            gap,
-            SizedBox(
-              width: AppSizes.lineEditWidth,
-              child: cell(s.cartTableDiscount()),
-            ),
-            gap,
-            Expanded(
-              flex: CartColumns.totalFlex,
-              child: cell(s.cartTableTotal()),
-            ),
-            gap,
-            const SizedBox(width: AppSizes.trashSize),
-          ],
-        ),
+        child: Row(children: children),
       ),
     );
   }

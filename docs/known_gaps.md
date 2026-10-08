@@ -44,12 +44,12 @@ Only light mode at the reference viewport (2124x1180 px, see `react_audit.md` se
 
 | ID | Area | Status |
 |---|---|---|
-| KG-040 | Media rule width <= 1700 (stacked cart line, stacked cart actions, stat tile sizes) | unverified |
-| KG-041 | Media rule width <= 1280 (top bar 56, sidebar 64, hidden hint/caption, 2-column grid with cart, wrapped cart heading) | unverified |
-| KG-042 | Media rule width <= 1100 (hidden line image/barcode, brand/store sizes, vertical stat tiles) | unverified |
-| KG-043 | Media rule height <= 960 (summary compaction) | unverified |
-| KG-044 | Media rule height <= 820 (tight summary) | unverified |
-| KG-045 | Media rule height <= 719 (collapsed member card and floating panel) | unverified |
+| KG-040 | Media rule width <= 1700 (stacked cart line, stacked cart actions, stat tile sizes) | cart/catalog parts built from CSS in S4.0 (summary parts in S4.a), unverified visually |
+| KG-041 | Media rule width <= 1280 (top bar 56, sidebar 64, hidden hint/caption, 2-column grid with cart, wrapped cart heading) | cart/catalog parts built from CSS in S4.0 (summary parts in S4.a), unverified visually |
+| KG-042 | Media rule width <= 1100 (hidden line image/barcode, brand/store sizes, vertical stat tiles) | cart/catalog parts built from CSS in S4.0 (summary parts in S4.a), unverified visually |
+| KG-043 | Media rule height <= 960 (summary compaction) | cart/catalog parts built from CSS in S4.0 (summary parts in S4.a), unverified visually |
+| KG-044 | Media rule height <= 820 (tight summary) | cart/catalog parts built from CSS in S4.0 (summary parts in S4.a), unverified visually |
+| KG-045 | Media rule height <= 719 (collapsed member card and floating panel) | cart/catalog parts built from CSS in S4.0 (summary parts in S4.a), unverified visually |
 | KG-046 | Fluid `clamp(vw/vh)` values at any size other than the reference viewport | unverified |
 | KG-047 | `@media print` receipt layout (80mm) and reduced-motion rule | unverified |
 | KG-048 | Dark mode, all screens and components (built from the 13 `.dark` rules only) | unverified |
@@ -108,10 +108,13 @@ Rows KG-060..063 are placeholders; each phase 2/3 step adds concrete component r
 | KG-094 | Unverified visually (built from CSS): list view, cards with qty badge, in-cart and hover states, 2-column grid beside the cart (checked against screenshot 2 by eye only), thin scrollbar look, category "next" scrolling, no-results state, focus rings, sizes other than the reference viewport, dark mode | unverified |
 | KG-095 | Search text is debounced 150 ms (React filters on every keystroke); cards are built lazily so a screenshot-free review is needed for 10k products (S3.d numbers) | deviation (approved) |
 | KG-096 | Cart panel parts not built yet (S4): Cash/Credit toggle and the "..." order menu in the heading (the clock is right-aligned alone), the Customer label, dropdown, search and Add Customer row, the note line and the credit validation message. Hold, Recall and Price Check show the F4/F5 demo toast and the placeholder dialog | temporary (S4) |
-| KG-097 | The cart line is built only for the single-row layout (window wider than 1700 px). The stacked layout (width <= 1700), hidden product image (<= 1280 and <= 1100), hidden barcode (<= 1100), vertical stat tiles (<= 1100) and the other cart media rules are not implemented yet; below 1700 px the single row is cramped | not built (S7.a), KG-040..042 |
+| KG-097 | RESOLVED in S4.0 (DEC-091): stacked cart line, hidden image/barcode at <= 1100, stat tiles, cart actions, heading wrap and the 2-column grid are built from CSS. Still open: customer row, sale toggle, order menu, note and validation rules (S4), summary panel use of the density metrics (S4.a) | built, unverified visually |
 | KG-098 | Clicking a cart line selects it on pointer down (React: on click); the trash button does not select | deviation (minor) |
 | KG-099 | Unverified visually: cart line states (selected, highlight animation, hover on qty buttons and trash, remove state of the minus button), confirm dialog, toast stack over the cart, scrollbar of the table, stat tile sizes other than the reference viewport (only the one-line screenshot exists), dark mode | unverified |
 | KG-100 | Number inputs allow `0-9 . -` only (React type=number also allows `e`); empty text commits nothing and resets on leaving the field (React resets it on the next render) | deviation (minor) |
 | KG-101 | Every favourite toggle persists the whole product list as JSON (32 ms for 10,000 products, on the UI thread) because the mock repository has one key per list; a real local database (Phase B) writes the single row | deviation (mock) |
 | KG-102 | Shared widgets built in S3 (`AppChip`, `SegmentedToggle`, `SearchTextField`, `ProductCard`, `ProductImage`, `StarIcon`, `HoldToRepeatButton`, `QuantityField`, `NumberField`, `ActionButton`, `StatTile`, `ConfirmDialog`) have no standalone goldens (KG-081); the tooltip with shortcut hint is not built yet (S3 tooltips are plain titles) | accepted |
+| KG-103 | Search focus ring: React draws a rectangular outline on the input inside the field box (as tall as the field content); Flutter now draws the same (DEC-094). It is not a defect. Ring geometry (offset 2 px, 2 px wide) is unverified at other sizes | replicated |
+| KG-104 | At width <= 1700 the table header (`18 1.4fr 1.3fr .8fr .8fr 1fr 0`) does not line up with the stacked lines (`152 1fr 1fr`); the prototype has the same misalignment and it is replicated (DEC-092). Wide layout: aligned | replicated |
+| KG-105 | S4.0 compared against no React screenshot at 1440 or 1000 px (none exist); stacked line, header, tiles and actions are built from CSS and unverified visually. Regression goldens at 1440 x 900 and 1100 x 700 only guard against change | unverified |
 

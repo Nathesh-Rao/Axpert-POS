@@ -177,10 +177,16 @@ class _GlobalSearch extends StatelessWidget {
                   controller: search.text,
                   focusNode: search.focusNode,
                   style: fieldStyle,
+                  // The input fills the field (`input{height:100%}`), so the
+                  // focus ring has the height React draws.
+                  expands: true,
+                  maxLines: null,
+                  textAlignVertical: TextAlignVertical.center,
                   cursorColor: c.text,
                   decoration: InputDecoration(
                     isCollapsed: true,
                     border: InputBorder.none,
+                    hintMaxLines: 1,
                     hintText: s.searchHint(),
                     hintStyle: fieldStyle.copyWith(color: c.placeholder),
                     contentPadding: EdgeInsets.zero,

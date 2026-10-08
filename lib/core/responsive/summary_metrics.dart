@@ -1,0 +1,240 @@
+import 'clamp_rule.dart';
+
+/// Bill Summary density: normal, compact (height <= 960), tight (<= 820).
+enum SummaryDensity { normal, compact, tight }
+
+/// Bill Summary sizes for one density (`css_metrics.md` section 13). Normal is
+/// the base block with its `clamp(vh/vw)` rules; compact (height <= 960) and
+/// tight (height <= 820) are the later media blocks, cascade-resolved in file
+/// order. Pure Dart: the panel arrives in S4.a and only reads these values.
+class SummaryMetrics {
+  const SummaryMetrics({
+    required this.density,
+    required this.panelPad,
+    required this.gap,
+    required this.titleHeight,
+    required this.titleFont,
+    required this.cardPad,
+    required this.rowHeight,
+    required this.rowFont,
+    required this.rowValueFont,
+    required this.invoiceHeight,
+    required this.invoicePad,
+    required this.invoiceLabelFont,
+    required this.invoiceTotalFont,
+    required this.currencyRowHeight,
+    required this.currencyRowFont,
+    required this.rateLabelHeight,
+    required this.membershipGap,
+    required this.membershipLabelGap,
+    required this.membershipInputHeight,
+    required this.membershipFont,
+    required this.applyDiscountHeight,
+    required this.applyDiscountMarginBottom,
+    required this.applyDiscountFont,
+    required this.checkoutPad,
+    required this.checkoutGap,
+    required this.paymentButtonHeight,
+    required this.paymentButtonFont,
+    required this.inlineGap,
+    required this.inlineAmountHeight,
+    required this.tenderedHeight,
+    required this.quickAmountHeight,
+    required this.quickAmountFont,
+    required this.completeHeight,
+    required this.completeFont,
+    required this.terminalHeight,
+    required this.declineHeight,
+    required this.quickActionsGap,
+    required this.quickActionSize,
+  });
+
+  /// Values for [density] in a window of [c]'s size.
+  factory SummaryMetrics.of(SummaryDensity density, ClampRule c) {
+    switch (density) {
+      case SummaryDensity.normal:
+        return SummaryMetrics(
+          density: density,
+          panelPad: c.vh(14, 1.6, 20),
+          gap: c.vh(8, .75, 12),
+          titleHeight: 24,
+          titleFont: c.vw(18, 1.25, 22),
+          cardPad: c.vh(6, .8, 10),
+          rowHeight: c.vh(28, 3.2, 34),
+          rowFont: 13,
+          rowValueFont: c.vw(13, .95, 16),
+          invoiceHeight: c.vh(52, 5.6, 68),
+          invoicePad: 8,
+          invoiceLabelFont: c.vw(14, .9, 17),
+          invoiceTotalFont: c.vh(25, 2.5, 32),
+          currencyRowHeight: 40,
+          currencyRowFont: 13,
+          rateLabelHeight: 14,
+          membershipGap: 10,
+          membershipLabelGap: 4,
+          membershipInputHeight: 38,
+          membershipFont: 13,
+          applyDiscountHeight: 32,
+          applyDiscountMarginBottom: 12,
+          applyDiscountFont: c.vw(11, .8, 14),
+          checkoutPad: c.vh(10, 1.3, 16),
+          checkoutGap: 10,
+          paymentButtonHeight: c.vh(46, 6.5, 56),
+          paymentButtonFont: c.vw(16, 1.1, 20),
+          inlineGap: c.vh(8, .75, 12),
+          inlineAmountHeight: 24,
+          tenderedHeight: 44,
+          quickAmountHeight: 36,
+          quickAmountFont: 13,
+          completeHeight: 48,
+          completeFont: 15,
+          terminalHeight: 90,
+          declineHeight: 54,
+          quickActionsGap: 10,
+          quickActionSize: c.vh(44, 5.2, 52),
+        );
+      case SummaryDensity.compact:
+        return SummaryMetrics(
+          density: density,
+          panelPad: 14,
+          gap: 4,
+          titleHeight: 22,
+          titleFont: 18,
+          cardPad: 6,
+          rowHeight: c.vh(24, 3.1, 28),
+          rowFont: 13,
+          rowValueFont: c.vw(13, .95, 16),
+          invoiceHeight: c.vh(44, 5.5, 52),
+          invoicePad: 6,
+          invoiceLabelFont: c.vw(14, .9, 17),
+          invoiceTotalFont: 25,
+          currencyRowHeight: 32,
+          currencyRowFont: 13,
+          rateLabelHeight: 12,
+          membershipGap: 6,
+          membershipLabelGap: 3,
+          membershipInputHeight: 28,
+          membershipFont: 12,
+          applyDiscountHeight: 32,
+          applyDiscountMarginBottom: 12,
+          applyDiscountFont: c.vw(11, .8, 14),
+          checkoutPad: 8,
+          checkoutGap: 8,
+          paymentButtonHeight: 46,
+          paymentButtonFont: c.vw(16, 1.1, 20),
+          inlineGap: 4,
+          inlineAmountHeight: 22,
+          tenderedHeight: 34,
+          quickAmountHeight: 28,
+          quickAmountFont: 13,
+          completeHeight: 36,
+          completeFont: 14,
+          terminalHeight: 68,
+          declineHeight: 46,
+          quickActionsGap: 10,
+          quickActionSize: 44,
+        );
+      case SummaryDensity.tight:
+        return SummaryMetrics(
+          density: density,
+          panelPad: 14,
+          gap: 3,
+          titleHeight: 20,
+          titleFont: 17,
+          cardPad: 4,
+          rowHeight: 21,
+          rowFont: 12,
+          rowValueFont: 13,
+          invoiceHeight: 42,
+          invoicePad: 5,
+          invoiceLabelFont: 13,
+          invoiceTotalFont: 24,
+          currencyRowHeight: 28,
+          currencyRowFont: 12,
+          rateLabelHeight: 12,
+          membershipGap: 6,
+          membershipLabelGap: 2,
+          membershipInputHeight: 22,
+          membershipFont: 12,
+          applyDiscountHeight: 27,
+          applyDiscountMarginBottom: 4,
+          applyDiscountFont: 11,
+          checkoutPad: 6,
+          checkoutGap: 6,
+          paymentButtonHeight: 46,
+          paymentButtonFont: c.vw(16, 1.1, 20),
+          inlineGap: 3,
+          inlineAmountHeight: 20,
+          tenderedHeight: 32,
+          quickAmountHeight: 26,
+          quickAmountFont: 12,
+          completeHeight: 34,
+          completeFont: 13,
+          terminalHeight: 64,
+          declineHeight: 40,
+          quickActionsGap: 8,
+          quickActionSize: 44,
+        );
+    }
+  }
+
+  final SummaryDensity density;
+  final double panelPad;
+  final double gap;
+  final double titleHeight;
+  final double titleFont;
+  final double cardPad;
+  final double rowHeight;
+  final double rowFont;
+  final double rowValueFont;
+  final double invoiceHeight;
+  final double invoicePad;
+  final double invoiceLabelFont;
+  final double invoiceTotalFont;
+  final double currencyRowHeight;
+  final double currencyRowFont;
+  final double rateLabelHeight;
+  final double membershipGap;
+  final double membershipLabelGap;
+  final double membershipInputHeight;
+  final double membershipFont;
+  final double applyDiscountHeight;
+  final double applyDiscountMarginBottom;
+  final double applyDiscountFont;
+  final double checkoutPad;
+  final double checkoutGap;
+  final double paymentButtonHeight;
+  final double paymentButtonFont;
+  final double inlineGap;
+  final double inlineAmountHeight;
+  final double tenderedHeight;
+  final double quickAmountHeight;
+  final double quickAmountFont;
+  final double completeHeight;
+  final double completeFont;
+  final double terminalHeight;
+  final double declineHeight;
+  final double quickActionsGap;
+  final double quickActionSize;
+}
+
+/// Height <= 719: the member card collapses to a one-line header and the form
+/// floats (`.member-compact`, `.member-card.member-open .membership`).
+class MemberCardMetrics {
+  const MemberCardMetrics._();
+
+  static const double compactMinHeight = 34;
+  static const double compactPadY = 4;
+  static const double compactPadX = 6;
+  static const double compactGap = 6;
+  static const double compactFont = 12;
+  static const double floatingPad = 16;
+  static const double floatingInputHeight = 38;
+  static const double floatingRight = 24;
+
+  /// `top: clamp(100px, 22vh, 180px)`.
+  static double floatingTop(ClampRule c) => c.vh(100, 22, 180);
+
+  /// `width: calc(var(--summary-width) - 36px)`.
+  static double floatingWidth(double summaryWidth) => summaryWidth - 36;
+}

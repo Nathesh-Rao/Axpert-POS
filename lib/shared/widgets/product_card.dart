@@ -230,7 +230,7 @@ class ProductCard extends StatelessWidget {
             tooltip: s.removeOneTooltip(name),
             onTap: onRemoveOne!,
           ),
-          const SizedBox(width: AppSpacing.s3),
+          SizedBox(width: m.productStepperGap),
         ],
         _StepButton(
           size: m.productStepperButton,

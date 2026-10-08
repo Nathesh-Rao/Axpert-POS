@@ -14,6 +14,7 @@ import '../../../core/theme/tokens/app_typography.dart';
 import '../../../shared/widgets/app_pressable.dart';
 import '../controllers/catalog_controller.dart';
 import '../../products/models/product.dart';
+import '../controllers/cart_controller.dart';
 import 'catalog_product_card.dart';
 
 /// Scrolling product grid or list. Builds only the visible cards (lazy sliver
@@ -70,12 +71,17 @@ class _ProductGridState extends State<ProductGrid> {
           final items = catalog.filtered;
           final inner = constraints.maxWidth - 2 * AppSpacing.s2;
           final gap = m.productGridGap;
+          final fixed = m.catalogFixedColumns(
+            cartOpen: Get.find<CartController>().active.value,
+            list: list,
+          );
           final columns = list
               ? 1
-              : math.max(
-                  1,
-                  ((inner + gap) / (m.productGridMinColumn + gap)).floor(),
-                );
+              : fixed ??
+                    math.max(
+                      1,
+                      ((inner + gap) / (m.productGridMinColumn + gap)).floor(),
+                    );
           return CustomScrollView(
             controller: _scroll,
             slivers: <Widget>[

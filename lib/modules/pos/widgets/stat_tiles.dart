@@ -6,7 +6,6 @@ import '../../../core/responsive/app_metrics_scope.dart';
 import '../../../core/theme/theme_x.dart';
 import '../../../core/theme/tokens/app_icons.dart';
 import '../../../core/theme/tokens/app_radii.dart';
-import '../../../core/theme/tokens/app_sizes.dart';
 import '../../../core/utils/money_formatter.dart';
 import '../../../core/utils/qty_formatter.dart';
 import '../../../shared/widgets/stat_tile.dart';
@@ -29,7 +28,7 @@ class StatTiles extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadii.r11),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(AppSizes.statTilesPad),
+        padding: EdgeInsets.all(m.statTilesPad),
         child: Obx(() {
           final t = cart.totals.value;
           return Row(
@@ -43,9 +42,14 @@ class StatTiles extends StatelessWidget {
                   label: s.statTotalItems(),
                   value: '${t.items}',
                   valueFontSize: m.statTileValueFont,
+                  padY: m.statTilePadY,
+                  padX: m.statTilePadX,
+                  gap: m.statTileGap,
+                  showIcon: m.showStatTileIcon,
+                  vertical: m.statTilesVertical,
                 ),
               ),
-              const SizedBox(width: AppSizes.statTilesGap),
+              SizedBox(width: m.statTilesGap),
               Expanded(
                 flex: 100,
                 child: StatTile(
@@ -55,9 +59,14 @@ class StatTiles extends StatelessWidget {
                   label: s.statTotalQty(),
                   value: QtyFormatter.fixed3(t.qty),
                   valueFontSize: m.statTileValueFont,
+                  padY: m.statTilePadY,
+                  padX: m.statTilePadX,
+                  gap: m.statTileGap,
+                  showIcon: m.showStatTileIcon,
+                  vertical: m.statTilesVertical,
                 ),
               ),
-              const SizedBox(width: AppSizes.statTilesGap),
+              SizedBox(width: m.statTilesGap),
               Expanded(
                 flex: 125,
                 child: StatTile(
@@ -67,6 +76,11 @@ class StatTiles extends StatelessWidget {
                   label: s.statTotalValue(),
                   value: MoneyFormatter.format(t.value, symbol: false),
                   valueFontSize: m.statTileValueFont,
+                  padY: m.statTilePadY,
+                  padX: m.statTilePadX,
+                  gap: m.statTileGap,
+                  showIcon: m.showStatTileIcon,
+                  vertical: m.statTilesVertical,
                 ),
               ),
             ],

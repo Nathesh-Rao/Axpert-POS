@@ -641,4 +641,116 @@ class EnAppStrings extends AppStrings {
 
   @override
   String searchResultsLabel() => 'Search results';
+
+  @override
+  String receiptBrand() => 'AXPERT POS';
+
+  @override
+  String receiptTagline() => 'Retail tax invoice';
+
+  @override
+  String receiptBill(String number) => 'Bill: $number';
+
+  @override
+  String receiptCashier(String name) => 'Cashier: $name';
+
+  @override
+  String receiptCustomer(String name) => 'Customer: $name';
+
+  @override
+  String receiptColItem() => 'Item';
+
+  @override
+  String receiptColQty() => 'Qty';
+
+  @override
+  String receiptColTotal() => 'Total';
+
+  @override
+  String receiptSubtotal() => 'Subtotal';
+
+  @override
+  String receiptDiscount() => 'Discount';
+
+  @override
+  String receiptPoints() => 'Reward Points';
+
+  @override
+  String receiptTax() => 'GST';
+
+  @override
+  String receiptTotal() => 'Total';
+
+  @override
+  String receiptPayment() => 'Payment';
+
+  @override
+  String receiptChange() => 'Change';
+
+  @override
+  String receiptThanks() => 'Thank you for shopping with us!';
+
+  @override
+  String receiptPrint() => 'Print';
+
+  @override
+  String receiptEmail() => 'Email';
+
+  @override
+  String receiptWhatsApp() => 'WhatsApp';
+
+  @override
+  String receiptNewSale() => 'New Sale';
+
+  @override
+  String toastReceiptEmail() => 'Receipt email sent (demo)';
+
+  @override
+  String toastReceiptWhatsApp() => 'Receipt shared on WhatsApp (demo)';
+
+  @override
+  String reprintTitle() => 'Recent sales';
+
+  @override
+  String reprintSubtitle() => 'Select a bill to preview or reprint.';
+
+  @override
+  String reprintRowTitle(String number, String customer) =>
+      '$number · $customer';
+
+  @override
+  String reprintEmpty() => 'No completed sales yet.';
+
+  @override
+  String noteDialogTitle() => 'Add order note';
+
+  @override
+  String textDialogSave() => 'Save';
+
+  @override
+  String shortcutsTitle() => 'Keyboard shortcuts';
+
+  @override
+  String helpFocusSearch() => 'Focus barcode search';
+
+  @override
+  String helpAddScanned() => 'Add scanned product';
+
+  @override
+  String helpRemoveLine() => 'Remove selected line';
+
+  @override
+  String helpCloseDialog() => 'Close dialog';
+
+  @override
+  String keyEnter() => 'Enter';
+
+  @override
+  String keyDelete() => 'Delete';
+
+  @override
+  String keyEscape() => 'Esc';
+
+  @override
+  String keyFunction(int number) => 'F$number';
 }

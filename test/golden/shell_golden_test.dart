@@ -21,7 +21,10 @@ import 'package:pos_application/shared/controllers/toast_controller.dart';
 import 'package:pos_application/modules/pos/controllers/cart_controller.dart';
 import 'package:pos_application/modules/pos/controllers/discount_form_controller.dart';
 import 'package:pos_application/modules/pos/controllers/global_search_controller.dart';
+import 'package:pos_application/modules/pos/controllers/order_menu_controller.dart';
+import 'package:pos_application/modules/pos/controllers/payment_controller.dart';
 import 'package:pos_application/modules/pos/controllers/price_check_controller.dart';
+import 'package:pos_application/modules/pos/models/payment_state.dart';
 import 'package:pos_application/shared/controllers/search_field_controller.dart';
 import 'package:pos_application/modules/pos/controllers/held_bills_controller.dart';
 import 'package:pos_application/modules/pos/models/held_bill.dart';
@@ -239,6 +242,62 @@ void main() {
     'add_customer_light',
     after: (tester) async {
       Get.find<OverlayController>().open('addCustomer');
+      await tester.pumpAndSettle();
+    },
+  );
+  golden(
+    'Receipt after a cash payment (regression, unverified visually)',
+    'receipt_light',
+    after: (tester) async {
+      await addLays(tester);
+      final pay = Get.find<PaymentController>();
+      pay.payment(PaymentMode.cash);
+      await tester.pump();
+      pay.tendered.text = '50';
+      pay.completeCash();
+      await tester.pumpAndSettle();
+      Get.find<ToastController>().toasts.clear();
+      await tester.pump();
+    },
+  );
+  golden(
+    'Receipt draft (regression, unverified visually)',
+    'receipt_draft_light',
+    after: (tester) async {
+      await addLays(tester);
+      Get.find<OrderMenuController>().printDraft();
+      await tester.pumpAndSettle();
+    },
+  );
+  golden(
+    'Reprint list (regression, unverified visually)',
+    'reprint_light',
+    after: (tester) async {
+      await addLays(tester);
+      final pay = Get.find<PaymentController>();
+      pay.payment(PaymentMode.cash);
+      await tester.pump();
+      pay.tendered.text = '50';
+      pay.completeCash();
+      await tester.pumpAndSettle();
+      Get.find<OverlayController>().open('reprint');
+      Get.find<ToastController>().toasts.clear();
+      await tester.pumpAndSettle();
+    },
+  );
+  golden(
+    'Rename counter (regression, unverified visually)',
+    'counter_dialog_light',
+    after: (tester) async {
+      Get.find<OrderMenuController>().renameCounter();
+      await tester.pumpAndSettle();
+    },
+  );
+  golden(
+    'Keyboard shortcuts (regression, unverified visually)',
+    'shortcuts_light',
+    after: (tester) async {
+      Get.find<OverlayController>().open('shortcuts');
       await tester.pumpAndSettle();
     },
   );

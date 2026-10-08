@@ -109,7 +109,7 @@ void main() {
     expect(overlay.modal.value, isNull);
     overlay.open('shortcuts');
     await tester.pumpAndSettle();
-    expect(find.text('Shortcuts'), findsWidgets);
+    expect(find.text('Keyboard shortcuts'), findsOneWidget);
     overlay.close();
     await tester.pumpAndSettle();
     expect(find.text('This screen arrives in a later step.'), findsNothing);

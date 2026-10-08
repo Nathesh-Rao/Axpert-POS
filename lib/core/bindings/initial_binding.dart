@@ -1,6 +1,11 @@
 import 'package:get/get.dart';
 
 import '../../modules/customers/controllers/add_customer_controller.dart';
+import '../../modules/pos/controllers/text_dialog_controller.dart';
+import '../../modules/sales/controllers/receipt_controller.dart';
+import '../../modules/sales/controllers/reprint_controller.dart';
+import '../services/print_service.dart';
+import '../services/receipt_share_service.dart';
 import '../../modules/customers/controllers/customer_picker_controller.dart';
 import '../../modules/pos/controllers/discount_form_controller.dart';
 import '../../modules/pos/controllers/global_search_controller.dart';
@@ -189,6 +194,27 @@ class InitialBinding extends Bindings {
         toasts: Get.find(),
         overlay: Get.find(),
         clock: Get.find(),
+      ),
+    );
+    _put<PrintService>(RecordingPrintService());
+    _put<ReceiptShareService>(RecordingReceiptShareService());
+    _put<ReceiptController>(
+      ReceiptController(
+        overlay: Get.find(),
+        toasts: Get.find(),
+        printer: Get.find(),
+        sharing: Get.find(),
+      ),
+    );
+    _put<ReprintController>(
+      ReprintController(sales: Get.find(), overlay: Get.find()),
+    );
+    _put<TextDialogController>(
+      TextDialogController(
+        overlay: Get.find(),
+        settings: Get.find(),
+        cart: Get.find(),
+        meta: Get.find(),
       ),
     );
     final shortcuts = Get.find<ShortcutController>();

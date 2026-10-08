@@ -17,16 +17,25 @@ import 'app_pressable.dart';
 /// `.modal`: 460 wide card, 16 px radius, modal shadow, 25 px bold title.
 class AppModal extends StatelessWidget {
   const AppModal({
-    required this.title,
     required this.children,
+    this.title,
     this.leading,
+    this.maxWidth = AppSizes.modalWidth,
+    this.scrollable = false,
     super.key,
   });
 
   /// A `.modal-symbol` shown above the title.
   final Widget? leading;
-  final String title;
+
+  /// The `h2`; null for a modal that starts with its own content (receipt).
+  final String? title;
   final List<Widget> children;
+  final double maxWidth;
+
+  /// The content scrolls when it is taller than the card (`max-height:
+  /// calc(100dvh - 32px)`); the children must not use `Flexible`.
+  final bool scrollable;
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +47,10 @@ class AppModal extends StatelessWidget {
         child: Material(
           type: MaterialType.transparency,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: AppSizes.modalWidth),
+            constraints: BoxConstraints(
+              maxWidth: maxWidth,
+              maxHeight: MediaQuery.sizeOf(context).height - 32,
+            ),
             child: DecoratedBox(
               decoration: BoxDecoration(
                 color: c.card,
@@ -46,22 +58,28 @@ class AppModal extends StatelessWidget {
                 boxShadow: AppShadows.modal.boxShadows,
               ),
               child: Stack(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.all(m.modalPad),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[ModalTitle(title), ...children],
-                    ),
-                  ),
-                  const ModalCloseButton(),
-                ],
+                children: <Widget>[_body(m.modalPad), const ModalCloseButton()],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _body(double pad) {
+    final column = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        ?leading,
+        if (title != null) ModalTitle(title!),
+        ...children,
+      ],
+    );
+    return Padding(
+      padding: EdgeInsets.all(pad),
+      child: scrollable ? SingleChildScrollView(child: column) : column,
     );
   }
 }

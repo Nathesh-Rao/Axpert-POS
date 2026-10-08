@@ -10,6 +10,7 @@ import '../../../../core/utils/date_format.dart';
 import '../../../../core/utils/money_formatter.dart';
 import '../../../../shared/widgets/app_modal.dart';
 import '../../../../shared/widgets/modal_list_row.dart';
+import '../../../../shared/widgets/modal_list_view.dart';
 import '../../../../shared/widgets/modal_actions.dart';
 import '../../controllers/cart_controller.dart';
 import '../../controllers/held_bills_controller.dart';
@@ -63,12 +64,6 @@ class _HeldList extends StatelessWidget {
     final held = Get.find<HeldBillsController>();
     final flow = Get.find<HoldRecallController>();
     final cart = Get.find<CartController>();
-    // `.modal-list{max-height:min(400px,40dvh)}`
-    final maxHeight = [
-      AppCheckoutSizes.modalListMaxHeight,
-      MediaQuery.sizeOf(context).height *
-          AppCheckoutSizes.modalListMaxHeightFraction,
-    ].reduce((a, b) => a < b ? a : b);
     final rowStyle = context.text.of(
       AppFontSize.s14,
       weight: AppFontWeight.bold,
@@ -94,53 +89,9 @@ class _HeldList extends StatelessWidget {
         );
       }
 
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Flexible(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: AppCheckoutSizes.modalListMarginY,
-              ),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: maxHeight),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[for (final bill in bills) row(bill)],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          if (bills.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: AppCheckoutSizes.emptyStatePadY,
-                horizontal: AppCheckoutSizes.emptyStatePadX,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Icon(
-                    AppIcons.fileText,
-                    size: AppCheckoutSizes.emptyStateIcon,
-                    color: c.muted,
-                  ),
-                  const SizedBox(height: AppCheckoutSizes.emptyStateGap),
-                  Text(
-                    s.heldBillsEmpty(),
-                    textAlign: TextAlign.center,
-                    style: context.text
-                        .of(AppFontSize.s14, height: AppLineHeight.base)
-                        .copyWith(color: c.muted),
-                  ),
-                ],
-              ),
-            ),
-        ],
+      return ModalListView(
+        rows: <Widget>[for (final bill in bills) row(bill)],
+        emptyText: s.heldBillsEmpty(),
       );
     });
   }

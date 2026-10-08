@@ -160,4 +160,42 @@ abstract final class AppCheckoutSizes {
   static const double searchResultsPad = 6.0;
   static const double searchResultRowPad = 11.0;
   static const double searchResultSmallFont = 12.0;
+
+  /// `.receipt*` (the compact `@media screen` values apply at every size)
+  static const double receiptBrandMarginBottom = 8.0;
+  static const double receiptStoreFont = 18.0;
+  static const double receiptStoreMarginBottom = 6.0;
+  static const double receiptTaglineFont = 12.0;
+  static const double receiptMetaPadY = 10.0;
+  static const double receiptMetaMarginY = 12.0;
+  static const double receiptMetaGap = 4.0;
+  static const double receiptMetaFont = 11.0;
+  static const double receiptMetaLineHeight = 1.3;
+  static const double receiptTableFont = 12.0;
+  static const double receiptThPadY = 8.0;
+  static const double receiptTdPadY = 9.0;
+  static const double receiptItemsMaxFraction = 0.26;
+  static const double receiptItemsMinHeight = 100.0;
+  static const double receiptTotalsMarginTop = 10.0;
+  static const double receiptTotalsPadTop = 6.0;
+  static const double receiptRowPadY = 4.0;
+  static const double receiptRowFont = 12.0;
+  static const double receiptRowLineHeight = 1.3;
+  static const double receiptGrandFont = 20.0;
+  static const double receiptGrandMarginTop = 4.0;
+  static const double receiptGrandPadY = 7.0;
+  static const double receiptThanksMarginY = 10.0;
+  static const double receiptActionsGap = 6.0;
+  static const double receiptActionsMarginTop = 20.0;
+  static const double receiptActionFont = 12.0;
+  static const double receiptActionPad = 10.0;
+  static const double receiptActionIcon = 17.0;
+  static const double dashLength = 3.0;
+  static const double dashGap = 3.0;
+
+  /// `.shortcut`, `.shortcut kbd`
+  static const double shortcutRowPadY = 13.0;
+  static const double kbdPadX = 8.0;
+  static const double kbdPadY = 3.0;
+  static const double kbdFont = 12.0;
 }

@@ -18,7 +18,7 @@ HeldBillsController, RecallController (stock re-validation, missing product guar
 ## S4.c Pickers and search (done)
 PriceCheck, ScanSimulator, CustomerPicker, AddCustomerForm controllers and dialogs; top-bar matches dropdown (max 6, Enter adds first or scans), scan button opens simulator.
 
-## S4.d Receipt and help
+## S4.d Receipt and help (done)
 ReceiptDocument, ReceiptBuilder (Sale or draft), ReceiptPrinter + no-op stub, receipt dialog (80 mm look), reprint list, print draft, shortcuts help (platform-aware labels).
 
 ## Every checkpoint

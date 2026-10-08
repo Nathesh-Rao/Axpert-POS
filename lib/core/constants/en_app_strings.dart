@@ -306,4 +306,197 @@ class EnAppStrings extends AppStrings {
 
   @override
   String lineNumber(int number) => '$number';
+
+  @override
+  String summarySubtotal() => 'Subtotal';
+
+  @override
+  String summaryDiscount() => 'Discount';
+
+  @override
+  String summaryRewardPoints() => 'Reward Points';
+
+  @override
+  String summaryTaxAmount() => 'Tax Amount';
+
+  @override
+  String summaryInvoiceTotal() => 'Invoice Total';
+
+  @override
+  String forexFc() => 'FC';
+
+  @override
+  String forexRateLabel() => 'Exchange rate';
+
+  @override
+  String forexCurrencySemantic() => 'Conversion currency';
+
+  @override
+  String forexRateSemantic() => 'Exchange rate';
+
+  @override
+  String forexCurrencyLabel(String code) => code == 'USD' ? r'$' : code;
+
+  @override
+  String memberNumberLabel() => 'Member Ship No.';
+
+  @override
+  String memberNumberHint() => 'Enter membership no...';
+
+  @override
+  String memberFindTooltip() => 'Find member';
+
+  @override
+  String memberInfoLabel() => 'Membership Info.';
+
+  @override
+  String memberPointsAvailable() => 'Available Points';
+
+  @override
+  String memberPointsRedeem() => 'Redeem Points';
+
+  @override
+  String memberCompactTitle() => 'Member';
+
+  @override
+  String memberAdd() => 'Add membership';
+
+  @override
+  String payCash() => 'Cash';
+
+  @override
+  String paySaveCredit() => 'Save Credit';
+
+  @override
+  String payCard() => 'Card';
+
+  @override
+  String amountDue() => 'Amount Due';
+
+  @override
+  String amountTendered() => 'Amount Tendered';
+
+  @override
+  String amountTenderedHint() => '0.00';
+
+  @override
+  String quickAmountExact() => 'Exact';
+
+  @override
+  String changeDue() => 'Change Due';
+
+  @override
+  String completePayment() => 'Complete Payment';
+
+  @override
+  String saveOnCredit() => 'Save on Credit';
+
+  @override
+  String terminalAddItems() => 'Add items to begin';
+
+  @override
+  String terminalWaiting() => 'Waiting for card...';
+
+  @override
+  String terminalApproved() => 'Approved';
+
+  @override
+  String terminalDeclined() => 'Card declined';
+
+  @override
+  String simulateDecline() => 'Simulate Decline';
+
+  @override
+  String terminalRetry() => 'Retry';
+
+  @override
+  String actionDiscount() => 'Discount';
+
+  @override
+  String actionClearHold() => 'Clear Hold';
+
+  @override
+  String actionReprint() => 'Reprint';
+
+  @override
+  String actionClear() => 'Clear';
+
+  @override
+  String actionClose() => 'Close';
+
+  @override
+  String actionTitleWithKey({required String label, required String key}) =>
+      '$label ($key)';
+
+  @override
+  String saleCash() => 'Cash Sale';
+
+  @override
+  String saleCredit() => 'Credit Sale';
+
+  @override
+  String customerLabel() => 'Customer';
+
+  @override
+  String customerFindTooltip() => 'Find customer';
+
+  @override
+  String customerSearchTooltip() => 'Search customers';
+
+  @override
+  String addCustomerButton() => 'Add Customer';
+
+  @override
+  String addCustomerTooltip() => 'Add customer';
+
+  @override
+  String creditValidation() => 'Select a customer to save a credit sale.';
+
+  @override
+  String orderNote(String note) => 'Note: $note';
+
+  @override
+  String orderOptionsTooltip() => 'Order options';
+
+  @override
+  String orderRename() => 'Rename counter';
+
+  @override
+  String orderAddNote() => 'Add note';
+
+  @override
+  String orderPrintDraft() => 'Print draft';
+
+  @override
+  String toastWelcome(String name) => 'Welcome, $name';
+
+  @override
+  String toastMemberNotFound() =>
+      'Member not found. Try MG1001, MG1002 or MG1003';
+
+  @override
+  String toastCreditNeedsCustomer() => 'Select a customer for a credit sale';
+
+  @override
+  String toastStockChanged() => 'Stock changed. Please adjust your quantities.';
+
+  @override
+  String toastPaymentCompleted() => 'Payment completed';
+
+  @override
+  String toastSavedOnCredit() => 'Saved on credit';
+
+  @override
+  String confirmSaveCredit({required String total, required String customer}) =>
+      'Save $total on credit for $customer?';
+
+  @override
+  String confirmDeleteHeld({required int count}) =>
+      'Delete all $count held bills?';
+
+  @override
+  String toastHeldCleared() => 'Held bills cleared';
+
+  @override
+  String countBadge(int count) => '$count';
 }

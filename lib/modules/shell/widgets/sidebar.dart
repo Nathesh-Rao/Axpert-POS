@@ -84,19 +84,24 @@ class SidebarButton extends StatelessWidget {
         final content = SizedBox(
           width: double.infinity,
           height: m.sidebarButtonHeight,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Icon(destination.icon, size: m.sidebarIconSize, color: color),
-              const SizedBox(height: AppSpacing.s6),
-              Text(
-                label,
-                maxLines: 1,
-                style: context.text
-                    .fluid(m.sidebarLabelFont)
-                    .copyWith(color: color),
-              ),
-            ],
+          // The prototype's content overflows a short button (window height
+          // below about 650); here it scales down instead.
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(destination.icon, size: m.sidebarIconSize, color: color),
+                const SizedBox(height: AppSpacing.s6),
+                Text(
+                  label,
+                  maxLines: 1,
+                  style: context.text
+                      .fluid(m.sidebarLabelFont)
+                      .copyWith(color: color),
+                ),
+              ],
+            ),
           ),
         );
         if (active) {

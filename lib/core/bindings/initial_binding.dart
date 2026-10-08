@@ -5,7 +5,15 @@ import '../../modules/customers/repository/customer_repository.dart';
 import '../../modules/customers/repository/mock_customer_repository.dart';
 import '../../modules/pos/controllers/cart_actions_controller.dart';
 import '../../modules/pos/controllers/cart_controller.dart';
+import '../../modules/pos/controllers/cart_meta_controller.dart';
 import '../../modules/pos/controllers/cart_selection_controller.dart';
+import '../../modules/pos/controllers/forex_controller.dart';
+import '../../modules/pos/controllers/held_bills_controller.dart';
+import '../../modules/pos/controllers/member_controller.dart';
+import '../../modules/pos/controllers/order_menu_controller.dart';
+import '../../modules/pos/controllers/payment_controller.dart';
+import '../../modules/pos/models/payment_state.dart';
+import '../../modules/sales/controllers/sales_controller.dart';
 import '../../modules/pos/repository/cart_repository.dart';
 import '../../modules/pos/repository/held_bill_repository.dart';
 import '../../modules/pos/repository/mock_cart_repository.dart';
@@ -80,8 +88,54 @@ class InitialBinding extends Bindings {
         beep: Get.find(),
       ),
     );
-    Get.find<ShortcutController>().handlers[ShortcutAction.deleteSelected] =
+    _put<SalesController>(SalesController(Get.find()));
+    _put<HeldBillsController>(HeldBillsController(Get.find()));
+    _put<ForexController>(ForexController(Get.find()));
+    _put<CartMetaController>(
+      CartMetaController(
+        cart: Get.find(),
+        customers: Get.find(),
+        search: Get.find(),
+      ),
+    );
+    _put<MemberController>(
+      MemberController(
+        cart: Get.find(),
+        customers: Get.find(),
+        meta: Get.find(),
+        toasts: Get.find(),
+      ),
+    );
+    _put<PaymentController>(
+      PaymentController(
+        cart: Get.find(),
+        meta: Get.find(),
+        products: Get.find(),
+        customers: Get.find(),
+        sales: Get.find(),
+        settings: Get.find(),
+        toasts: Get.find(),
+        overlay: Get.find(),
+        search: Get.find(),
+      ),
+    );
+    _put<OrderMenuController>(
+      OrderMenuController(
+        cart: Get.find(),
+        meta: Get.find(),
+        settings: Get.find(),
+        clock: Get.find(),
+        overlay: Get.find(),
+      ),
+    );
+    final shortcuts = Get.find<ShortcutController>();
+    shortcuts.handlers[ShortcutAction.deleteSelected] =
         Get.find<CartActionsController>().removeSelected;
+    final payment = Get.find<PaymentController>();
+    shortcuts.handlers[ShortcutAction.cash] = () =>
+        payment.payment(PaymentMode.cash);
+    shortcuts.handlers[ShortcutAction.card] = () =>
+        payment.payment(PaymentMode.card);
   }
 
   /// Loads the persisted data of every permanent controller (call once before
@@ -91,6 +145,8 @@ class InitialBinding extends Bindings {
     await Future.wait(<Future<void>>[
       Get.find<ProductsController>().load(),
       Get.find<CustomersController>().load(),
+      Get.find<SalesController>().load(),
+      Get.find<HeldBillsController>().load(),
     ]);
     await Get.find<CartController>().load();
   }

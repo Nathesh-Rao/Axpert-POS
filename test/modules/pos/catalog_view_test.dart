@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/shared/widgets/search_text_field.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/modules/pos/controllers/cart_controller.dart';
 import 'package:pos_application/modules/products/controllers/products_controller.dart';
@@ -126,7 +127,10 @@ void main() {
     tester,
   ) async {
     await _boot(tester);
-    final field = find.byType(TextField).last;
+    final field = find.descendant(
+      of: find.byType(SearchTextField),
+      matching: find.byType(TextField),
+    );
     await tester.enterText(field, 'lays');
     await tester.pump(const Duration(milliseconds: 200));
     expect(find.byType(ProductCard), findsNWidgets(2));

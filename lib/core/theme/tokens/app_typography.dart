@@ -64,6 +64,9 @@ abstract final class AppLineHeight {
   static const double lineName = 1.3;
   static const double lineSmall = 1.2;
   static const double modalBody = 1.5;
+
+  /// .inline-amount b, .change-due b (236)
+  static const double inlineValue = 1.2;
 }
 
 abstract final class AppTypography {

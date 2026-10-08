@@ -21,5 +21,21 @@ class CustomersController extends GetxController {
     return customers.firstWhereOrNull((c) => c.id == id) ?? customers.first;
   }
 
+  /// Subtracts redeemed points (`points - totals.points`) and persists.
+  Future<void> deductPoints(String id, int points) {
+    final index = customers.indexWhere((c) => c.id == id);
+    if (index < 0 || points == 0) return Future<void>.value();
+    final c = customers[index];
+    customers[index] = Customer(
+      id: c.id,
+      name: c.name,
+      phone: c.phone,
+      email: c.email,
+      member: c.member,
+      points: c.points - points,
+    );
+    return save();
+  }
+
   Future<void> save() => _repository.save(customers.toList());
 }

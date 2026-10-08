@@ -132,6 +132,10 @@ abstract final class AppSizes {
   /// 1px solid var(--border) everywhere
   static const double borderWidth = 1.0;
 
+  /// select chevron (Lucide ChevronDown) and the max height of an open list
+  static const double dropdownChevron = 17.0;
+  static const double dropdownMaxHeight = 320.0;
+
   /// input:focus outline
   static const double focusRingWidth = 2.0;
 

@@ -20,10 +20,15 @@ class OverlayController extends GetxController {
 
   Confirmation? confirmation;
 
+  /// Data handed to the dialog that was opened (for example the sale a receipt
+  /// shows). Cleared on close.
+  Object? payload;
+
   bool get isOpen => modal.value != null;
 
-  void open(String id) {
+  void open(String id, {Object? payload}) {
     Get.find<ShellChromeController>().closeMenu();
+    this.payload = payload;
     modal.value = id;
   }
 
@@ -42,6 +47,7 @@ class OverlayController extends GetxController {
 
   void close() {
     confirmation = null;
+    payload = null;
     modal.value = null;
     Get.find<SearchFieldController>().refocus();
   }

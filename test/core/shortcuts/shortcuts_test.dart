@@ -98,12 +98,12 @@ void main() {
       await tester.sendKeyEvent(key);
       await tester.pump();
     }
+    // F2 and F3 are real since S4.a (empty cart: nothing happens, no toast).
     expect(toasts.toasts.map((t) => t.text), <String>[
-      'Card payment (demo)',
       'Hold bill (demo)',
       'Recall bill (demo)',
       'Apply discount (demo)',
-    ]); // last four of five
+    ]);
     toasts.toasts.clear();
 
     overlay.open('profile');

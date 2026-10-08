@@ -5,6 +5,7 @@ import '../../../shared/widgets/app_panel.dart';
 import 'cart_actions_bar.dart';
 import 'cart_heading.dart';
 import 'cart_table.dart';
+import 'customer_row.dart';
 import 'stat_tiles.dart';
 
 /// `.center-column`: the cart panel over the stat tiles, shown while the cart
@@ -25,6 +26,7 @@ class CenterColumn extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 const CartHeading(),
+                const CustomerRow(),
                 SizedBox(height: m.cartTableMarginTop),
                 const Expanded(child: CartTable()),
                 const CartActionsBar(),

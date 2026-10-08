@@ -101,7 +101,7 @@ Rows KG-060..063 are placeholders; each phase 2/3 step adds concrete component r
 
 | ID | Gap | Status |
 |---|---|---|
-| KG-090 | The catalog header row of the empty cart shows only the "PRODUCT CATALOG / N items" caption (customer chip, sale toggle and add button arrive in S4); its height is a measured placeholder (`AppSizes.emptyCustomerRowHeight`) | temporary (S4) |
+| KG-090 | The catalog header row of the empty cart shows only the "PRODUCT CATALOG / N items" caption (customer chip, sale toggle and add button arrive in S4); its height is a measured placeholder (`AppSizes.emptyCustomerRowHeight`) | RESOLVED in S4.a (chip, sale toggle, add button and caption built; row height is natural, not measured) |
 | KG-091 | Product placeholder art (juice carton and care bottle) uses fixed CSS colors with no dark override: same in both modes (`AppProductArt`). The juice carton's inset side shade is a plain strip | replicated / deviation (minor) |
 | KG-092 | Filled stars (favourite, Favourites chip) are a polygon traced from the Lucide path under the outline glyph, not the exact SVG fill | deviation (minor) |
 | KG-093 | A focused product card also activates with Space (React: Enter only) | deviation (minor) |
@@ -117,4 +117,16 @@ Rows KG-060..063 are placeholders; each phase 2/3 step adds concrete component r
 | KG-103 | Search focus ring: React draws a rectangular outline on the input inside the field box (as tall as the field content); Flutter now draws the same (DEC-094). It is not a defect. Ring geometry (offset 2 px, 2 px wide) is unverified at other sizes | replicated |
 | KG-104 | At width <= 1700 the table header (`18 1.4fr 1.3fr .8fr .8fr 1fr 0`) does not line up with the stacked lines (`152 1fr 1fr`); the prototype has the same misalignment and it is replicated (DEC-092). Wide layout: aligned | replicated |
 | KG-105 | S4.0 compared against no React screenshot at 1440 or 1000 px (none exist); stacked line, header, tiles and actions are built from CSS and unverified visually. Regression goldens at 1440 x 900 and 1100 x 700 only guard against change | unverified |
+
+## F. S4 checkout
+
+| ID | Gap | Status |
+|---|---|---|
+| KG-106 | Stock is whole units: a fractional sold quantity (for example 1.5) lowers the stock by the rounded-up whole number (React leaves 43.5) | deviation (minor) |
+| KG-107 | The forex selector (USD, EUR, AED, FC) only changes its label; the FC box and the selector box show the same converted amount at the one stored rate | replicated |
+| KG-108 | Redeemed points are whole numbers; a redeemed amount capped by a total with minor units (for example 21.50) is deducted rounded half-up from the customer's points (React deducts 21.5) | deviation (minor) |
+| KG-109 | Member card at height <= 719: the collapsed header and its floating form are approximated with the shared popover (right aligned below the header, width summary - 36); the CSS offset (`right:24; top:clamp(100px,22vh,180px)`) is not reproduced | unverified visually |
+| KG-110 | Bill Summary, quick-action tooltips (dark label above the tile; here the shared tooltip), disabled opacities, the rate field underline (solid here, dashed in React), the terminal box, the decline checkbox (Material checkbox, blue), the spinner (circular indicator arc) and all density rules are built from CSS and compared only at the reference viewport against the two POS screenshots | unverified visually |
+| KG-111 | At small windows the cart heading, the empty-cart chip and the sidebar buttons scale their content down where the prototype wraps (heading) or overflows (chip, sidebar) | deviation (minor, DEC-097) |
+| KG-112 | Reprint, Price Check, Discount, Recall, Add Customer, customer search, Rename counter, Add note, Print draft and the receipt still open the placeholder dialog until S4.b to S4.d; Close stays a placeholder until S5 | temporary |
 

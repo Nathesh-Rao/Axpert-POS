@@ -44,6 +44,14 @@ void main() {
     'rotateCcw': LucideIcons.rotateCcw,
     'package': LucideIcons.package,
     'indianRupee': LucideIcons.indianRupee,
+    'banknote': LucideIcons.banknote,
+    'creditCard': LucideIcons.creditCard,
+    'percent': LucideIcons.percent,
+    'printer': LucideIcons.printer,
+    'power': LucideIcons.power,
+    'clock': LucideIcons.clock,
+    'mail': LucideIcons.mail,
+    'smartphone': LucideIcons.smartphone,
   };
 
   test('AppIcons equals the lucide_icons_flutter constants', () {

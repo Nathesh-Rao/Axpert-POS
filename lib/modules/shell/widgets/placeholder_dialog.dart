@@ -18,6 +18,15 @@ String placeholderDialogTitle(AppStrings s, String id) => switch (id) {
   'settings' => s.menuSettings(),
   'shortcuts' => s.menuShortcuts(),
   'priceCheck' => s.actionPriceCheck(),
+  'discount' => s.actionDiscount(),
+  'recall' => s.actionRecall(),
+  'reprint' => s.actionReprint(),
+  'close' => s.actionClose(),
+  'addCustomer' => s.addCustomerTooltip(),
+  'customers' => s.customerSearchTooltip(),
+  'counter' => s.orderRename(),
+  'note' => s.orderAddNote(),
+  'receipt' => s.orderPrintDraft(),
   _ => s.menuLogout(),
 };
 

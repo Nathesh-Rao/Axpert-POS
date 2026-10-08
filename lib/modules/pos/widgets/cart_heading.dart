@@ -9,9 +9,12 @@ import '../../../core/theme/tokens/app_typography.dart';
 import '../../../core/utils/date_format.dart';
 import '../../../shared/controllers/clock_controller.dart';
 import '../../shell/controllers/settings_controller.dart';
+import 'order_menu.dart';
+import 'sale_toggle.dart';
 
-/// `.cart-heading`: cart icon, counter name and the clock. The sale toggle and
-/// the order menu arrive in S4 (the clock keeps its `margin-left:auto`).
+/// `.cart-heading`: cart icon, counter name, sale toggle, the clock and the
+/// order menu (the clock and the menu both have `margin-left:auto`, so the
+/// free space is split between them).
 class CartHeading extends StatefulWidget {
   const CartHeading({super.key});
 
@@ -65,7 +68,24 @@ class _CartHeadingState extends State<CartHeading> {
                 .copyWith(color: c.text),
           ),
         ),
-        if (!m.cartTimeOnOwnRow) ...<Widget>[const Spacer(), timeText],
+        SizedBox(width: m.cartHeadingGap),
+        // The prototype wraps the heading when it is too narrow; here the
+        // toggle and the clock scale down instead.
+        const Flexible(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: SaleToggle(),
+          ),
+        ),
+        if (!m.cartTimeOnOwnRow) ...<Widget>[
+          const Spacer(),
+          Flexible(
+            child: FittedBox(fit: BoxFit.scaleDown, child: timeText),
+          ),
+        ],
+        const Spacer(),
+        const OrderMenu(),
       ],
     );
     return ConstrainedBox(

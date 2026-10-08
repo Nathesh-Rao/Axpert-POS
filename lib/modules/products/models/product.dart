@@ -57,7 +57,7 @@ class Product {
 
   bool get hasImage => image >= 0;
 
-  Product copyWith({bool? favourite}) => Product(
+  Product copyWith({bool? favourite, int? stock}) => Product(
     id: id,
     name: name,
     code: code,
@@ -65,7 +65,7 @@ class Product {
     price: price,
     category: category,
     sub: sub,
-    stock: stock,
+    stock: stock ?? this.stock,
     gst: gst,
     image: image,
     favourite: favourite ?? this.favourite,

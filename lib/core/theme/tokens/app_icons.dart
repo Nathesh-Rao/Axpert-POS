@@ -182,6 +182,46 @@ abstract final class AppIcons {
     fontFamily: _family,
     fontPackage: _package,
   );
+  static const IconData banknote = IconData(
+    57426,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData creditCard = IconData(
+    57514,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData percent = IconData(
+    57650,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData printer = IconData(
+    57665,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData power = IconData(
+    57664,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData clock = IconData(
+    57479,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData mail = IconData(
+    57615,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData smartphone = IconData(
+    57699,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
 
   /// All icons by name, for the sync test.
   static const Map<String, IconData> all = <String, IconData>{
@@ -218,5 +258,13 @@ abstract final class AppIcons {
     'rotateCcw': rotateCcw,
     'package': packageBox,
     'indianRupee': indianRupee,
+    'banknote': banknote,
+    'creditCard': creditCard,
+    'percent': percent,
+    'printer': printer,
+    'power': power,
+    'clock': clock,
+    'mail': mail,
+    'smartphone': smartphone,
   };
 }

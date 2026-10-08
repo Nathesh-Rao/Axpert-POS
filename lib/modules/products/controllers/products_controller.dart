@@ -48,6 +48,20 @@ class ProductsController extends GetxController {
     return _repository.save(products.toList());
   }
 
+  /// Subtracts sold units (`stock - qty`, as `complete()` does) and persists.
+  Future<void> applyStockDeltas(Map<int, int> deltas) {
+    for (var i = 0; i < products.length; i++) {
+      final delta = deltas[products[i].id];
+      if (delta == null) continue;
+      final updated = products[i].copyWith(stock: products[i].stock - delta);
+      _byId[updated.id] = updated;
+      _byBarcode[updated.barcode] = updated;
+      _byCode[updated.code.toLowerCase()] = updated;
+      products[i] = updated;
+    }
+    return _repository.save(products.toList());
+  }
+
   void _index(List<Product> list) {
     _byId = <int, Product>{for (final p in list) p.id: p};
     _byBarcode = <String, Product>{};

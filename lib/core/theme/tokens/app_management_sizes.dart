@@ -26,4 +26,21 @@ abstract final class AppManagementSizes {
 
   /// `.empty-state` icon of the Sales table
   static const double salesEmptyIcon = 38.0;
+
+  /// `.report-stats`: three tiles, gap and margins, tile padding and value
+  static const double reportStatsGap = 15.0;
+  static const double reportStatsMarginTop = 30.0;
+  static const double reportStatsMarginBottom = 40.0;
+  static const double reportTilePadY = 24.0;
+  static const double reportTilePadX = 20.0;
+  static const double reportValueFont = 27.0;
+  static const double reportValueMarginTop = 10.0;
+
+  /// `.bar-chart` rows
+  static const double chartMarginY = 25.0;
+  static const double chartRowMarginY = 24.0;
+  static const double chartGap = 20.0;
+  static const double chartLabelWidth = 50.0;
+  static const double chartValueMinWidth = 100.0;
+  static const double chartTrackHeight = 30.0;
 }

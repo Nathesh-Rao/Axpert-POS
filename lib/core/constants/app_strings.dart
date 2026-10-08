@@ -291,4 +291,17 @@ abstract class AppStrings {
   String colPoints();
   String emptyCell();
   String percentSuffix(String value);
+  String colBill();
+  String colDate();
+  String colCustomer();
+  String colMode();
+  String colTotal();
+  String salesViewReceipt();
+  String salesEmptyTitle();
+  String salesEmptyBody();
+  String reportsTodaySales();
+  String reportsBillsCompleted();
+  String reportsAverageBill();
+  String reportsByMode();
+  String reportsBasedOn(String date);
 }

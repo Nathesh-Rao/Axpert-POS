@@ -27,6 +27,7 @@ import '../../modules/pos/controllers/order_menu_controller.dart';
 import '../../modules/pos/controllers/payment_controller.dart';
 import '../../modules/pos/models/payment_state.dart';
 import '../../modules/sales/controllers/sales_controller.dart';
+import '../../modules/shift/controllers/shift_controller.dart';
 import '../../modules/pos/repository/cart_repository.dart';
 import '../../modules/pos/repository/held_bill_repository.dart';
 import '../../modules/pos/repository/mock_cart_repository.dart';
@@ -102,6 +103,9 @@ class InitialBinding extends Bindings {
       ),
     );
     _put<SalesController>(SalesController(Get.find()));
+    _put<ShiftController>(
+      ShiftController(sales: Get.find(), clock: Get.find()),
+    );
     _put<HeldBillsController>(HeldBillsController(Get.find()));
     _put<ForexController>(ForexController(Get.find()));
     _put<CartMetaController>(

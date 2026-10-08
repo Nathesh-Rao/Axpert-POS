@@ -804,4 +804,43 @@ class EnAppStrings extends AppStrings {
 
   @override
   String percentSuffix(String value) => '$value%';
+
+  @override
+  String colBill() => 'Bill';
+
+  @override
+  String colDate() => 'Date';
+
+  @override
+  String colCustomer() => 'Customer';
+
+  @override
+  String colMode() => 'Mode';
+
+  @override
+  String colTotal() => 'Total';
+
+  @override
+  String salesViewReceipt() => 'View receipt';
+
+  @override
+  String salesEmptyTitle() => 'Your first sale starts here';
+
+  @override
+  String salesEmptyBody() => 'Completed bills will appear here automatically.';
+
+  @override
+  String reportsTodaySales() => "Today's sales";
+
+  @override
+  String reportsBillsCompleted() => 'Bills completed';
+
+  @override
+  String reportsAverageBill() => 'Average bill';
+
+  @override
+  String reportsByMode() => 'Sales by payment method';
+
+  @override
+  String reportsBasedOn(String date) => 'Based on completed bills for $date.';
 }

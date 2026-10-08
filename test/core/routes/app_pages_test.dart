@@ -5,6 +5,8 @@ import 'package:pos_application/core/routes/app_routes.dart';
 import 'package:pos_application/modules/customers/views/customers_view.dart';
 import 'package:pos_application/modules/pos/views/pos_view.dart';
 import 'package:pos_application/modules/products/views/products_view.dart';
+import 'package:pos_application/modules/reports/views/reports_view.dart';
+import 'package:pos_application/modules/sales/views/sales_view.dart';
 import 'package:pos_application/modules/shell/views/page_placeholder.dart';
 
 import '../../support/test_app.dart';
@@ -44,6 +46,10 @@ void main() {
       }
       if (find.byType(CustomersView).evaluate().isNotEmpty) {
         return AppPage.customers;
+      }
+      if (find.byType(SalesView).evaluate().isNotEmpty) return AppPage.sales;
+      if (find.byType(ReportsView).evaluate().isNotEmpty) {
+        return AppPage.reports;
       }
       return tester.widget<PagePlaceholder>(find.byType(PagePlaceholder)).page;
     }

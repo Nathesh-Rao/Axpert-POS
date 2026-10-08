@@ -14,6 +14,7 @@ import 'package:pos_application/main.dart';
 import 'package:pos_application/modules/shell/controllers/settings_controller.dart';
 import 'package:pos_application/modules/pos/controllers/cart_actions_controller.dart';
 import 'package:pos_application/modules/products/controllers/products_controller.dart';
+import 'package:pos_application/modules/shift/controllers/shift_controller.dart';
 import 'package:pos_application/shared/controllers/clock_controller.dart';
 import 'package:pos_application/shared/controllers/overlay_controller.dart';
 import 'package:pos_application/shared/controllers/toast_controller.dart';
@@ -55,6 +56,11 @@ Future<void> _pump(
   Get.delete<ClockController>(force: true);
   Get.put<ClockController>(
     ClockController(now: () => DateTime(2026, 10, 7, 16, 57, 8)),
+    permanent: true,
+  );
+  Get.delete<ShiftController>(force: true);
+  Get.put<ShiftController>(
+    ShiftController(sales: Get.find(), clock: Get.find()),
     permanent: true,
   );
   if (dark) {
@@ -127,6 +133,16 @@ void main() {
     'Customers light, reference viewport',
     'shell_customers_light',
     route: AppRoutes.customers,
+  );
+  golden(
+    'Sales empty light, reference viewport',
+    'shell_sales_light',
+    route: AppRoutes.sales,
+  );
+  golden(
+    'Reports zeros light, reference viewport',
+    'shell_reports_light',
+    route: AppRoutes.reports,
   );
   golden(
     'Dialog and toast over POS (unverified visually)',

@@ -6,6 +6,10 @@ import '../../modules/pos/bindings/pos_binding.dart';
 import '../../modules/pos/views/pos_view.dart';
 import '../../modules/products/bindings/products_binding.dart';
 import '../../modules/products/views/products_view.dart';
+import '../../modules/reports/bindings/reports_binding.dart';
+import '../../modules/reports/views/reports_view.dart';
+import '../../modules/sales/bindings/sales_binding.dart';
+import '../../modules/sales/views/sales_view.dart';
 import '../../modules/shell/views/page_placeholder.dart';
 import 'app_routes.dart';
 
@@ -26,12 +30,16 @@ abstract final class AppPages {
           AppPage.pos => const PosView(),
           AppPage.products => const ProductsView(),
           AppPage.customers => const CustomersView(),
+          AppPage.sales => const SalesView(),
+          AppPage.reports => const ReportsView(),
           _ => PagePlaceholder(page: page),
         },
         binding: switch (page) {
           AppPage.pos => PosBinding(),
           AppPage.products => ProductsBinding(),
           AppPage.customers => CustomersBinding(),
+          AppPage.sales => SalesBinding(),
+          AppPage.reports => ReportsBinding(),
           _ => null,
         },
         transition: Transition.noTransition,

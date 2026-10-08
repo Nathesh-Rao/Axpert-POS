@@ -12,6 +12,8 @@ import 'core/services/storage/shared_prefs_local_store.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/debug/theme_swatch_page.dart';
 import 'modules/shell/controllers/settings_controller.dart';
+import 'modules/shell/widgets/dialog_host.dart';
+import 'shared/widgets/toast_host.dart';
 
 // TEMPORARY (DEC-065): debug-only swatch, deleted in S2.d.
 const bool _swatchFlag = bool.fromEnvironment('SWATCH');
@@ -46,7 +48,15 @@ class PosApp extends StatelessWidget {
         darkTheme: AppTheme.dark,
         themeMode: settings.dark ? ThemeMode.dark : ThemeMode.light,
         initialBinding: binding,
-        builder: (context, child) => ResponsiveLayout(child: child!),
+        builder: (context, child) => ResponsiveLayout(
+          child: Stack(
+            children: <Widget>[
+              Positioned.fill(child: child!),
+              const DialogHost(),
+              const ToastHost(),
+            ],
+          ),
+        ),
         getPages: AppPages.pages,
         unknownRoute: AppPages.unknown,
         home: _showSwatch ? const ThemeSwatchPage() : null,

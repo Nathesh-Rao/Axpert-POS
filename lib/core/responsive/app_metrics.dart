@@ -53,6 +53,11 @@ class AppMetrics {
   double summaryWidth({required bool isPos}) =>
       isPos ? _c.vw(300, 24, 380) : AppSizes.summaryWidthAlternate;
 
+  /// `.management` padding, `clamp(16px, 1.5vw, 28px)`.
+  double get managementPad => _c.vw(16, 1.5, 28);
+  double get modalOverlayPad => _c.vw(12, 2, 25);
+  double get modalPad => _c.vw(20, 2, 32);
+
   // --- top bar ---------------------------------------------------------------
   double get rootFontSize => _c.vw(11, .85, 14);
   double get topbarPadX => _c.vw(10, 1, 20);

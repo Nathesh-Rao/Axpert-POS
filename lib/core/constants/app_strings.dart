@@ -54,4 +54,10 @@ abstract class AppStrings {
   String storeSwitched();
   String placeholderDialogBody();
   String dialogClose();
+
+  // Frame, toasts
+  String billSummaryTitle();
+  String offlineBanner();
+  String toastDismissTooltip();
+  String toastUndo();
 }

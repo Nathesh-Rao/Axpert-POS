@@ -71,8 +71,11 @@ void main() {
       'paymentButtonFont': (ref.paymentButtonFont, 20.00),
       'tenderedFont': (ref.tenderedFont, 22.00),
       'quickActionTile': (ref.quickActionTile, 52.00),
+      'managementPad': (ref.managementPad, 28.00),
+      'modalOverlayPad': (ref.modalOverlayPad, 25.00),
+      'modalPad': (ref.modalPad, 32.00),
     };
-    expect(expected.length, 63);
+    expect(expected.length, 66);
     expected.forEach((name, pair) {
       expect(pair.$1, closeTo(pair.$2, 0.01), reason: name);
     });

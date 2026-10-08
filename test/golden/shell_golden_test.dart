@@ -9,6 +9,8 @@ import 'package:pos_application/core/routes/app_routes.dart';
 import 'package:pos_application/core/theme/tokens/app_typography.dart';
 import 'package:pos_application/main.dart';
 import 'package:pos_application/modules/shell/controllers/settings_controller.dart';
+import 'package:pos_application/shared/controllers/overlay_controller.dart';
+import 'package:pos_application/shared/controllers/toast_controller.dart';
 
 import '../support/test_app.dart';
 import 'harness.dart';
@@ -18,6 +20,7 @@ Future<void> _pump(
   required String route,
   bool dark = false,
   Size? logicalSize,
+  Future<void> Function(WidgetTester tester)? after,
 }) async {
   if (logicalSize == null) {
     useReferenceViewport(tester);
@@ -39,6 +42,7 @@ Future<void> _pump(
     Get.offAllNamed<void>(route);
     await tester.pumpAndSettle();
   }
+  await after?.call(tester);
 }
 
 void main() {
@@ -61,17 +65,27 @@ void main() {
     String route = AppRoutes.pos,
     bool dark = false,
     Size? size,
+    Future<void> Function(WidgetTester tester)? after,
   }) {
     testWidgets('$prefix$name', (tester) async {
       useRealShadows();
       debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
       try {
-        await _pump(tester, route: route, dark: dark, logicalSize: size);
+        await _pump(
+          tester,
+          route: route,
+          dark: dark,
+          logicalSize: size,
+          after: after,
+        );
         await expectLater(
           find.byType(PosApp),
           matchesGoldenFile('goldens/$file.png'),
         );
       } finally {
+        if (Get.isRegistered<ToastController>()) {
+          Get.find<ToastController>().onClose(); // cancel pending timers
+        }
         debugDefaultTargetPlatformOverride = null;
         restoreDefaultShadows();
       }
@@ -83,6 +97,15 @@ void main() {
     'Customers light, reference viewport',
     'shell_customers_light',
     route: AppRoutes.customers,
+  );
+  golden(
+    'Dialog and toast over POS (unverified visually)',
+    'shell_dialog_toast',
+    after: (tester) async {
+      Get.find<OverlayController>().open('profile');
+      Get.find<ToastController>().show('Store switched');
+      await tester.pumpAndSettle();
+    },
   );
   golden('POS dark (unverified visually)', 'shell_pos_dark', dark: true);
   for (final size in const <Size>[

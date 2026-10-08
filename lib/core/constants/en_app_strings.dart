@@ -117,4 +117,16 @@ class EnAppStrings extends AppStrings {
 
   @override
   String dialogClose() => 'Close';
+
+  @override
+  String billSummaryTitle() => 'Bill Summary';
+
+  @override
+  String offlineBanner() => 'Offline mode – bills will sync later';
+
+  @override
+  String toastDismissTooltip() => 'Dismiss notification';
+
+  @override
+  String toastUndo() => 'Undo';
 }

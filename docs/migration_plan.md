@@ -1,58 +1,40 @@
 # Migration plan (master, short)
 
-React prototype (`reference_react/`) -> Flutter (`pos_application/`). Phase A = one-time port replicating behavior as-is. Phase B = production development in Flutter only (known gaps fixed). Rules: `CLAUDE.md`. Decisions: `decisions.md`. Gaps: `known_gaps.md`. Prototype inventory: `react_audit.md`. Current detailed plan: `plan_phase1.md`.
+React prototype (`reference_react/`) -> Flutter (`pos_application/`). Phase A = one-time port replicating behavior as-is. Phase B = production development in Flutter only (known gaps fixed). Rules: `CLAUDE.md`. Decisions: `decisions.md`. Gaps: `known_gaps.md`. Prototype inventory: `react_audit.md`. Current detailed plan: `plan_s1_s2.md`.
 
-Status: plan v2 approved 2026-10-07. Nothing implemented yet.
+Status: replanned into 7 large steps (DEC-069, 2026-10-08). Done: 1.1 Setup, 1.2 Theme tokens (committed). Next: S1 Money (not started).
 
 ## How we work
-- Every step starts in Plan mode, is approved, runs in its own session (start with `/clear`; read only CLAUDE.md and the current plan file), ends with `dart format .`, `flutter analyze` (0 issues), `flutter test`, a run on macOS and Chrome, and a short report (changes, checks, differences vs React, open questions).
-- One commit per step, message proposed by the agent, committed only after the user's OK.
+- Each STEP is planned in Plan mode and approved once. Checkpoints inside an approved step need no extra approval; each ends with a short report and a commit (message proposed, committed after the user's OK).
+- One session per step: `/clear` between steps; `/compact` only at the marked points. Read only CLAUDE.md and the current plan file.
+- Every checkpoint: `dart format .`, `flutter analyze` (0 issues), `flutter test`; steps that change UI also run on macOS and Chrome.
 - UI comparison: only at the reference viewport (2124x1180 px, light) against `reference_screenshots/`. Everything else is built from CSS/code and marked unverified in `known_gaps.md`.
-- Size guide: S < 40k tokens, M 40-100k, L > 100k (L is always split).
+- Size guide: S < 40k tokens, M 40-100k, L > 100k.
 
-## Phases and steps
+## Steps and checkpoints
 
-| Phase | Step | Goal | Size |
-|---|---|---|---|
-| 1 | 1.1 | Project setup: packages, assets, skeleton, docs, git init | S |
-| 1 | 1.2 | Theme tokens + `css_metrics.md` + golden harness | M |
-| 1 | 1.3a | Currency, Money, Qty, Rational, rounding strategy, formatter | M |
-| 1 | 1.3b | PricingService (both tax modes) + golden vectors from React | M-L |
-| 1 | 1.4a | Routing spike (throwaway) -> decision record | S |
-| 1 | 1.4b | LocalStore, AppStrings, routes, responsive core (AppMetrics, ResponsiveLayout) | M |
-| 1 | 1.4c | Shell UI: top bar, sidebar, summary frame, toast/overlay hosts, shortcuts, placeholder pages | M-L |
-| 2 | 2.1 | Buttons and inputs (incl. hold-to-repeat, quantity input, toggles) | M |
-| 2 | 2.2 | Chips, cards, badges, segmented, tooltip, stat tiles | M |
-| 2 | 2.3 | Overlays: modal, drawer, confirm, popover, toast with Undo | M |
-| 2 | 2.4 | Data table, cart-line row, empty/no-results states | S |
-| 3 | 3.1 | Data layer: models, repository interfaces, mocks, seeds for products/customers/sales/held/settings | M |
-| 3 | 3.2 | POS: catalog (categories, sub chips, filter, grid/list, product cards, search/scan field) | M |
-| 3 | 3.3 | POS: cart (lines, qty/price/discount editing, remove + undo, highlight, actions, stat tiles) | M |
-| 3 | 3.4 | POS: bill summary and payment (totals, forex card, member card, cash/card/credit) | M |
-| 3 | 3.5 | POS: dialogs (hold/recall, discount drawer, price check, scan simulator, customer picker, add customer, receipt, notes, shortcuts help) | M |
-| 3 | 3.6 | Customers | S |
-| 3 | 3.7 | Products | S |
-| 3 | 3.8 | Sales | S |
-| 3 | 3.9 | Returns | M |
-| 3 | 3.10 | Reports | S |
-| 3 | 3.11 | Settings (More) + shift close + profile + signed-out screen | S |
-| 3 | 3.12 | Keyboard and focus pass (all shortcuts, focus return, web checks) | M |
-| 4 | 4.1 | Responsive pass: media-query rules vs CSS, tablet checks (adds `ios/` only if approved at that time) | M |
-| 4 | 4.2 | Web and Windows prep and review (shortcut conflicts, hover/scroll, platform assumptions) | S |
-| 4 | 4.3 | Final comparison, performance run with 10k products, then (with explicit OK) remove `reference_react/` and `reference_screenshots/`, move CLAUDE.md into `pos_application` | S |
+| Step | Goal | Checkpoints (commit points) | Size | `/compact` | User provides |
+|---|---|---|---|---|---|
+| S1 Money | Currency registry, Money/Qty/Bp, rounding, formatter, PricingService (both tax modes), ~300 golden vectors from React `calculate()` | S1.a types + formatter; S1.b golden vectors + exclusive mode; S1.c inclusive mode + helpers | L | after S1.b | npx esbuild OK (DEC-053) |
+| S2 Shell | LocalStore, AppStrings, 7 routes (+ fall-through to POS), AppMetrics, ResponsiveLayout, top bar, sidebar, summary frame, toast/overlay hosts, shortcuts, theme toggle; delete swatch page (DEC-065) | S2.a foundations; S2.b responsive core + top bar/sidebar; S2.c frame + hosts; S2.d shortcuts, theme toggle, cleanup, goldens | L | after S2.b | nothing blocking |
+| S3 POS core | Models, repository interfaces, mocks, controllers, catalog, cart table with editing and Undo | S3.a data; S3.b catalog; S3.c cart table; S3.d controllers + compare | L | after S3.b | nothing blocking |
+| S4 POS checkout | Bill summary totals, cash/card/credit, hold/recall, discount drawer, price check, scan simulator, customer picker, add customer, receipt preview, note, rename, shortcuts help | S4.a totals + payment; S4.b hold/recall, discount, note; S4.c pickers; S4.d receipt + help | L | after S4.b | optional screenshots of drawer, receipt, picker |
+| S5 Secondary pages | Products, Customers, Sales, Reports, Settings, shift close, signed-out | S5.a Products + Customers; S5.b Sales + Reports; S5.c Settings + profile; S5.d shift close + signed-out | L | after S5.b | optional screenshots of Settings, shift, signed-out |
+| S6 Returns and keyboard | Returns flow; shortcut and focus-return pass; web key-conflict check | S6.a Returns; S6.b shortcuts + focus; S6.c web key conflicts | M-L | after S6.a | nothing blocking |
+| S7 Polish | Responsive pass, web and Windows review, 10k-product performance, final comparison, cleanup | S7.a responsive; S7.b web/Windows review; S7.c performance; S7.d final comparison + cleanup | L | after S7.b | side-by-side React check; explicit OK for cleanup |
 
-Each Phase 2-4 step gets its own `plan_phaseX.md` when we reach it.
+Only S1 and S2 are detailed (`plan_s1_s2.md`). S3 to S7 get their own detailed plan when reached.
 
 ## Cross-cutting design (summary; details in decisions.md)
-- State/DI/routing: GetX; permanent shared controllers in `InitialBinding`; route-bound controllers via `Get.lazyPut`; dialog-scoped controllers; plain Dart services for pricing, checkout, receipt.
+- State/DI/routing: GetX; permanent shared controllers in `InitialBinding`; route-bound controllers via `Get.lazyPut`; dialog-scoped controllers; plain Dart services for pricing, checkout, receipt. Routing option (i), per-page `AppShell` wrapper (DEC-041, final).
 - Money: integer minor units + currency registry + tax config; swappable rounding; golden vectors from React's real `calculate()`.
 - Theme: `ThemeData` + `ThemeExtension` (colors, typography, spacing, radii, shadows, sizes, motion) + `AppMetrics` for the prototype's `clamp()`/media-query rules; no hardcoded values in widgets.
 - Storage: `LocalStore` (JSON key-value) behind mock repositories; strings in `AppStrings`; hardware and outbound features as interfaces with no-op stubs.
-- Performance (sales screen): lazy builders, stable keys, scoped rebuilds per product/line, prebuilt barcode/code indexes, debounced filter, no heavy work in `build`, 10k-product debug dataset.
+- Performance (sales screen): lazy builders, stable keys, scoped rebuilds, prebuilt indexes, debounced filter, no heavy work in `build`, 10k-product debug dataset.
+
+## Deferred or dropped (see DEC-069)
+Routing spike (dropped); web key-default check (S6.c, KG-015); tie review and 2000 vectors (KG-079); Phase 2 shared-widget block (KG-080, KG-081); iOS only if approved in S7; font bundling in Phase B (KG-078, DEC-044, DEC-055).
 
 ## Open items carried forward
-- Routing option (i) confirmed or changed by spike 1.4a.
-- Scale between screenshot pixels and CSS px calibrated in 1.2.
-- User reviews `test/fixtures/known_ties.json` after 1.3b generates it.
-- iOS added only in Phase 4 if approved.
-- Revisit bundling fonts at the start of Phase B (google_fonts 6.3.3 is two majors behind; offline first launch). See DEC-044, DEC-055, KG-078.
+- Scale between screenshot pixels and CSS px is calibrated (1.125, DEC-062).
+- Revisit bundling fonts at the start of Phase B (KG-078).

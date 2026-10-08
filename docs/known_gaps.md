@@ -21,7 +21,7 @@ Status values: `replicated` (Flutter does the same), `deviation` (Flutter differ
 | KG-012 | No shifts, auth or roles: cashier `MGTCASH3`, stores and counter are hardcoded; Close/Logout shows a summary and a signed-out screen but closes nothing | replicated |
 | KG-013 | Recall of a held bill whose product no longer exists crashes in React (`products.find(...)!`) | guarded in Flutter (DEC-003), otherwise replicated |
 | KG-014 | F2-F6 fire inside text inputs and while modals are open (e.g. F4 holds a bill under an open dialog) | replicated on purpose |
-| KG-015 | On web, F3 / F5 / F6 (and possibly Ctrl+K) can also trigger browser defaults; whether Flutter prevents them is unverified | unverified (check in spike 1.4a) |
+| KG-015 | On web, F3 / F5 / F6 (and possibly Ctrl+K) can also trigger browser defaults; whether Flutter prevents them is unverified | unverified (check in S6.c; spike 1.4a dropped, DEC-069) |
 | KG-016 | Notifications text and the "3" badge are hardcoded; profile button and kebab button open the same menu | replicated |
 | KG-017 | Online/Offline toggle is cosmetic (banner only); no sync | replicated |
 | KG-018 | Print button is a silent stub (React calls `window.print()`); Email and WhatsApp are "(demo)" toasts | replicated (Print: stub, no feedback) |
@@ -85,3 +85,6 @@ Rows KG-060..063 are placeholders; each phase 2/3 step adds concrete component r
 | KG-076 | Screenshot colors are shifted by 1-3 per channel against the CSS hex (macOS capture colour profile), e.g. page bg `#f0f4f8` vs `#eff4f9`, red action tile `#fcf1f3` vs `#fff0f3`, selected tab `#e6effd` vs `#e4efff`. Colors are compared with a tolerance; the CSS value is the truth | accepted |
 | KG-077 | Flutter text runs about 1-3 % wider/narrower than Chrome for the same string (hinting, sub-pixel advance), e.g. "Subtotal" 49 px vs 47 px ink width at 13 px | accepted (see KG-051) |
 | KG-078 | Fonts are fetched at runtime via `google_fonts` 6.3.3; offline first launch falls back to the system font; brief fallback flash on web; macOS `com.apple.security.network.client` entitlement and Android `INTERNET` permission required. Bundling is a one-file change in `app_typography.dart` (Phase B, DEC-044, DEC-055) | accepted
+| KG-079 | Golden vectors: about 300 (edge cases plus seeded random carts), no tie-review file. Any 1-minor-unit mismatch at an exact rounding tie between React's float math and the integer/Rational port is recorded here (cart, field, delta) and accepted | open (filled in S1.b) |
+| KG-080 | Shared widgets (buttons, inputs, chips, cards, tables, overlays) are built when first needed in S2-S5 instead of a dedicated Phase 2; no separate widget catalog | accepted (DEC-069) |
+| KG-081 | Shared widgets have no standalone goldens; they are covered by screen tests and goldens at the reference viewport (light). Other sizes and dark mode remain regression only | accepted (DEC-069) |

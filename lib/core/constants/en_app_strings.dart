@@ -499,4 +499,65 @@ class EnAppStrings extends AppStrings {
 
   @override
   String countBadge(int count) => '$count';
+
+  @override
+  String toastAddItemsBeforeHold() => 'Add items before holding a bill';
+
+  @override
+  String toastBillHeld() => 'Bill held. Ready for a new sale.';
+
+  @override
+  String toastBillRecalled(String ref) => 'Bill $ref recalled';
+
+  @override
+  String heldBillsTitle() => 'Held bills';
+
+  @override
+  String heldBillsSubtitle() => 'Pick up right where you left off.';
+
+  @override
+  String heldBillRowTitle(String ref, int items) => '$ref · $items items';
+
+  @override
+  String heldBillsEmpty() => 'No held bills yet.';
+
+  @override
+  String recallConflictTitle() => 'You have an active cart';
+
+  @override
+  String recallConflictBody(String ref) =>
+      'Hold your current cart, or replace it with $ref?';
+
+  @override
+  String recallReplaceCurrent() => 'Replace current';
+
+  @override
+  String recallHoldAndRecall() => 'Hold & recall';
+
+  @override
+  String discountDrawerTitle() => 'Bill discount';
+
+  @override
+  String discountDrawerSubtitle() => 'Apply a discount to this entire bill.';
+
+  @override
+  String discountTabPercent() => 'Percentage %';
+
+  @override
+  String discountTabFlat() => 'Flat amount ₹';
+
+  @override
+  String discountValueLabel() => 'Discount';
+
+  @override
+  String discountReasonLabel() => 'Reason';
+
+  @override
+  String discountReasonHint() => 'e.g. Seasonal offer';
+
+  @override
+  String discountRemove() => 'Remove';
+
+  @override
+  String discountApply() => 'Apply discount';
 }

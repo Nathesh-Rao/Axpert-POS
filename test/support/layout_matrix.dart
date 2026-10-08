@@ -72,6 +72,7 @@ void expectReadable(
   Finder finder,
   Size window, {
   double minPerChar = 3,
+  bool oneLine = true,
   String? reason,
 }) {
   expect(finder, findsAtLeastNWidgets(1), reason: reason);
@@ -79,7 +80,10 @@ void expectReadable(
   final chars = p.text.toPlainText().length;
   final rect = tester.getRect(finder.first);
   final why = '${reason ?? ''} "${p.text.toPlainText()}" $rect in $window';
-  expect(lineCount(tester, finder), 1, reason: 'one line: $why');
+  // Plain widget tests draw with the wide test font (the real Roboto
+  // Condensed is only loaded in goldens), so long strings may wrap there:
+  // [oneLine] false keeps the other checks and leaves one-line to web_check.
+  if (oneLine) expect(lineCount(tester, finder), 1, reason: 'one line: $why');
   expect(
     p.size.width,
     greaterThanOrEqualTo(chars * minPerChar),
@@ -183,5 +187,61 @@ void expectGap(Rect upper, Rect lower, double min, {required String reason}) {
     lower.top - upper.bottom,
     greaterThanOrEqualTo(min - 0.01),
     reason: 'gap $upper -> $lower: $reason',
+  );
+}
+
+/// The text inside the focused [outline] (a `FocusOutline`) keeps at least
+/// [min] from the ring (2 px outside the box) on top, bottom and left.
+void expectRingClearance(
+  WidgetTester tester,
+  Finder outline,
+  double min, {
+  required String reason,
+}) {
+  final box = tester.getRect(outline);
+  final ringInner = box.inflate(2);
+  RenderEditable? editable;
+  void visit(Element e) {
+    if (e.renderObject is RenderEditable) {
+      editable = e.renderObject! as RenderEditable;
+    }
+    e.visitChildren(visit);
+  }
+
+  visit(outline.evaluate().first);
+  final r = editable!;
+  final boxes = r.getBoxesForSelection(
+    TextSelection(baseOffset: 0, extentOffset: r.text!.toPlainText().length),
+  );
+  final origin = r.localToGlobal(Offset.zero);
+  var text = boxes.first.toRect().shift(origin);
+  for (final b in boxes.skip(1)) {
+    text = text.expandToInclude(b.toRect().shift(origin));
+  }
+  // The painted line box is the strut: the line height, centred.
+  final top = r
+      .localToGlobal(Offset(0, (r.size.height - r.preferredLineHeight) / 2))
+      .dy;
+  final line = Rect.fromLTRB(
+    text.left,
+    top,
+    text.right,
+    top + r.preferredLineHeight,
+  );
+  final why = 'text $line ring $ringInner box $box: $reason';
+  expect(
+    line.top - ringInner.top,
+    greaterThanOrEqualTo(min - 0.01),
+    reason: 'top $why',
+  );
+  expect(
+    ringInner.bottom - line.bottom,
+    greaterThanOrEqualTo(min - 0.01),
+    reason: 'bottom $why',
+  );
+  expect(
+    line.left - ringInner.left,
+    greaterThanOrEqualTo(min - 0.01),
+    reason: 'left $why',
   );
 }

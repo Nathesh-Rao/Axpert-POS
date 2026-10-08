@@ -192,4 +192,24 @@ abstract class AppStrings {
   String confirmDeleteHeld({required int count});
   String toastHeldCleared();
   String countBadge(int count);
+  String toastAddItemsBeforeHold();
+  String toastBillHeld();
+  String toastBillRecalled(String ref);
+  String heldBillsTitle();
+  String heldBillsSubtitle();
+  String heldBillRowTitle(String ref, int items);
+  String heldBillsEmpty();
+  String recallConflictTitle();
+  String recallConflictBody(String ref);
+  String recallReplaceCurrent();
+  String recallHoldAndRecall();
+  String discountDrawerTitle();
+  String discountDrawerSubtitle();
+  String discountTabPercent();
+  String discountTabFlat();
+  String discountValueLabel();
+  String discountReasonLabel();
+  String discountReasonHint();
+  String discountRemove();
+  String discountApply();
 }

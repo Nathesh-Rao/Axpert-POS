@@ -98,19 +98,22 @@ void main() {
       await tester.sendKeyEvent(key);
       await tester.pump();
     }
-    // F2 and F3 are real since S4.a (empty cart: nothing happens, no toast).
+    // F2/F3 (S4.a) and F4 to F6 (S4.b) are real: F4 on an empty cart only
+    // toasts, F5 opens the held bills and F6 the discount drawer (the last
+    // one wins).
     expect(toasts.toasts.map((t) => t.text), <String>[
-      'Hold bill (demo)',
-      'Recall bill (demo)',
-      'Apply discount (demo)',
+      'Add items before holding a bill',
     ]);
+    expect(overlay.modal.value, 'discount');
     toasts.toasts.clear();
+    overlay.close();
+    await tester.pumpAndSettle();
 
     overlay.open('profile');
     await tester.pumpAndSettle();
     await tester.sendKeyEvent(LogicalKeyboardKey.f4);
     await tester.pump();
-    expect(toasts.toasts.single.text, 'Hold bill (demo)');
+    expect(toasts.toasts.single.text, 'Add items before holding a bill');
     expect(overlay.isOpen, isTrue, reason: 'F4 does not close the dialog');
     await _drain(tester);
   });

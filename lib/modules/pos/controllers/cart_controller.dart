@@ -36,7 +36,7 @@ class CartController extends GetxController {
 
   /// True while the cart has lines (changes only when that flips).
   final RxBool active = false.obs;
-  late final Rx<CartTotals> totals = _totalsOf(Cart.empty).obs;
+  late final Rx<CartTotals> totals = totalsOf(Cart.empty).obs;
 
   final Map<int, ValueNotifier<CartLine?>> _lineNotifiers =
       <int, ValueNotifier<CartLine?>>{};
@@ -110,9 +110,10 @@ class CartController extends GetxController {
     if (persist) _persist();
   }
 
-  void _recomputeTotals() => totals.value = _totalsOf(cart.value);
+  void _recomputeTotals() => totals.value = totalsOf(cart.value);
 
-  CartTotals _totalsOf(Cart value) {
+  /// The totals of any cart (held bills use their customer's points).
+  CartTotals totalsOf(Cart value) {
     final customer = _customers.byIdOrFirst(value.customer);
     return _pricing.calculate(
       CartInput(

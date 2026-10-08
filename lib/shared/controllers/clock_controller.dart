@@ -12,6 +12,9 @@ class ClockController extends GetxController {
   final DateTime Function() _nowFn;
   late final Rx<DateTime> now;
 
+  /// The current time (not the once-a-second [now] value).
+  DateTime get current => _nowFn();
+
   Timer? _timer;
   int _attached = 0;
 

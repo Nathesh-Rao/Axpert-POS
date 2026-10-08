@@ -8,6 +8,7 @@ import '../../../core/theme/tokens/app_motion.dart';
 import '../../../core/theme/tokens/app_sizes.dart';
 import '../../../shared/controllers/overlay_controller.dart';
 import '../../../shared/widgets/confirm_dialog.dart';
+import 'dialog_registry.dart';
 import 'placeholder_dialog.dart';
 
 /// Shows the dialog for [OverlayController.modal] on the ROOT navigator, so
@@ -68,7 +69,7 @@ class _DialogLayerState extends State<DialogLayer> {
           ),
           id == OverlayController.confirmId
               ? ConfirmDialog(text: confirmText)
-              : PlaceholderDialog(id: id),
+              : (DialogRegistry.build(id) ?? PlaceholderDialog(id: id)),
         ],
       ),
       transitionBuilder: (context, animation, secondary, child) {

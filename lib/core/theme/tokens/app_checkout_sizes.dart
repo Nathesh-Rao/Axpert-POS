@@ -102,4 +102,34 @@ abstract final class AppCheckoutSizes {
   static const double headerGap = 14.0;
   static const double headerAddIcon = 19.0;
   static const double orderMenuIcon = 20.0;
+
+  /// `.drawer`, `.modal-symbol`, `.segmented`, `.form-label` (S4.b)
+  static const double drawerPadTop = 45.0;
+  static const double symbolIcon = 27.0;
+  static const double symbolMarginBottom = 18.0;
+  static const double segmentedPad = 4.0;
+  static const double segmentedGap = 4.0;
+  static const double segmentedButtonPad = 11.0;
+  static const double formLabelMarginTop = 15.0;
+  static const double formLabelFont = 13.0;
+  static const double formInputGap = 9.0;
+  static const double formInputMarginBottom = 10.0;
+  static const double formInputPadX = 13.0;
+  static const double formInputPadY = 10.0;
+  static const double modalParagraphMarginBottom = 20.0;
+
+  /// `.modal-list`, `.empty-state`
+  static const double modalListMaxHeight = 400.0;
+  static const double modalListMaxHeightFraction = 0.4;
+  static const double modalListMarginY = 20.0;
+  static const double modalListRowPadY = 17.0;
+  static const double modalListRowPadX = 8.0;
+  static const double modalListRowGap = 12.0;
+  static const double modalListIcon = 23.0;
+  static const double modalListSmallMarginTop = 6.0;
+  static const double modalListSmallFont = 12.0;
+  static const double emptyStatePadY = 45.0;
+  static const double emptyStatePadX = 15.0;
+  static const double emptyStateGap = 12.0;
+  static const double emptyStateIcon = 32.0;
 }

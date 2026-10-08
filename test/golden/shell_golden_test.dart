@@ -18,6 +18,11 @@ import 'package:pos_application/shared/controllers/clock_controller.dart';
 import 'package:pos_application/shared/controllers/overlay_controller.dart';
 import 'package:pos_application/shared/controllers/toast_controller.dart';
 
+import 'package:pos_application/modules/pos/controllers/cart_controller.dart';
+import 'package:pos_application/modules/pos/controllers/discount_form_controller.dart';
+import 'package:pos_application/modules/pos/controllers/held_bills_controller.dart';
+import 'package:pos_application/modules/pos/models/held_bill.dart';
+
 import '../support/test_app.dart';
 import 'images.dart';
 import 'harness.dart';
@@ -150,6 +155,45 @@ void main() {
       after: addLays,
     );
   }
+  Future<void> holdTwo(WidgetTester tester) async {
+    final cart = Get.find<CartController>();
+    final held = Get.find<HeldBillsController>();
+    final products = Get.find<ProductsController>();
+    for (final (ref, id) in <(String, int)>[('H482913', 5), ('H482977', 1)]) {
+      Get.find<CartActionsController>().add(products.byId(id)!);
+      // A local time without zone: the golden does not depend on the machine.
+      held.bills.add(
+        HeldBill(
+          ref: ref,
+          time: '2026-10-07T16:57:08.000',
+          cart: cart.cart.value,
+        ),
+      );
+      cart.clear();
+    }
+    await tester.pump(const Duration(seconds: 2)); // highlight ends
+    Get.find<ToastController>().toasts.clear();
+    await tester.pump();
+  }
+
+  golden(
+    'Held bills dialog (regression, unverified visually)',
+    'recall_dialog_light',
+    after: (tester) async {
+      await holdTwo(tester);
+      Get.find<OverlayController>().open('recall');
+      await tester.pumpAndSettle();
+    },
+  );
+  golden(
+    'Bill discount drawer (regression, unverified visually)',
+    'discount_drawer_light',
+    after: (tester) async {
+      await addLays(tester);
+      Get.find<DiscountFormController>().open();
+      await tester.pumpAndSettle();
+    },
+  );
   golden('POS dark (unverified visually)', 'shell_pos_dark', dark: true);
   for (final size in const <Size>[
     Size(1700, 960),

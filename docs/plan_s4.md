@@ -12,7 +12,7 @@ Checkpoints are commit points: S4.a Totals and payment, S4.b Hold, recall, disco
 PaymentController (permanent), CheckoutService (plain Dart, injected clock), SalesController, ForexController (rate in milli-units), MemberController, OrderMenuController. Widgets: summary panel, totals card, forex card, member card, payment buttons, cash and card panels, quick-actions grid, sale toggle, customer row, customer chip row, order menu, note line, credit validation. F2/F3 real. Other dialogs open the placeholder until their checkpoint.
 Tests: CheckoutService, PaymentController (fake timer), forex rounding, member lookup/points clamp, widget states, layout matrix helper (widths 1000-1900, heights 600-1000; line counts, min widths, clipping, no overflow), Chrome copy, goldens at reference viewport.
 
-## S4.b Hold, recall, discount
+## S4.b Hold, recall, discount (done)
 HeldBillsController, RecallController (stock re-validation, missing product guarded, conflict dialog), DiscountFormController, text dialog controller (note, rename). Recall dialog, conflict dialog, discount drawer (390), note, counter. F4/F5/F6 real. Notifications count wired.
 
 ## S4.c Pickers and search

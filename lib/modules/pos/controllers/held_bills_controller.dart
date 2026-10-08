@@ -17,6 +17,18 @@ class HeldBillsController extends GetxController {
     bills.assignAll(await _repository.load());
   }
 
+  /// `setHeld(prev => [...prev, bill])`: newest last.
+  Future<void> add(HeldBill bill) {
+    bills.add(bill);
+    return save();
+  }
+
+  /// `setHeld(prev => prev.filter(item => item.ref !== ref))`.
+  Future<void> remove(String ref) {
+    bills.removeWhere((b) => b.ref == ref);
+    return save();
+  }
+
   /// Clear Hold, after its confirmation (`setHeld([])`).
   Future<void> clearAll() {
     bills.clear();

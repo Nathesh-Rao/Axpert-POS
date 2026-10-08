@@ -1,5 +1,8 @@
 import 'package:get/get.dart';
 
+import '../../modules/pos/controllers/discount_form_controller.dart';
+import '../../modules/pos/controllers/hold_recall_controller.dart';
+
 import '../../modules/customers/controllers/customers_controller.dart';
 import '../../modules/customers/repository/customer_repository.dart';
 import '../../modules/customers/repository/mock_customer_repository.dart';
@@ -128,6 +131,20 @@ class InitialBinding extends Bindings {
         overlay: Get.find(),
       ),
     );
+    _put<HoldRecallController>(
+      HoldRecallController(
+        cart: Get.find(),
+        held: Get.find(),
+        products: Get.find(),
+        toasts: Get.find(),
+        search: Get.find(),
+        overlay: Get.find(),
+        clock: Get.find(),
+      ),
+    );
+    _put<DiscountFormController>(
+      DiscountFormController(cart: Get.find(), overlay: Get.find()),
+    );
     final shortcuts = Get.find<ShortcutController>();
     shortcuts.handlers[ShortcutAction.deleteSelected] =
         Get.find<CartActionsController>().removeSelected;
@@ -136,6 +153,12 @@ class InitialBinding extends Bindings {
         payment.payment(PaymentMode.cash);
     shortcuts.handlers[ShortcutAction.card] = () =>
         payment.payment(PaymentMode.card);
+    shortcuts.handlers[ShortcutAction.hold] =
+        Get.find<HoldRecallController>().hold;
+    shortcuts.handlers[ShortcutAction.recall] =
+        Get.find<HoldRecallController>().openRecall;
+    shortcuts.handlers[ShortcutAction.discount] =
+        Get.find<DiscountFormController>().open;
   }
 
   /// Loads the persisted data of every permanent controller (call once before

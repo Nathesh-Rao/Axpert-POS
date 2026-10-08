@@ -42,12 +42,13 @@ class CartLine {
   /// Line discount percent in basis points.
   final Bp discount;
 
-  CartLine copyWith({Qty? qty, Money? price, Bp? discount}) => CartLine(
-    product: product,
-    qty: qty ?? this.qty,
-    price: price ?? this.price,
-    discount: discount ?? this.discount,
-  );
+  CartLine copyWith({Product? product, Qty? qty, Money? price, Bp? discount}) =>
+      CartLine(
+        product: product ?? this.product,
+        qty: qty ?? this.qty,
+        price: price ?? this.price,
+        discount: discount ?? this.discount,
+      );
 
   Map<String, dynamic> toJson() => <String, dynamic>{
     'product': product.toJson(),

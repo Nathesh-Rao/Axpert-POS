@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../../core/constants/app_strings_x.dart';
 import '../../core/responsive/app_metrics_scope.dart';
 import '../../core/theme/theme_x.dart';
+import '../../core/theme/tokens/app_checkout_sizes.dart';
 import '../../core/theme/tokens/app_icons.dart';
 import '../../core/theme/tokens/app_radii.dart';
 import '../../core/theme/tokens/app_shadows.dart';
@@ -44,46 +45,87 @@ class AppModal extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            right: AppSpacing.s20,
-                            bottom: AppSpacing.s12,
-                          ),
-                          child: Text(
-                            title,
-                            style: context.text
-                                .of(AppFontSize.s25, weight: AppFontWeight.bold)
-                                .copyWith(color: c.text),
-                          ),
-                        ),
-                        ...children,
-                      ],
+                      children: <Widget>[ModalTitle(title), ...children],
                     ),
                   ),
-                  // `.modal-close`: right 14, top 14, padding 5, round.
-                  Positioned(
-                    right: AppSpacing.s14,
-                    top: AppSpacing.s14,
-                    child: AppPressable(
-                      tooltip: context.strings.dialogCloseTooltip(),
-                      onTap: Get.find<OverlayController>().close,
-                      borderRadius: AppRadii.full,
-                      builder: (context, hovered) => Container(
-                        padding: const EdgeInsets.all(AppSpacing.s5),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: hovered ? c.secondary : null,
-                        ),
-                        child: Icon(AppIcons.x, size: 21, color: c.muted),
-                      ),
-                    ),
-                  ),
+                  const ModalCloseButton(),
                 ],
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// `.modal h2`: 25 px bold, 12 px below, 20 px reserved for the close button.
+class ModalTitle extends StatelessWidget {
+  const ModalTitle(this.text, {super.key});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        right: AppSpacing.s20,
+        bottom: AppSpacing.s12,
+      ),
+      child: Text(
+        text,
+        style: context.text
+            .of(AppFontSize.s25, weight: AppFontWeight.bold)
+            .copyWith(color: context.colors.text),
+      ),
+    );
+  }
+}
+
+/// `.modal-close`: right 14, top 14, padding 5, round. Place it in a [Stack].
+class ModalCloseButton extends StatelessWidget {
+  const ModalCloseButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return Positioned(
+      right: AppSpacing.s14,
+      top: AppSpacing.s14,
+      child: AppPressable(
+        tooltip: context.strings.dialogCloseTooltip(),
+        onTap: Get.find<OverlayController>().close,
+        borderRadius: AppRadii.full,
+        builder: (context, hovered) => Container(
+          padding: const EdgeInsets.all(AppSpacing.s5),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: hovered ? c.secondary : null,
+          ),
+          child: Icon(AppIcons.x, size: 21, color: c.muted),
+        ),
+      ),
+    );
+  }
+}
+
+/// `.modal>p`: muted, line height 1.5, 20 px below.
+class ModalParagraph extends StatelessWidget {
+  const ModalParagraph(this.text, {super.key});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        bottom: AppCheckoutSizes.modalParagraphMarginBottom,
+      ),
+      child: Text(
+        text,
+        style: context.text
+            .of(AppFontSize.s14, height: AppLineHeight.modalBody)
+            .copyWith(color: context.colors.muted),
       ),
     );
   }

@@ -7,8 +7,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/responsive/app_metrics.dart';
 import 'package:pos_application/core/responsive/summary_metrics.dart';
-import 'package:flutter/rendering.dart';
-import 'package:pos_application/core/theme/tokens/app_sizes.dart';
 import 'package:pos_application/modules/pos/controllers/cart_actions_controller.dart';
 import 'package:pos_application/modules/pos/controllers/payment_controller.dart';
 import 'package:pos_application/modules/pos/models/payment_state.dart';
@@ -281,53 +279,14 @@ Future<void> _expectRingClearance(WidgetTester tester, Size size) async {
   pay.tendered.text = '47.20';
   pay.tenderedFocus.requestFocus();
   await tester.pump();
-  final outline = find.descendant(
-    of: find.byType(CashPanel),
-    matching: find.byType(FocusOutline),
-  );
-  final box = tester.getRect(outline);
-  final ringInner = box.inflate(AppSizes.focusRingOffset);
-  RenderEditable? editable;
-  void visit(Element e) {
-    if (e.renderObject is RenderEditable) {
-      editable = e.renderObject! as RenderEditable;
-    }
-    e.visitChildren(visit);
-  }
-
-  visit(outline.evaluate().first);
-  final r = editable!;
-  final boxes = r.getBoxesForSelection(
-    const TextSelection(baseOffset: 0, extentOffset: 5),
-  );
-  final origin = r.localToGlobal(Offset.zero);
-  var text = boxes.first.toRect().shift(origin);
-  for (final b in boxes.skip(1)) {
-    text = text.expandToInclude(b.toRect().shift(origin));
-  }
-  // The painted line box is the strut: the full editable height at most.
-  final line = Rect.fromLTRB(
-    text.left,
-    r.localToGlobal(Offset(0, (r.size.height - r.preferredLineHeight) / 2)).dy,
-    text.right,
-    r.localToGlobal(Offset(0, (r.size.height + r.preferredLineHeight) / 2)).dy,
-  );
-  const min = SummaryMetrics.minRingClearance;
-  final why = 'text $line ring $ringInner box $box at $size';
-  expect(
-    line.top - ringInner.top,
-    greaterThanOrEqualTo(min - 0.01),
-    reason: 'top $why',
-  );
-  expect(
-    ringInner.bottom - line.bottom,
-    greaterThanOrEqualTo(min - 0.01),
-    reason: 'bottom $why',
-  );
-  expect(
-    line.left - ringInner.left,
-    greaterThanOrEqualTo(min - 0.01),
-    reason: 'left $why',
+  expectRingClearance(
+    tester,
+    find.descendant(
+      of: find.byType(CashPanel),
+      matching: find.byType(FocusOutline),
+    ),
+    SummaryMetrics.minRingClearance,
+    reason: 'tendered at $size',
   );
   pay.tenderedFocus.unfocus();
   await tester.pump();

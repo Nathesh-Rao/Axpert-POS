@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../pos/controllers/held_bills_controller.dart';
+
 import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_strings_x.dart';
 import '../../../core/responsive/app_metrics_scope.dart';
@@ -328,8 +330,11 @@ class _NotificationsBody extends StatelessWidget {
         const SizedBox(height: AppSpacing.s12),
         row(s.notificationLowStock()),
         row(s.notificationSynced()),
-        // Held bills arrive in S4; until then the count is zero.
-        row(s.notificationHeld(count: 0)),
+        Obx(
+          () => row(
+            s.notificationHeld(count: Get.find<HeldBillsController>().count),
+          ),
+        ),
       ],
     );
   }

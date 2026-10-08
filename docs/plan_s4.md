@@ -1,4 +1,4 @@
-# Plan S4: POS checkout (approved 2026-10-08)
+# Plan S4: POS checkout (approved 2026-10-08) - COMPLETE (S4.0, S4.a to S4.d committed; see DEC-095 to DEC-104)
 
 Checkpoints are commit points: S4.a Totals and payment, S4.b Hold, recall, discount, S4.c Pickers and search, S4.d Receipt and help. `/compact` suggested after S4.b. S4.0 (narrow-window cart, density metrics) is done (f051362).
 
@@ -26,3 +26,9 @@ format, analyze 0, flutter test, Chrome tests, `flutter run -d chrome` + served 
 
 ## Assumptions accepted
 Quick amounts write `String(amount)` text, F2 writes toFixed(2), labels use Indian grouping; negative Change Due shown as in screenshot; FC and $ rows show the same converted amount; Reprint/Print draft placeholders until S4.d.
+
+
+## Status (closed)
+- S4.0 f051362, S4.a 1c9b272 + b3ed92a + c91e357 (spacing and inner padding fixes), S4.b 92eb16e, S4.c c113978, S4.d d7d47fc.
+- Full Chrome suite: not run for S4.b to S4.d; Chrome tests dropped from the routine by the user (DEC-104, KG-145).
+- Open placeholders after S4: only Close (shift summary), S5.

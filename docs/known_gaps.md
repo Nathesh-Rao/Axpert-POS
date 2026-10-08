@@ -95,3 +95,4 @@ Rows KG-060..063 are placeholders; each phase 2/3 step adds concrete component r
 | KG-086 | Scan, Profile, Settings, Shortcuts and Logout open a placeholder dialog until S4/S5; the notifications "held bills" count is 0 until S4; F2-F6 show "(demo)" toasts until S3/S4 | temporary |
 | KG-087 | Settings toggles use the Material `Checkbox` (not the native checkbox); the full Settings page arrives in S5 | deviation (minor) |
 | KG-088 | The shell has no minimum window size (no window manager package); below 1100 px width only the prototype's own media rules apply | accepted |
+| KG-089 | Placeholder POS panel was zero-sized (invisible) until the real-browser screenshot showed it; fixed. Import cycle `app_strings.dart` <-> `en_app_strings.dart` remains (harmless today, see DEC-080); candidate cleanup in S7 | open (low) |

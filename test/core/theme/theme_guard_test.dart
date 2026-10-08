@@ -1,5 +1,8 @@
 // Guards the theme rules from CLAUDE.md: no raw colors, google_fonts only in
 // app_typography.dart, no font-size literals outside the token files.
+@TestOn('vm')
+library;
+
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';

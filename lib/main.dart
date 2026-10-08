@@ -11,8 +11,8 @@ import 'core/routes/url_strategy.dart';
 import 'core/services/storage/shared_prefs_local_store.dart';
 import 'core/theme/app_theme.dart';
 import 'modules/shell/controllers/settings_controller.dart';
-import 'modules/shell/widgets/dialog_host.dart';
-import 'shared/widgets/toast_host.dart';
+import 'modules/shell/widgets/dialog_layer.dart';
+import 'shared/widgets/toast_layer.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,8 +44,8 @@ class PosApp extends StatelessWidget {
           child: Stack(
             children: <Widget>[
               Positioned.fill(child: AppShortcuts(child: child!)),
-              const DialogHost(),
-              const ToastHost(),
+              const DialogLayer(),
+              const ToastLayer(),
             ],
           ),
         ),

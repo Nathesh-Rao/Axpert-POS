@@ -13,7 +13,7 @@ import 'package:pos_application/shared/controllers/search_field_controller.dart'
 import 'package:pos_application/shared/controllers/shell_chrome_controller.dart';
 import 'package:pos_application/shared/controllers/toast_controller.dart';
 
-import '../../golden/harness.dart';
+import '../../support/viewport.dart';
 import '../../support/test_app.dart';
 
 Future<void> _boot(WidgetTester tester, {InMemoryLocalStore? store}) async {

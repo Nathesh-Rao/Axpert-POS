@@ -1,5 +1,8 @@
 // Asserts every token against the tables in docs/css_metrics.md (the tables
 // are the reference; edit the document and the token together).
+@TestOn('vm')
+library;
+
 import 'dart:io';
 
 import 'package:flutter/painting.dart';

@@ -33,7 +33,7 @@ class PagePlaceholder extends StatelessWidget {
     return AppShell(
       page: page,
       child: page == AppPage.pos
-          ? const AppPanel()
+          ? const SizedBox.expand(child: AppPanel())
           : _ManagementPanel(
               title: pageTitle(context.strings, page),
               body: page == AppPage.more ? const SettingsToggles() : null,

@@ -9,17 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pos_application/core/theme/tokens/app_typography.dart';
 
-/// Image pixels per CSS px, measured (css_metrics.md section 1).
-const double referenceScale = 1.125;
-
-/// Page area of the reference screenshots (window frame excluded).
-const Size referencePhysicalSize = Size(2102, 1164);
-
-/// Top-left of the page area inside the 2124 x 1180 screenshots.
-const Offset referencePageOffset = Offset(10, 8);
-
-/// Logical size: 1868.44 x 1034.67 (fractional on purpose, DEC-066).
-Size get referenceLogicalSize => referencePhysicalSize / referenceScale;
+export '../support/viewport.dart';
 
 /// Roboto Condensed static TTFs the user places in test/fonts (DEC-044).
 const Map<String, String> testFontFiles = <String, String>{
@@ -68,15 +58,6 @@ Future<void> loadTestFonts() async {
 /// before tearDown callbacks run).
 void useRealShadows() => debugDisableShadows = false;
 void restoreDefaultShadows() => debugDisableShadows = true;
-
-/// Sets the test window to the reference viewport (2102 x 1164 px at 1.125).
-void useReferenceViewport(WidgetTester tester) {
-  tester.view
-    ..devicePixelRatio = referenceScale
-    ..physicalSize = referencePhysicalSize;
-  addTearDown(tester.view.resetPhysicalSize);
-  addTearDown(tester.view.resetDevicePixelRatio);
-}
 
 /// Accepts pixel differences up to [tolerance] (fraction, 0.005 = 0.5 %).
 class TolerantFileComparator extends LocalFileComparator {

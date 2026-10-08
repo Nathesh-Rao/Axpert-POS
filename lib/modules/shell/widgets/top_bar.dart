@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_strings_x.dart';
@@ -23,6 +22,7 @@ import '../../../shared/widgets/css_gradient.dart';
 import '../../../shared/widgets/focus_outline.dart';
 import '../../../shared/widgets/kbd_chip.dart';
 import '../controllers/settings_controller.dart';
+import '../../../core/theme/tokens/app_icons.dart';
 
 /// Brand, store select, global search, online chip, notifications, profile
 /// and the user menu (prototype `<header class="topbar">`).
@@ -168,7 +168,7 @@ class _GlobalSearch extends StatelessWidget {
         ),
         child: Row(
           children: <Widget>[
-            Icon(LucideIcons.search, size: 20, color: c.globalSearchFg),
+            Icon(AppIcons.search, size: 20, color: c.globalSearchFg),
             SizedBox(width: m.searchGap),
             Expanded(
               child: FocusOutline(
@@ -202,11 +202,8 @@ class _GlobalSearch extends StatelessWidget {
                 child: AppPressable(
                   tooltip: s.scanTooltip(),
                   onTap: () => Get.find<OverlayController>().open('scan'),
-                  builder: (context, hovered) => Icon(
-                    LucideIcons.barcode,
-                    size: 23,
-                    color: c.globalSearchFg,
-                  ),
+                  builder: (context, hovered) =>
+                      Icon(AppIcons.barcode, size: 23, color: c.globalSearchFg),
                 ),
               ),
             ),
@@ -279,7 +276,7 @@ class _NotificationsButton extends StatelessWidget {
             child: Stack(
               clipBehavior: Clip.none,
               children: <Widget>[
-                Icon(LucideIcons.bell, size: 24, color: c.text),
+                Icon(AppIcons.bell, size: 24, color: c.text),
                 if (chrome.unread.value)
                   const Positioned(
                     top: -AppSpacing.s6,
@@ -405,10 +402,10 @@ class _UserMenuButton extends StatelessWidget {
     final chrome = Get.find<ShellChromeController>();
     final overlay = Get.find<OverlayController>();
     final entries = <(IconData, String, String)>[
-      (LucideIcons.userRound, s.menuProfile(), 'profile'),
-      (LucideIcons.settings, s.menuSettings(), 'settings'),
-      (LucideIcons.keyboard, s.menuShortcuts(), 'shortcuts'),
-      (LucideIcons.logOut, s.menuLogout(), 'close'),
+      (AppIcons.userRound, s.menuProfile(), 'profile'),
+      (AppIcons.settings, s.menuSettings(), 'settings'),
+      (AppIcons.keyboard, s.menuShortcuts(), 'shortcuts'),
+      (AppIcons.logOut, s.menuLogout(), 'close'),
     ];
     return Obx(
       () => AppPopover(
@@ -419,7 +416,7 @@ class _UserMenuButton extends StatelessWidget {
           onTap: chrome.toggleUserMenu,
           builder: (context, hovered) => Padding(
             padding: const EdgeInsets.all(AppSpacing.s6),
-            child: Icon(LucideIcons.ellipsisVertical, size: 24, color: c.text),
+            child: Icon(AppIcons.ellipsisVertical, size: 24, color: c.text),
           ),
         ),
         child: Column(

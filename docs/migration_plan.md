@@ -7,7 +7,8 @@ Status: replanned into 7 large steps (DEC-069, 2026-10-08). Done: 1.1 Setup, 1.2
 ## How we work
 - Each STEP is planned in Plan mode and approved once. Checkpoints inside an approved step need no extra approval; each ends with a short report and a commit (message proposed, committed after the user's OK).
 - One session per step: `/clear` between steps; `/compact` only at the marked points. Read only CLAUDE.md and the current plan file.
-- Every checkpoint: `dart format .`, `flutter analyze` (0 issues), `flutter test`; steps that change UI also run on macOS and Chrome.
+- Every checkpoint: `dart format .`, `flutter analyze` (0 issues), `flutter test`, `flutter test --platform chrome test/core test/modules test/widget_test.dart`; steps that change UI also run on macOS and Chrome.
+- **A build is not a run (DEC-079).** Every checkpoint includes a real Chrome run that reads the console: `flutter run -d chrome` (debug, DDC; add `--web-browser-flag=--headless=new` when no window is wanted, errors then print in the terminal) AND `flutter build web` served locally with an SPA fallback and opened in headless Chrome (`--enable-logging=stderr --screenshot=...`, deep link such as `/customers` included). The report states what was seen in the console and what could not be seen.
 - UI comparison: only at the reference viewport (2124x1180 px, light) against `reference_screenshots/`. Everything else is built from CSS/code and marked unverified in `known_gaps.md`.
 - Size guide: S < 40k tokens, M 40-100k, L > 100k.
 

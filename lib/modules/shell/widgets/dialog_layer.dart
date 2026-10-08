@@ -12,14 +12,14 @@ import 'placeholder_dialog.dart';
 /// Shows the dialog for [OverlayController.modal] on the ROOT navigator, so
 /// the dim layer (scrim + 4 px blur) covers the whole window including the top
 /// bar and sidebar. Lives above the Navigator, in `GetMaterialApp.builder`.
-class DialogHost extends StatefulWidget {
-  const DialogHost({super.key});
+class DialogLayer extends StatefulWidget {
+  const DialogLayer({super.key});
 
   @override
-  State<DialogHost> createState() => _DialogHostState();
+  State<DialogLayer> createState() => _DialogLayerState();
 }
 
-class _DialogHostState extends State<DialogHost> {
+class _DialogLayerState extends State<DialogLayer> {
   late final Worker _worker;
   bool _showing = false;
 

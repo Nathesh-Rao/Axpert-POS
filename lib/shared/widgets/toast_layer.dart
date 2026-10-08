@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../core/constants/app_strings_x.dart';
 import '../../core/theme/theme_x.dart';
@@ -14,18 +13,19 @@ import '../../core/theme/tokens/app_typography.dart';
 import '../controllers/search_field_controller.dart';
 import '../controllers/toast_controller.dart';
 import 'app_pressable.dart';
+import '../../core/theme/tokens/app_icons.dart';
 
 /// Toast stack, bottom center, above the Navigator (and so above dialogs).
 /// It owns a small [Overlay] because it sits outside the Navigator and its
 /// buttons use tooltips.
-class ToastHost extends StatefulWidget {
-  const ToastHost({super.key});
+class ToastLayer extends StatefulWidget {
+  const ToastLayer({super.key});
 
   @override
-  State<ToastHost> createState() => _ToastHostState();
+  State<ToastLayer> createState() => _ToastLayerState();
 }
 
-class _ToastHostState extends State<ToastHost> {
+class _ToastLayerState extends State<ToastLayer> {
   late final OverlayEntry _entry = OverlayEntry(
     builder: (context) => const _ToastStack(),
   );
@@ -149,7 +149,7 @@ class _ToastCard extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         Icon(
-                          LucideIcons.check,
+                          AppIcons.check,
                           size: 17,
                           color: c.toastSuccessIcon,
                         ),
@@ -180,7 +180,7 @@ class _ToastCard extends StatelessWidget {
                           borderRadius: AppRadii.r4,
                           onTap: () => controller.dismiss(item.id),
                           builder: (context, hovered) =>
-                              Icon(LucideIcons.x, size: 14, color: c.text),
+                              Icon(AppIcons.x, size: 14, color: c.text),
                         ),
                       ],
                     ),

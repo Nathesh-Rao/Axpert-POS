@@ -1,6 +1,9 @@
 // Shell goldens. Light at the reference viewport is compared (by eye) with
 // reference_screenshots/; other sizes and dark are regression only.
 
+@TestOn('vm')
+library;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

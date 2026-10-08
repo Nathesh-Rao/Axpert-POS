@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/constants/app_strings_x.dart';
 import '../../../core/theme/theme_x.dart';
 import '../../../core/theme/tokens/app_spacing.dart';
 import '../../../core/theme/tokens/app_typography.dart';
 import '../controllers/settings_controller.dart';
+import '../../../core/theme/tokens/app_icons.dart';
 
 /// The prototype's two Settings rows (dark mode, scan beep). The full
 /// Settings page is built in S5; the toggles live here so the dark theme can
@@ -24,14 +24,14 @@ class SettingsToggles extends StatelessWidget {
         () => Column(
           children: <Widget>[
             _ToggleRow(
-              icon: LucideIcons.settings,
+              icon: AppIcons.settings,
               title: s.darkModeTitle(),
               hint: s.darkModeHint(),
               value: settings.settings.value.dark,
               onChanged: settings.setDark,
             ),
             _ToggleRow(
-              icon: LucideIcons.volume2,
+              icon: AppIcons.volume2,
               title: s.beepTitle(),
               hint: s.beepHint(),
               value: settings.settings.value.beep,

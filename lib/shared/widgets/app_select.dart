@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../core/theme/theme_x.dart';
 import '../../core/theme/tokens/app_radii.dart';
 import '../../core/theme/tokens/app_shadows.dart';
 import '../../core/theme/tokens/app_spacing.dart';
 import 'app_pressable.dart';
+import '../../core/theme/tokens/app_icons.dart';
 
 /// Replacement for the prototype's native `<select>`: a flat button with a
 /// chevron that opens a list under it. The native popup cannot be matched in
@@ -146,7 +146,7 @@ class _AppSelectState extends State<AppSelect> {
                     ),
                   ),
                   Icon(
-                    LucideIcons.chevronDown,
+                    AppIcons.chevronDown,
                     size: widget.fontSize + AppSpacing.s6,
                     color: c.text,
                   ),

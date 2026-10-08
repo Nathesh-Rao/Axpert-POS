@@ -93,7 +93,7 @@ abstract final class AppSpacing {
   /// --layout-gap (236 overrides the clamp)
   static const double layoutGap = 16.0;
 
-  /// All values by name, for the css_metrics tests and the swatch page.
+  /// All values by name, for the css_metrics tests.
   static const Map<String, num> all = <String, num>{
     's2': s2,
     's3': s3,

@@ -10,8 +10,6 @@ void main() {
       .whereType<File>()
       .where((f) => f.path.endsWith('.dart'))
       .where((f) => !f.path.contains('lib/core/theme/tokens/'))
-      // TEMPORARY swatch page (DEC-065), deleted in step 1.4c.
-      .where((f) => !f.path.contains('lib/core/theme/debug/'))
       .toList();
 
   void forbid(String why, Pattern pattern) {

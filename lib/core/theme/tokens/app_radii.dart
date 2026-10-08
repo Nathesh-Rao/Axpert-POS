@@ -42,7 +42,7 @@ abstract final class AppRadii {
   /// border-radius:50% (circles: avatar, dots, badges, trash, qty buttons)
   static const double full = 9999.0;
 
-  /// All values by name, for the css_metrics tests and the swatch page.
+  /// All values by name, for the css_metrics tests.
   static const Map<String, num> all = <String, num>{
     'r4': r4,
     'r5': r5,

@@ -129,4 +129,34 @@ class EnAppStrings extends AppStrings {
 
   @override
   String toastUndo() => 'Undo';
+
+  @override
+  String shortcutDemo({required String action}) => '$action (demo)';
+
+  @override
+  String shortcutCash() => 'Cash payment';
+
+  @override
+  String shortcutCard() => 'Card payment';
+
+  @override
+  String shortcutHold() => 'Hold bill';
+
+  @override
+  String shortcutRecall() => 'Recall bill';
+
+  @override
+  String shortcutDiscount() => 'Apply discount';
+
+  @override
+  String darkModeTitle() => 'Dark mode';
+
+  @override
+  String darkModeHint() => 'A softer screen for evening shifts';
+
+  @override
+  String beepTitle() => 'Scan beep';
+
+  @override
+  String beepHint() => 'Play a sound after a successful scan';
 }

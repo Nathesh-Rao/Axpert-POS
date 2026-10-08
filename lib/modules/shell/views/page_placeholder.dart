@@ -8,6 +8,7 @@ import '../../../core/theme/theme_x.dart';
 import '../../../core/theme/tokens/app_spacing.dart';
 import '../../../core/theme/tokens/app_typography.dart';
 import '../../../shared/widgets/app_panel.dart';
+import '../widgets/settings_toggles.dart';
 import 'app_shell.dart';
 
 String pageTitle(AppStrings s, AppPage page) => switch (page) {
@@ -33,15 +34,19 @@ class PagePlaceholder extends StatelessWidget {
       page: page,
       child: page == AppPage.pos
           ? const AppPanel()
-          : _ManagementPanel(title: pageTitle(context.strings, page)),
+          : _ManagementPanel(
+              title: pageTitle(context.strings, page),
+              body: page == AppPage.more ? const SettingsToggles() : null,
+            ),
     );
   }
 }
 
 class _ManagementPanel extends StatelessWidget {
-  const _ManagementPanel({required this.title});
+  const _ManagementPanel({required this.title, this.body});
 
   final String title;
+  final Widget? body;
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +76,10 @@ class _ManagementPanel extends StatelessWidget {
                     .of(AppFontSize.s30, weight: AppFontWeight.bold)
                     .copyWith(color: c.text),
               ),
+              if (body != null) ...<Widget>[
+                const SizedBox(height: AppSpacing.s28),
+                body!,
+              ],
             ],
           ),
         ),

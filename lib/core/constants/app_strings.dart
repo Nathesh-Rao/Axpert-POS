@@ -60,4 +60,16 @@ abstract class AppStrings {
   String offlineBanner();
   String toastDismissTooltip();
   String toastUndo();
+
+  // Shortcuts (demo until S3/S4) and settings toggles
+  String shortcutDemo({required String action});
+  String shortcutCash();
+  String shortcutCard();
+  String shortcutHold();
+  String shortcutRecall();
+  String shortcutDiscount();
+  String darkModeTitle();
+  String darkModeHint();
+  String beepTitle();
+  String beepHint();
 }

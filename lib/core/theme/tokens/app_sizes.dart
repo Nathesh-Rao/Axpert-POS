@@ -180,7 +180,7 @@ abstract final class AppSizes {
   /// .app min-height (dead: 236 screen block sets 0)
   static const double appMinHeight = 650.0;
 
-  /// All values by name, for the css_metrics tests and the swatch page.
+  /// All values by name, for the css_metrics tests.
   static const Map<String, num> all = <String, num>{
     'topbarHeight': topbarHeight,
     'sidebarWidth': sidebarWidth,

@@ -32,7 +32,7 @@ Status values: `replicated` (Flutter does the same), `deviation` (Flutter differ
 | KG-023 | Hardcoded values: quick cash amounts 100/500/2000, 5 s toast duration, "MAISON GALAXY"/"Axpert POS" brand text, receipt cashier name | replicated |
 | KG-024 | Change Due shows negative values in red when tendered is empty or short (e.g. "-21.00") | replicated |
 | KG-025 | `V - S + BD` in React can yield `-0.00` from float noise in rare cases; Flutter is exact and shows `0.00` | deviation (unavoidable) |
-| KG-026 | React float artifacts at exact half-minor-unit boundaries: Flutter rounds exactly half-up; accepted 1-unit mismatches are listed in `test/fixtures/known_ties.json` (reviewed by the user) | deviation (approved) |
+| KG-026 | React float artifacts at exact half-minor-unit boundaries: Flutter rounds exactly half-up; accepted 1-unit mismatches are listed in KG-079 (reviewed by the user) | deviation (approved) |
 | KG-027 | One shared `filter` string serves the catalog filter and the Products/Customers/Sales search boxes; cleared only by sidebar clicks, not by browser back | replicated |
 | KG-028 | Persistence: React `localStorage` data is not imported; Flutter seeds from mock data on first run via `LocalStore` | deviation (approved) |
 | KG-029 | Summary panel width differs between POS (`clamp(300px,24vw,380px)` = 380 at the reference viewport) and other pages (310px). CONFIRMED in step 1.2: `.alternate-main{grid-template-columns:minmax(0,1fr) 310px!important}` (line 5) beats the later screen-block rule; measured 426 px vs 348 px in the screenshots (= 380 and 310 CSS px at scale 1.125) | replicated |
@@ -88,3 +88,10 @@ Rows KG-060..063 are placeholders; each phase 2/3 step adds concrete component r
 | KG-079 | Golden vectors: about 300 (edge cases plus seeded random carts), no tie-review file. Any 1-minor-unit mismatch at an exact rounding tie between React's float math and the integer/Rational port is recorded here (cart, field, delta) and accepted | accepted: 1 tie in 300 vectors: h044 tax (React 6.82, port 6.83; exact value is a half minor unit). No other mismatch |
 | KG-080 | Shared widgets (buttons, inputs, chips, cards, tables, overlays) are built when first needed in S2-S5 instead of a dedicated Phase 2; no separate widget catalog | accepted (DEC-069) |
 | KG-081 | Shared widgets have no standalone goldens; they are covered by screen tests and goldens at the reference viewport (light). Other sizes and dark mode remain regression only | accepted (DEC-069) |
+| KG-082 | Store select: the native `<select>` list cannot be matched in Flutter; the closed state follows the prototype, the open list is a custom popup (same items, hover/selected tint) | deviation (unavoidable) |
+| KG-083 | Shell parts without screenshots, built from CSS and code: notifications popover, user menu, store list, toasts, dialog scrim and blur, offline banner, focus rings, dark mode, every size other than the reference viewport | unverified visually |
+| KG-084 | Brand mark "A" and avatar letter use Arial like the prototype; the test environment has no Arial, so goldens draw boxes for them (the "⌘" glyph also falls back). The real app uses the system fonts | accepted |
+| KG-085 | Button press feedback (`translateY(1px)`), global `brightness(.97)` hover and button transitions are not ported; toast slide-in is a simple fade and 18 px slide; toast left border is a clipped bar, not a curved colored border | deviation (minor) |
+| KG-086 | Scan, Profile, Settings, Shortcuts and Logout open a placeholder dialog until S4/S5; the notifications "held bills" count is 0 until S4; F2-F6 show "(demo)" toasts until S3/S4 | temporary |
+| KG-087 | Settings toggles use the Material `Checkbox` (not the native checkbox); the full Settings page arrives in S5 | deviation (minor) |
+| KG-088 | The shell has no minimum window size (no window manager package); below 1100 px width only the prototype's own media rules apply | accepted |

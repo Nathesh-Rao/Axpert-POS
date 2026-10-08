@@ -27,7 +27,7 @@ abstract final class AppMotion {
   /// button:active translateY(1px) (px)
   static const int pressTranslate = 1;
 
-  /// All values by name, for the css_metrics tests and the swatch page.
+  /// All values by name, for the css_metrics tests.
   static const Map<String, num> all = <String, num>{
     'buttonMs': buttonMs,
     'cardMs': cardMs,

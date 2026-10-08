@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,20 +6,13 @@ import 'core/bindings/initial_binding.dart';
 import 'core/constants/app_strings.dart';
 import 'core/responsive/responsive_layout.dart';
 import 'core/routes/app_pages.dart';
+import 'core/shortcuts/app_shortcuts.dart';
 import 'core/routes/url_strategy.dart';
 import 'core/services/storage/shared_prefs_local_store.dart';
 import 'core/theme/app_theme.dart';
-import 'core/theme/debug/theme_swatch_page.dart';
 import 'modules/shell/controllers/settings_controller.dart';
 import 'modules/shell/widgets/dialog_host.dart';
 import 'shared/widgets/toast_host.dart';
-
-// TEMPORARY (DEC-065): debug-only swatch, deleted in S2.d.
-const bool _swatchFlag = bool.fromEnvironment('SWATCH');
-
-bool get _showSwatch =>
-    kDebugMode &&
-    (_swatchFlag || Uri.base.queryParameters.containsKey('swatch'));
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,7 +43,7 @@ class PosApp extends StatelessWidget {
         builder: (context, child) => ResponsiveLayout(
           child: Stack(
             children: <Widget>[
-              Positioned.fill(child: child!),
+              Positioned.fill(child: AppShortcuts(child: child!)),
               const DialogHost(),
               const ToastHost(),
             ],
@@ -59,7 +51,6 @@ class PosApp extends StatelessWidget {
         ),
         getPages: AppPages.pages,
         unknownRoute: AppPages.unknown,
-        home: _showSwatch ? const ThemeSwatchPage() : null,
       ),
     );
   }

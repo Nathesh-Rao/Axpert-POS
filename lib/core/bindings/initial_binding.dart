@@ -9,6 +9,7 @@ import '../../shared/controllers/search_field_controller.dart';
 import '../../shared/controllers/shell_chrome_controller.dart';
 import '../../shared/controllers/toast_controller.dart';
 import '../services/storage/local_store.dart';
+import '../shortcuts/shortcut_controller.dart';
 
 /// Permanent, cross-module controllers. Idempotent: calling it twice (from
 /// `main` and from `GetMaterialApp.initialBinding`) registers once.
@@ -27,6 +28,7 @@ class InitialBinding extends Bindings {
     _put<PageFilterController>(PageFilterController());
     _put<ShellChromeController>(ShellChromeController());
     _put<OverlayController>(OverlayController());
+    _put<ShortcutController>(ShortcutController());
   }
 
   void _put<T extends Object>(T instance) {

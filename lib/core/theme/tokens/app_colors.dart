@@ -1093,7 +1093,7 @@ class AppColors extends ThemeExtension<AppColors> {
     );
   }
 
-  /// All colors by name, for the swatch page and the css_metrics tests.
+  /// All colors by name, for the css_metrics tests.
   Map<String, Color> toMap() => <String, Color>{
     'background': background,
     'card': card,

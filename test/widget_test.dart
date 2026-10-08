@@ -1,13 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pos_application/core/theme/tokens/app_typography.dart';
 import 'package:pos_application/main.dart';
 
-void main() {
-  setUpAll(() => AppTypography.useBundledFonts = true);
-  tearDownAll(() => AppTypography.useBundledFonts = false);
+import 'support/test_app.dart';
 
-  testWidgets('placeholder app boots', (tester) async {
-    await tester.pumpWidget(const PosApp());
+void main() {
+  useTestApp();
+
+  testWidgets('app boots on POS', (tester) async {
+    final binding = await bootInWidgetTest(tester);
+    await tester.pumpWidget(testApp(binding));
+    await tester.pumpAndSettle();
     expect(find.byType(PosApp), findsOneWidget);
+    expect(find.text('POS'), findsOneWidget);
   });
 }

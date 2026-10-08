@@ -132,4 +132,32 @@ abstract final class AppCheckoutSizes {
   static const double emptyStatePadX = 15.0;
   static const double emptyStateGap = 12.0;
   static const double emptyStateIcon = 32.0;
+
+  /// `.modal-input` standing alone (scan, price check, customer search)
+  static const double modalInputMarginTop = 9.0;
+  static const double modalInputMarginBottom = 20.0;
+
+  /// `.primary` with an icon, `.primary.full`
+  static const double primaryIconGap = 8.0;
+  static const double primaryPlusIcon = 17.0;
+  static const double primaryFullMarginTop = 12.0;
+
+  /// `.modal-symbol` icon of the scan dialog
+  static const double scanSymbolIcon = 30.0;
+
+  /// `.price-result`: h3 is the UA 1.17 em of the 14 px base.
+  static const double priceResultPad = 25.0;
+  static const double priceResultMarginTop = 20.0;
+  static const double priceResultNameFont = 16.38;
+  static const double priceResultPriceMarginY = 12.0;
+
+  /// `.modal-list` rows of the customer picker
+  static const double pickerUserIcon = 22.0;
+  static const double pickerChevron = 18.0;
+
+  /// `.search-results`
+  static const double searchResultsTop = 48.0;
+  static const double searchResultsPad = 6.0;
+  static const double searchResultRowPad = 11.0;
+  static const double searchResultSmallFont = 12.0;
 }

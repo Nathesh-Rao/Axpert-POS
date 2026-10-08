@@ -1,6 +1,11 @@
 import 'package:get/get.dart';
 
+import '../../modules/customers/controllers/add_customer_controller.dart';
+import '../../modules/customers/controllers/customer_picker_controller.dart';
 import '../../modules/pos/controllers/discount_form_controller.dart';
+import '../../modules/pos/controllers/global_search_controller.dart';
+import '../../modules/pos/controllers/price_check_controller.dart';
+import '../../modules/pos/controllers/scan_controller.dart';
 import '../../modules/pos/controllers/hold_recall_controller.dart';
 
 import '../../modules/customers/controllers/customers_controller.dart';
@@ -144,6 +149,47 @@ class InitialBinding extends Bindings {
     );
     _put<DiscountFormController>(
       DiscountFormController(cart: Get.find(), overlay: Get.find()),
+    );
+    _put<ScanController>(
+      ScanController(
+        products: Get.find(),
+        actions: Get.find(),
+        toasts: Get.find(),
+        search: Get.find(),
+        overlay: Get.find(),
+      ),
+    );
+    _put<GlobalSearchController>(
+      GlobalSearchController(
+        search: Get.find(),
+        products: Get.find(),
+        actions: Get.find(),
+        scan: Get.find(),
+      ),
+    );
+    _put<PriceCheckController>(
+      PriceCheckController(
+        products: Get.find(),
+        toasts: Get.find(),
+        overlay: Get.find(),
+      ),
+    );
+    _put<CustomerPickerController>(
+      CustomerPickerController(
+        customers: Get.find(),
+        meta: Get.find(),
+        member: Get.find(),
+        overlay: Get.find(),
+      ),
+    );
+    _put<AddCustomerController>(
+      AddCustomerController(
+        customers: Get.find(),
+        meta: Get.find(),
+        toasts: Get.find(),
+        overlay: Get.find(),
+        clock: Get.find(),
+      ),
     );
     final shortcuts = Get.find<ShortcutController>();
     shortcuts.handlers[ShortcutAction.deleteSelected] =

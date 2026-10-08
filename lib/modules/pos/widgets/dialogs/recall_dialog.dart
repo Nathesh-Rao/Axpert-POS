@@ -9,7 +9,7 @@ import '../../../../core/theme/tokens/app_typography.dart';
 import '../../../../core/utils/date_format.dart';
 import '../../../../core/utils/money_formatter.dart';
 import '../../../../shared/widgets/app_modal.dart';
-import '../../../../shared/widgets/app_pressable.dart';
+import '../../../../shared/widgets/modal_list_row.dart';
 import '../../../../shared/widgets/modal_actions.dart';
 import '../../controllers/cart_controller.dart';
 import '../../controllers/held_bills_controller.dart';
@@ -78,61 +78,18 @@ class _HeldList extends StatelessWidget {
       final bills = held.bills.toList();
       Widget row(HeldBill bill) {
         final total = cart.totalsOf(bill.cart).total;
-        return AppPressable(
-          semanticLabel: s.heldBillRowTitle(bill.ref, bill.cart.lines.length),
+        return ModalListRow(
+          key: ObjectKey(bill),
+          icon: AppIcons.pauseCircle,
+          iconSize: AppCheckoutSizes.modalListIcon,
+          title: s.heldBillRowTitle(bill.ref, bill.cart.lines.length),
+          subtitle: DateFormatter.dateTime(DateTime.parse(bill.time).toLocal()),
           onTap: () => flow.pick(bill),
-          builder: (context, hovered) => Container(
-            padding: const EdgeInsets.symmetric(
-              vertical: AppCheckoutSizes.modalListRowPadY,
-              horizontal: AppCheckoutSizes.modalListRowPadX,
-            ),
-            decoration: BoxDecoration(
-              color: hovered ? c.secondary : null,
-              border: Border(bottom: BorderSide(color: c.border)),
-            ),
-            child: Row(
-              children: <Widget>[
-                Icon(
-                  AppIcons.pauseCircle,
-                  size: AppCheckoutSizes.modalListIcon,
-                  color: c.text,
-                ),
-                const SizedBox(width: AppCheckoutSizes.modalListRowGap),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        s.heldBillRowTitle(bill.ref, bill.cart.lines.length),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: rowStyle.copyWith(color: c.text),
-                      ),
-                      const SizedBox(
-                        height: AppCheckoutSizes.modalListSmallMarginTop,
-                      ),
-                      Text(
-                        DateFormatter.dateTime(
-                          DateTime.parse(bill.time).toLocal(),
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: context.text
-                            .fluid(AppCheckoutSizes.modalListSmallFont)
-                            .copyWith(color: c.muted),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: AppCheckoutSizes.modalListRowGap),
-                Text(
-                  MoneyFormatter.format(total),
-                  maxLines: 1,
-                  softWrap: false,
-                  style: rowStyle.copyWith(color: c.text),
-                ),
-              ],
-            ),
+          trailing: Text(
+            MoneyFormatter.format(total),
+            maxLines: 1,
+            softWrap: false,
+            style: rowStyle.copyWith(color: c.text),
           ),
         );
       }

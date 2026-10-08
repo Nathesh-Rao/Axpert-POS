@@ -29,6 +29,11 @@ class ProductsController extends GetxController {
     return _byBarcode[text] ?? _byCode[text.toLowerCase()];
   }
 
+  /// Price check lookup: exact barcode or case-insensitive code, NOT trimmed
+  /// (unlike the scan, KG-129).
+  Product? byExact(String value) =>
+      _byBarcode[value] ?? _byCode[value.toLowerCase()];
+
   /// Lowercase `"$name $code"`; the prototype filters on this string.
   String searchKey(Product product) =>
       _searchKey[product.id] ?? '${product.name} ${product.code}'.toLowerCase();

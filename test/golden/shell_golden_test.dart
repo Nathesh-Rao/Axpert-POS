@@ -20,6 +20,9 @@ import 'package:pos_application/shared/controllers/toast_controller.dart';
 
 import 'package:pos_application/modules/pos/controllers/cart_controller.dart';
 import 'package:pos_application/modules/pos/controllers/discount_form_controller.dart';
+import 'package:pos_application/modules/pos/controllers/global_search_controller.dart';
+import 'package:pos_application/modules/pos/controllers/price_check_controller.dart';
+import 'package:pos_application/shared/controllers/search_field_controller.dart';
 import 'package:pos_application/modules/pos/controllers/held_bills_controller.dart';
 import 'package:pos_application/modules/pos/models/held_bill.dart';
 
@@ -191,6 +194,51 @@ void main() {
     after: (tester) async {
       await addLays(tester);
       Get.find<DiscountFormController>().open();
+      await tester.pumpAndSettle();
+    },
+  );
+  golden(
+    'Search results dropdown (regression, unverified visually)',
+    'search_results_light',
+    after: (tester) async {
+      Get.find<SearchFieldController>().text.text = 'a';
+      Get.find<GlobalSearchController>().refreshNow();
+      await tester.pumpAndSettle();
+    },
+  );
+  golden(
+    'Scan simulator (regression, unverified visually)',
+    'scan_dialog_light',
+    after: (tester) async {
+      Get.find<OverlayController>().open('scan');
+      await tester.pumpAndSettle();
+    },
+  );
+  golden(
+    'Price check with a result (regression, unverified visually)',
+    'price_check_light',
+    after: (tester) async {
+      Get.find<OverlayController>().open('priceCheck');
+      await tester.pumpAndSettle();
+      final check = Get.find<PriceCheckController>();
+      check.text.text = 'bdv001';
+      check.onChanged('bdv001');
+      await tester.pumpAndSettle();
+    },
+  );
+  golden(
+    'Customer picker (regression, unverified visually)',
+    'customer_picker_light',
+    after: (tester) async {
+      Get.find<OverlayController>().open('customers');
+      await tester.pumpAndSettle();
+    },
+  );
+  golden(
+    'Add customer (regression, unverified visually)',
+    'add_customer_light',
+    after: (tester) async {
+      Get.find<OverlayController>().open('addCustomer');
       await tester.pumpAndSettle();
     },
   );

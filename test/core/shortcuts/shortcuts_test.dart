@@ -74,6 +74,7 @@ void main() {
       );
       expect(search.text.text, 'cola');
       expect(search.focusNode.hasFocus, isTrue);
+      await tester.pump(const Duration(milliseconds: 200)); // search debounce
     } finally {
       debugDefaultTargetPlatformOverride = null;
     }

@@ -21,6 +21,12 @@ class CustomersController extends GetxController {
     return customers.firstWhereOrNull((c) => c.id == id) ?? customers.first;
   }
 
+  /// `setCustomers(prev => [...prev, customer])`, persisted.
+  Future<void> add(Customer customer) {
+    customers.add(customer);
+    return save();
+  }
+
   /// Subtracts redeemed points (`points - totals.points`) and persists.
   Future<void> deductPoints(String id, int points) {
     final index = customers.indexWhere((c) => c.id == id);

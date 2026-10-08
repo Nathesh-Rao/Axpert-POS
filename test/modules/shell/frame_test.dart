@@ -102,7 +102,7 @@ void main() {
   ) async {
     await _boot(tester);
     final overlay = Get.find<OverlayController>();
-    overlay.open('scan');
+    overlay.open('profile'); // a placeholder dialog has a Close button
     await tester.pumpAndSettle();
     await tester.tap(find.text('Close'));
     await tester.pumpAndSettle();

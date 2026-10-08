@@ -14,6 +14,7 @@ import '../../../core/theme/tokens/app_spacing.dart';
 import '../../../core/theme/tokens/app_typography.dart';
 import '../../../shared/controllers/overlay_controller.dart';
 import '../../../shared/controllers/search_field_controller.dart';
+import 'search_results.dart';
 import '../../../shared/controllers/shell_chrome_controller.dart';
 import '../../../shared/controllers/toast_controller.dart';
 import '../../../shared/widgets/app_popover.dart';
@@ -160,62 +161,67 @@ class _GlobalSearch extends StatelessWidget {
     final fieldStyle = context.text.fluid(m.searchFont).copyWith(color: c.text);
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: m.searchMarginX),
-      child: Container(
-        height: m.searchHeight,
-        padding: EdgeInsets.symmetric(horizontal: m.searchPadX),
-        decoration: BoxDecoration(
-          color: c.card,
-          borderRadius: BorderRadius.circular(AppRadii.r9),
-          border: Border.all(color: c.border),
-        ),
-        child: Row(
-          children: <Widget>[
-            Icon(AppIcons.search, size: 20, color: c.globalSearchFg),
-            SizedBox(width: m.searchGap),
-            Expanded(
-              child: FocusOutline(
-                focusNode: search.focusNode,
-                child: TextField(
-                  controller: search.text,
+      child: SearchResultsPortal(
+        child: Container(
+          height: m.searchHeight,
+          padding: EdgeInsets.symmetric(horizontal: m.searchPadX),
+          decoration: BoxDecoration(
+            color: c.card,
+            borderRadius: BorderRadius.circular(AppRadii.r9),
+            border: Border.all(color: c.border),
+          ),
+          child: Row(
+            children: <Widget>[
+              Icon(AppIcons.search, size: 20, color: c.globalSearchFg),
+              SizedBox(width: m.searchGap),
+              Expanded(
+                child: FocusOutline(
                   focusNode: search.focusNode,
-                  style: fieldStyle,
-                  // The input fills the field (`input{height:100%}`), so the
-                  // focus ring has the height React draws.
-                  expands: true,
-                  maxLines: null,
-                  textAlignVertical: TextAlignVertical.center,
-                  cursorColor: c.text,
-                  decoration: InputDecoration(
-                    isCollapsed: true,
-                    border: InputBorder.none,
-                    hintMaxLines: 1,
-                    hintText: s.searchHint(),
-                    hintStyle: fieldStyle.copyWith(color: c.placeholder),
-                    contentPadding: EdgeInsets.zero,
+                  child: TextField(
+                    controller: search.text,
+                    focusNode: search.focusNode,
+                    style: fieldStyle,
+                    // The input fills the field (`input{height:100%}`), so the
+                    // focus ring has the height React draws.
+                    expands: true,
+                    maxLines: null,
+                    textAlignVertical: TextAlignVertical.center,
+                    cursorColor: c.text,
+                    decoration: InputDecoration(
+                      isCollapsed: true,
+                      border: InputBorder.none,
+                      hintMaxLines: 1,
+                      hintText: s.searchHint(),
+                      hintStyle: fieldStyle.copyWith(color: c.placeholder),
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
                 ),
               ),
-            ),
-            if (m.showShortcutHint) ...<Widget>[
+              if (m.showShortcutHint) ...<Widget>[
+                SizedBox(width: m.searchGap),
+                KbdChip(searchShortcutLabel(s, defaultTargetPlatform)),
+              ],
               SizedBox(width: m.searchGap),
-              KbdChip(searchShortcutLabel(s, defaultTargetPlatform)),
-            ],
-            SizedBox(width: m.searchGap),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                border: Border(left: BorderSide(color: c.border)),
-              ),
-              child: Padding(
-                padding: EdgeInsets.only(left: m.searchGap),
-                child: AppPressable(
-                  tooltip: s.scanTooltip(),
-                  onTap: () => Get.find<OverlayController>().open('scan'),
-                  builder: (context, hovered) =>
-                      Icon(AppIcons.barcode, size: 23, color: c.globalSearchFg),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border(left: BorderSide(color: c.border)),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(left: m.searchGap),
+                  child: AppPressable(
+                    tooltip: s.scanTooltip(),
+                    onTap: () => Get.find<OverlayController>().open('scan'),
+                    builder: (context, hovered) => Icon(
+                      AppIcons.barcode,
+                      size: 23,
+                      color: c.globalSearchFg,
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

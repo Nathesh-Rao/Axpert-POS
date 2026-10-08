@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/theme_x.dart';
+import '../../core/theme/tokens/app_checkout_sizes.dart';
 import '../../core/theme/tokens/app_radii.dart';
 import '../../core/theme/tokens/app_sizes.dart';
 import '../../core/theme/tokens/app_spacing.dart';
@@ -17,6 +18,7 @@ class ModalActions extends StatelessWidget {
     required this.onSecondary,
     required this.primaryLabel,
     required this.onPrimary,
+    this.primaryEnabled = true,
     super.key,
   });
 
@@ -24,6 +26,9 @@ class ModalActions extends StatelessWidget {
   final VoidCallback onSecondary;
   final String primaryLabel;
   final VoidCallback onPrimary;
+
+  /// `button:disabled`: 0.45 opacity, no tap.
+  final bool primaryEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -73,26 +78,31 @@ class ModalActions extends StatelessWidget {
             Flexible(
               child: Padding(
                 padding: const EdgeInsets.only(top: AppSpacing.s20),
-                child: AppPressable(
-                  borderRadius: AppRadii.r8,
-                  onTap: onPrimary,
-                  builder: (context, hovered) => Container(
-                    constraints: const BoxConstraints(
-                      minHeight: AppSizes.controlMinHeight,
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.s18,
-                      vertical: AppSpacing.s12,
-                    ),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: c.primary,
-                      borderRadius: BorderRadius.circular(AppRadii.r8),
-                    ),
-                    child: Text(
-                      primaryLabel,
-                      textAlign: TextAlign.center,
-                      style: label.copyWith(color: c.white),
+                child: Opacity(
+                  opacity: primaryEnabled
+                      ? 1
+                      : AppCheckoutSizes.disabledOpacity,
+                  child: AppPressable(
+                    borderRadius: AppRadii.r8,
+                    onTap: primaryEnabled ? onPrimary : null,
+                    builder: (context, hovered) => Container(
+                      constraints: const BoxConstraints(
+                        minHeight: AppSizes.controlMinHeight,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.s18,
+                        vertical: AppSpacing.s12,
+                      ),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: c.primary,
+                        borderRadius: BorderRadius.circular(AppRadii.r8),
+                      ),
+                      child: Text(
+                        primaryLabel,
+                        textAlign: TextAlign.center,
+                        style: label.copyWith(color: c.white),
+                      ),
                     ),
                   ),
                 ),

@@ -49,7 +49,8 @@ class _DialogLayerState extends State<DialogLayer> {
   void _show(String id) {
     _showing = true;
     final scrim = context.colors.modalOverlay;
-    final confirmText = Get.find<OverlayController>().confirmation?.text ?? '';
+    final overlay = Get.find<OverlayController>();
+    final confirmText = overlay.confirmation?.text ?? '';
     Get.generalDialog<void>(
       barrierDismissible: true,
       barrierLabel: '',
@@ -67,9 +68,15 @@ class _DialogLayerState extends State<DialogLayer> {
               child: const SizedBox.expand(),
             ),
           ),
-          id == OverlayController.confirmId
-              ? ConfirmDialog(text: confirmText)
-              : (DialogRegistry.build(id) ?? PlaceholderDialog(id: id)),
+          // The content follows the dialog id: one modal can swap into
+          // another (the picker's Add Customer button), as in the prototype.
+          Obx(() {
+            final current = overlay.modal.value ?? id;
+            return current == OverlayController.confirmId
+                ? ConfirmDialog(text: overlay.confirmation?.text ?? confirmText)
+                : (DialogRegistry.build(current) ??
+                      PlaceholderDialog(id: current));
+          }),
         ],
       ),
       transitionBuilder: (context, animation, secondary, child) {

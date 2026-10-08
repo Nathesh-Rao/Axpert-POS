@@ -65,9 +65,14 @@ class AppDrawer extends StatelessWidget {
 
 /// `.modal-symbol`: 57 square, 14 radius, tinted blue, centred icon.
 class ModalSymbol extends StatelessWidget {
-  const ModalSymbol({required this.icon, super.key});
+  const ModalSymbol({
+    required this.icon,
+    this.iconSize = AppCheckoutSizes.symbolIcon,
+    super.key,
+  });
 
   final IconData icon;
+  final double iconSize;
 
   @override
   Widget build(BuildContext context) {

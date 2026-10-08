@@ -15,7 +15,7 @@ Tests: CheckoutService, PaymentController (fake timer), forex rounding, member l
 ## S4.b Hold, recall, discount (done)
 HeldBillsController, RecallController (stock re-validation, missing product guarded, conflict dialog), DiscountFormController, text dialog controller (note, rename). Recall dialog, conflict dialog, discount drawer (390), note, counter. F4/F5/F6 real. Notifications count wired.
 
-## S4.c Pickers and search
+## S4.c Pickers and search (done)
 PriceCheck, ScanSimulator, CustomerPicker, AddCustomerForm controllers and dialogs; top-bar matches dropdown (max 6, Enter adds first or scans), scan button opens simulator.
 
 ## S4.d Receipt and help

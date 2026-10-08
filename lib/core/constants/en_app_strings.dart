@@ -560,4 +560,85 @@ class EnAppStrings extends AppStrings {
 
   @override
   String discountApply() => 'Apply discount';
+
+  @override
+  String toastProductNotFoundForBarcode(String barcode) =>
+      'Product not found for barcode $barcode';
+
+  @override
+  String toastProductNotFound() => 'Product not found';
+
+  @override
+  String toastCustomerAdded() => 'Customer added';
+
+  @override
+  String toastCustomerInvalid() => 'Enter a name, valid phone and email';
+
+  @override
+  String scanDialogTitle() => 'Scan simulator';
+
+  @override
+  String scanDialogBody() =>
+      'Enter a product barcode to simulate your scanner.';
+
+  @override
+  String scanInputHint() => '8901234567890';
+
+  @override
+  String scanRandom() => 'Scan random product';
+
+  @override
+  String scanSimulate() => 'Simulate scan';
+
+  @override
+  String scanTryHint() =>
+      'Try 8901234567890 for Coca Cola or 8901234567895 for Lays.';
+
+  @override
+  String priceCheckBody() =>
+      'Scan a barcode or enter a product code. No items will be added.';
+
+  @override
+  String priceCheckHint() => 'Barcode or product code';
+
+  @override
+  String priceCheckNoMatch() => 'No matching product. Try BDV001.';
+
+  @override
+  String priceCheckDetails(String code, int stock, String gst) =>
+      '$code · $stock in stock · GST $gst%';
+
+  @override
+  String customerPickerTitle() => 'Find a customer';
+
+  @override
+  String customerPickerHint() => 'Search name, phone or membership...';
+
+  @override
+  String customerRowDetail(String phone, String member, int points) =>
+      '$phone $member ${member.isEmpty ? '' : '· $points points'}';
+
+  @override
+  String customerAddButton() => 'Add Customer';
+
+  @override
+  String addCustomerTitle() => 'Add Customer';
+
+  @override
+  String addCustomerBody() => 'A little personal service goes a long way.';
+
+  @override
+  String addCustomerName() => 'Name *';
+
+  @override
+  String addCustomerPhone() => 'Phone *';
+
+  @override
+  String addCustomerEmail() => 'Email';
+
+  @override
+  String addCustomerSave() => 'Save customer';
+
+  @override
+  String searchResultsLabel() => 'Search results';
 }

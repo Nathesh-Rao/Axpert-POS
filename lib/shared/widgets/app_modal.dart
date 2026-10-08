@@ -16,8 +16,15 @@ import 'app_pressable.dart';
 
 /// `.modal`: 460 wide card, 16 px radius, modal shadow, 25 px bold title.
 class AppModal extends StatelessWidget {
-  const AppModal({required this.title, required this.children, super.key});
+  const AppModal({
+    required this.title,
+    required this.children,
+    this.leading,
+    super.key,
+  });
 
+  /// A `.modal-symbol` shown above the title.
+  final Widget? leading;
   final String title;
   final List<Widget> children;
 

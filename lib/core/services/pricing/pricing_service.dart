@@ -54,7 +54,7 @@ class PricingService {
       case TaxMode.exclusive:
         return _exclusive(cart);
       case TaxMode.inclusive:
-        throw UnimplementedError('Inclusive mode arrives in S1.c');
+        return _inclusive(cart);
     }
   }
 
@@ -70,7 +70,7 @@ class PricingService {
     BigInt.from(units) * BigInt.from(10).pow(config.currency.exponent),
   );
 
-  ExactTotals _exclusive(CartInput cart) {
+  _Base _base(CartInput cart) {
     final gross = <Rational>[];
     final net = <Rational>[];
     var value = Rational.zero;
@@ -86,33 +86,91 @@ class PricingService {
     final requested = cart.billDiscount.flat != null
         ? Rational.fromInt(cart.billDiscount.flat!.minor)
         : subtotal * _bp(cart.billDiscount.percent);
-    final billDiscount = Rational.min(subtotal, requested);
-    final ratio = subtotal.isZero
+    return _Base(
+      gross: gross,
+      net: net,
+      value: value,
+      subtotal: subtotal,
+      billDiscount: Rational.min(subtotal, requested),
+    );
+  }
+
+  Rational _pointsCap(CartInput cart, Rational payable) => Rational.min(
+    Rational.min(
+      _wholeUnits(cart.pointsToRedeem),
+      _wholeUnits(cart.availablePoints),
+    ),
+    payable,
+  );
+
+  /// Prices exclude tax: tax is added on top of the discounted lines.
+  ExactTotals _exclusive(CartInput cart) {
+    final b = _base(cart);
+    final ratio = b.subtotal.isZero
         ? Rational.zero
-        : (subtotal - billDiscount) / subtotal;
+        : (b.subtotal - b.billDiscount) / b.subtotal;
     var tax = Rational.zero;
     final lines = <LineBreakdown>[];
     for (var i = 0; i < cart.lines.length; i++) {
-      final t = net[i] * ratio * _bp(cart.lines[i].taxRate);
+      final t = b.net[i] * ratio * _bp(cart.lines[i].taxRate);
       tax += t;
-      lines.add(LineBreakdown(gross: gross[i], net: net[i], tax: t));
+      lines.add(LineBreakdown(gross: b.gross[i], net: b.net[i], tax: t));
     }
-    final payable = subtotal - billDiscount + tax;
-    final points = Rational.min(
-      Rational.min(
-        _wholeUnits(cart.pointsToRedeem),
-        _wholeUnits(cart.availablePoints),
-      ),
-      payable,
-    );
+    final payable = b.subtotal - b.billDiscount + tax;
+    final points = _pointsCap(cart, payable);
     return ExactTotals(
-      value: value,
-      subtotal: value,
-      discount: value - subtotal + billDiscount,
+      value: b.value,
+      subtotal: b.value,
+      discount: b.value - b.subtotal + b.billDiscount,
       tax: tax,
       points: points,
       total: Rational.max(Rational.zero, payable - points),
       lines: lines,
     );
   }
+
+  /// Prices include tax (DEC-022): the bill discount is allocated on gross
+  /// line amounts, each line's tax is `gross * r / (100 + r)`, tax is only
+  /// informational, and points are capped at the discounted gross.
+  ExactTotals _inclusive(CartInput cart) {
+    final b = _base(cart);
+    final ratio = b.subtotal.isZero
+        ? Rational.zero
+        : (b.subtotal - b.billDiscount) / b.subtotal;
+    var tax = Rational.zero;
+    final lines = <LineBreakdown>[];
+    for (var i = 0; i < cart.lines.length; i++) {
+      final r = _bp(cart.lines[i].taxRate);
+      final t = b.net[i] * ratio * r / (Rational.one + r);
+      tax += t;
+      lines.add(LineBreakdown(gross: b.gross[i], net: b.net[i], tax: t));
+    }
+    final payable = b.subtotal - b.billDiscount;
+    final points = _pointsCap(cart, payable);
+    return ExactTotals(
+      value: b.value,
+      subtotal: b.value,
+      discount: b.value - b.subtotal + b.billDiscount,
+      tax: tax,
+      points: points,
+      total: Rational.max(Rational.zero, payable - points),
+      lines: lines,
+    );
+  }
+}
+
+class _Base {
+  const _Base({
+    required this.gross,
+    required this.net,
+    required this.value,
+    required this.subtotal,
+    required this.billDiscount,
+  });
+
+  final List<Rational> gross;
+  final List<Rational> net;
+  final Rational value;
+  final Rational subtotal;
+  final Rational billDiscount;
 }

@@ -3,10 +3,10 @@ import 'package:get/get.dart';
 
 import '../../../core/responsive/app_metrics_scope.dart';
 import '../../../core/routes/app_routes.dart';
-import '../../../shared/widgets/app_panel.dart';
 import '../../shell/views/app_shell.dart';
 import '../controllers/cart_controller.dart';
 import '../widgets/catalog_panel.dart';
+import '../widgets/center_column.dart';
 
 /// POS page: the catalog, plus the center column (cart) once the cart has
 /// lines. The catalog keeps its slot, so its scroll and text survive the
@@ -27,10 +27,7 @@ class PosView extends StatelessWidget {
             const Expanded(flex: 2, child: CatalogPanel()),
             if (active) ...<Widget>[
               SizedBox(width: gap),
-              const Expanded(
-                flex: 3,
-                child: SizedBox.expand(child: AppPanel()),
-              ),
+              const Expanded(flex: 3, child: CenterColumn()),
             ],
           ],
         );

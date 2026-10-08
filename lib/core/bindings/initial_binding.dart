@@ -80,6 +80,8 @@ class InitialBinding extends Bindings {
         beep: Get.find(),
       ),
     );
+    Get.find<ShortcutController>().handlers[ShortcutAction.deleteSelected] =
+        Get.find<CartActionsController>().removeSelected;
   }
 
   /// Loads the persisted data of every permanent controller (call once before

@@ -152,6 +152,17 @@ class AppMetrics {
   double get cartLineMinHeight => _c.vh(84, 10, 96);
   double get statTileValueFont => _c.vw(20, 1.45, 28);
 
+  /// `.cart-actions .action svg`, `clamp(14px,1.2vw,19px)`.
+  double get cartActionIcon => _c.vw(14, 1.2, 19);
+
+  /// `.stat-tiles svg`, `clamp(19px,1.8vw,26px)` (the later block wins over 25).
+  double get statTileIcon => _c.vw(19, 1.8, 26);
+
+  /// `.cart-line` min-height in the single-row layout, `clamp(84px,10vh,96px)`
+  /// (already `cartLineMinHeight`).
+  /// `.cart-heading time`, `clamp(9px,.7vw,12px)` overridden by the later 12.
+  double get cartTimeFont => 12;
+
   // --- bill summary (consumed from S4) --------------------------------------------
   double get billSummaryPad => _c.vh(14, 1.6, 20);
   double get billSummaryGap => _c.vh(8, .75, 12);

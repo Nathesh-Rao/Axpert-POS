@@ -54,6 +54,11 @@ abstract class AppStrings {
   String storeSwitched();
   String placeholderDialogBody();
   String dialogClose();
+  String dialogCloseTooltip();
+  String confirmTitle();
+  String confirmCancel();
+  String confirmAccept();
+  String confirmClearCart();
 
   // Frame, toasts
   String billSummaryTitle();
@@ -81,6 +86,29 @@ abstract class AppStrings {
   String noResultsTitle();
   String noResultsHint();
   String resetFilters();
+
+  // Cart
+  String cartTableNumber();
+  String lineNumber(int number);
+  String cartTableItem();
+  String cartTableQty();
+  String cartTablePrice();
+  String cartTableDiscount();
+  String cartTableTotal();
+  String decreaseQtyTooltip();
+  String increaseQtyTooltip();
+  String qtyInputLabel(String name);
+  String priceInputLabel(String name);
+  String discountInputLabel(String name);
+  String removeItemTooltip();
+  String gstLabel(String percent);
+  String actionClearCart();
+  String actionHold();
+  String actionRecall();
+  String actionPriceCheck();
+  String statTotalItems();
+  String statTotalQty();
+  String statTotalValue();
 
   // Cart and catalog toasts
   String toastProductAdded(String name);

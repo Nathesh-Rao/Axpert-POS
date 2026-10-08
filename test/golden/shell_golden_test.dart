@@ -12,6 +12,9 @@ import 'package:pos_application/core/routes/app_routes.dart';
 import 'package:pos_application/core/theme/tokens/app_typography.dart';
 import 'package:pos_application/main.dart';
 import 'package:pos_application/modules/shell/controllers/settings_controller.dart';
+import 'package:pos_application/modules/pos/controllers/cart_actions_controller.dart';
+import 'package:pos_application/modules/products/controllers/products_controller.dart';
+import 'package:pos_application/shared/controllers/clock_controller.dart';
 import 'package:pos_application/shared/controllers/overlay_controller.dart';
 import 'package:pos_application/shared/controllers/toast_controller.dart';
 
@@ -37,6 +40,12 @@ Future<void> _pump(
   }
   final binding = await bootInWidgetTest(tester);
   AppTypography.useBundledFonts = true;
+  // A fixed clock (the reference screenshot shows 07/10/2026 16:57:08).
+  Get.delete<ClockController>(force: true);
+  Get.put<ClockController>(
+    ClockController(now: () => DateTime(2026, 10, 7, 16, 57, 8)),
+    permanent: true,
+  );
   if (dark) {
     await tester.runAsync(() => Get.find<SettingsController>().setDark(true));
   }
@@ -110,6 +119,19 @@ void main() {
       Get.find<OverlayController>().open('profile');
       Get.find<ToastController>().show('Store switched');
       await tester.pumpAndSettle();
+    },
+  );
+  golden(
+    'POS with one line (Lays Classic), reference viewport',
+    'pos_one_line_light',
+    after: (tester) async {
+      final lays = Get.find<ProductsController>().byId(5)!;
+      Get.find<CartActionsController>().add(lays);
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 2)); // highlight ends
+      Get.find<ToastController>().toasts.clear();
+      await tester.pumpAndSettle();
+      await settleImages(tester);
     },
   );
   golden('POS dark (unverified visually)', 'shell_pos_dark', dark: true);

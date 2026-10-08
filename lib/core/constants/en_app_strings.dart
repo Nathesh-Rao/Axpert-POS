@@ -228,4 +228,82 @@ class EnAppStrings extends AppStrings {
 
   @override
   String resetFilters() => 'Reset filters';
+
+  @override
+  String dialogCloseTooltip() => 'Close dialog';
+
+  @override
+  String confirmTitle() => 'Confirm action';
+
+  @override
+  String confirmCancel() => 'Cancel';
+
+  @override
+  String confirmAccept() => 'Confirm';
+
+  @override
+  String confirmClearCart() => 'Clear all items and start a new sale?';
+
+  @override
+  String cartTableNumber() => '#';
+
+  @override
+  String cartTableItem() => 'Item';
+
+  @override
+  String cartTableQty() => 'Qty';
+
+  @override
+  String cartTablePrice() => 'Price';
+
+  @override
+  String cartTableDiscount() => 'Disc %';
+
+  @override
+  String cartTableTotal() => 'Total';
+
+  @override
+  String decreaseQtyTooltip() => 'Decrease quantity';
+
+  @override
+  String increaseQtyTooltip() => 'Increase quantity';
+
+  @override
+  String qtyInputLabel(String name) => '$name quantity';
+
+  @override
+  String priceInputLabel(String name) => '$name price';
+
+  @override
+  String discountInputLabel(String name) => '$name discount percent';
+
+  @override
+  String removeItemTooltip() => 'Remove item';
+
+  @override
+  String gstLabel(String percent) => 'GST $percent%';
+
+  @override
+  String actionClearCart() => 'Clear Cart';
+
+  @override
+  String actionHold() => 'Hold';
+
+  @override
+  String actionRecall() => 'Recall';
+
+  @override
+  String actionPriceCheck() => 'Price Check';
+
+  @override
+  String statTotalItems() => 'Total Items';
+
+  @override
+  String statTotalQty() => 'Total Qty';
+
+  @override
+  String statTotalValue() => 'Total Value';
+
+  @override
+  String lineNumber(int number) => '$number';
 }

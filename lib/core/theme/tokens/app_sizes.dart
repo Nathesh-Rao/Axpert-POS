@@ -219,6 +219,30 @@ abstract final class AppSizes {
   /// Thin scrollbar (`scrollbar-width: thin`) thumb thickness.
   static const double scrollbarThickness = 8.0;
 
+  /// Cart table icons: `.qty-control button svg` (JSX 20), trash (20), the
+  /// action button and heading icons come from AppMetrics.
+  static const double qtyButtonIcon = 20.0;
+  static const double trashIcon = 20.0;
+
+  /// `.cart-line .line-product img` radius (8) and gap between its parts.
+  static const double cartLineImageRadius = 8.0;
+
+  /// `.cart-table-head` padding 10 x 12 and `.cart-line` padding 12.
+  static const double cartHeadPadY = 10.0;
+  static const double cartPad = 12.0;
+
+  /// `.line-edit input` height uses lineEditHeight; its text is 14.
+  /// `.stat-tiles` padding and gap (the later block), tile padding 16 x 8.
+  static const double statTilesPad = 12.0;
+  static const double statTilesGap = 12.0;
+  static const double statTilePadY = 16.0;
+  static const double statTilePadX = 8.0;
+  static const double statTileGap = 8.0;
+
+  /// `.cart-actions` gap and top margin.
+  static const double cartActionsGap = 10.0;
+  static const double cartActionsMarginTop = 12.0;
+
   /// All values by name, for the css_metrics tests.
   static const Map<String, num> all = <String, num>{
     'topbarHeight': topbarHeight,

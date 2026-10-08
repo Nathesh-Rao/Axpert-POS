@@ -17,6 +17,7 @@ String placeholderDialogTitle(AppStrings s, String id) => switch (id) {
   'profile' => s.menuProfile(),
   'settings' => s.menuSettings(),
   'shortcuts' => s.menuShortcuts(),
+  'priceCheck' => s.actionPriceCheck(),
   _ => s.menuLogout(),
 };
 

@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
+import '../../core/constants/app_strings_x.dart';
 import '../../core/responsive/app_metrics_scope.dart';
 import '../../core/theme/theme_x.dart';
+import '../../core/theme/tokens/app_icons.dart';
 import '../../core/theme/tokens/app_radii.dart';
 import '../../core/theme/tokens/app_shadows.dart';
 import '../../core/theme/tokens/app_sizes.dart';
 import '../../core/theme/tokens/app_spacing.dart';
 import '../../core/theme/tokens/app_typography.dart';
+import '../controllers/overlay_controller.dart';
+import 'app_pressable.dart';
 
 /// `.modal`: 460 wide card, 16 px radius, modal shadow, 25 px bold title.
 class AppModal extends StatelessWidget {
@@ -32,27 +37,49 @@ class AppModal extends StatelessWidget {
                 borderRadius: BorderRadius.circular(AppRadii.r16),
                 boxShadow: AppShadows.modal.boxShadows,
               ),
-              child: Padding(
-                padding: EdgeInsets.all(m.modalPad),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        right: AppSpacing.s20,
-                        bottom: AppSpacing.s12,
-                      ),
-                      child: Text(
-                        title,
-                        style: context.text
-                            .of(AppFontSize.s25, weight: AppFontWeight.bold)
-                            .copyWith(color: c.text),
+              child: Stack(
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(m.modalPad),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            right: AppSpacing.s20,
+                            bottom: AppSpacing.s12,
+                          ),
+                          child: Text(
+                            title,
+                            style: context.text
+                                .of(AppFontSize.s25, weight: AppFontWeight.bold)
+                                .copyWith(color: c.text),
+                          ),
+                        ),
+                        ...children,
+                      ],
+                    ),
+                  ),
+                  // `.modal-close`: right 14, top 14, padding 5, round.
+                  Positioned(
+                    right: AppSpacing.s14,
+                    top: AppSpacing.s14,
+                    child: AppPressable(
+                      tooltip: context.strings.dialogCloseTooltip(),
+                      onTap: Get.find<OverlayController>().close,
+                      borderRadius: AppRadii.full,
+                      builder: (context, hovered) => Container(
+                        padding: const EdgeInsets.all(AppSpacing.s5),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: hovered ? c.secondary : null,
+                        ),
+                        child: Icon(AppIcons.x, size: 21, color: c.muted),
                       ),
                     ),
-                    ...children,
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

@@ -882,4 +882,43 @@ class EnAppStrings extends AppStrings {
 
   @override
   String profileStatus() => 'Status';
+
+  @override
+  String returnsFindTitle() => 'Find a bill to return items';
+
+  @override
+  String returnsBillHint() => 'Bill number, e.g. AX000001';
+
+  @override
+  String returnsBegin() => 'Enter a completed bill number to begin.';
+
+  @override
+  String returnsNoMatch() => 'No matching bill found.';
+
+  @override
+  String returnsBillSummary(String customer, String total) =>
+      '$customer · $total';
+
+  @override
+  String returnsAvailable(String qty) => 'Available to return: $qty';
+
+  @override
+  String returnsRefundButton() => 'Refund & restock';
+
+  @override
+  String returnsQtyLabel(String product) => 'Return quantity of $product';
+
+  @override
+  String toastRefundSelect() => 'Select items to refund';
+
+  @override
+  String toastRefundExceeds() =>
+      'Refund quantity exceeds remaining sold quantity';
+
+  @override
+  String toastRefundDone(String amount) => 'Refund completed: $amount';
+
+  @override
+  String refundConfirm(String amount) =>
+      'Refund $amount and restock selected items?';
 }

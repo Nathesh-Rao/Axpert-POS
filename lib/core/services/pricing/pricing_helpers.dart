@@ -19,15 +19,17 @@ class PricingHelpers {
     return diff.isNegative ? Money.zero(total.currency) : diff;
   }
 
-  /// Refund for returned quantities (prototype formula): each line's share of
-  /// the sale total is `total * (qty * price / saleValue)`, taken pro rata for
-  /// the returned quantity. Summed exactly, rounded half-up once for display.
-  static Money refund({
+  /// Refund for returned quantities (prototype formula, App.tsx 625-629): each
+  /// line's share of the sale total is `total * (qty * price / saleValue)`,
+  /// taken pro rata for the returned quantity. The share uses the line's GROSS
+  /// price (line discounts, bill discount and points are not reflected).
+  /// Exact, in minor units.
+  static Rational refundExact({
     required Money saleTotal,
     required Money saleValue,
     required List<RefundLine> lines,
   }) {
-    if (saleValue.isZero) return Money.zero(saleTotal.currency);
+    if (saleValue.isZero) return Rational.zero;
     var sum = Rational.zero;
     for (final l in lines) {
       if (l.soldQty.milli == 0) continue;
@@ -43,38 +45,47 @@ class PricingHelpers {
           Rational(BigInt.from(l.returnQty.milli)) /
           Rational(BigInt.from(l.soldQty.milli));
     }
-    return Money(sum.roundHalfUp().toInt(), saleTotal.currency);
+    return sum;
   }
 
-  /// Forex card: `total / rate` shown with 2 decimals (KG-006). The rate has 3
-  /// decimals (`rateMilli`); the result is in hundredths of the foreign unit.
-  static int forexConvertHundredths({
+  /// [refundExact] rounded half up once to a minor unit.
+  static Money refund({
+    required Money saleTotal,
+    required Money saleValue,
+    required List<RefundLine> lines,
+  }) => Money(
+    refundExact(
+      saleTotal: saleTotal,
+      saleValue: saleValue,
+      lines: lines,
+    ).roundHalfUp().toInt(),
+    saleTotal.currency,
+  );
+
+  /// Forex card (App.tsx 182): `rate > 0 ? total / rate : 0`, exact, in
+  /// hundredths of the foreign unit (KG-006). The rate has 3 decimals
+  /// (`rateMilli`).
+  static Rational forexExactHundredths({
     required Money total,
     required int rateMilli,
   }) {
-    if (rateMilli <= 0) return 0;
+    if (rateMilli <= 0) return Rational.zero;
     final units = Rational(
       BigInt.from(total.minor),
       BigInt.from(10).pow(total.currency.exponent),
     );
     final rate = Rational(BigInt.from(rateMilli), BigInt.from(1000));
-    return (units / rate * Rational.fromInt(100)).roundHalfUp().toInt();
+    return units / rate * Rational.fromInt(100);
   }
 
-  /// Whole points allowed: `min(requested, available, whole units payable)`.
-  static int clampPoints({
-    required int requested,
-    required int available,
-    required Money payable,
-  }) {
-    final wholePayable = payable.minor ~/ _unit(payable);
-    final capped = [
-      requested,
-      available,
-      wholePayable,
-    ].reduce((a, b) => a < b ? a : b);
-    return capped < 0 ? 0 : capped;
-  }
+  /// [forexExactHundredths] rounded half up (`toFixed(2)`).
+  static int forexConvertHundredths({
+    required Money total,
+    required int rateMilli,
+  }) => forexExactHundredths(
+    total: total,
+    rateMilli: rateMilli,
+  ).roundHalfUp().toInt();
 
   /// Percent discount clamped to 0..100 %.
   static BillDiscount clampPercent(Bp percent) =>
@@ -86,8 +97,6 @@ class PricingHelpers {
     if (flat.isNegative) return BillDiscount.flat(Money.zero(flat.currency));
     return BillDiscount.flat(flat > max ? max : flat);
   }
-
-  static int _unit(Money m) => BigInt.from(10).pow(m.currency.exponent).toInt();
 }
 
 class RefundLine {

@@ -229,33 +229,6 @@ void main() {
       );
     });
 
-    test('points clamp: whole points, truncated, never negative', () {
-      expect(
-        PricingHelpers.clampPoints(
-          requested: 500,
-          available: 120,
-          payable: _m('300.99'),
-        ),
-        120,
-      );
-      expect(
-        PricingHelpers.clampPoints(
-          requested: 500,
-          available: 900,
-          payable: _m('47.99'),
-        ),
-        47,
-      );
-      expect(
-        PricingHelpers.clampPoints(
-          requested: -5,
-          available: 9,
-          payable: _m('10'),
-        ),
-        0,
-      );
-    });
-
     test('bill discount clamps', () {
       expect(
         PricingHelpers.clampPercent(Bp.parsePercent('250')).percent,

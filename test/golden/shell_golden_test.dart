@@ -30,6 +30,16 @@ import 'package:pos_application/shared/controllers/search_field_controller.dart'
 import 'package:pos_application/modules/pos/controllers/held_bills_controller.dart';
 import 'package:pos_application/modules/pos/models/held_bill.dart';
 
+import 'package:pos_application/core/services/pricing/basis_points.dart';
+import 'package:pos_application/core/services/pricing/currency_registry.dart';
+import 'package:pos_application/core/services/pricing/money.dart';
+import 'package:pos_application/core/services/pricing/qty.dart';
+import 'package:pos_application/modules/pos/models/cart.dart';
+import 'package:pos_application/modules/pos/models/cart_line.dart';
+import 'package:pos_application/modules/returns/controllers/returns_controller.dart';
+import 'package:pos_application/modules/sales/controllers/sales_controller.dart';
+
+import '../support/sale_fixtures.dart';
 import '../support/test_app.dart';
 import 'images.dart';
 import 'harness.dart';
@@ -148,6 +158,50 @@ void main() {
     'Reports zeros light, reference viewport',
     'shell_reports_light',
     route: AppRoutes.reports,
+  );
+  golden(
+    'Returns empty light, reference viewport',
+    'shell_returns_light',
+    route: AppRoutes.returns,
+  );
+  golden(
+    'Returns matched bill light (unverified visually)',
+    'shell_returns_matched_light',
+    route: AppRoutes.returns,
+    after: (tester) async {
+      final products = Get.find<ProductsController>();
+      Get.find<SalesController>().sales.add(
+        testSale(
+          number: 'AX000007',
+          at: DateTime(2026, 10, 7, 16, 50),
+          customer: 'Ananya Sharma',
+          totalMinor: 12980,
+          valueMinor: 11000,
+          cart: Cart(
+            lines: <CartLine>[
+              CartLine(
+                product: products.byId(0)!,
+                qty: const Qty(2000),
+                price: const Money(4000, CurrencyRegistry.inr),
+                discount: Bp.zero,
+              ),
+              CartLine(
+                product: products.byId(1)!,
+                qty: const Qty(1500),
+                price: const Money(2000, CurrencyRegistry.inr),
+                discount: Bp.zero,
+              ),
+            ],
+          ),
+        ),
+      );
+      final page = Get.find<ReturnsController>();
+      page.billNumber.text = 'AX000007';
+      page.onBillChanged('AX000007');
+      page.fieldFor(0).text = '1';
+      page.onQtyChanged(0, '1');
+      await tester.pumpAndSettle();
+    },
   );
   golden(
     'Settings page light (unverified visually)',

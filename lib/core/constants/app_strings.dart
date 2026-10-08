@@ -317,4 +317,16 @@ abstract class AppStrings {
   String profileCounter();
   String profileShiftSales();
   String profileStatus();
+  String returnsFindTitle();
+  String returnsBillHint();
+  String returnsBegin();
+  String returnsNoMatch();
+  String returnsBillSummary(String customer, String total);
+  String returnsAvailable(String qty);
+  String returnsRefundButton();
+  String returnsQtyLabel(String product);
+  String toastRefundSelect();
+  String toastRefundExceeds();
+  String toastRefundDone(String amount);
+  String refundConfirm(String amount);
 }

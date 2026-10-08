@@ -22,7 +22,7 @@ Status: 7 large steps (DEC-069, 2026-10-08). Done: S1 Money, S2 Shell, S3 POS co
 | S3 POS core | Models, repository interfaces, mocks, controllers, catalog, cart table with editing and Undo | S3.a data; S3.b catalog; S3.c cart table; S3.d controllers + compare | L | after S3.b | nothing blocking |
 | S4 POS checkout | Bill summary totals, cash/card/credit, hold/recall, discount drawer, price check, scan simulator, customer picker, add customer, receipt preview, note, rename, shortcuts help | S4.a totals + payment; S4.b hold/recall, discount, note; S4.c pickers; S4.d receipt + help | L | after S4.b | optional screenshots of drawer, receipt, picker |
 | S5 Secondary pages (built, S5.a to S5.c) | Products, Customers, Sales, Reports, Settings, profile, shift close, signed-out | S5.a Products + Customers; S5.b Sales + Reports; S5.c Settings + profile + shift close + signed-out | L | after S5.b | optional screenshots of Settings, shift, signed-out |
-| S6 Returns and keyboard | Returns flow; shortcut and focus-return pass; web key-conflict check | S6.a Returns; S6.b shortcuts + focus; S6.c web key conflicts | M-L | after S6.a | nothing blocking |
+| S6 Returns and keyboard (built) | Returns flow; shortcut and focus-return pass; web key-conflict check | S6.a Returns; S6.b shortcuts + focus; S6.c web key conflicts | M-L | after S6.a | nothing blocking |
 | S7 Polish | Responsive pass, web and Windows review, 10k-product performance, final comparison, cleanup | S7.a responsive; S7.b web/Windows review; S7.c performance; S7.d final comparison + cleanup | L | after S7.b | side-by-side React check; explicit OK for cleanup |
 
 Only S1 and S2 are detailed (`plan_s1_s2.md`). S3 to S7 get their own detailed plan when reached.

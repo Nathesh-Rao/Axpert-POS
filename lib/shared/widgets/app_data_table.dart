@@ -187,6 +187,7 @@ class TableText extends StatelessWidget {
     this.color,
     this.bold = false,
     this.oneLine = false,
+    this.ellipsis = false,
     super.key,
   });
 
@@ -199,12 +200,17 @@ class TableText extends StatelessWidget {
   /// emails wrap as in CSS.
   final bool oneLine;
 
+  /// One line cut with an ellipsis, the full text in a tooltip: emails and
+  /// other long single tokens that must not break mid-word.
+  final bool ellipsis;
+
   @override
   Widget build(BuildContext context) {
     final label = Text(
       text,
-      softWrap: !oneLine,
-      maxLines: oneLine ? 1 : null,
+      softWrap: !(oneLine || ellipsis),
+      maxLines: oneLine || ellipsis ? 1 : null,
+      overflow: ellipsis ? TextOverflow.ellipsis : null,
       style: context.text
           .fluid(
             AppManagementSizes.tdFont,
@@ -213,6 +219,7 @@ class TableText extends StatelessWidget {
           )
           .copyWith(color: color ?? context.colors.text),
     );
+    if (ellipsis) return Tooltip(message: text, child: label);
     return oneLine
         ? FittedBox(
             fit: BoxFit.scaleDown,

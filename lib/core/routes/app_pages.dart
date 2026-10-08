@@ -10,8 +10,9 @@ import '../../modules/reports/bindings/reports_binding.dart';
 import '../../modules/reports/views/reports_view.dart';
 import '../../modules/sales/bindings/sales_binding.dart';
 import '../../modules/sales/views/sales_view.dart';
+import '../../modules/returns/bindings/returns_binding.dart';
+import '../../modules/returns/views/returns_view.dart';
 import '../../modules/settings/views/settings_view.dart';
-import '../../modules/shell/views/page_placeholder.dart';
 import 'app_routes.dart';
 
 /// Seven named routes, no transition. Unknown paths fall through to POS.
@@ -34,7 +35,7 @@ abstract final class AppPages {
           AppPage.sales => const SalesView(),
           AppPage.reports => const ReportsView(),
           AppPage.more => const SettingsView(),
-          _ => PagePlaceholder(page: page),
+          AppPage.returns => const ReturnsView(),
         },
         binding: switch (page) {
           AppPage.pos => PosBinding(),
@@ -42,6 +43,7 @@ abstract final class AppPages {
           AppPage.customers => CustomersBinding(),
           AppPage.sales => SalesBinding(),
           AppPage.reports => ReportsBinding(),
+          AppPage.returns => ReturnsBinding(),
           _ => null,
         },
         transition: Transition.noTransition,

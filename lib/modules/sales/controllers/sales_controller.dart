@@ -20,4 +20,11 @@ class SalesController extends GetxController {
     sales.add(sale);
     return _repository.save(sales.toList());
   }
+
+  /// Swaps the sale with the same number in memory (a refund changes only
+  /// `returned`); the caller persists through its own repository.
+  void replace(Sale updated) {
+    final index = sales.indexWhere((s) => s.number == updated.number);
+    if (index >= 0) sales[index] = updated;
+  }
 }

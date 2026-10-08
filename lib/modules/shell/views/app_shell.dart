@@ -19,27 +19,51 @@ class AppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final gap = context.metrics.layoutGap;
-    return Scaffold(
-      body: Column(
-        children: <Widget>[
-          const TopBar(),
-          const OfflineBanner(),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(0, gap, gap, gap),
-              child: Row(
-                children: <Widget>[
-                  Sidebar(current: page),
-                  SizedBox(width: gap),
-                  Expanded(child: child),
-                  SizedBox(width: gap),
-                  BillSummaryFrame(isPos: page == AppPage.pos),
-                ],
+    // Tab visits the regions in the prototype's DOM order (top bar, sidebar,
+    // page, Bill Summary) instead of the default top-to-bottom, left-to-right
+    // sweep, which would interleave sidebar buttons and page controls.
+    return FocusTraversalGroup(
+      policy: OrderedTraversalPolicy(),
+      child: Scaffold(
+        body: Column(
+          children: <Widget>[
+            const _Region(order: 0, child: TopBar()),
+            const OfflineBanner(),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(0, gap, gap, gap),
+                child: Row(
+                  children: <Widget>[
+                    _Region(order: 1, child: Sidebar(current: page)),
+                    SizedBox(width: gap),
+                    Expanded(child: _Region(order: 2, child: child)),
+                    SizedBox(width: gap),
+                    _Region(
+                      order: 3,
+                      child: BillSummaryFrame(isPos: page == AppPage.pos),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
+}
+
+/// One tab-order region: its position in the page and its own reading order
+/// inside.
+class _Region extends StatelessWidget {
+  const _Region({required this.order, required this.child});
+
+  final double order;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => FocusTraversalOrder(
+    order: NumericFocusOrder(order),
+    child: FocusTraversalGroup(child: child),
+  );
 }

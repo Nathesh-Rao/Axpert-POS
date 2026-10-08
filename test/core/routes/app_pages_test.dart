@@ -8,7 +8,7 @@ import 'package:pos_application/modules/products/views/products_view.dart';
 import 'package:pos_application/modules/reports/views/reports_view.dart';
 import 'package:pos_application/modules/sales/views/sales_view.dart';
 import 'package:pos_application/modules/settings/views/settings_view.dart';
-import 'package:pos_application/modules/shell/views/page_placeholder.dart';
+import 'package:pos_application/modules/returns/views/returns_view.dart';
 
 import '../../support/test_app.dart';
 
@@ -55,7 +55,10 @@ void main() {
       if (find.byType(SettingsView).evaluate().isNotEmpty) {
         return AppPage.more;
       }
-      return tester.widget<PagePlaceholder>(find.byType(PagePlaceholder)).page;
+      if (find.byType(ReturnsView).evaluate().isNotEmpty) {
+        return AppPage.returns;
+      }
+      throw StateError('no page is shown');
     }
 
     for (final page in AppPage.values) {

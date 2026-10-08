@@ -22,16 +22,39 @@ class PosView extends StatelessWidget {
       page: AppPage.pos,
       child: Obx(() {
         final active = cart.active.value;
-        return Row(
-          children: <Widget>[
-            const Expanded(flex: 2, child: CatalogPanel()),
-            if (active) ...<Widget>[
-              SizedBox(width: gap),
-              const Expanded(flex: 3, child: CenterColumn()),
+        // Tab goes through the whole catalog, then the cart column (DOM order).
+        return FocusTraversalGroup(
+          policy: OrderedTraversalPolicy(),
+          child: Row(
+            children: <Widget>[
+              const Expanded(
+                flex: 2,
+                child: _Pane(order: 0, child: CatalogPanel()),
+              ),
+              if (active) ...<Widget>[
+                SizedBox(width: gap),
+                const Expanded(
+                  flex: 3,
+                  child: _Pane(order: 1, child: CenterColumn()),
+                ),
+              ],
             ],
-          ],
+          ),
         );
       }),
     );
   }
+}
+
+class _Pane extends StatelessWidget {
+  const _Pane({required this.order, required this.child});
+
+  final double order;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => FocusTraversalOrder(
+    order: NumericFocusOrder(order),
+    child: FocusTraversalGroup(child: child),
+  );
 }

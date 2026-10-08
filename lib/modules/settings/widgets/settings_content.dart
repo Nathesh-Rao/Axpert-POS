@@ -64,7 +64,10 @@ class _ToggleRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
+    // The row is a label around the checkbox in React: one Tab stop (the
+    // checkbox); a click anywhere on the row toggles it.
     return InkWell(
+      canRequestFocus: false,
       onTap: () => onChanged(!value),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: AppSpacing.s22),

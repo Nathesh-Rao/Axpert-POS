@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../../../core/services/pricing/pricing_helpers.dart';
+
 import '../../../core/utils/decimal_input.dart';
 import '../../../core/services/pricing/money.dart';
 import '../../shell/controllers/settings_controller.dart';
@@ -23,22 +25,16 @@ class ForexController extends GetxController {
 
   int get rateMilli => _settings.settings.value.rateMilli;
 
-  /// `total / rate` shown with 2 decimals (`toFixed(2)`, half-up), integer
-  /// arithmetic only. Zero when the rate is not positive.
+  /// `total / rate` shown with 2 decimals (`toFixed(2)`): the plain-Dart
+  /// [PricingHelpers.forexConvertHundredths] formatted here. Zero when the rate
+  /// is not positive.
   String converted(Money total) {
-    final rate = rateMilli;
-    if (rate <= 0) return '0.00';
-    // total.minor / 10^exp / (rate / 1000), scaled to hundredths.
-    var unit = 1;
-    for (var i = 0; i < total.currency.exponent; i++) {
-      unit *= 10;
-    }
-    final numerator = total.minor * 1000 * 100;
-    final denominator = unit * rate;
-    final cents = (numerator * 2 + denominator) ~/ (denominator * 2);
-    final whole = cents ~/ 100;
+    final cents = PricingHelpers.forexConvertHundredths(
+      total: total,
+      rateMilli: rateMilli,
+    );
     final frac = (cents % 100).toString().padLeft(2, '0');
-    return '$whole.$frac';
+    return '${cents ~/ 100}.$frac';
   }
 
   /// Rate field commit (`next > 0` only, 3 decimals, KG-003).

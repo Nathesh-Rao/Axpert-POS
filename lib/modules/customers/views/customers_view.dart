@@ -5,6 +5,7 @@ import '../../../core/constants/app_strings_x.dart';
 import '../../../core/responsive/app_metrics_scope.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/tokens/app_icons.dart';
+import '../../../core/theme/tokens/app_management_sizes.dart';
 import '../../../shared/controllers/overlay_controller.dart';
 import '../../../shared/widgets/app_data_table.dart';
 import '../../../shared/widgets/management_page.dart';
@@ -45,11 +46,31 @@ class CustomersView extends GetView<CustomersPageController> {
                 horizontal: context.metrics.managementPad,
               ),
               columns: <TableColumnSpec>[
-                TableColumnSpec(label: s.colName(), flex: 353),
-                TableColumnSpec(label: s.colPhone(), flex: 271),
-                TableColumnSpec(label: s.colEmail(), flex: 436),
-                TableColumnSpec(label: s.colMembership(), flex: 241),
-                TableColumnSpec(label: s.colPoints(), flex: 157),
+                TableColumnSpec(
+                  label: s.colName(),
+                  flex: 353,
+                  minContent: AppManagementSizes.customersMinName,
+                ),
+                TableColumnSpec(
+                  label: s.colPhone(),
+                  flex: 271,
+                  minContent: AppManagementSizes.customersMinPhone,
+                ),
+                TableColumnSpec(
+                  label: s.colEmail(),
+                  flex: 436,
+                  minContent: AppManagementSizes.customersMinEmail,
+                ),
+                TableColumnSpec(
+                  label: s.colMembership(),
+                  flex: 241,
+                  minContent: AppManagementSizes.customersMinMembership,
+                ),
+                TableColumnSpec(
+                  label: s.colPoints(),
+                  flex: 157,
+                  minContent: AppManagementSizes.customersMinPoints,
+                ),
               ],
               rowCount: rows.length,
               cellsOf: (context, i) {
@@ -57,7 +78,7 @@ class CustomersView extends GetView<CustomersPageController> {
                 return <Widget>[
                   TableText(c.name),
                   TableText(orDash(c.phone), oneLine: true),
-                  TableText(orDash(c.email)),
+                  TableText(orDash(c.email), ellipsis: true),
                   TableText(orDash(c.member), oneLine: true),
                   TableText(s.countBadge(c.points), oneLine: true),
                 ];

@@ -67,10 +67,28 @@ abstract final class AppManagementSizes {
 
   /// Sales table min-content widths (the longest unbreakable word at the
   /// 14 px table font, measured once; the columns never go below them)
-  static const double salesMinBill = 52.0;
+  static const double salesMinBill = 62.0;
   static const double salesMinDate = 78.0;
   static const double salesMinCustomer = 46.0;
   static const double salesMinMode = 40.0;
   static const double salesMinTotal = 60.0;
   static const double salesMinAction = 42.0;
+
+  /// `.returns` max-width, `h3` and `p` margins, `.return-line` padding,
+  /// `.return-line input`, `.returns .primary` margin-top
+  static const double returnsMaxWidth = 550.0;
+  static const double returnsTitleMarginBottom = 18.0;
+  static const double returnsParagraphMarginY = 18.0;
+  static const double returnLinePadY = 17.0;
+  static const double returnInputWidth = 80.0;
+  static const double returnInputHeight = 36.0;
+  static const double returnInputPad = 8.0;
+  static const double returnsButtonMarginTop = 20.0;
+
+  /// Customers table min-content widths (see the Sales ones above)
+  static const double customersMinName = 50.0;
+  static const double customersMinPhone = 80.0;
+  static const double customersMinEmail = 96.0;
+  static const double customersMinMembership = 60.0;
+  static const double customersMinPoints = 44.0;
 }

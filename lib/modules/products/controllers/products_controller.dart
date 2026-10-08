@@ -67,6 +67,20 @@ class ProductsController extends GetxController {
     return _repository.save(products.toList());
   }
 
+  /// Adds returned whole units to the stock in memory (a refund, App.tsx
+  /// 633-639); the caller persists through its own repository.
+  void restock(Map<int, int> units) {
+    for (var i = 0; i < products.length; i++) {
+      final added = units[products[i].id];
+      if (added == null || added == 0) continue;
+      final updated = products[i].copyWith(stock: products[i].stock + added);
+      _byId[updated.id] = updated;
+      _byBarcode[updated.barcode] = updated;
+      _byCode[updated.code.toLowerCase()] = updated;
+      products[i] = updated;
+    }
+  }
+
   void _index(List<Product> list) {
     _byId = <int, Product>{for (final p in list) p.id: p};
     _byBarcode = <String, Product>{};

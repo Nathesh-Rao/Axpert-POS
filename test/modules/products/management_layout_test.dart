@@ -143,7 +143,8 @@ void main() {
             favourite: false,
           ),
         );
-        Get.find<CustomersController>().customers.add(
+        Get.find<CustomersController>().customers.insert(
+          1,
           const Customer(
             id: 'long',
             name: 'Venkata Subramanian Krishnamurthy Iyer',
@@ -241,6 +242,29 @@ void main() {
           <String>['Name', 'Phone', 'Email', 'Membership', 'Points'],
           'Walk-in Customer',
           pad,
+        );
+        // A long email stays on one line, cut with an ellipsis, left of the
+        // next column (it never breaks inside the word).
+        const longEmail =
+            'venkata.subramanian.krishnamurthy.iyer@example-company.in';
+        final email = _r(tester, find.text(longEmail));
+        final member = _r(
+          tester,
+          find.descendant(
+            of: find.byType(AppDataTable),
+            matching: find.text('Membership'),
+          ),
+        );
+        expect(email.height, lessThan(30), reason: 'one line $size');
+        expect(
+          email.right,
+          lessThanOrEqualTo(member.left - AppManagementSizes.cellPadX + 0.6),
+          reason: 'email inside its column $size',
+        );
+        expect(
+          find.byTooltip(longEmail),
+          findsOneWidget,
+          reason: 'the full email is in the tooltip',
         );
         final heading = _r(
           tester,

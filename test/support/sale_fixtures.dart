@@ -11,6 +11,9 @@ Sale testSale({
   String customer = 'Walk-in Customer',
   String mode = 'Cash',
   int totalMinor = 10000,
+  Cart cart = const Cart(),
+  int? valueMinor,
+  Map<int, Qty> returned = const <int, Qty>{},
 }) {
   final total = Money(totalMinor, CurrencyRegistry.inr);
   const zero = Money.zero(CurrencyRegistry.inr);
@@ -19,11 +22,13 @@ Sale testSale({
     date: at.toUtc().toIso8601String(),
     store: 'Maison Galaxy',
     customer: customer,
-    cart: const Cart(),
+    cart: cart,
     totals: SaleTotals(
       items: 1,
       qty: const Qty(1000),
-      value: total,
+      value: valueMinor == null
+          ? total
+          : Money(valueMinor, CurrencyRegistry.inr),
       subtotal: total,
       discount: zero,
       tax: zero,
@@ -33,6 +38,6 @@ Sale testSale({
     mode: mode,
     tendered: total,
     change: zero,
-    returned: const <int, Qty>{},
+    returned: returned,
   );
 }

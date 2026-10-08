@@ -104,6 +104,19 @@ class Sale {
   final Money change;
   final Map<int, Qty> returned;
 
+  Sale copyWith({Map<int, Qty>? returned}) => Sale(
+    number: number,
+    date: date,
+    store: store,
+    customer: customer,
+    cart: cart,
+    totals: totals,
+    mode: mode,
+    tendered: tendered,
+    change: change,
+    returned: returned ?? this.returned,
+  );
+
   Map<String, dynamic> toJson() => <String, dynamic>{
     'number': number,
     'date': date,

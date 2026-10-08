@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/routes/app_pages.dart';
 import 'package:pos_application/core/routes/app_routes.dart';
+import 'package:pos_application/modules/pos/views/pos_view.dart';
 import 'package:pos_application/modules/shell/views/page_placeholder.dart';
 
 import '../../support/test_app.dart';
@@ -34,8 +35,11 @@ void main() {
     final binding = await bootInWidgetTest(tester);
     await tester.pumpWidget(testApp(binding));
     await tester.pumpAndSettle();
-    AppPage shown() =>
-        tester.widget<PagePlaceholder>(find.byType(PagePlaceholder)).page;
+    AppPage shown() {
+      if (find.byType(PosView).evaluate().isNotEmpty) return AppPage.pos;
+      return tester.widget<PagePlaceholder>(find.byType(PagePlaceholder)).page;
+    }
+
     for (final page in AppPage.values) {
       Get.offAllNamed<void>(page.path);
       await tester.pumpAndSettle();

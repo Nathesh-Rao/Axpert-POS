@@ -26,7 +26,7 @@ Status values: `replicated` (Flutter does the same), `deviation` (Flutter differ
 | KG-017 | Online/Offline toggle is cosmetic (banner only); no sync | replicated |
 | KG-018 | Print button is a silent stub (React calls `window.print()`); Email and WhatsApp are "(demo)" toasts | replicated (Print: stub, no feedback) |
 | KG-019 | Subcategory chips for "All Items" and "Favourites" omit Oral Care, Bath & Body, Hair Care, Noodles | replicated |
-| KG-020 | "Sold out" styling exists for stock 0 but add is blocked by a stock toast; stock cannot be adjusted anywhere | replicated |
+| KG-020 | The card gets a `sold-out` class for stock 0 but index.css has NO rule for it (corrected in S3.b: no sold-out styling exists); add is blocked by a stock toast; stock cannot be adjusted anywhere | replicated |
 | KG-021 | Products and Customers pages are read-only (no add/edit/stock adjust for products; customers can only be added) | replicated |
 | KG-022 | Reports cover today only and ignore refunds (see KG-007); Credit counted in Total but not in the Cash/Card closing summary | replicated |
 | KG-023 | Hardcoded values: quick cash amounts 100/500/2000, 5 s toast duration, "MAISON GALAXY"/"Axpert POS" brand text, receipt cashier name | replicated |
@@ -96,3 +96,15 @@ Rows KG-060..063 are placeholders; each phase 2/3 step adds concrete component r
 | KG-087 | Settings toggles use the Material `Checkbox` (not the native checkbox); the full Settings page arrives in S5 | deviation (minor) |
 | KG-088 | The shell has no minimum window size (no window manager package); below 1100 px width only the prototype's own media rules apply | accepted |
 | KG-089 | Placeholder POS panel was zero-sized (invisible) until the real-browser screenshot showed it; fixed. Import cycle `app_strings.dart` <-> `en_app_strings.dart` remains (harmless today, see DEC-080); candidate cleanup in S7 | open (low) |
+
+## E. S3 catalog and cart
+
+| ID | Gap | Status |
+|---|---|---|
+| KG-090 | The catalog header row of the empty cart shows only the "PRODUCT CATALOG / N items" caption (customer chip, sale toggle and add button arrive in S4); its height is a measured placeholder (`AppSizes.emptyCustomerRowHeight`) | temporary (S4) |
+| KG-091 | Product placeholder art (juice carton and care bottle) uses fixed CSS colors with no dark override: same in both modes (`AppProductArt`). The juice carton's inset side shade is a plain strip | replicated / deviation (minor) |
+| KG-092 | Filled stars (favourite, Favourites chip) are a polygon traced from the Lucide path under the outline glyph, not the exact SVG fill | deviation (minor) |
+| KG-093 | A focused product card also activates with Space (React: Enter only) | deviation (minor) |
+| KG-094 | Unverified visually (built from CSS): list view, cards with qty badge, in-cart and hover states, 2-column grid beside the cart (checked against screenshot 2 by eye only), thin scrollbar look, category "next" scrolling, no-results state, focus rings, sizes other than the reference viewport, dark mode | unverified |
+| KG-095 | Search text is debounced 150 ms (React filters on every keystroke); cards are built lazily so a screenshot-free review is needed for 10k products (S3.d numbers) | deviation (approved) |
+

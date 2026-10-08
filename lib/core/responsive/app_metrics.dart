@@ -110,6 +110,39 @@ class AppMetrics {
   double get productPriceFont => _c.vw(12, .85, 15);
   double get productStepperButton => _c.vw(23, 1.8, 30);
   double get productStepperFirst => _c.vw(20, 1.6, 25);
+
+  /// `clamp(12px,.82vw,14px)`: field input, product name, category and
+  /// subcategory chip text (the later screen block wins over the clamp(10..13)
+  /// block).
+  double get catalogFont => _c.vw(12, .82, 14);
+
+  /// `.product-list .product-name`, `clamp(11px,.85vw,14px)`.
+  double get productListNameFont => _c.vw(11, .85, 14);
+
+  /// Product code (`.product-info > small`), 12 in the later block.
+  double get productCodeFont => 12;
+
+  /// Chip heights: vertical padding twice plus the 1.5 line height (the
+  /// category icon, 18, is smaller than the line).
+  double get categoryChipHeight => 2 * categoryPadY + catalogFont * 1.5;
+  double get subcategoryChipHeight => 2 * subcategoryPadY + catalogFont * 1.5;
+
+  /// Grid card: border, padding, image (margins 4 and 8), name line plus 4,
+  /// code line, 5 gap and the stepper row.
+  double get productCardHeight =>
+      2 +
+      2 * productCardPad +
+      4 +
+      productImageHeight +
+      8 +
+      catalogFont * 1.5 +
+      4 +
+      productCodeFont * 1.5 +
+      5 +
+      productStepperButton;
+
+  /// `.product-list .product-card` height, `clamp(72px,9vh,90px)`.
+  double get productListCardHeight => _c.vh(72, 9, 90);
   double get cartHeadingMinHeight => _c.vh(32, 4.5, 44);
   double get cartHeadingGap => _c.vw(5, .5, 9);
   double get cartHeadingFont => _c.vw(17, 1.25, 22);

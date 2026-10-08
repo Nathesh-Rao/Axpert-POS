@@ -180,6 +180,45 @@ abstract final class AppSizes {
   /// .app min-height (dead: 236 screen block sets 0)
   static const double appMinHeight = 650.0;
 
+  /// Decode width for product images (bounds memory with 10k products).
+  static const double productImageCacheWidth = 256.0;
+
+  /// `.categories button svg` and the category chip icon.
+  static const double categoryIcon = 18.0;
+
+  /// `.chip-next` min-width (screen block).
+  static const double chipNextMinWidth = 26.0;
+
+  /// `.chip-next svg` (ChevronRight size 20 in JSX).
+  static const double chipNextIcon = 20.0;
+
+  /// Search icon in `.field` (JSX size 19) and the clear button icon (15).
+  static const double fieldSearchIcon = 19.0;
+  static const double fieldClearIcon = 15.0;
+
+  /// `.view-toggle` icons (JSX sizes 19 and 21).
+  static const double viewGridIcon = 19.0;
+  static const double viewListIcon = 21.0;
+
+  /// Product card: favourite star (svg 15), stepper icons (16 and 19).
+  static const double favouriteIcon = 15.0;
+  static const double stepperMinusIcon = 16.0;
+  static const double stepperPlusIcon = 19.0;
+
+  /// `.product-list .product-image` (screen block).
+  static const double productListImageWidth = 45.0;
+  static const double productListImageHeight = 54.0;
+
+  /// `.no-results` search icon (JSX size 32).
+  static const double noResultsIcon = 32.0;
+
+  /// Height of the `.empty-customer` row content until the S4 customer chip
+  /// exists (measured from the reference screenshot: chip row about 36 px).
+  static const double emptyCustomerRowHeight = 36.0;
+
+  /// Thin scrollbar (`scrollbar-width: thin`) thumb thickness.
+  static const double scrollbarThickness = 8.0;
+
   /// All values by name, for the css_metrics tests.
   static const Map<String, num> all = <String, num>{
     'topbarHeight': topbarHeight,

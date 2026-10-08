@@ -64,7 +64,7 @@ void main() {
     try {
       await _boot(tester);
       final search = Get.find<SearchFieldController>();
-      await tester.enterText(find.byType(TextField), 'cola');
+      await tester.enterText(find.byType(TextField).first, 'cola');
       search.text.selection = const TextSelection.collapsed(offset: 0);
       await tester.pump();
       await _chord(

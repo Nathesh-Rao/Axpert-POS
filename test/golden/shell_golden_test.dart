@@ -16,6 +16,7 @@ import 'package:pos_application/shared/controllers/overlay_controller.dart';
 import 'package:pos_application/shared/controllers/toast_controller.dart';
 
 import '../support/test_app.dart';
+import 'images.dart';
 import 'harness.dart';
 
 Future<void> _pump(
@@ -41,6 +42,7 @@ Future<void> _pump(
   }
   await tester.pumpWidget(testApp(binding));
   await tester.pumpAndSettle();
+  await settleImages(tester);
   if (route != AppRoutes.pos) {
     Get.offAllNamed<void>(route);
     await tester.pumpAndSettle();

@@ -29,6 +29,9 @@ class CartController extends GetxController {
   final PricingService _pricing;
 
   final Rx<Cart> cart = Cart.empty.obs;
+
+  /// True while the cart has lines (changes only when that flips).
+  final RxBool active = false.obs;
   late final Rx<CartTotals> totals = _totalsOf(Cart.empty).obs;
 
   final Map<int, ValueNotifier<CartLine?>> _lineNotifiers =
@@ -95,6 +98,7 @@ class CartController extends GetxController {
   void _apply(Cart next, {required bool persist}) {
     final previous = cart.value;
     cart.value = next;
+    active.value = next.isActive;
     _recomputeTotals();
     _notifyLines(previous, next);
     if (persist) _persist();

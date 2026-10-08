@@ -144,7 +144,7 @@ void main() {
   testWidgets('search text and focus survive navigation', (tester) async {
     await _boot(tester);
     final search = Get.find<SearchFieldController>();
-    await tester.enterText(find.byType(TextField), 'cola');
+    await tester.enterText(find.byType(TextField).first, 'cola');
     for (final label in <String>['Products', 'Sales', 'More', 'POS']) {
       await tester.tap(
         find.descendant(of: find.byType(Sidebar), matching: find.text(label)),

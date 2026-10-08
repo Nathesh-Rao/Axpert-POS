@@ -30,6 +30,20 @@ void main() {
     'users': LucideIcons.users,
     'volume2': LucideIcons.volume2,
     'x': LucideIcons.x,
+    'star': LucideIcons.star,
+    'cupSoda': LucideIcons.cupSoda,
+    'cookie': LucideIcons.cookie,
+    'bottleWine': LucideIcons.bottleWine,
+    'chevronRight': LucideIcons.chevronRight,
+    'layoutGrid': LucideIcons.layoutGrid,
+    'list': LucideIcons.list,
+    'plus': LucideIcons.plus,
+    'minus': LucideIcons.minus,
+    'trash2': LucideIcons.trash2,
+    'pauseCircle': LucideIcons.pauseCircle,
+    'rotateCcw': LucideIcons.rotateCcw,
+    'package': LucideIcons.package,
+    'indianRupee': LucideIcons.indianRupee,
   };
 
   test('AppIcons equals the lucide_icons_flutter constants', () {

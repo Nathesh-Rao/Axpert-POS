@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../../modules/pos/bindings/pos_binding.dart';
+import '../../modules/pos/views/pos_view.dart';
 import '../../modules/shell/views/page_placeholder.dart';
 import 'app_routes.dart';
 
@@ -16,7 +18,9 @@ abstract final class AppPages {
   static GetPage<dynamic> _page(AppPage page, {String? name}) =>
       GetPage<dynamic>(
         name: name ?? page.path,
-        page: () => PagePlaceholder(page: page),
+        page: () =>
+            page == AppPage.pos ? const PosView() : PagePlaceholder(page: page),
+        binding: page == AppPage.pos ? PosBinding() : null,
         transition: Transition.noTransition,
       );
 }

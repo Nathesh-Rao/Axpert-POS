@@ -61,6 +61,27 @@ abstract class AppStrings {
   String toastDismissTooltip();
   String toastUndo();
 
+  // Catalog
+  String catalogCaptionTitle();
+  String catalogCaptionCount(int count);
+  String categoryAllItems();
+  String categoryFavourites();
+  String subcategoryAll();
+  String moreCategoriesTooltip();
+  String searchProductHint();
+  String clearSearchTooltip();
+  String gridViewTooltip();
+  String listViewTooltip();
+  String favouriteTooltip();
+  String addProductTooltip(String name);
+  String removeOneTooltip(String name);
+  String qtyBadge(String qty);
+  String placeholderJuiceTag();
+  String placeholderCareTag();
+  String noResultsTitle();
+  String noResultsHint();
+  String resetFilters();
+
   // Cart and catalog toasts
   String toastProductAdded(String name);
   String toastProductRemoved(String name);

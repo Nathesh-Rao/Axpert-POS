@@ -57,6 +57,9 @@ abstract final class AppTracking {
 }
 
 abstract final class AppLineHeight {
+  /// Tailwind preflight `html{line-height:1.5}`: every text without its own
+  /// line-height (buttons, inputs, headings) uses it.
+  static const double base = 1.5;
   static const double summaryTitle = 1.1;
   static const double lineName = 1.3;
   static const double lineSmall = 1.2;

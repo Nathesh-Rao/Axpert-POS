@@ -112,6 +112,76 @@ abstract final class AppIcons {
     fontFamily: _family,
     fontPackage: _package,
   );
+  static const IconData star = IconData(
+    57718,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData cupSoda = IconData(
+    58065,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData cookie = IconData(
+    57963,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData bottleWine = IconData(
+    59003,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData chevronRight = IconData(
+    57455,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData layoutGrid = IconData(
+    57599,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData list = IconData(
+    57606,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData plus = IconData(
+    57661,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData minus = IconData(
+    57628,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData trash2 = IconData(
+    57742,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData pauseCircle = IconData(
+    57471,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData rotateCcw = IconData(
+    57672,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData packageBox = IconData(
+    57641,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData indianRupee = IconData(
+    57592,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
 
   /// All icons by name, for the sync test.
   static const Map<String, IconData> all = <String, IconData>{
@@ -134,5 +204,19 @@ abstract final class AppIcons {
     'users': users,
     'volume2': volume2,
     'x': x,
+    'star': star,
+    'cupSoda': cupSoda,
+    'cookie': cookie,
+    'bottleWine': bottleWine,
+    'chevronRight': chevronRight,
+    'layoutGrid': layoutGrid,
+    'list': list,
+    'plus': plus,
+    'minus': minus,
+    'trash2': trash2,
+    'pauseCircle': pauseCircle,
+    'rotateCcw': rotateCcw,
+    'package': packageBox,
+    'indianRupee': indianRupee,
   };
 }

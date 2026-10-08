@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/theme/theme_x.dart';
 import '../../core/theme/tokens/app_sizes.dart';
@@ -73,6 +74,11 @@ class _PressableBodyState extends State<_PressableBody> {
       mouseCursor: enabled ? SystemMouseCursors.click : MouseCursor.defer,
       onShowHoverHighlight: (v) => setState(() => _hovered = v),
       onShowFocusHighlight: (v) => setState(() => _focused = v),
+      // Enter always activates (the web defaults do not map it).
+      shortcuts: const <ShortcutActivator, Intent>{
+        SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+        SingleActivator(LogicalKeyboardKey.numpadEnter): ActivateIntent(),
+      },
       actions: <Type, Action<Intent>>{
         ActivateIntent: CallbackAction<ActivateIntent>(
           onInvoke: (_) {

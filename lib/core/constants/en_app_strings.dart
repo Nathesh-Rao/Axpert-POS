@@ -171,4 +171,61 @@ class EnAppStrings extends AppStrings {
 
   @override
   String toastStockOnly(int stock) => 'Only $stock available in stock';
+
+  @override
+  String catalogCaptionTitle() => 'PRODUCT CATALOG';
+
+  @override
+  String catalogCaptionCount(int count) => '$count items';
+
+  @override
+  String categoryAllItems() => 'All Items';
+
+  @override
+  String categoryFavourites() => 'Favourites';
+
+  @override
+  String subcategoryAll() => 'All';
+
+  @override
+  String moreCategoriesTooltip() => 'More categories';
+
+  @override
+  String searchProductHint() => 'Search product by name or code...';
+
+  @override
+  String clearSearchTooltip() => 'Clear search';
+
+  @override
+  String gridViewTooltip() => 'Grid view';
+
+  @override
+  String listViewTooltip() => 'List view';
+
+  @override
+  String favouriteTooltip() => 'Toggle favourite';
+
+  @override
+  String addProductTooltip(String name) => 'Add $name';
+
+  @override
+  String removeOneTooltip(String name) => 'Remove one $name';
+
+  @override
+  String qtyBadge(String qty) => 'x$qty';
+
+  @override
+  String placeholderJuiceTag() => '100% JUICE';
+
+  @override
+  String placeholderCareTag() => 'DAILY CARE';
+
+  @override
+  String noResultsTitle() => 'No products found';
+
+  @override
+  String noResultsHint() => 'Try another name or category.';
+
+  @override
+  String resetFilters() => 'Reset filters';
 }

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../../core/constants/app_strings_x.dart';
 import '../../../../core/responsive/app_metrics_scope.dart';
+import '../../../../core/responsive/summary_metrics.dart';
 import '../../../../core/services/pricing/money.dart';
 import '../../../../core/theme/theme_x.dart';
 import '../../../../core/theme/tokens/app_checkout_sizes.dart';
@@ -94,13 +95,17 @@ class CashPanel extends StatelessWidget {
                     focusNode: pay.tenderedFocus,
                     style: context.text
                         .fluid(
-                          context.metrics.tenderedFont,
+                          sm.tenderedFont,
                           weight: AppFontWeight.semiBold,
+                          height: SummaryMetrics.inputLineHeight,
                         )
                         .copyWith(color: c.text),
                     height: sm.tenderedHeight,
                     radius: AppRadii.r8,
-                    padding: const EdgeInsets.all(AppSpacing.s8),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppSpacing.s8,
+                      vertical: sm.tenderedPadY,
+                    ),
                     hint: s.amountTenderedHint(),
                     enabled: inputsOn,
                     decimal: true,

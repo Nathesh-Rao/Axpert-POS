@@ -37,7 +37,6 @@ abstract final class AppCheckoutSizes {
   static const double rateInputWidth = 50.0;
   static const double rateGap = 7.0;
   static const double rateMarginTop = 4.0;
-  static const double rateFont = 12.0;
 
   /// `.currency-row > div`
   static const double currencyGap = 10.0;

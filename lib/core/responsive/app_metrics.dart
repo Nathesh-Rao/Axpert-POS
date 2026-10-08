@@ -280,6 +280,5 @@ class AppMetrics {
   double get checkoutGap => summary.checkoutGap;
   double get paymentButtonHeight => summary.paymentButtonHeight;
   double get paymentButtonFont => summary.paymentButtonFont;
-  double get tenderedFont => _c.vw(18, 1.25, 22);
   double get quickActionTile => summary.quickActionSize;
 }

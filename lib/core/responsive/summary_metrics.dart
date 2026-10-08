@@ -39,6 +39,9 @@ class SummaryMetrics {
     required this.inlineGap,
     required this.inlineAmountHeight,
     required this.tenderedHeight,
+    required this.tenderedPadY,
+    required this.tenderedFont,
+    required this.rateFont,
     required this.quickAmountHeight,
     required this.quickAmountFont,
     required this.completeHeight,
@@ -48,6 +51,35 @@ class SummaryMetrics {
     required this.quickActionsGap,
     required this.quickActionSize,
   });
+
+  /// `clamp(18px,1.25vw,22px)` capped to what fits in the input: the inner
+  /// height (field height minus the 2 px border and both paddings) over the
+  /// input line height.
+  /// Line height factor of the tendered and rate texts.
+  static const double inputLineHeight = 1.15;
+
+  static double _tenderedFont(double height, double padY, ClampRule c) {
+    final fits = (height - 2 - 2 * padY) / inputLineHeight;
+    final wanted = c.vw(18, 1.25, 22);
+    return wanted < fits ? wanted : fits;
+  }
+
+  /// Height of the rate row text box: the label height, or the font's line
+  /// (1.2) when that is taller, so the text is never cut.
+  double get rateRowHeight {
+    final line = (rateFont * inputLineHeight).ceilToDouble();
+    return line > rateLabelHeight ? line : rateLabelHeight;
+  }
+
+  /// Smallest gap between two cards (and the quick actions) and the largest
+  /// one free height is spread to before it collects between the member card
+  /// and the checkout section (user-approved deviation from the media rules,
+  /// DEC-099).
+  static const double minCardGap = 8;
+  static const double maxCardGap = 16;
+
+  /// The gap this density starts from: the CSS gap, never below [minCardGap].
+  double get baseGap => gap < minCardGap ? minCardGap : gap;
 
   /// Values for [density] in a window of [c]'s size.
   factory SummaryMetrics.of(SummaryDensity density, ClampRule c) {
@@ -84,6 +116,9 @@ class SummaryMetrics {
           inlineGap: c.vh(8, .75, 12),
           inlineAmountHeight: 24,
           tenderedHeight: 44,
+          tenderedPadY: 8,
+          tenderedFont: _tenderedFont(44, 8, c),
+          rateFont: 12,
           quickAmountHeight: 36,
           quickAmountFont: 13,
           completeHeight: 48,
@@ -125,6 +160,9 @@ class SummaryMetrics {
           inlineGap: 4,
           inlineAmountHeight: 22,
           tenderedHeight: 34,
+          tenderedPadY: 4,
+          tenderedFont: _tenderedFont(34, 4, c),
+          rateFont: 12,
           quickAmountHeight: 28,
           quickAmountFont: 13,
           completeHeight: 36,
@@ -166,6 +204,9 @@ class SummaryMetrics {
           inlineGap: 3,
           inlineAmountHeight: 20,
           tenderedHeight: 32,
+          tenderedPadY: 4,
+          tenderedFont: _tenderedFont(32, 4, c),
+          rateFont: 10,
           quickAmountHeight: 26,
           quickAmountFont: 12,
           completeHeight: 34,
@@ -208,6 +249,16 @@ class SummaryMetrics {
   final double inlineGap;
   final double inlineAmountHeight;
   final double tenderedHeight;
+
+  /// Vertical padding and font of the tendered input. The CSS keeps the
+  /// clamp font and 8 px padding at every density, which clips the value in a
+  /// 32 to 34 px field; here the padding shrinks and the font is capped so the
+  /// text always fits (user-approved, DEC-099).
+  final double tenderedPadY;
+  final double tenderedFont;
+
+  /// `.rate-label input` font (10 when tight).
+  final double rateFont;
   final double quickAmountHeight;
   final double quickAmountFont;
   final double completeHeight;

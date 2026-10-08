@@ -104,7 +104,7 @@ class ForexCard extends StatelessWidget {
               ],
             ),
             SizedBox(
-              height: sm.rateLabelHeight + AppCheckoutSizes.rateMarginTop,
+              height: sm.rateRowHeight + AppCheckoutSizes.rateMarginTop,
               child: const Padding(
                 padding: EdgeInsets.only(top: AppCheckoutSizes.rateMarginTop),
                 child: _RateRow(),
@@ -155,7 +155,10 @@ class _RateRowState extends State<_RateRow> {
     final c = context.colors;
     final s = context.strings;
     final style = context.text
-        .fluid(AppCheckoutSizes.rateFont)
+        .fluid(
+          context.metrics.summary.rateFont,
+          height: SummaryMetrics.inputLineHeight,
+        )
         .copyWith(color: c.muted);
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,

@@ -69,7 +69,7 @@ void main() {
       'checkoutGap': (ref.checkoutGap, 10.00),
       'paymentButtonHeight': (ref.paymentButtonHeight, 56.00),
       'paymentButtonFont': (ref.paymentButtonFont, 20.00),
-      'tenderedFont': (ref.tenderedFont, 22.00),
+      'tenderedFont': (ref.summary.tenderedFont, 22.00),
       'quickActionTile': (ref.quickActionTile, 52.00),
       'managementPad': (ref.managementPad, 28.00),
       'modalOverlayPad': (ref.modalOverlayPad, 25.00),

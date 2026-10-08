@@ -753,4 +753,55 @@ class EnAppStrings extends AppStrings {
 
   @override
   String keyFunction(int number) => 'F$number';
+
+  @override
+  String searchPageHint(String page) => 'Search $page...';
+
+  @override
+  String pageNameProducts() => 'products';
+
+  @override
+  String pageNameCustomers() => 'customers';
+
+  @override
+  String pageNameSales() => 'sales';
+
+  @override
+  String colProduct() => 'Product';
+
+  @override
+  String colCodeBarcode() => 'Code / Barcode';
+
+  @override
+  String colCategory() => 'Category';
+
+  @override
+  String colGst() => 'GST';
+
+  @override
+  String colPrice() => 'Price';
+
+  @override
+  String colStock() => 'Stock';
+
+  @override
+  String colName() => 'Name';
+
+  @override
+  String colPhone() => 'Phone';
+
+  @override
+  String colEmail() => 'Email';
+
+  @override
+  String colMembership() => 'Membership';
+
+  @override
+  String colPoints() => 'Points';
+
+  @override
+  String emptyCell() => '—';
+
+  @override
+  String percentSuffix(String value) => '$value%';
 }

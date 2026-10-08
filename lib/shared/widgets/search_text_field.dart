@@ -18,6 +18,7 @@ class SearchTextField extends StatefulWidget {
     required this.clearTooltip,
     required this.onChanged,
     required this.onClear,
+    this.showClear = true,
     super.key,
   });
 
@@ -26,6 +27,10 @@ class SearchTextField extends StatefulWidget {
   final String clearTooltip;
   final ValueChanged<String> onChanged;
   final VoidCallback onClear;
+
+  /// The catalog field has a clear button; the management pages' field does
+  /// not (`.field.search-field` with a bare input).
+  final bool showClear;
 
   @override
   State<SearchTextField> createState() => _SearchTextFieldState();
@@ -96,7 +101,7 @@ class _SearchTextFieldState extends State<SearchTextField> {
             ListenableBuilder(
               listenable: widget.controller,
               builder: (context, _) {
-                if (widget.controller.text.isEmpty) {
+                if (!widget.showClear || widget.controller.text.isEmpty) {
                   return const SizedBox.shrink();
                 }
                 return AppPressable(

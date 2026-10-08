@@ -119,6 +119,11 @@ void main() {
 
   golden('POS light, reference viewport', 'shell_pos_light');
   golden(
+    'Products light, reference viewport',
+    'shell_products_light',
+    route: AppRoutes.products,
+  );
+  golden(
     'Customers light, reference viewport',
     'shell_customers_light',
     route: AppRoutes.customers,

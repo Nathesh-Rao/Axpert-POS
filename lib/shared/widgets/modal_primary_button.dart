@@ -17,6 +17,7 @@ class ModalPrimaryButton extends StatelessWidget {
     required this.onTap,
     this.icon,
     this.marginTop = 0,
+    this.iconSize = AppCheckoutSizes.primaryPlusIcon,
     super.key,
   });
 
@@ -24,6 +25,7 @@ class ModalPrimaryButton extends StatelessWidget {
   final VoidCallback onTap;
   final IconData? icon;
   final double marginTop;
+  final double iconSize;
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +53,7 @@ class ModalPrimaryButton extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               if (icon != null) ...<Widget>[
-                Icon(
-                  icon,
-                  size: AppCheckoutSizes.primaryPlusIcon,
-                  color: c.white,
-                ),
+                Icon(icon, size: iconSize, color: c.white),
                 const SizedBox(width: AppCheckoutSizes.primaryIconGap),
               ],
               Flexible(

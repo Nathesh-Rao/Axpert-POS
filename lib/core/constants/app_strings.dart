@@ -274,4 +274,21 @@ abstract class AppStrings {
   String keyDelete();
   String keyEscape();
   String keyFunction(int number);
+  String searchPageHint(String page);
+  String pageNameProducts();
+  String pageNameCustomers();
+  String pageNameSales();
+  String colProduct();
+  String colCodeBarcode();
+  String colCategory();
+  String colGst();
+  String colPrice();
+  String colStock();
+  String colName();
+  String colPhone();
+  String colEmail();
+  String colMembership();
+  String colPoints();
+  String emptyCell();
+  String percentSuffix(String value);
 }

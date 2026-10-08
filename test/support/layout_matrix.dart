@@ -31,6 +31,11 @@ const List<double> matrixHeights = <double>[
   1000,
 ];
 
+/// The smaller sweep for new screens from S5 on (user decision); the full
+/// sweep above runs once in S7.
+const List<double> smallWidths = <double>[900, 1100, 1280, 1500, 1900];
+const List<double> smallHeights = <double>[600, 733, 900, 1000];
+
 /// The paragraph that renders [finder]'s first match.
 RenderParagraph paragraphOf(WidgetTester tester, Finder finder) {
   final element = finder.evaluate().first;

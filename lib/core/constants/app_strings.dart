@@ -22,4 +22,36 @@ abstract class AppStrings {
   String navMore();
   String titleSettings();
   String workspaceEyebrow();
+
+  // Top bar
+  String brandMark();
+  String brandName();
+  String storeNameOzone();
+  String storeNameCentral();
+  String storeNameMarina();
+  String storeSelectLabel();
+  String searchHint();
+  String searchShortcutMac();
+  String searchShortcutOther();
+  String scanTooltip();
+  String online();
+  String offline();
+  String notificationsTooltip();
+  String notificationsTitle();
+  String notificationLowStock();
+  String notificationSynced();
+  String notificationHeld({required int count});
+  String moreOptionsTooltip();
+  String userInitial();
+  String userName();
+  String userRole();
+  String menuProfile();
+  String menuSettings();
+  String menuShortcuts();
+  String menuLogout();
+
+  // Feedback and placeholders
+  String storeSwitched();
+  String placeholderDialogBody();
+  String dialogClose();
 }

@@ -140,3 +140,11 @@ abstract final class AppShadows {
     'qtyControlRing': qtyControlRing,
   };
 }
+
+extension ShadowSpecListX on List<ShadowSpec> {
+  /// Drawable layers (inset layers are skipped, see DEC-064).
+  List<BoxShadow> get boxShadows => <BoxShadow>[
+    for (final s in this)
+      if (!s.inset) s.toBoxShadow(),
+  ];
+}

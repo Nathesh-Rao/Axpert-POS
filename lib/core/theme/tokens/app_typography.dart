@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 /// (css_metrics.md, "Typography"). Fluid `clamp()` sizes are resolved at the
 /// reference viewport; AppMetrics (step 1.4b) handles other window sizes.
 enum AppFontSize {
+  s8(8),
   s9(9),
   s10(10),
   s11(11),
@@ -119,6 +120,45 @@ abstract final class AppTypography {
   }
 
   /// Material text theme in Roboto Condensed with [color] as text color.
+  /// Any fluid size (the prototype's `clamp()` font sizes, from AppMetrics).
+  static TextStyle fluid(
+    double px, {
+    AppFontWeight weight = AppFontWeight.regular,
+    double? letterSpacing,
+    double? height,
+  }) {
+    if (_useBundledFonts) {
+      return TextStyle(
+        fontFamily: family,
+        fontSize: px,
+        fontWeight: weight.value,
+        letterSpacing: letterSpacing,
+        height: height,
+      );
+    }
+    return GoogleFonts.robotoCondensed(
+      fontSize: px,
+      fontWeight: weight.value,
+      letterSpacing: letterSpacing,
+      height: height,
+    );
+  }
+
+  /// Arial, used by the prototype for the brand mark and the avatar letter.
+  static TextStyle arial(
+    double px, {
+    FontWeight weight = FontWeight.w400,
+    FontStyle style = FontStyle.normal,
+    List<Shadow>? shadows,
+  }) => TextStyle(
+    fontFamily: 'Arial',
+    fontSize: px,
+    fontWeight: weight,
+    fontStyle: style,
+    height: 1,
+    shadows: shadows,
+  );
+
   static TextTheme textTheme(TextTheme base, Color color) {
     final themed = _useBundledFonts
         ? base.apply(fontFamily: family)
@@ -139,6 +179,18 @@ class AppTextStyles extends ThemeExtension<AppTextStyles> {
     double? height,
   }) => AppTypography.style(
     size,
+    weight: weight,
+    letterSpacing: letterSpacing,
+    height: height,
+  );
+
+  TextStyle fluid(
+    double px, {
+    AppFontWeight weight = AppFontWeight.regular,
+    double? letterSpacing,
+    double? height,
+  }) => AppTypography.fluid(
+    px,
     weight: weight,
     letterSpacing: letterSpacing,
     height: height,

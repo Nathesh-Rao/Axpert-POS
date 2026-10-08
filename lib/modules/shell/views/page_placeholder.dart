@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_strings_x.dart';
 import '../../../core/routes/app_routes.dart';
+import 'app_shell.dart';
 
-/// Temporary page body until the shell frame arrives (S2.c).
+/// Temporary page body until the real screens arrive (S3 onwards).
 class PagePlaceholder extends StatelessWidget {
   const PagePlaceholder({required this.page, super.key});
 
@@ -21,6 +22,9 @@ class PagePlaceholder extends StatelessWidget {
       AppPage.reports => s.navReports(),
       AppPage.more => s.titleSettings(),
     };
-    return Scaffold(body: Center(child: Text(title)));
+    return AppShell(
+      page: page,
+      child: Center(child: Text(title)),
+    );
   }
 }

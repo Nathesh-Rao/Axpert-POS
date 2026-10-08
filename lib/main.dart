@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/bindings/initial_binding.dart';
 import 'core/constants/app_strings.dart';
+import 'core/responsive/responsive_layout.dart';
 import 'core/routes/app_pages.dart';
 import 'core/routes/url_strategy.dart';
 import 'core/services/storage/shared_prefs_local_store.dart';
@@ -39,11 +40,13 @@ class PosApp extends StatelessWidget {
     final settings = Get.find<SettingsController>();
     return Obx(
       () => GetMaterialApp(
+        debugShowCheckedModeBanner: false,
         title: AppStrings.current.appTitle(),
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
         themeMode: settings.dark ? ThemeMode.dark : ThemeMode.light,
         initialBinding: binding,
+        builder: (context, child) => ResponsiveLayout(child: child!),
         getPages: AppPages.pages,
         unknownRoute: AppPages.unknown,
         home: _showSwatch ? const ThemeSwatchPage() : null,

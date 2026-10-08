@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/routes/app_pages.dart';
 import 'package:pos_application/core/routes/app_routes.dart';
+import 'package:pos_application/modules/shell/views/page_placeholder.dart';
 
 import '../../support/test_app.dart';
 
@@ -33,22 +34,15 @@ void main() {
     final binding = await bootInWidgetTest(tester);
     await tester.pumpWidget(testApp(binding));
     await tester.pumpAndSettle();
-    const titles = <String, String>{
-      AppRoutes.products: 'Products',
-      AppRoutes.customers: 'Customers',
-      AppRoutes.sales: 'Sales',
-      AppRoutes.returns: 'Returns',
-      AppRoutes.reports: 'Reports',
-      AppRoutes.more: 'Settings',
-      AppRoutes.pos: 'POS',
-    };
-    for (final entry in titles.entries) {
-      Get.offAllNamed<void>(entry.key);
+    AppPage shown() =>
+        tester.widget<PagePlaceholder>(find.byType(PagePlaceholder)).page;
+    for (final page in AppPage.values) {
+      Get.offAllNamed<void>(page.path);
       await tester.pumpAndSettle();
-      expect(find.text(entry.value), findsOneWidget, reason: entry.key);
+      expect(shown(), page, reason: page.path);
     }
     Get.offAllNamed<void>('/does-not-exist');
     await tester.pumpAndSettle();
-    expect(find.text('POS'), findsOneWidget);
+    expect(shown(), AppPage.pos);
   });
 }

@@ -11,6 +11,6 @@ void main() {
     await tester.pumpWidget(testApp(binding));
     await tester.pumpAndSettle();
     expect(find.byType(PosApp), findsOneWidget);
-    expect(find.text('POS'), findsOneWidget);
+    expect(find.text('Axpert POS'), findsOneWidget);
   });
 }

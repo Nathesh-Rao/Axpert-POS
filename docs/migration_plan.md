@@ -55,3 +55,4 @@ Each Phase 2-4 step gets its own `plan_phaseX.md` when we reach it.
 - Scale between screenshot pixels and CSS px calibrated in 1.2.
 - User reviews `test/fixtures/known_ties.json` after 1.3b generates it.
 - iOS added only in Phase 4 if approved.
+- Revisit bundling fonts at the start of Phase B (google_fonts 6.3.3 is two majors behind; offline first launch). See DEC-044, DEC-055, KG-078.

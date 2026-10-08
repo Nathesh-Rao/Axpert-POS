@@ -35,7 +35,7 @@ Status values: `replicated` (Flutter does the same), `deviation` (Flutter differ
 | KG-026 | React float artifacts at exact half-minor-unit boundaries: Flutter rounds exactly half-up; accepted 1-unit mismatches are listed in `test/fixtures/known_ties.json` (reviewed by the user) | deviation (approved) |
 | KG-027 | One shared `filter` string serves the catalog filter and the Products/Customers/Sales search boxes; cleared only by sidebar clicks, not by browser back | replicated |
 | KG-028 | Persistence: React `localStorage` data is not imported; Flutter seeds from mock data on first run via `LocalStore` | deviation (approved) |
-| KG-029 | Summary panel width differs between POS (`clamp(300px,24vw,380px)`) and other pages (about 310px) | replicated |
+| KG-029 | Summary panel width differs between POS (`clamp(300px,24vw,380px)` = 380 at the reference viewport) and other pages (310px). CONFIRMED in step 1.2: `.alternate-main{grid-template-columns:minmax(0,1fr) 310px!important}` (line 5) beats the later screen-block rule; measured 426 px vs 348 px in the screenshots (= 380 and 310 CSS px at scale 1.125) | replicated |
 | KG-030 | Prototype has no layout for portrait or very narrow windows (below about 1000px); Flutter adds none (target: desktop and tablet landscape) | not built |
 
 ## B. Visual verification status
@@ -71,3 +71,17 @@ Components that will therefore look the same as light (to be completed per compo
 | KG-063 | Input/select/field backgrounds that use variables follow the dark variables; any fixed hex backgrounds do not | to confirm per component |
 
 Rows KG-060..063 are placeholders; each phase 2/3 step adds concrete component rows here.
+
+## D. Theme and tokens (step 1.2)
+
+| ID | Area | Status |
+|---|---|---|
+| KG-070 | ALL dark values (`AppColors.dark`, the 13 `.dark` rules and their specificity quirks, `css_metrics.md` section 4) | unverified visually (no dark screenshot) |
+| KG-071 | Tokens for modals, drawers, popovers, toasts, tooltips, receipt, More/Settings (colors, shadows, sizes) | unverified visually (built from CSS) |
+| KG-072 | Fluid `clamp(vw/vh)` values and every media-query rule (`css_metrics.md` sections 10, 11); fluid ones marked "fluid" move with the exact window size | unverified visually except the reference viewport |
+| KG-073 | Inset box-shadows (pay-button pressed highlight, qty control ring, quick-action hover ring) cannot be a Flutter `BoxShadow`; drawn by widgets later | open |
+| KG-074 | Dark `.product-image img` `mix-blend-mode: normal` and 4px radius are kept as `AppColors` flags (`productImageMultiply`, `productImageRadius`); multiply blending of the product PNGs in light mode must be done in the image widget | open |
+| KG-075 | Roboto Condensed text anti-aliasing and sub-pixel positioning differ between Chrome/macOS and Flutter; the specimen golden compares colors and type only | accepted (see KG-051) |
+| KG-076 | Screenshot colors are shifted by 1-3 per channel against the CSS hex (macOS capture colour profile), e.g. page bg `#f0f4f8` vs `#eff4f9`, red action tile `#fcf1f3` vs `#fff0f3`, selected tab `#e6effd` vs `#e4efff`. Colors are compared with a tolerance; the CSS value is the truth | accepted |
+| KG-077 | Flutter text runs about 1-3 % wider/narrower than Chrome for the same string (hinting, sub-pixel advance), e.g. "Subtotal" 49 px vs 47 px ink width at 13 px | accepted (see KG-051) |
+| KG-078 | Fonts are fetched at runtime via `google_fonts` 6.3.3; offline first launch falls back to the system font; brief fallback flash on web; macOS `com.apple.security.network.client` entitlement and Android `INTERNET` permission required. Bundling is a one-file change in `app_typography.dart` (Phase B, DEC-044, DEC-055) | accepted

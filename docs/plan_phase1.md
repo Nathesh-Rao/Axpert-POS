@@ -24,7 +24,7 @@ Run `/clear` between every step. `/compact` only inside 1.3b and 1.4c as noted.
 
 **Prerequisites:**
 - The four Roboto Condensed static TTFs placed in `pos_application/assets/fonts/`: `RobotoCondensed-Regular.ttf` (400), `RobotoCondensed-Medium.ttf` (500), `RobotoCondensed-SemiBold.ttf` (600), `RobotoCondensed-Bold.ttf` (700), plus `OFL.txt` (from fonts.google.com "Get font", `static/` folder; verify the exact names in the ZIP).
-- Packages approved: `get`, `lucide_icons_flutter`, `shared_preferences`, `google_fonts` 8.2.1 pinned (DEC-044, DEC-055) (added in this step, not before). Flutter stays on 3.38.4 (no `flutter upgrade`).
+- Packages approved: `get`, `lucide_icons_flutter`, `shared_preferences`, `google_fonts` 6.3.3 pinned (DEC-044, DEC-055; 8.2.1 has no Roboto Condensed) (added in this step, not before). Flutter stays on 3.38.4 (no `flutter upgrade`).
 - No screenshots needed.
 
 **Files created or changed:**
@@ -64,7 +64,7 @@ Run `/clear` between every step. `/compact` only inside 1.3b and 1.4c as noted.
 - `test/golden/harness.dart` (load Roboto Condensed + Lucide fonts via `FontLoader`, set window size and DPR, tolerance comparator) and a swatch/type specimen golden.
 - `assets`/fonts declared in 1.1 are used here.
 
-**Scale calibration:** measure fixed CSS-size elements in the screenshots (top bar 64 CSS px, summary panel max 380, sidebar 80) with `sips` crops + viewing (no image tool installed); expected scale about 1.11. Record the scale S and the golden logical size = (2124/S) x (1180/S) at DPR S, so a golden renders to 2124x1180 px.
+**Scale calibration:** measure fixed CSS-size elements in the screenshots (top bar 64 CSS px, summary panel max 380, sidebar 80) with `sips` crops + viewing (no image tool installed); measured scale 1.125 (done in 1.2, `css_metrics.md` section 1); golden logical size 1868.44 x 1034.67 at DPR 1.125 = 2102x1164 px page area.
 
 **Order:** extract and resolve CSS -> write `css_metrics.md` -> light tokens -> dark tokens (13 rules; everything else identical in both modes and listed in `known_gaps.md` section C) -> ThemeData/extensions/helpers -> golden harness -> specimen golden -> checks.
 
@@ -74,7 +74,7 @@ Run `/clear` between every step. `/compact` only inside 1.3b and 1.4c as noted.
 - [ ] Every token traces to a CSS line in `css_metrics.md`
 - [ ] No hardcoded styling values outside the token files
 - [ ] Specimen compared to screenshot crops at the reference viewport; differences listed
-- [ ] Scale S recorded; harness produces 2124x1180 px output
+- [x] Scale 1.125 recorded (DEC-062 corrected); harness produces the 2102x1164 px page area (crop offset 10,8)
 - [ ] Standard checks pass
 
 ---
@@ -169,6 +169,8 @@ Run `/clear` between every step. `/compact` only inside 1.3b and 1.4c as noted.
 - Top bar: brand mark, store select, global search field (`FocusNode` from `SearchFieldController`) with platform-aware shortcut hint and scan button, online chip, notifications popover with badge, profile and kebab menu (same menu opened by both).
 - Sidebar: 7 items (POS, Products, Customers, Sales, Returns, Reports, More) with active gradient + 2px bar, hover, focus.
 - Offline banner; Bill Summary frame (static layout, correct width on POS vs other pages, no data yet); toast host (above dialogs, via builder); overlay host; placeholder pages for the 7 routes; dark-mode toggle wiring via `SettingsController`; shortcut skeleton (`Shortcuts`/`Actions` above the Navigator, Ctrl and Cmd bindings for K, F2-F6, Esc, Delete) with platform-aware labels.
+
+**Delete in this step (DEC-065):** the TEMPORARY debug token swatch page `lib/core/theme/debug/`, its `?swatch` / `SWATCH` hook in `main.dart`, and `test/golden/specimen_golden_test.dart` plus its goldens (replaced by real shell goldens).
 
 **Order:** top bar -> sidebar -> summary frame -> toast and overlay hosts -> shortcuts -> placeholders -> goldens (reference viewport light for comparison; other sizes and dark as regression).
 

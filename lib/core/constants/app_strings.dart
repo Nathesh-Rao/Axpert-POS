@@ -61,6 +61,12 @@ abstract class AppStrings {
   String toastDismissTooltip();
   String toastUndo();
 
+  // Cart and catalog toasts
+  String toastProductAdded(String name);
+  String toastProductRemoved(String name);
+  String toastStockAvailable(int stock);
+  String toastStockOnly(int stock);
+
   // Shortcuts (demo until S3/S4) and settings toggles
   String shortcutDemo({required String action});
   String shortcutCash();

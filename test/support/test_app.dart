@@ -6,7 +6,6 @@ import 'package:pos_application/core/services/storage/in_memory_local_store.dart
 import 'package:pos_application/core/services/storage/local_store.dart';
 import 'package:pos_application/core/theme/tokens/app_typography.dart';
 import 'package:pos_application/main.dart';
-import 'package:pos_application/modules/shell/controllers/settings_controller.dart';
 
 /// Fresh Get registry, in-memory store, zero mock delay, bundled test fonts.
 Future<InitialBinding> bootTestApp({LocalStore? store}) async {
@@ -15,7 +14,7 @@ Future<InitialBinding> bootTestApp({LocalStore? store}) async {
   Get.reset();
   final binding = InitialBinding(store ?? InMemoryLocalStore());
   binding.dependencies();
-  await Get.find<SettingsController>().load();
+  await binding.loadData();
   return binding;
 }
 

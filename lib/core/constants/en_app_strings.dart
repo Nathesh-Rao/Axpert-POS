@@ -159,4 +159,16 @@ class EnAppStrings extends AppStrings {
 
   @override
   String beepHint() => 'Play a sound after a successful scan';
+
+  @override
+  String toastProductAdded(String name) => '$name added';
+
+  @override
+  String toastProductRemoved(String name) => '$name removed';
+
+  @override
+  String toastStockAvailable(int stock) => 'Available stock: $stock';
+
+  @override
+  String toastStockOnly(int stock) => 'Only $stock available in stock';
 }

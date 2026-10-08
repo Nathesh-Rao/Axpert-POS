@@ -20,7 +20,7 @@ Future<void> main() async {
   final prefs = await SharedPreferences.getInstance();
   final binding = InitialBinding(SharedPrefsLocalStore(prefs));
   binding.dependencies();
-  await Get.find<SettingsController>().load();
+  await binding.loadData();
   runApp(PosApp(binding: binding));
 }
 

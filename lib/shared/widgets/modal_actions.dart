@@ -9,9 +9,10 @@ import '../../core/theme/tokens/app_typography.dart';
 import 'app_pressable.dart';
 
 /// `.modal-actions`: a secondary and a primary button, right aligned, 9 px
-/// apart, 20 px above and 8 px below. Like the prototype, the primary button
-/// carries a 20 px top margin inside the flex row, so the secondary button
-/// stretches to the taller row.
+/// apart, 20 px above and 8 px below. DEC-112 (user-approved deviation): the
+/// prototype's `.primary{margin-top:20px}` quirk is NOT reproduced, so both
+/// buttons have the same height and top/bottom edges (a wrapped label makes
+/// both taller) and their labels share a baseline.
 class ModalActions extends StatelessWidget {
   const ModalActions({
     required this.secondaryLabel,
@@ -76,33 +77,28 @@ class ModalActions extends StatelessWidget {
             ),
             const SizedBox(width: AppSpacing.s9),
             Flexible(
-              child: Padding(
-                padding: const EdgeInsets.only(top: AppSpacing.s20),
-                child: Opacity(
-                  opacity: primaryEnabled
-                      ? 1
-                      : AppCheckoutSizes.disabledOpacity,
-                  child: AppPressable(
-                    borderRadius: AppRadii.r8,
-                    onTap: primaryEnabled ? onPrimary : null,
-                    builder: (context, hovered) => Container(
-                      constraints: const BoxConstraints(
-                        minHeight: AppSizes.controlMinHeight,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.s18,
-                        vertical: AppSpacing.s12,
-                      ),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: c.primary,
-                        borderRadius: BorderRadius.circular(AppRadii.r8),
-                      ),
-                      child: Text(
-                        primaryLabel,
-                        textAlign: TextAlign.center,
-                        style: label.copyWith(color: c.white),
-                      ),
+              child: Opacity(
+                opacity: primaryEnabled ? 1 : AppCheckoutSizes.disabledOpacity,
+                child: AppPressable(
+                  borderRadius: AppRadii.r8,
+                  onTap: primaryEnabled ? onPrimary : null,
+                  builder: (context, hovered) => Container(
+                    constraints: const BoxConstraints(
+                      minHeight: AppSizes.controlMinHeight,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.s18,
+                      vertical: AppSpacing.s12,
+                    ),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: c.primary,
+                      borderRadius: BorderRadius.circular(AppRadii.r8),
+                    ),
+                    child: Text(
+                      primaryLabel,
+                      textAlign: TextAlign.center,
+                      style: label.copyWith(color: c.white),
                     ),
                   ),
                 ),

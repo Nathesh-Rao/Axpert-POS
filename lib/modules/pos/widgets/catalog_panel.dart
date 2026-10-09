@@ -110,83 +110,101 @@ class _EmptyCartHeader extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(bottom: BorderSide(color: c.border)),
           ),
+          // `margin-left:auto` on the caption: the chip, the sale toggle and the
+          // add button keep their natural width at the left (the chip only
+          // shrinks when it must) and the caption sits at the right edge.
           child: Row(
             children: <Widget>[
-              Flexible(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.s7,
-                    vertical: AppSpacing.s5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: c.secondary,
-                    borderRadius: BorderRadius.circular(AppRadii.r7),
-                    border: Border.all(
-                      color: c.border,
-                      width: AppSizes.borderWidth,
-                    ),
-                  ),
-                  // Below the supported widths the chip scales down instead of
-                  // overflowing.
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Icon(
-                          AppIcons.userRound,
-                          size: AppCheckoutSizes.chipIcon,
-                          color: c.fieldIcon,
-                        ),
-                        const SizedBox(width: AppSpacing.s5),
-                        SizedBox(
-                          width: m.customerSelectWidth,
-                          child: CustomerSelect(
-                            style: context.text.fluid(m.customerSelectFont),
-                            semanticLabel: s.customerLabel(),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Flexible(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.s7,
+                            vertical: AppSpacing.s5,
                           ),
-                        ),
-                        const SizedBox(width: AppSpacing.s5),
-                        AppPressable(
-                          tooltip: s.customerSearchTooltip(),
-                          borderRadius: AppRadii.r6,
-                          onTap: () => overlay.open('customers'),
-                          builder: (context, hovered) => Container(
-                            padding: const EdgeInsets.only(left: AppSpacing.s5),
-                            decoration: BoxDecoration(
-                              border: Border(left: BorderSide(color: c.border)),
-                            ),
-                            child: Icon(
-                              AppIcons.search,
-                              size: AppCheckoutSizes.chipSearchIcon,
-                              color: c.fieldIcon,
+                          decoration: BoxDecoration(
+                            color: c.secondary,
+                            borderRadius: BorderRadius.circular(AppRadii.r7),
+                            border: Border.all(
+                              color: c.border,
+                              width: AppSizes.borderWidth,
                             ),
                           ),
+                          // Below the supported widths the chip scales down instead of
+                          // overflowing.
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Icon(
+                                  AppIcons.userRound,
+                                  size: AppCheckoutSizes.chipIcon,
+                                  color: c.fieldIcon,
+                                ),
+                                const SizedBox(width: AppSpacing.s5),
+                                SizedBox(
+                                  width: m.customerSelectWidth,
+                                  child: CustomerSelect(
+                                    style: context.text.fluid(
+                                      m.customerSelectFont,
+                                    ),
+                                    semanticLabel: s.customerLabel(),
+                                  ),
+                                ),
+                                const SizedBox(width: AppSpacing.s5),
+                                AppPressable(
+                                  tooltip: s.customerSearchTooltip(),
+                                  borderRadius: AppRadii.r6,
+                                  onTap: () => overlay.open('customers'),
+                                  builder: (context, hovered) => Container(
+                                    padding: const EdgeInsets.only(
+                                      left: AppSpacing.s5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        left: BorderSide(color: c.border),
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      AppIcons.search,
+                                      size: AppCheckoutSizes.chipSearchIcon,
+                                      color: c.fieldIcon,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: AppSpacing.s6),
-              const SaleToggle(),
-              const SizedBox(width: AppSpacing.s6),
-              AppPressable(
-                tooltip: s.addCustomerTooltip(),
-                borderRadius: AppRadii.r6,
-                onTap: () => overlay.open('addCustomer'),
-                builder: (context, hovered) => Padding(
-                  padding: const EdgeInsets.all(AppSpacing.s6),
-                  child: Icon(
-                    AppIcons.plus,
-                    size: AppCheckoutSizes.headerAddIcon,
-                    color: c.text,
+                      ),
+                      const SizedBox(width: AppSpacing.s6),
+                      const SaleToggle(),
+                      const SizedBox(width: AppSpacing.s6),
+                      AppPressable(
+                        tooltip: s.addCustomerTooltip(),
+                        borderRadius: AppRadii.r6,
+                        onTap: () => overlay.open('addCustomer'),
+                        builder: (context, hovered) => Padding(
+                          padding: const EdgeInsets.all(AppSpacing.s6),
+                          child: Icon(
+                            AppIcons.plus,
+                            size: AppCheckoutSizes.headerAddIcon,
+                            color: c.text,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
               if (!m.atMost1280) ...<Widget>[
-                const Spacer(),
                 Obx(
                   () => Column(
                     mainAxisSize: MainAxisSize.min,

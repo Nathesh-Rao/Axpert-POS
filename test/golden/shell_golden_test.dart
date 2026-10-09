@@ -138,31 +138,46 @@ void main() {
     }, skip: skip);
   }
 
+  Future<void> addLays(WidgetTester tester) async {
+    final lays = Get.find<ProductsController>().byId(5)!;
+    Get.find<CartActionsController>().add(lays);
+    await tester.pump();
+    await tester.pump(const Duration(seconds: 2)); // highlight ends
+    Get.find<ToastController>().toasts.clear();
+    await tester.pumpAndSettle();
+    await settleImages(tester);
+  }
+
   golden('POS light, reference viewport', 'shell_pos_light');
   golden(
     'Products light, reference viewport',
     'shell_products_light',
     route: AppRoutes.products,
+    after: addLays,
   );
   golden(
     'Customers light, reference viewport',
     'shell_customers_light',
     route: AppRoutes.customers,
+    after: addLays,
   );
   golden(
     'Sales empty light, reference viewport',
     'shell_sales_light',
     route: AppRoutes.sales,
+    after: addLays,
   );
   golden(
     'Reports zeros light, reference viewport',
     'shell_reports_light',
     route: AppRoutes.reports,
+    after: addLays,
   );
   golden(
     'Returns empty light, reference viewport',
     'shell_returns_light',
     route: AppRoutes.returns,
+    after: addLays,
   );
   golden(
     'Returns matched bill light (unverified visually)',
@@ -241,16 +256,6 @@ void main() {
       await tester.pumpAndSettle();
     },
   );
-  Future<void> addLays(WidgetTester tester) async {
-    final lays = Get.find<ProductsController>().byId(5)!;
-    Get.find<CartActionsController>().add(lays);
-    await tester.pump();
-    await tester.pump(const Duration(seconds: 2)); // highlight ends
-    Get.find<ToastController>().toasts.clear();
-    await tester.pumpAndSettle();
-    await settleImages(tester);
-  }
-
   golden(
     'POS with one line (Lays Classic), reference viewport',
     'pos_one_line_light',

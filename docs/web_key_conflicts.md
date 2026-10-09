@@ -18,6 +18,9 @@ Engine fact (Flutter SDK `keyboard_binding.dart`): when the framework handles a 
 
 Options (choose after the manual test): **A** keep the F-keys and add a help note ("on laptops hold Fn"); **B** web only: accept an alternate chord next to the F-key (for example Alt+1 to Alt+5 for cash, card, hold, recall, discount), shown in the help and tooltips so the hints match the real binding; F-keys stay on Windows, macOS and tablet; **C** web only: Ctrl/Cmd+Shift+letter chords. Recommendation: A now, B only for the keys that fail.
 
+## Result of the manual test (2026-10-09)
+The user ran the list below in real Chrome: **all keys work**, no binding was changed and no option (A, B or C) is needed for Chrome. Edge, Firefox, Safari and laptop Fn-lock were not tested.
+
 ## Manual test list (real Chrome, production build, focus inside the page)
 1. F5 with items in the cart: the Recall dialog opens and the page does NOT reload.
 2. F6: the discount drawer opens and the address bar is NOT focused.

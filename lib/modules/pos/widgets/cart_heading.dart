@@ -52,7 +52,13 @@ class _CartHeadingState extends State<CartHeading> {
             .copyWith(color: c.muted),
       ),
     );
-    final firstRow = Row(
+    // `.cart-heading` is a flex row with `gap`: the icon, counter and the
+    // sale toggle sit at the left (the toggle never shrinks), the clock and
+    // the menu button carry `margin-left:auto`, so the free space is shared
+    // equally before the clock and before the menu. Where the row is too
+    // narrow the whole row scales down instead of wrapping (KG-111).
+    final left = Row(
+      mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Icon(AppIcons.shoppingCart, size: m.cartHeadingIcon, color: c.blue),
         SizedBox(width: m.cartHeadingGap),
@@ -69,24 +75,25 @@ class _CartHeadingState extends State<CartHeading> {
           ),
         ),
         SizedBox(width: m.cartHeadingGap),
-        // The prototype wraps the heading when it is too narrow; here the
-        // toggle and the clock scale down instead.
-        const Flexible(
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
-            child: SaleToggle(),
+        const SaleToggle(),
+      ],
+    );
+    final firstRow = LayoutBuilder(
+      builder: (context, constraints) => FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.centerLeft,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minWidth: constraints.maxWidth),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              left,
+              if (!m.cartTimeOnOwnRow) timeText,
+              const OrderMenu(),
+            ],
           ),
         ),
-        if (!m.cartTimeOnOwnRow) ...<Widget>[
-          const Spacer(),
-          Flexible(
-            child: FittedBox(fit: BoxFit.scaleDown, child: timeText),
-          ),
-        ],
-        const Spacer(),
-        const OrderMenu(),
-      ],
+      ),
     );
     return ConstrainedBox(
       constraints: BoxConstraints(minHeight: m.cartHeadingMinHeight),

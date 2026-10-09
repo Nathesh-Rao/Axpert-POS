@@ -20,3 +20,12 @@ Window size: pass `width height` (CSS px) after the actions, e.g. `... '[...]' 1
 The release build prints no "overflowed" errors; for those use the debug build
 (`flutter run -d web-server --web-port=8097`) and the same script on port 8097:
 the script prints how many overflow errors the console showed.
+
+## Debug-build click-through (`debug_check.mjs`)
+Release builds hide debug-only errors ("setState() or markNeedsBuild() called during build", overflow reports, error widgets). `debug_check.mjs` drives a DEBUG `flutter run -d web-server` session through every route and dialog with seeded data and fails on any console error or red screen:
+
+```
+flutter run -d web-server --web-port=8170 --web-hostname=127.0.0.1    # wait for "is being served"
+node --experimental-websocket tool/web_check/debug_check.mjs http://127.0.0.1:8170/ /tmp/dbg_out
+```
+The debug dev server serves ONE page load per `flutter run`: start a fresh server for every run and stop it afterwards. Exit code 1 on any failure; `FAIL_*.log` and a screenshot per step are written to the output folder.

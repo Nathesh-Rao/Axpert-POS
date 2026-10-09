@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:get/get.dart';
 
 /// Permanent one-second clock. The timer only runs while at least one widget
-/// is attached (the cart heading), so idle pages and tests keep no timer.
+/// is attached (the cart heading, the Reports page), so idle pages and tests
+/// keep no timer. [now] is the tick signal; [current] is the real time.
 class ClockController extends GetxController {
   ClockController({DateTime Function()? now}) : _nowFn = now ?? DateTime.now {
     this.now = _nowFn().obs;
@@ -18,9 +19,12 @@ class ClockController extends GetxController {
   Timer? _timer;
   int _attached = 0;
 
+  /// Starts the ticks. It never writes [now]: `attach` runs inside widget
+  /// build (initState) and controller creation, where a write would notify
+  /// observers that are mounted at that moment. Widgets show [current] when
+  /// they rebuild and use [now] only as the once-a-second signal.
   void attach() {
     _attached++;
-    now.value = _nowFn();
     _timer ??= Timer.periodic(
       const Duration(seconds: 1),
       (_) => now.value = _nowFn(),

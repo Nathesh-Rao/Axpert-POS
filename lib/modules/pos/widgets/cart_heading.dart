@@ -42,16 +42,19 @@ class _CartHeadingState extends State<CartHeading> {
     final c = context.colors;
     final m = context.metrics;
     final settings = Get.find<SettingsController>();
-    final timeText = Obx(
-      () => Text(
-        DateFormatter.dateTime(_clock.now.value),
+    final timeText = Obx(() {
+      // `now` only signals the tick; the text shows the real time, so it is
+      // right even on the first build after the clock was idle.
+      _clock.now.value;
+      return Text(
+        DateFormatter.dateTime(_clock.current),
         maxLines: 1,
         softWrap: false,
         style: context.text
             .fluid(m.cartTimeFont, height: AppLineHeight.base)
             .copyWith(color: c.muted),
-      ),
-    );
+      );
+    });
     // `.cart-heading` is a flex row with `gap`: the icon, counter and the
     // sale toggle sit at the left (the toggle never shrinks), the clock and
     // the menu button carry `margin-left:auto`, so the free space is shared

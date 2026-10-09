@@ -11,7 +11,9 @@ class ReportsController extends GetxController {
 
   final ShiftController shift;
 
-  late final Rx<ShiftSummary> summary = shift.today.obs;
+  /// Today's summary; computed in [onInit] (plain reads) so the first build
+  /// never creates or changes it.
+  late final Rx<ShiftSummary> summary;
   final List<Worker> _workers = <Worker>[];
 
   ClockController get _clock => shift.clock;
@@ -19,6 +21,7 @@ class ReportsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    summary = shift.today.obs;
     _clock.attach();
     _workers
       ..add(ever(shift.sales.sales, (_) => refresh()))

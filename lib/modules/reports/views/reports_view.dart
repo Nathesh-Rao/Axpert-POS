@@ -26,6 +26,10 @@ class ReportsView extends GetView<ReportsController> {
     final s = context.strings;
     final c = context.colors;
     final pad = context.metrics.managementPad;
+    // Created here, in plain build code: creating it inside the Obx builder
+    // would run its onInit under an observer (and any write in it during the
+    // build of that Obx).
+    final reports = controller;
     final body = context.text
         .of(AppFontSize.s13, height: AppLineHeight.base)
         .copyWith(color: c.text);
@@ -38,7 +42,7 @@ class ReportsView extends GetView<ReportsController> {
             padding: EdgeInsets.symmetric(horizontal: pad),
             sliver: SliverToBoxAdapter(
               child: Obx(() {
-                final today = controller.summary.value;
+                final today = reports.summary.value;
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[

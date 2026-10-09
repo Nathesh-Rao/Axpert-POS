@@ -40,7 +40,7 @@ class OrderMenuController extends GetxController {
     final zero = Money(0, totals.total.currency);
     return Sale(
       number: 'DRAFT',
-      date: clock.now.value.toUtc().toIso8601String(),
+      date: clock.current.toUtc().toIso8601String(),
       store: settings.settings.value.store,
       customer: meta.customer.name,
       cart: cart.cart.value,

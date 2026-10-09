@@ -14,8 +14,11 @@ abstract class FilteredListController<T> extends GetxController {
 
   final PageFilterController pageFilter;
 
-  /// The rows shown (filtered, in display order).
-  final RxList<T> rows = <T>[].obs;
+  /// The rows shown (filtered, in display order). Built from the first
+  /// filter result in [onInit] without a notification: the controller is
+  /// created inside a widget build, where a write would reach any observer
+  /// that is mounted at that moment.
+  late final RxList<T> rows;
 
   /// The page's search field text; follows the shared filter (sidebar
   /// navigation clears it).
@@ -39,7 +42,8 @@ abstract class FilteredListController<T> extends GetxController {
     super.onInit();
     filterText.text = pageFilter.filter.value;
     _applied = pageFilter.filter.value;
-    _reindex();
+    _entries = _entriesOf(source);
+    rows = _matches().obs;
     _workers
       ..add(ever(source, (_) => _reindex()))
       ..add(
@@ -55,19 +59,25 @@ abstract class FilteredListController<T> extends GetxController {
       );
   }
 
+  List<(T, String)> _entriesOf(Iterable<T> items) => <(T, String)>[
+    for (final item in items) (item, keyOf(item)),
+  ];
+
   void _reindex() {
-    _entries = <(T, String)>[for (final item in source) (item, keyOf(item))];
+    _entries = _entriesOf(source);
     _recompute();
   }
 
-  void _recompute() {
+  List<T> _matches() {
     final needle = _applied.toLowerCase();
     final found = <T>[
       for (final entry in _entries)
         if (entry.$2.contains(needle)) entry.$1,
     ];
-    rows.assignAll(newestFirst ? found.reversed : found);
+    return newestFirst ? found.reversed.toList() : found;
   }
+
+  void _recompute() => rows.assignAll(_matches());
 
   /// The search field's `onChange`.
   void onFilterChanged(String value) => pageFilter.set(value);

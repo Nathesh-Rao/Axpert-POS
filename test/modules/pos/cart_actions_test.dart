@@ -18,7 +18,7 @@ void main() {
     expect(ok, isTrue);
     expect(h.toasts.toasts.last.text, 'Coca Cola 500ml added');
     expect(h.toasts.toasts.last.kind, ToastKind.success);
-    expect(h.beep.played, 1);
+    expect(h.audio.beeps, 1);
     expect(h.selection.selected.value, 0);
     expect(h.selection.highlight.value, 0);
     expect(search.text.text, '');
@@ -32,11 +32,11 @@ void main() {
     for (var i = 0; i < 8; i++) {
       expect(h.actions.add(limited), isTrue);
     }
-    final beeps = h.beep.played;
+    final beeps = h.audio.beeps;
     expect(h.actions.add(limited), isFalse);
     expect(h.toasts.toasts.last.text, 'Available stock: 8');
     expect(h.toasts.toasts.last.kind, ToastKind.warning);
-    expect(h.beep.played, beeps);
+    expect(h.audio.beeps, beeps);
     expect(h.cart.cart.value.lines.single.qty, Qty.units(8));
     h.selection.onClose();
   });
@@ -45,10 +45,10 @@ void main() {
     final h = await PosHarness.boot();
     await Get.find<SettingsController>().setBeep(false);
     h.actions.add(h.products.byId(0)!);
-    expect(h.beep.played, 0);
+    expect(h.audio.beeps, 0);
     await Get.find<SettingsController>().setBeep(true);
     h.actions.add(h.products.byId(0)!);
-    expect(h.beep.played, 1);
+    expect(h.audio.beeps, 1);
     h.selection.onClose();
   });
 

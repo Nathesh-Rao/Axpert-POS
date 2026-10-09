@@ -1,20 +1,21 @@
-/// Scan beep (hardware/audio later). The prototype plays a short 1100 Hz tone
-/// when the beep setting is on; the Flutter stub does nothing audible yet.
+import 'audio/audio_service.dart';
+
+/// Scan beep: the prototype plays a short tone after a successful add to the
+/// cart when the beep setting is on (`playBeep()` in `add()`).
 abstract interface class BeepService {
   void play();
 }
 
-class NoopBeepService implements BeepService {
-  NoopBeepService(this._enabled);
+/// Gates [AudioService.beep] behind the persisted beep setting.
+class SettingBeepService implements BeepService {
+  SettingBeepService(this._enabled, this._audio);
 
   final bool Function() _enabled;
-
-  /// Counts accepted beeps (tests).
-  int played = 0;
+  final AudioService _audio;
 
   @override
   void play() {
     if (!_enabled()) return;
-    played++;
+    _audio.beep();
   }
 }

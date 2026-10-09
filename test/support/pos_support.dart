@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:pos_application/core/bindings/initial_binding.dart';
-import 'package:pos_application/core/services/beep_service.dart';
+import 'package:pos_application/core/services/audio/audio_service.dart';
 import 'package:pos_application/core/services/storage/in_memory_local_store.dart';
 import 'package:pos_application/core/services/storage/local_store.dart';
 import 'package:pos_application/modules/pos/controllers/cart_actions_controller.dart';
@@ -23,7 +23,8 @@ class PosHarness {
   CartSelectionController get selection => Get.find();
   ProductsController get products => Get.find();
   ToastController get toasts => Get.find();
-  NoopBeepService get beep => Get.find<BeepService>() as NoopBeepService;
+  RecordingAudioService get audio =>
+      Get.find<AudioService>() as RecordingAudioService;
 
   static Future<PosHarness> boot({LocalStore? store}) async {
     final s = store ?? InMemoryLocalStore();

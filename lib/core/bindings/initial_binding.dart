@@ -39,6 +39,8 @@ import '../../modules/sales/repository/mock_sale_repository.dart';
 import '../../modules/sales/repository/sale_repository.dart';
 import '../../shared/controllers/clock_controller.dart';
 import '../mock/large_dataset.dart';
+import '../services/audio/audio_service.dart';
+import '../services/audio/audio_service_platform.dart';
 import '../services/beep_service.dart';
 
 import '../../modules/shell/controllers/settings_controller.dart';
@@ -55,9 +57,11 @@ import '../shortcuts/shortcut_controller.dart';
 /// Permanent, cross-module controllers. Idempotent: calling it twice (from
 /// `main` and from `GetMaterialApp.initialBinding`) registers once.
 class InitialBinding extends Bindings {
-  InitialBinding(this.store);
+  InitialBinding(this.store, {AudioService? audio})
+    : audio = audio ?? createPlatformAudioService();
 
   final LocalStore store;
+  final AudioService audio;
 
   @override
   void dependencies() {
@@ -85,8 +89,12 @@ class InitialBinding extends Bindings {
     _put<CartRepository>(MockCartRepository(store));
     _put<HeldBillRepository>(MockHeldBillRepository(store));
     _put<SaleRepository>(MockSaleRepository(store));
+    _put<AudioService>(audio);
     _put<BeepService>(
-      NoopBeepService(() => Get.find<SettingsController>().settings.value.beep),
+      SettingBeepService(
+        () => Get.find<SettingsController>().settings.value.beep,
+        Get.find(),
+      ),
     );
     _put<ProductsController>(ProductsController(Get.find()));
     _put<CustomersController>(CustomersController(Get.find()));

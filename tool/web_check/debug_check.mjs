@@ -65,6 +65,11 @@ const send = (method, params = {}) => new Promise((r) => { const i = ++id; pendi
 await send('Runtime.enable'); await send('Log.enable'); await send('Page.enable');
 await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
 await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{const d=${JSON.stringify(seed)};for(const k in d)localStorage.setItem(k,d[k])}catch(e){}` });
+
+// Records every Web Audio beep (oscillator frequency, gain, duration) so the
+// check can assert React's tone: sine 1100 Hz, gain 0.04, 80 ms.
+const audioHook = `(()=>{window.__beeps=[];const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const co=C.prototype.createOscillator,cg=C.prototype.createGain;C.prototype.createGain=function(){const g=cg.call(this);this.__g=g;return g};C.prototype.createOscillator=function(){const o=co.call(this),ctx=this,stop=o.stop.bind(o);o.stop=function(when){window.__beeps.push({type:o.type,freq:o.frequency.value,gain:ctx.__g&&ctx.__g.gain.value,secs:Math.round((when-ctx.currentTime)*1000)/1000});return stop(when)};return o}})()`;
+await send('Page.addScriptToEvaluateOnNewDocument', { source: audioHook });
 const click = async (x, y) => { await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y }); await send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: 1 }); await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', clickCount: 1 }); };
 const insert = (text) => send('Input.insertText', { text });
 const key = async (k, vk) => { await send('Input.dispatchKeyEvent', { type: 'keyDown', key: k, code: k, windowsVirtualKeyCode: vk }); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: k, code: k, windowsVirtualKeyCode: vk }); };
@@ -120,6 +125,12 @@ const esc = async () => { await key('Escape', 27); await sleep(500); };
 
 await step(semanticsOn ? 'start on POS (semantics on)' : 'start on POS', async () => {});
 await step('add 3 items', async () => { await click(width / 2, 28); for (const code of ['8901234567895', '8901234567896', '8901234567897']) { await insert(code); await key('Enter', 13); await sleep(900); } });
+await step('beep on add (Web Audio: sine 1100 Hz, gain 0.04, 80 ms)', async () => {
+  const beeps = (await send('Runtime.evaluate', { expression: 'JSON.stringify(window.__beeps)', returnByValue: true })).result?.value;
+  const list = JSON.parse(beeps ?? '[]');
+  console.log('beeps after 3 adds:', beeps);
+  if (list.length !== 3 || list.some((b) => b.type !== 'sine' || b.freq !== 1100 || Math.abs(b.gain - 0.04) > 1e-6 || Math.abs(b.secs - 0.08) > 0.005)) throw new Error('beep mismatch: ' + beeps);
+});
 await step('select member MG1003', async () => { await click(1020, 375); await insert('MG1003'); await sleep(800); });
 
 // every page from POS and back, then the order that showed the red screen

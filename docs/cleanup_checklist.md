@@ -1,6 +1,6 @@
-# Cleanup note: `reference_react/` and `CLAUDE.md` (no preparation made)
+# Cleanup note: `reference_react/` and `CLAUDE.md` (reduced preparation, 2026-10-09)
 
-Updated 2026-10-09 on request: **no cleanup preparation is done.** Nothing was copied into the repository, no tool was repointed, nothing is deleted or moved. This file only records what depends on the reference folders.
+Reduced preparation (owner's decision): nothing from `reference_react/` or `reference_screenshots/` was copied into the repository, no tool was repointed, nothing is deleted. The docs that mention the folders carry a note that the generators and the compare tool need them and stop working after removal; the generated fixtures stay committed. A Phase B `CLAUDE.md` for `pos_application/` was proposed to the owner (before/after diff); it is written only after approval, and the workspace one is kept.
 
 ## What stops working when `reference_react/` and `reference_screenshots/` are removed
 | Tool or file | Needs | Effect after removal |

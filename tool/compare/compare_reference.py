@@ -9,6 +9,10 @@ panel edges (white runs), text bands (rows with ink) and their x extents per
 region, plus a mismatch percentage and a diff image.
 
 usage: python3 tool/compare/compare_reference.py [outdir]
+
+NOTE: needs ../reference_screenshots/ (outside git). It stops working when
+that folder is deleted after Phase A; docs/final_comparison.md stays as the
+record of the last run.
 """
 import struct, sys, zlib, os
 

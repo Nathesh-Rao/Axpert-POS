@@ -1,5 +1,7 @@
 # Plan S3: POS core (data layer, catalog, cart)
 
+> **Phase A cleanup note:** `reference_react/` and `reference_screenshots/` are a read-only reference kept outside git and are deleted after Phase A (only with the owner's OK). After that the golden-vector generators (`tool/golden/gen_vectors.mjs`, `tool/golden/gen_s6_vectors.mjs`) and `tool/compare/compare_reference.py` stop working, and references to React source lines or screenshots in this file become historical. The generated fixtures (`test/fixtures`), the goldens, the tests and the app keep working.
+
 ## Context
 S1 (money/pricing) and S2 (shell) are done. The POS route is still a placeholder. S3 adds the data layer, the catalog and the cart panel, ported as-is from `data.ts` and `App.tsx` (catalog 846-1087, cart 1088-1330, add/remove/changeQty 305-348, RepeatButton/QuantityInput 2493-2616). Settled decisions from the brief apply unchanged. Plan file after approval: `docs/plan_s3.md`.
 

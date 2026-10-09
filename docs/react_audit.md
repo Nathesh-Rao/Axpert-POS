@@ -1,5 +1,7 @@
 # React prototype audit (source of truth for Phase A)
 
+> **Phase A cleanup note:** `reference_react/` and `reference_screenshots/` are a read-only reference kept outside git and are deleted after Phase A (only with the owner's OK). After that the golden-vector generators (`tool/golden/gen_vectors.mjs`, `tool/golden/gen_s6_vectors.mjs`) and `tool/compare/compare_reference.py` stop working, and references to React source lines or screenshots in this file become historical. The generated fixtures (`test/fixtures`), the goldens, the tests and the app keep working.
+
 Purpose: so sessions never re-read all of `reference_react/`. Read only the line ranges listed in section 9 when building a matching screen.
 Prototype: `reference_react/` (React 19, Vite 8, TS 5.7, `lucide-react@1.52.0` pinned in pnpm-lock, `react-router` 7). READ-ONLY, outside git.
 Status: written during plan v2 approval. Items marked **(inferred)** were not measured directly.

@@ -1,5 +1,7 @@
 # Plan S1 + S2: money and shell (detailed); S3 to S7 (summary)
 
+> **Phase A cleanup note:** `reference_react/` and `reference_screenshots/` are a read-only reference kept outside git and are deleted after Phase A (only with the owner's OK). After that the golden-vector generators (`tool/golden/gen_vectors.mjs`, `tool/golden/gen_s6_vectors.mjs`) and `tool/compare/compare_reference.py` stop working, and references to React source lines or screenshots in this file become historical. The generated fixtures (`test/fixtures`), the goldens, the tests and the app keep working.
+
 Replan approved 2026-10-08 (DEC-069). Read `CLAUDE.md` and this file only. Approval once per step; checkpoints are commit points with a short report each. Done earlier: 1.1 Setup, 1.2 Theme tokens (tokens, `css_metrics.md`, golden harness).
 
 Standard checks at every checkpoint: `dart format .`, `flutter analyze` (0), `flutter test`; UI checkpoints also run on macOS and Chrome. Comparison policy: pixel comparison only at the reference viewport (2124x1180 px, light; golden 1868.44 x 1034.67 logical at DPR 1.125) against `reference_screenshots/`. Other sizes, dark mode, popovers, modals: regression goldens only, "unverified visually" in `known_gaps.md`.

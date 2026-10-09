@@ -1,5 +1,7 @@
 # Final comparison with the reference screenshots (S7)
 
+> **Phase A cleanup note:** `reference_react/` and `reference_screenshots/` are a read-only reference kept outside git and are deleted after Phase A (only with the owner's OK). After that the golden-vector generators (`tool/golden/gen_vectors.mjs`, `tool/golden/gen_s6_vectors.mjs`) and `tool/compare/compare_reference.py` stop working, and references to React source lines or screenshots in this file become historical. The generated fixtures (`test/fixtures`), the goldens, the tests and the app keep working.
+
 Date: 2026-10-09. Seven React screenshots (2124x1180, light mode, `reference_screenshots/`) against the goldens at the reference viewport (2102x1164 at 1.125, which is exactly the screenshot's page area: crop x 10..2112, y 8..1172). Tool: `python3 tool/compare/compare_reference.py [outdir]` (standard library only): it crops each screenshot, aligns it 1:1 with the golden and measures structure (panel edges, text bands and their x extents per region, column positions) plus a pixel mismatch percentage and a diff image. I also looked at every reference screenshot and at the goldens and diff images myself.
 
 Since the reference pages 4.57.21 to 4.58.11 were taken with one "Lays Classic 52g" line in the cart (the Bill Summary shows 20.00 / 21.00), the goldens of Products, Customers, Sales, Returns and Reports now add that line too, so the Bill Summary is comparable.

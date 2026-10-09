@@ -1,5 +1,7 @@
 # css_metrics.md: cascade-resolved tokens and metrics (step 1.2)
 
+> **Phase A cleanup note:** `reference_react/` and `reference_screenshots/` are a read-only reference kept outside git and are deleted after Phase A (only with the owner's OK). After that the golden-vector generators (`tool/golden/gen_vectors.mjs`, `tool/golden/gen_s6_vectors.mjs`) and `tool/compare/compare_reference.py` stop working, and references to React source lines or screenshots in this file become historical. The generated fixtures (`test/fixtures`), the goldens, the tests and the app keep working.
+
 Source of truth: `reference_react/src/index.css` (read in full), resolved in file block order (later rule wins at equal specificity, including across media blocks; `!important` and higher specificity win regardless of order). Values are the EFFECTIVE values at the reference viewport (section 1), where no media query applies.
 
 Tables marked `<!-- table:... -->` are parsed by `test/core/theme/css_metrics_test.dart` and compared with the Dart tokens, so the code and this document cannot drift apart. Colors: CSS `#rrggbb`, or `#rrggbbaa` (alpha last, CSS order).

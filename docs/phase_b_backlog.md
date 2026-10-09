@@ -1,5 +1,7 @@
 # Phase B backlog (S7)
 
+> **Phase A cleanup note:** `reference_react/` and `reference_screenshots/` are a read-only reference kept outside git and are deleted after Phase A (only with the owner's OK). After that the golden-vector generators (`tool/golden/gen_vectors.mjs`, `tool/golden/gen_s6_vectors.mjs`) and `tool/compare/compare_reference.py` stop working, and references to React source lines or screenshots in this file become historical. The generated fixtures (`test/fixtures`), the goldens, the tests and the app keep working.
+
 Source: `known_gaps.md` (**154 entries**, KG-001 to KG-177 with unused numbers) and `decisions.md` (**85 entries**, DEC-001 to DEC-108 with unused numbers), triaged on 2026-10-09. Every id appears once in the tables at the end (checked by a script).
 
 ## Buckets

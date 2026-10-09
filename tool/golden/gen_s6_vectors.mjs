@@ -5,6 +5,7 @@
 //   npx --yes esbuild ../reference_react/src/data.ts --format=esm --outfile=$TMP/data.mjs
 //   node tool/golden/gen_s6_vectors.mjs $TMP/data.mjs
 // Nothing is written into reference_react/. Nothing is installed.
+// NOTE: needs ../reference_react/ (read-only reference outside git). It stops working when that folder is deleted after Phase A; the generated fixtures stay committed.
 //
 // Points vectors use React's REAL exported calculate(). The refund amount and
 // the forex figure are inline in App.tsx (not exported), so their expressions

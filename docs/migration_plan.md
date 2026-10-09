@@ -1,5 +1,7 @@
 # Migration plan (master, short)
 
+> **Phase A cleanup note:** `reference_react/` and `reference_screenshots/` are a read-only reference kept outside git and are deleted after Phase A (only with the owner's OK). After that the golden-vector generators (`tool/golden/gen_vectors.mjs`, `tool/golden/gen_s6_vectors.mjs`) and `tool/compare/compare_reference.py` stop working, and references to React source lines or screenshots in this file become historical. The generated fixtures (`test/fixtures`), the goldens, the tests and the app keep working.
+
 React prototype (`reference_react/`) -> Flutter (`pos_application/`). Phase A = one-time port replicating behavior as-is. Phase B = production development in Flutter only (known gaps fixed). Rules: `CLAUDE.md`. Decisions: `decisions.md`. Gaps: `known_gaps.md`. Prototype inventory: `react_audit.md`. Current detailed plan: `plan_s1_s2.md`.
 
 Status: 7 large steps (DEC-069, 2026-10-08). Done: S1 Money, S2 Shell, S3 POS core (S3.a-d, see `plan_s3.md`). S4.0 Narrow-window cart layout and density (see `plan_s4_0.md`). Next: S4 POS checkout (not started).

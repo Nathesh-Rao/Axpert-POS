@@ -1,5 +1,7 @@
 # Plan S4.0: narrow-window cart layout and density rules
 
+> **Phase A cleanup note:** `reference_react/` and `reference_screenshots/` are a read-only reference kept outside git and are deleted after Phase A (only with the owner's OK). After that the golden-vector generators (`tool/golden/gen_vectors.mjs`, `tool/golden/gen_s6_vectors.mjs`) and `tool/compare/compare_reference.py` stop working, and references to React source lines or screenshots in this file become historical. The generated fixtures (`test/fixtures`), the goldens, the tests and the app keep working.
+
 ## Context
 Your screenshot (Chrome window about 1000 CSS px wide) shows the S3.c cart line, which is built only for the wide single-row layout, squeezed into a few pixels: the name column collapses ("RIGHT OVERFLOWED BY 55 PIXELS") and the header cells no longer sit over the row cells. KG-097 already lists this. S4.0 builds the width <= 1700 and <= 1100 rules for the cart and catalog, exposes the height-density rules as metrics for S4.a, and fixes the search ring height. Nothing from S4.a starts.
 

@@ -5,6 +5,7 @@
 //   npx --yes esbuild ../reference_react/src/data.ts --format=esm --outfile=$TMP/data.mjs
 //   node tool/golden/gen_vectors.mjs $TMP/data.mjs
 // Nothing is written into reference_react/. Nothing is installed.
+// NOTE: needs ../reference_react/ (read-only reference outside git). It stops working when that folder is deleted after Phase A; the generated fixtures stay committed.
 import { writeFileSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'

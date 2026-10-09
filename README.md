@@ -1,16 +1,19 @@
-# pos_application
+# Axpert-POS
 
-A new Flutter project.
+Point-of-sale application (Flutter, GetX) for Windows desktop, web, tablet and macOS.
+Phase A, the one-to-one migration of the React prototype, is complete (tag
+`phase-a-complete`); Phase B, production development, continues from there.
 
-## Getting Started
+## Where to look
 
-This project is a starting point for a Flutter application.
+- `CLAUDE.md`: working rules and conventions
+- `docs/`: migration plan, decisions (`decisions.md`), known gaps (`known_gaps.md`), Phase B backlog
+- `tool/web_check/`: browser checks (debug click-through, release checks)
 
-A few resources to get you started if this is your first Flutter project:
+## Run
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```
+flutter pub get
+flutter run -d chrome        # or macos / windows
+flutter analyze && flutter test
+```

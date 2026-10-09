@@ -46,7 +46,11 @@ class PosApp extends StatelessWidget {
           child: Stack(
             children: <Widget>[
               Positioned.fill(
-                child: AppShortcuts(child: SignedOutLayer(child: child!)),
+                child: Semantics(
+                  container: true,
+                  explicitChildNodes: true,
+                  child: AppShortcuts(child: SignedOutLayer(child: child!)),
+                ),
               ),
               const DialogLayer(),
               const _ToastsUnlessSignedOut(),

@@ -61,6 +61,7 @@ CheckoutResult run(
   String mode = SaleMode.cash,
   Money? tendered,
   Qty Function(int)? stockOf,
+  String? saleId,
 }) => const CheckoutService().complete(
   cart: cart,
   totals: totalsOf(cart, points: customer.points),
@@ -71,6 +72,7 @@ CheckoutResult run(
   now: DateTime.utc(2026, 10, 8, 12),
   mode: mode,
   tendered: tendered ?? inr(5000),
+  saleId: saleId,
 );
 
 void main() {
@@ -86,6 +88,12 @@ void main() {
     expect(r.sale.customer, 'Walk-in Customer');
     expect(r.stockDeltas, <int, int>{1: 1});
     expect(r.pointsDeducted, 0);
+  });
+
+  test('the optional saleId is carried onto the sale (DEC-123)', () {
+    expect((run(cart) as CheckoutDone).sale.saleId, isNull);
+    final r = run(cart, saleId: 'a-uuid') as CheckoutDone;
+    expect(r.sale.saleId, 'a-uuid');
   });
 
   test('change is zero for card and credit', () {

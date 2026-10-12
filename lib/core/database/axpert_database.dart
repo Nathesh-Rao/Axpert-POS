@@ -42,4 +42,16 @@ class AxpertDatabase extends _$AxpertDatabase {
       await customStatement('PRAGMA foreign_keys = ON');
     },
   );
+
+  /// Runs `<body>` in a transaction and makes the commit durable on web.
+  ///
+  /// Drift's web (IndexedDB) storage only flushes after a statement outside a
+  /// transaction, so the last committed transaction can stay in memory and be
+  /// lost when the tab closes (found in D1, see DEC-125). The trailing no-op
+  /// pragma is that statement; on native it is free.
+  Future<T> durableTransaction<T>(Future<T> Function() body) async {
+    final result = await transaction(body);
+    await customStatement('PRAGMA foreign_keys = ON');
+    return result;
+  }
 }

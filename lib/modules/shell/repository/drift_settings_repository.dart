@@ -64,7 +64,7 @@ class DriftSettingsRepository implements SettingsRepository {
     final json = settings.toJson();
     try {
       final now = _now().toUtc().toIso8601String();
-      await db.transaction(() async {
+      await db.durableTransaction(() async {
         for (final entry in json.entries) {
           await db
               .into(db.settingsEntries)

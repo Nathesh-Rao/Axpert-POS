@@ -53,3 +53,7 @@ Run and read: format and analyze clean; full VM suite 994/994; no PNG changed ve
 
 ## Database and sync planning (2026-10-12, documents only)
 `axpert_db_sync_digest.md` (what axpert_pos decides, proposes and leaves open about tables, ids, money, offline and sync, with sources) and `database_plan.md` (LocalStore inventory, provisional tables, sync-readiness columns, no-data-loss migration, repository replacement order, risks, open questions) written; DEC-124 records the recommended provisional local-only schema. No code, schema or persistence changed; axpert_pos untouched; the owner has not yet approved any implementation stage.
+
+## Stage D1 (settings in Drift, 2026-10-12)
+- Commits on `integration`: D1.a schema v3 (`83502c9`), D1.b migrator (`8c48f0d`), D1.c repository, flag and binding (`08420a5`), D1.d contract suite (`2995e93`), D1.e web check, durable transaction, docs. Details and rollback: DEC-125.
+- No UI, money, pricing, golden or other-repository change; no new package.

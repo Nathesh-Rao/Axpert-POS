@@ -85,7 +85,7 @@ Principles: LocalStore data is never deleted or rewritten by the migration; the 
 Each stage adds a `Drift*Repository` implementing the existing interface, switched by a binding flag, with the Mock kept for tests. Order by blast radius (test files that touch the controller are from the inventory):
 | Stage | Repository | Notes | Test files touching the controller |
 |---|---|---|---|
-| R1 | Settings | smallest; device-local | 7 |
+| R1 | Settings | smallest; device-local | 7 (D1 done: DEC-125) |
 | R2 | Customers | walk-in row; points deduction becomes a row update | 6 |
 | R3 | Held bills | device-local JSON column | 2 |
 | R4 | Products | per-row writes remove KG-101's whole-list save; stock deltas become row updates | 22 |

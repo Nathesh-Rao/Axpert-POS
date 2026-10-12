@@ -49,7 +49,7 @@ class SettingsMigrator {
     final expected = _canonicalRows(settings);
     final expectedChecksum = _checksum(expected);
 
-    await db.transaction(() async {
+    await db.durableTransaction(() async {
       final now = _now().toUtc().toIso8601String();
       await db.delete(db.settingsEntries).go();
       for (final entry in expected.entries) {

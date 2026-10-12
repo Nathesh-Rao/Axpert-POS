@@ -4,7 +4,7 @@ import 'package:pos_application/core/routes/app_pages.dart';
 import 'package:pos_application/core/routes/app_routes.dart';
 import 'package:pos_application/modules/customers/views/customers_view.dart';
 import 'package:pos_application/modules/pos/views/pos_view.dart';
-import 'package:pos_application/modules/products/views/products_view.dart';
+import 'package:pos_application/features/products/presentation/pages/products_view.dart';
 import 'package:pos_application/modules/reports/views/reports_view.dart';
 import 'package:pos_application/modules/sales/views/sales_view.dart';
 import 'package:pos_application/modules/settings/views/settings_view.dart';

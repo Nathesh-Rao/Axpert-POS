@@ -1,4 +1,4 @@
-import '../../products/repository/product_repository.dart';
+import '../../../features/products/domain/repositories/product_repository.dart';
 import '../../sales/repository/sale_repository.dart';
 import 'return_repository.dart';
 

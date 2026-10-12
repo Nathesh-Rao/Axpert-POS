@@ -14,7 +14,7 @@ import 'package:pos_application/core/shortcuts/shortcut_help.dart';
 import 'package:pos_application/core/utils/date_format.dart';
 import 'package:pos_application/modules/pos/models/cart.dart';
 import 'package:pos_application/modules/pos/models/cart_line.dart';
-import 'package:pos_application/modules/products/models/product.dart';
+import 'package:pos_application/features/products/domain/entities/product.dart';
 import 'package:pos_application/modules/sales/models/sale.dart';
 import 'package:pos_application/modules/sales/services/receipt_builder.dart';
 

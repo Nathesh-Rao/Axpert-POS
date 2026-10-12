@@ -1,0 +1,1 @@
+enum PaymentStatus { succeeded, failed }

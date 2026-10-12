@@ -13,7 +13,7 @@ import '../../../core/theme/tokens/app_spacing.dart';
 import '../../../core/theme/tokens/app_typography.dart';
 import '../../../shared/widgets/app_pressable.dart';
 import '../controllers/catalog_controller.dart';
-import '../../products/models/product.dart';
+import '../../../features/products/domain/entities/product.dart';
 import '../controllers/cart_controller.dart';
 import 'catalog_product_card.dart';
 

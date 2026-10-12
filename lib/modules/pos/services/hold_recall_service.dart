@@ -1,6 +1,6 @@
 import '../../../core/services/pricing/qty.dart';
 
-import '../../products/models/product.dart';
+import '../../../features/products/domain/entities/product.dart';
 import '../models/cart.dart';
 import '../models/cart_line.dart';
 import '../models/held_bill.dart';

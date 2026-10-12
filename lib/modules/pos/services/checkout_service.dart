@@ -55,6 +55,7 @@ class CheckoutService {
     required DateTime now,
     required String mode,
     required Money tendered,
+    String? saleId,
   }) {
     for (final line in cart.lines) {
       if (line.qty > stockOf(line.product.id)) {
@@ -66,6 +67,7 @@ class CheckoutService {
         ? tendered - totals.total
         : zero;
     final sale = Sale(
+      saleId: saleId,
       number: 'AX${(salesCount + 1).toString().padLeft(6, '0')}',
       date: now.toUtc().toIso8601String(),
       store: store,

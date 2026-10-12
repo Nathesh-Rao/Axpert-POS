@@ -18,7 +18,7 @@ import 'package:pos_application/modules/pos/controllers/cart_controller.dart';
 import 'package:pos_application/modules/pos/models/cart.dart';
 import 'package:pos_application/modules/pos/models/cart_line.dart';
 import 'package:pos_application/modules/pos/repository/mock_cart_repository.dart';
-import 'package:pos_application/modules/products/models/product.dart';
+import 'package:pos_application/features/products/domain/entities/product.dart';
 
 import '../../fixtures/pricing_golden_data.g.dart';
 import '../../support/pos_support.dart';

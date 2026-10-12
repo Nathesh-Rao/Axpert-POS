@@ -335,3 +335,11 @@ Dark mode and every window size other than the reference viewport, hover and foc
 | DEC-106 | ACCEPT | P3 | S5.b structure. Plain-Dart `ShiftSummary` (`modules/shift/services`): `dailySales` by local calendar day, total, count, exact half-up average, per-mod… |
 | DEC-107 | ACCEPT | P3 | approved deviations and policies: keep |
 | DEC-108 | ACCEPT | P3 | S6 structure. Returns: `RefundService` (plain Dart: find, checks in the prototype's order, amount through the single `PricingHelpers.refund`, applied … |
+
+## Added after Stage 7 (axpert_pos integration, DEC-123)
+| Id | Bucket | Priority | Item |
+|---|---|---|---|
+| KG-185 | MUST | P1 | real payment provider/terminal behind `PaymentService`; the mock always succeeds |
+| KG-186 | MUST | P0 | processing UI state and cart lock while an asynchronous payment runs (UI change, needs approval); related KG-028, KG-128 |
+| KG-187 | MUST | P0 | payment may succeed while the fire-and-forget sale persistence fails: awaited persistence, pending state, reconciliation; same data-loss items as KG-028 and KG-128 |
+| KG-188 | NICE | P2 | `saleId` is not shown or used for lookups; decide sale identity and numbering with the backend (KG-008) |

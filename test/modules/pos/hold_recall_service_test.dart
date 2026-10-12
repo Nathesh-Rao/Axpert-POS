@@ -11,7 +11,7 @@ import 'package:pos_application/modules/pos/models/cart_line.dart';
 import 'package:pos_application/modules/pos/models/held_bill.dart';
 import 'package:pos_application/modules/pos/services/discount_rules.dart';
 import 'package:pos_application/modules/pos/services/hold_recall_service.dart';
-import 'package:pos_application/modules/products/models/product.dart';
+import 'package:pos_application/features/products/domain/entities/product.dart';
 
 Product _product(int id, {int stock = 10, int priceMinor = 4000}) => Product(
   id: id,

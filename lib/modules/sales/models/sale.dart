@@ -69,6 +69,7 @@ class Sale {
     required this.tendered,
     required this.change,
     required this.returned,
+    this.saleId,
   });
 
   factory Sale.fromJson(
@@ -76,6 +77,7 @@ class Sale {
     Currency currency = CurrencyRegistry.inr,
   }) => Sale(
     number: json['number'] as String,
+    saleId: json['saleId'] as String?,
     date: json['date'] as String,
     store: json['store'] as String,
     customer: json['customer'] as String,
@@ -94,6 +96,10 @@ class Sale {
   );
 
   final String number;
+
+  /// UUID v4 of a NEW sale (DEC-123); null for sales stored before it existed
+  /// and for draft receipts. Display and lookups still use [number].
+  final String? saleId;
   final String date;
   final String store;
   final String customer;
@@ -106,6 +112,7 @@ class Sale {
 
   Sale copyWith({Map<int, Qty>? returned}) => Sale(
     number: number,
+    saleId: saleId,
     date: date,
     store: store,
     customer: customer,
@@ -119,6 +126,7 @@ class Sale {
 
   Map<String, dynamic> toJson() => <String, dynamic>{
     'number': number,
+    if (saleId != null) 'saleId': saleId,
     'date': date,
     'store': store,
     'customer': customer,

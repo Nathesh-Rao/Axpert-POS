@@ -6,7 +6,7 @@ import 'package:pos_application/core/services/pricing/money.dart';
 import 'package:pos_application/modules/customers/models/customer.dart';
 import 'package:pos_application/modules/customers/services/customer_rules.dart';
 import 'package:pos_application/modules/pos/services/product_search.dart';
-import 'package:pos_application/modules/products/models/product.dart';
+import 'package:pos_application/features/products/domain/entities/product.dart';
 
 Product _p(int id, String name, String code) => Product(
   id: id,

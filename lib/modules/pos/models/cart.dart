@@ -5,7 +5,7 @@ import '../../../core/services/pricing/money.dart';
 import '../../../core/services/pricing/pricing_models.dart';
 import '../../../core/services/pricing/qty.dart';
 import '../../customers/models/customer.dart';
-import '../../products/models/product.dart';
+import '../../../features/products/domain/entities/product.dart';
 import 'cart_line.dart';
 
 enum SaleType {

@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:pos_application/core/theme/tokens/app_sizes.dart';
 import 'package:pos_application/modules/pos/controllers/cart_actions_controller.dart';
 import 'package:pos_application/modules/pos/controllers/hold_recall_controller.dart';
-import 'package:pos_application/modules/products/controllers/products_controller.dart';
+import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
 import 'package:pos_application/shared/controllers/overlay_controller.dart';
 import 'package:pos_application/shared/widgets/modal_actions.dart';
 

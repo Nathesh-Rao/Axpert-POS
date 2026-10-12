@@ -9,7 +9,7 @@ import '../../../core/services/pricing/pricing_models.dart';
 import '../../../core/services/pricing/pricing_service.dart';
 import '../../../core/services/pricing/qty.dart';
 import '../../customers/controllers/customers_controller.dart';
-import '../../products/models/product.dart';
+import '../../../features/products/domain/entities/product.dart';
 import '../models/cart.dart';
 import '../models/cart_line.dart';
 import '../repository/cart_repository.dart';

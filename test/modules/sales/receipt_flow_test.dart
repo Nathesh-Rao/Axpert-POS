@@ -13,7 +13,7 @@ import 'package:pos_application/modules/pos/controllers/order_menu_controller.da
 import 'package:pos_application/modules/pos/controllers/payment_controller.dart';
 import 'package:pos_application/modules/pos/controllers/text_dialog_controller.dart';
 import 'package:pos_application/modules/pos/models/payment_state.dart';
-import 'package:pos_application/modules/products/controllers/products_controller.dart';
+import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
 import 'package:pos_application/modules/sales/controllers/receipt_controller.dart';
 import 'package:pos_application/modules/sales/widgets/receipt_dialog.dart';
 import 'package:pos_application/modules/shell/controllers/settings_controller.dart';

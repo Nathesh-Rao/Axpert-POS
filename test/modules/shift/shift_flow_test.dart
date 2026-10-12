@@ -7,7 +7,7 @@ import 'package:pos_application/core/routes/app_routes.dart';
 import 'package:pos_application/core/services/storage/in_memory_local_store.dart';
 import 'package:pos_application/modules/pos/controllers/cart_actions_controller.dart';
 import 'package:pos_application/modules/pos/controllers/cart_controller.dart';
-import 'package:pos_application/modules/products/controllers/products_controller.dart';
+import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
 import 'package:pos_application/modules/sales/controllers/sales_controller.dart';
 import 'package:pos_application/modules/settings/widgets/settings_content.dart';
 import 'package:pos_application/modules/shell/controllers/settings_controller.dart';

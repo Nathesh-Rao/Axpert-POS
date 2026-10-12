@@ -176,6 +176,26 @@ await step('receipt via View receipt', () => click(864, 323));
 await esc();
 await page('POS');
 
+// Checkout (DEC-123): complete a CASH sale with F2 + Enter in the tendered field, check that
+// the receipt dialog opens and that the stored `axpert-sales` JSON has a new sale with a UUID v4
+// `saleId`. The receipt is read from the semantics DOM: in normal mode accessibility is switched
+// on only AFTER the sale, for this one read.
+await step('checkout: cash sale, receipt opens, saleId stored', async () => {
+  const evalPage = async (expression) => (await send('Runtime.evaluate', { expression, returnByValue: true })).result?.value;
+  await key('F2', 113); await sleep(700);
+  await key('Enter', 13); await sleep(1800);
+  if (!semanticsOn) { await evalPage("(()=>{const p=document.querySelector('flt-semantics-placeholder'); if(p) p.click()})()"); await sleep(2500); }
+  const receipt = await evalPage("document.body.innerHTML.includes('Retail tax invoice')");
+  if (!receipt) throw new Error('receipt dialog not found after the sale');
+  const stored = await evalPage("localStorage.getItem('flutter.axpert-sales')");
+  const sales = JSON.parse(JSON.parse(stored));
+  const last = sales[sales.length - 1];
+  const uuidV4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+  console.log(`checkout: ${sales.length} stored sales (3 seeded), last ${last.number} saleId ${last.saleId}, seeded sales without saleId: ${sales.slice(0, 3).filter((x) => !('saleId' in x)).length}`);
+  if (sales.length !== 4 || !uuidV4.test(last.saleId ?? '')) throw new Error('stored sale or saleId wrong');
+  if (sales.slice(0, 3).some((x) => 'saleId' in x)) throw new Error('old sales were rewritten with a saleId');
+});
+
 console.log('\nstep | ok | red screen share | console errors | first error');
 for (const r of results) console.log(`${r.ok ? 'ok  ' : 'FAIL'} | ${r.name} | ${r.red} | ${r.errors} | ${r.first}`);
 const failed = results.filter((r) => !r.ok);

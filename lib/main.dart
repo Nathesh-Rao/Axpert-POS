@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'core/bindings/app_infrastructure.dart';
 import 'core/bindings/initial_binding.dart';
 import 'core/constants/app_strings.dart';
 import 'core/responsive/responsive_layout.dart';
@@ -20,7 +21,11 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   configureUrlStrategy();
   final prefs = await SharedPreferences.getInstance();
-  final binding = InitialBinding(SharedPrefsLocalStore(prefs));
+  final infrastructure = await AppInfrastructure.bootstrap();
+  final binding = InitialBinding(
+    SharedPrefsLocalStore(prefs),
+    infrastructure: infrastructure,
+  );
   binding.dependencies();
   await binding.loadData();
   runApp(PosApp(binding: binding));

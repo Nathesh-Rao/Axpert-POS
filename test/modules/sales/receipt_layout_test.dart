@@ -21,7 +21,7 @@ import 'package:pos_application/modules/pos/controllers/order_menu_controller.da
 import 'package:pos_application/modules/pos/controllers/text_dialog_controller.dart';
 import 'package:pos_application/modules/pos/models/cart.dart';
 import 'package:pos_application/modules/pos/models/cart_line.dart';
-import 'package:pos_application/modules/products/models/product.dart';
+import 'package:pos_application/features/products/domain/entities/product.dart';
 import 'package:pos_application/modules/sales/controllers/sales_controller.dart';
 import 'package:pos_application/modules/sales/models/sale.dart';
 import 'package:pos_application/modules/sales/widgets/receipt_dialog.dart';

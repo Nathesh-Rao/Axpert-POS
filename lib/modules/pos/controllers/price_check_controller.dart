@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../shared/controllers/overlay_controller.dart';
 import '../../../shared/controllers/toast_controller.dart';
-import '../../products/controllers/products_controller.dart';
-import '../../products/models/product.dart';
+import '../../../features/products/presentation/controllers/products_controller.dart';
+import '../../../features/products/domain/entities/product.dart';
 
 /// The Price Check dialog: looks a product up on every keystroke by exact
 /// barcode or case-insensitive code (not trimmed); nothing is added.

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pos_application/core/mock/seed_customers.dart';
-import 'package:pos_application/core/mock/seed_products.dart';
+import 'package:pos_application/features/products/data/datasources/seed_products.dart';
 import 'package:pos_application/core/services/pricing/basis_points.dart';
 import 'package:pos_application/core/services/pricing/currency_registry.dart';
 import 'package:pos_application/core/services/pricing/money.dart';
@@ -13,7 +13,7 @@ import 'package:pos_application/modules/customers/models/customer.dart';
 import 'package:pos_application/modules/pos/models/cart.dart';
 import 'package:pos_application/modules/pos/models/cart_line.dart';
 import 'package:pos_application/modules/pos/models/held_bill.dart';
-import 'package:pos_application/modules/products/models/product.dart';
+import 'package:pos_application/features/products/domain/entities/product.dart';
 import 'package:pos_application/modules/sales/models/sale.dart';
 
 Map<String, dynamic> _roundTrip(Map<String, dynamic> json) =>

@@ -484,6 +484,9 @@ class EnAppStrings extends AppStrings {
   String toastPaymentCompleted() => 'Payment completed';
 
   @override
+  String toastPaymentFailed() => 'Payment failed';
+
+  @override
   String toastSavedOnCredit() => 'Saved on credit';
 
   @override

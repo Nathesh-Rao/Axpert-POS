@@ -11,7 +11,7 @@ import '../../../core/theme/tokens/app_typography.dart';
 import '../../../core/utils/money_formatter.dart';
 import '../../../shared/widgets/app_pressable.dart';
 import '../../pos/controllers/global_search_controller.dart';
-import '../../products/models/product.dart';
+import '../../../features/products/domain/entities/product.dart';
 
 /// Shows the top-bar search results (`.search-results`) under [child]: the
 /// field's width, 4 px below it (`top:48` of a 44 px field), over the page.

@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/app_strings.dart';
+import '../../../core/identifiers/uuid_generator.dart';
+import '../../../core/identifiers/uuid_v4_generator.dart';
 import '../../../core/services/pricing/money.dart';
 import '../../../core/services/pricing/qty.dart';
 import '../../../core/utils/decimal_input.dart';
@@ -13,7 +15,11 @@ import '../../../shared/controllers/overlay_controller.dart';
 import '../../../shared/controllers/search_field_controller.dart';
 import '../../../shared/controllers/toast_controller.dart';
 import '../../customers/controllers/customers_controller.dart';
-import '../../products/controllers/products_controller.dart';
+import '../../../features/payment/data/services/mock_payment_service.dart';
+import '../../../features/payment/domain/entities/payment_method.dart';
+import '../../../features/payment/domain/entities/payment_request.dart';
+import '../../../features/payment/domain/services/payment_service.dart';
+import '../../../features/products/presentation/controllers/products_controller.dart';
 import '../../sales/controllers/sales_controller.dart';
 import '../../shell/controllers/settings_controller.dart';
 import '../models/cart.dart';
@@ -36,9 +42,12 @@ class PaymentController extends GetxController {
     required this.overlay,
     required this.search,
     this.service = const CheckoutService(),
+    this.payments = const MockPaymentService(),
+    UuidGenerator? uuid,
     this.terminalDelay = const Duration(seconds: 2),
     DateTime Function()? now,
-  }) : _now = now ?? DateTime.now;
+  }) : _uuid = uuid ?? UuidV4Generator(),
+       _now = now ?? DateTime.now;
 
   static const Duration tenderedFocusDelay = Duration(milliseconds: 40);
 
@@ -52,6 +61,11 @@ class PaymentController extends GetxController {
   final OverlayController overlay;
   final SearchFieldController search;
   final CheckoutService service;
+
+  /// The payment boundary (DEC-123): cash and card sales go through it,
+  /// credit sales do not.
+  final PaymentService payments;
+  final UuidGenerator _uuid;
   final Duration terminalDelay;
   final DateTime Function() _now;
 
@@ -61,6 +75,9 @@ class PaymentController extends GetxController {
   final RxString tenderedValue = ''.obs;
   final TextEditingController tendered = TextEditingController();
   final FocusNode tenderedFocus = FocusNode(debugLabel: 'tendered');
+
+  /// True while a payment is being processed: a second Complete is ignored.
+  bool _processing = false;
 
   Timer? _terminalTimer;
   Timer? _focusTimer;
@@ -213,7 +230,7 @@ class PaymentController extends GetxController {
     if (isCredit) {
       payment(PaymentMode.cash);
     } else {
-      _complete(SaleMode.cash, tenderedMoney!);
+      unawaited(_complete(SaleMode.cash, tenderedMoney!));
     }
   }
 
@@ -224,38 +241,68 @@ class PaymentController extends GetxController {
 
   void completeCard() {
     if (!canCompleteCard) return;
-    _complete(SaleMode.card, total);
+    unawaited(_complete(SaleMode.card, total));
   }
 
-  void _complete(String saleMode, Money amount) {
-    if (!cart.isActive) return;
-    final result = service.complete(
-      cart: _cart,
-      totals: cart.totals.value,
-      customer: meta.customer,
-      stockOf: (id) => products.byId(id)?.stockQty ?? Qty.zero,
-      salesCount: sales.sales.length,
-      store: settings.settings.value.store,
-      now: _now(),
-      mode: saleMode,
-      tendered: amount,
-    );
-    switch (result) {
-      case CheckoutStockChanged():
-        toasts.show(_s.toastStockChanged(), kind: ToastKind.error);
-      case CheckoutDone():
-        sales.add(result.sale);
-        products.applyStockDeltas(result.stockDeltas);
-        customers.deductPoints(meta.customer.id, result.pointsDeducted);
-        cart.clear();
-        search.refocus();
-        overlay.open('receipt', payload: result.sale);
-        toasts.show(
-          saleMode == SaleMode.credit
-              ? _s.toastSavedOnCredit()
-              : _s.toastPaymentCompleted(),
-        );
+  Future<void> _complete(String saleMode, Money amount) async {
+    if (!cart.isActive || _processing) return;
+    _processing = true;
+    try {
+      final result = service.complete(
+        cart: _cart,
+        totals: cart.totals.value,
+        customer: meta.customer,
+        stockOf: (id) => products.byId(id)?.stockQty ?? Qty.zero,
+        salesCount: sales.sales.length,
+        store: settings.settings.value.store,
+        now: _now(),
+        mode: saleMode,
+        tendered: amount,
+        saleId: _uuid.generate(),
+      );
+      switch (result) {
+        case CheckoutStockChanged():
+          toasts.show(_s.toastStockChanged(), kind: ToastKind.error);
+        case CheckoutDone():
+          // Credit sales are not paid at the till: no payment service call.
+          if (saleMode != SaleMode.credit && !await _pay(result, saleMode)) {
+            toasts.show(_s.toastPaymentFailed(), kind: ToastKind.error);
+            return;
+          }
+          sales.add(result.sale);
+          products.applyStockDeltas(result.stockDeltas);
+          customers.deductPoints(meta.customer.id, result.pointsDeducted);
+          cart.clear();
+          search.refocus();
+          overlay.open('receipt', payload: result.sale);
+          toasts.show(
+            saleMode == SaleMode.credit
+                ? _s.toastSavedOnCredit()
+                : _s.toastPaymentCompleted(),
+          );
+      }
+    } finally {
+      _processing = false;
     }
+  }
+
+  /// Asks the payment service for the amount due (`sale.totals.total`, for
+  /// cash and card); tendered and change stay on the sale only.
+  Future<bool> _pay(CheckoutDone done, String saleMode) async {
+    final outcome = await payments.process(
+      PaymentRequest(
+        paymentId: _uuid.generate(),
+        saleId: done.sale.saleId!,
+        amount: done.sale.totals.total,
+        method: saleMode == SaleMode.card
+            ? PaymentMethod.card
+            : PaymentMethod.cash,
+      ),
+    );
+    return outcome.fold(
+      onSuccess: (payment) => payment.succeeded,
+      onFailure: (_) => false,
+    );
   }
 
   @override

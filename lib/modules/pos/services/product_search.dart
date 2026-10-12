@@ -1,4 +1,4 @@
-import '../../products/models/product.dart';
+import '../../../features/products/domain/entities/product.dart';
 
 /// The top-bar search rules of the prototype as plain Dart.
 abstract final class ProductSearch {

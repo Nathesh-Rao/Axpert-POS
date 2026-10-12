@@ -14,11 +14,13 @@ Sale testSale({
   Cart cart = const Cart(),
   int? valueMinor,
   Map<int, Qty> returned = const <int, Qty>{},
+  String? saleId,
 }) {
   final total = Money(totalMinor, CurrencyRegistry.inr);
   const zero = Money.zero(CurrencyRegistry.inr);
   return Sale(
     number: number,
+    saleId: saleId,
     date: at.toUtc().toIso8601String(),
     store: 'Maison Galaxy',
     customer: customer,

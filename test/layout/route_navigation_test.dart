@@ -22,7 +22,7 @@ import 'package:pos_application/modules/pos/controllers/cart_actions_controller.
 import 'package:pos_application/modules/pos/controllers/cart_meta_controller.dart';
 import 'package:pos_application/modules/pos/models/cart.dart';
 import 'package:pos_application/modules/pos/models/cart_line.dart';
-import 'package:pos_application/modules/products/controllers/products_controller.dart';
+import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
 import 'package:pos_application/modules/shell/widgets/sidebar.dart';
 import 'package:pos_application/shared/controllers/overlay_controller.dart';
 import 'package:pos_application/shared/controllers/toast_controller.dart';

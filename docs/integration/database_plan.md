@@ -86,7 +86,7 @@ Each stage adds a `Drift*Repository` implementing the existing interface, switch
 | Stage | Repository | Notes | Test files touching the controller |
 |---|---|---|---|
 | R1 | Settings | smallest; device-local | 7 (D1 done: DEC-125) |
-| R2 | Customers | walk-in row; points deduction becomes a row update | 6 |
+| R2 | Customers | walk-in row; points deduction becomes a row update | 6 (D2 done: DEC-126) |
 | R3 | Held bills | device-local JSON column | 2 |
 | R4 | Products | per-row writes remove KG-101's whole-list save; stock deltas become row updates | 22 |
 | R5 | Sales + Returns together | one transaction for sale, lines and returned quantities (today `MockReturnRepository` saves sales and products non-atomically although its comment says "one unit") | 13 and 6 |

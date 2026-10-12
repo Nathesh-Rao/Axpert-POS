@@ -1,6 +1,9 @@
 // Release-build check that the Drift web database really loads (DEC-117/119):
 //   python3 tool/web_check/serve.py build/web 8300 &
-//   node --experimental-websocket tool/web_check/drift_check.mjs http://127.0.0.1:8300/ <outDir> [width height]
+//   node --experimental-websocket tool/web_check/drift_check.mjs http://127.0.0.1:8300/ <outDir> [width height] [--seed-duplicates]
+// --seed-duplicates first writes two customers with the SAME id, the same member number and
+// two sales whose customer names match 1 / 0 customers into localStorage (D2, KG-132) and
+// expects the second to be imported as `<id>~dup2` with the report in the marker.
 // Reports: HTTP status, size and content type of drift_worker.js and sqlite3.wasm
 // (probed with fetch: the worker's own requests are not visible to the page),
 // console errors, the browser storage the database created (IndexedDB names and
@@ -12,7 +15,8 @@ import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
-const [url, outDir = '/tmp/drift_check', widthArg = '1280', heightArg = '720'] = process.argv.slice(2);
+const seedDuplicates = process.argv.includes('--seed-duplicates');
+const [url, outDir = '/tmp/drift_check', widthArg = '1280', heightArg = '720'] = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 const width = Number(widthArg), height = Number(heightArg);
 fs.mkdirSync(outDir, { recursive: true });
 const CH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
@@ -39,6 +43,22 @@ const send = (method, params = {}) => new Promise((r) => { const i = ++id; pendi
 const ev = async (expression) => (await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true })).result?.value;
 await send('Runtime.enable'); await send('Log.enable'); await send('Page.enable'); await send('Network.enable');
 await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
+if (seedDuplicates) {
+  const cust = (id, name, member) => ({ id, name, phone: '9876543210', email: '', member, points: 10 });
+  // Same shape as debug_check.mjs (a stored sale must parse, or the app does not start).
+  const prod = { id: 0, name: 'Coca Cola 500ml', code: 'BDV001', barcode: '8901234567890', priceMinor: 4000, category: 'Beverages', sub: 'Soft Drinks', stock: 40, gst: 18, image: 0, favourite: false };
+  const sale = (n, customer) => ({
+    number: 'AX' + String(n).padStart(6, '0'), date: new Date().toISOString(), store: 'Maison Galaxy', customer,
+    cart: { lines: [{ product: prod, qtyMilli: 1000, priceMinor: 4000, discountBp: 0 }], customer: 'walk', saleType: 'Cash', discountType: 'percent', billDiscountBp: 0, billDiscountMinor: 0, reason: '', points: 0, note: '' },
+    totals: { items: 1, qtyMilli: 1000, valueMinor: 4000, subtotalMinor: 4000, discountMinor: 0, taxMinor: 0, pointsMinor: 0, totalMinor: 4000 },
+    mode: 'Cash', tenderedMinor: 4000, changeMinor: 0, returned: {},
+  });
+  const seed = {
+    'flutter.axpert-customers': JSON.stringify(JSON.stringify([cust('walk', 'Walk-in Customer', ''), cust('7', 'Asha', 'MG00007'), cust('7', 'Bela', 'MG00007')])),
+    'flutter.axpert-sales': JSON.stringify(JSON.stringify([sale(1, 'Asha'), sale(2, 'Nobody')])),
+  };
+  await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{if(!localStorage.getItem('flutter.axpert-customers')){const d=${JSON.stringify(seed)};for(const k in d)localStorage.setItem(k,d[k])}}catch(e){}` });
+}
 const t0 = Date.now();
 await send('Page.navigate', { url });
 let firstViewMs = null;
@@ -51,7 +71,7 @@ const idb = await ev(`new Promise((res)=>{const q=indexedDB.open('axpert_pos');q
 // Drift's IndexedDB file system: store `files` {name,length} (key = file id) and
 // store `blocks` (key [fileId, byteOffset], 4096-byte ArrayBuffers).
 const dump = await ev(`new Promise((res)=>{const q=indexedDB.open('axpert_pos');q.onerror=()=>res(null);q.onsuccess=()=>{const db=q.result;const get=(n)=>new Promise(r=>{const rows=[];db.transaction(n).objectStore(n).openCursor().onsuccess=e=>{const c=e.target.result;if(!c){r(rows);return}rows.push([c.key,c.value]);c.continue()}});(async()=>{const files=await get('files');const blocks=await get('blocks');const b64=(buf)=>{let s='';const a=new Uint8Array(buf);for(let i=0;i<a.length;i++)s+=String.fromCharCode(a[i]);return btoa(s)};db.close();res(JSON.stringify({files:files.map(([k,v])=>({id:k,name:v.name,length:v.length})),blocks:blocks.map(([k,v])=>({file:k[0],offset:k[1],data:b64(v)}))}))})()}})`);
-let row = null, rowProblem = null, settingsRows = null, markerRows = null, userVersion = null;
+let row = null, rowProblem = null, settingsRows = null, markerRows = null, userVersion = null, customerRows = null, customersMarker = null;
 const tmp = `/tmp/drift_check_db_${port}.sqlite`;
 try {
   const d = JSON.parse(dump);
@@ -65,11 +85,19 @@ try {
   const q = (sql) => JSON.parse(execFileSync('sqlite3', ['-readonly', '-json', tmp, sql], { encoding: 'utf8' }) || '[]');
   settingsRows = q('SELECT key, value_json FROM settings ORDER BY key');
   markerRows = q("SELECT key, value FROM migration_state WHERE key = 'settings_copy_v1'");
+  customerRows = q('SELECT id, legacy_id, position, name, member_no, points, deleted_at, server_id, server_version, device_id FROM customers ORDER BY position');
+  customersMarker = q("SELECT value FROM migration_state WHERE key = 'customers_copy_v1'");
   userVersion = q('PRAGMA user_version')[0]?.user_version;
 } catch (e) { rowProblem = String(e).slice(0, 200); } finally { fs.rmSync(tmp, { force: true }); }
 const uuidV4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const rowOk = !!row && row.length === 1 && uuidV4.test(row[0].device_id);
-const settingsOk = !!settingsRows && settingsRows.length === 5 && !!markerRows && markerRows.length === 1 && userVersion === 3;
+const settingsOk = !!settingsRows && settingsRows.length === 5 && !!markerRows && markerRows.length === 1 && userVersion === 4;
+const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+const report = customersMarker?.length === 1 ? JSON.parse(JSON.parse(customersMarker[0].value).report ? customersMarker[0].value : '{}').report : null;
+const customersOk = !!customerRows && customersMarker?.length === 1 && customerRows.every((r, i) => uuidRe.test(r.id) && r.position === i && !r.deleted_at && r.server_id === null && r.server_version === null && r.device_id === null)
+  && (seedDuplicates
+    ? customerRows.map((r) => r.legacy_id).join(',') === 'walk,7,7~dup2' && customerRows[2].name === 'Bela' && report?.renamed?.length === 1 && report.renamed[0].to === '7~dup2' && Object.keys(report.duplicate_members).join() === 'MG00007' && report.sales_checked === 2 && report.sales_name_unmatched === 1
+    : customerRows.map((r) => r.legacy_id).join(',') === 'walk,1,2,3' && report?.renamed?.length === 0);
 const png = await send('Page.captureScreenshot', { format: 'png' });
 fs.writeFileSync(`${outDir}/drift_check_${width}x${height}.png`, Buffer.from(png.data, 'base64'));
 console.log('first Flutter view after', firstViewMs, 'ms');
@@ -79,11 +107,12 @@ console.log('probes:', probes);
 console.log('indexedDB axpert_pos record counts:', idb);
 console.log('device_context_entries row:', rowProblem ? 'NOT READ: ' + rowProblem : JSON.stringify(row), rowOk ? '(device_id is UUID v4; outlet_id/register_id may be null)' : '');
 console.log('schema user_version:', userVersion, '| settings rows:', JSON.stringify(settingsRows));
-console.log('settings_copy_v1 marker:', JSON.stringify(markerRows), settingsOk ? '(5 rows, marker present, v3)' : '(SETTINGS CHECK FAILED)');
+console.log('customers rows:', JSON.stringify(customerRows?.map((r) => `${r.position}:${r.legacy_id}:${r.name}:${r.points}`)), '| customers_copy_v1 marker:', customersMarker?.length === 1 ? customersMarker[0].value.slice(0, 400) : 'MISSING', customersOk ? '(customers OK)' : '(CUSTOMERS CHECK FAILED)');
+console.log('settings_copy_v1 marker:', JSON.stringify(markerRows), settingsOk ? '(5 rows, marker present, v4)' : '(SETTINGS CHECK FAILED)');
 console.log('console errors:', logs.length, logs.slice(0, 3).join(' | ').slice(0, 300));
 const pr = JSON.parse(probes ?? '{}');
 let stored = 0; try { stored = Object.values(JSON.parse(idb)).filter((n) => n > 0).reduce((a, b) => a + b, 0); } catch {}
-const ok = ['drift_worker.js', 'sqlite3.wasm'].every((n) => pr[n]?.status === 200 && pr[n].bytes > 100000) && pr['sqlite3.wasm']?.type === 'application/wasm' && stored > 0 && rowOk && settingsOk && logs.length === 0;
+const ok = ['drift_worker.js', 'sqlite3.wasm'].every((n) => pr[n]?.status === 200 && pr[n].bytes > 100000) && pr['sqlite3.wasm']?.type === 'application/wasm' && stored > 0 && rowOk && settingsOk && customersOk && logs.length === 0;
 console.log(ok ? 'DRIFT CHECK OK' : 'DRIFT CHECK FAILED');
 ws.close(); proc.kill();
 process.exit(ok ? 0 : 1);

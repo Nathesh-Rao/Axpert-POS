@@ -24,12 +24,14 @@ class DriftCustomerRepository implements CustomerRepository {
     required LocalStore store,
     required StartupDiagnostics diagnostics,
     required UuidGenerator uuid,
+    SerialQueue? queue,
     CustomersMigrator? migrator,
     DateTime Function()? now,
   }) : _provider = provider,
        _store = store,
        _diagnostics = diagnostics,
        _uuid = uuid,
+       _saves = queue ?? SerialQueue(),
        _migrator = migrator ?? CustomersMigrator(uuid: uuid, now: now),
        _now = now ?? DateTime.now,
        _fallback = MockCustomerRepository(store);
@@ -67,8 +69,9 @@ class DriftCustomerRepository implements CustomerRepository {
     }
   }
 
-  /// Saves run one after another (see [SerialQueue], KG-190).
-  final SerialQueue _saves = SerialQueue();
+  /// Saves run one after another (see [SerialQueue], KG-190); the queue is
+  /// shared with the sales, checkout and refund writes (DEC-129).
+  final SerialQueue _saves;
 
   @override
   Future<void> save(List<Customer> customers) =>

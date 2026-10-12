@@ -66,6 +66,23 @@ enum ProductsBackend {
       _fromEnvironment == 'localStore' ? localStore : drift;
 }
 
+/// Where the sales ledger lives (DEC-129); same meaning as [SettingsBackend]
+/// (`--dart-define=SALES_BACKEND=localStore` rolls back sales, checkout
+/// transaction and refund transaction to the LocalStore path).
+enum SalesBackend {
+  drift,
+  localStore,
+  mock;
+
+  static const String _fromEnvironment = String.fromEnvironment(
+    'SALES_BACKEND',
+    defaultValue: 'drift',
+  );
+
+  static SalesBackend get configured =>
+      _fromEnvironment == 'localStore' ? localStore : drift;
+}
+
 abstract interface class AppConfig {
   AppEnvironment get environment;
 
@@ -80,6 +97,8 @@ abstract interface class AppConfig {
   HeldBackend get heldBackend;
 
   ProductsBackend get productsBackend;
+
+  SalesBackend get salesBackend;
 }
 
 final class DevelopmentAppConfig implements AppConfig {
@@ -89,15 +108,18 @@ final class DevelopmentAppConfig implements AppConfig {
     CustomersBackend? customersBackend,
     HeldBackend? heldBackend,
     ProductsBackend? productsBackend,
+    SalesBackend? salesBackend,
   }) : _settingsBackend = settingsBackend,
        _customersBackend = customersBackend,
        _heldBackend = heldBackend,
-       _productsBackend = productsBackend;
+       _productsBackend = productsBackend,
+       _salesBackend = salesBackend;
 
   final SettingsBackend? _settingsBackend;
   final CustomersBackend? _customersBackend;
   final HeldBackend? _heldBackend;
   final ProductsBackend? _productsBackend;
+  final SalesBackend? _salesBackend;
 
   @override
   AppEnvironment get environment => AppEnvironment.development;
@@ -122,4 +144,7 @@ final class DevelopmentAppConfig implements AppConfig {
   @override
   ProductsBackend get productsBackend =>
       _productsBackend ?? ProductsBackend.configured;
+
+  @override
+  SalesBackend get salesBackend => _salesBackend ?? SalesBackend.configured;
 }

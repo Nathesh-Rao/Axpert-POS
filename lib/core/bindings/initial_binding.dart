@@ -39,6 +39,7 @@ import '../../features/products/presentation/controllers/products_controller.dar
 import '../../features/products/data/repositories/drift_product_repository.dart';
 import '../../features/products/data/repositories/mock_product_repository.dart';
 import '../../features/products/domain/repositories/product_repository.dart';
+import '../../modules/sales/repository/drift_sale_repository.dart';
 import '../../modules/sales/repository/mock_sale_repository.dart';
 import '../../modules/sales/repository/sale_repository.dart';
 import '../../shared/controllers/clock_controller.dart';
@@ -72,6 +73,7 @@ import '../../shared/controllers/toast_controller.dart';
 import '../services/storage/in_memory_local_store.dart';
 import '../services/storage/local_store.dart';
 import '../shortcuts/shortcut_controller.dart';
+import '../utils/serial_queue.dart';
 
 /// Permanent, cross-module controllers. Idempotent: calling it twice (from
 /// `main` and from `GetMaterialApp.initialBinding`) registers once.
@@ -91,6 +93,10 @@ class InitialBinding extends Bindings {
   /// The payment boundary; a mock until a provider exists (DEC-123).
   final PaymentService payments;
 
+  /// One queue for every write of products, customers, sales, checkout and
+  /// refund, so their LocalStore mirrors cannot finish out of order (DEC-129).
+  final SerialQueue _ledgerQueue = SerialQueue();
+
   SettingsRepository _settingsRepository() =>
       switch (infrastructure.config.settingsBackend) {
         SettingsBackend.drift => DriftSettingsRepository(
@@ -109,6 +115,7 @@ class InitialBinding extends Bindings {
           store: store,
           diagnostics: infrastructure.diagnostics,
           uuid: infrastructure.uuid,
+          queue: _ledgerQueue,
         ),
         CustomersBackend.localStore => LocalStoreCustomerRepository(store),
         CustomersBackend.mock => MockCustomerRepository(store),
@@ -132,11 +139,25 @@ class InitialBinding extends Bindings {
         store: store,
         diagnostics: infrastructure.diagnostics,
         uuid: infrastructure.uuid,
+        queue: _ledgerQueue,
       ),
       ProductsBackend.localStore => LocalStoreProductRepository(store),
       ProductsBackend.mock => MockProductRepository(store),
     };
   }
+
+  SaleRepository _saleRepository() =>
+      switch (infrastructure.config.salesBackend) {
+        SalesBackend.drift => DriftSaleRepository(
+          provider: infrastructure.databaseProvider,
+          store: store,
+          diagnostics: infrastructure.diagnostics,
+          uuid: infrastructure.uuid,
+          queue: _ledgerQueue,
+        ),
+        SalesBackend.localStore => LocalStoreSaleRepository(store),
+        SalesBackend.mock => MockSaleRepository(store),
+      };
 
   HeldBillRepository _heldBillRepository() =>
       switch (infrastructure.config.heldBackend) {
@@ -168,7 +189,7 @@ class InitialBinding extends Bindings {
     _put<CustomerRepository>(_customerRepository());
     _put<CartRepository>(MockCartRepository(store));
     _put<HeldBillRepository>(_heldBillRepository());
-    _put<SaleRepository>(MockSaleRepository(store));
+    _put<SaleRepository>(_saleRepository());
     _put<AudioService>(audio);
     _put<BeepService>(
       SettingBeepService(

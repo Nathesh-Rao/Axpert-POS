@@ -51,12 +51,14 @@ AppInfrastructure testInfrastructure({
   CustomersBackend customersBackend = CustomersBackend.mock,
   HeldBackend heldBackend = HeldBackend.mock,
   ProductsBackend productsBackend = ProductsBackend.mock,
+  SalesBackend salesBackend = SalesBackend.mock,
 }) {
   final config = DevelopmentAppConfig(
     settingsBackend: SettingsBackend.mock,
     customersBackend: customersBackend,
     heldBackend: heldBackend,
     productsBackend: productsBackend,
+    salesBackend: salesBackend,
   );
   return AppInfrastructure(
     config: config,

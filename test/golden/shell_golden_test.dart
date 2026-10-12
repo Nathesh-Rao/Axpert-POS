@@ -13,7 +13,7 @@ import 'package:pos_application/core/theme/tokens/app_typography.dart';
 import 'package:pos_application/main.dart';
 import 'package:pos_application/modules/shell/controllers/settings_controller.dart';
 import 'package:pos_application/modules/pos/controllers/cart_actions_controller.dart';
-import 'package:pos_application/modules/products/controllers/products_controller.dart';
+import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
 import 'package:pos_application/modules/shift/controllers/shift_controller.dart';
 import 'package:pos_application/shared/controllers/clock_controller.dart';
 import 'package:pos_application/shared/controllers/overlay_controller.dart';

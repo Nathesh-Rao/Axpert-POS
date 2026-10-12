@@ -3,12 +3,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/constants/storage_keys.dart';
-import 'package:pos_application/core/mock/large_dataset.dart';
+import 'package:pos_application/features/products/data/datasources/large_dataset.dart';
 import 'package:pos_application/core/routes/app_routes.dart';
 import 'package:pos_application/core/services/storage/in_memory_local_store.dart';
 import 'package:pos_application/modules/customers/controllers/customers_page_controller.dart';
 import 'package:pos_application/modules/customers/models/customer.dart';
-import 'package:pos_application/modules/products/controllers/products_page_controller.dart';
+import 'package:pos_application/features/products/presentation/controllers/products_page_controller.dart';
 import 'package:pos_application/shared/widgets/app_data_table.dart';
 
 import '../../support/test_app.dart';

@@ -8,7 +8,7 @@ import 'package:pos_application/core/responsive/app_metrics.dart';
 import 'package:pos_application/modules/pos/controllers/cart_actions_controller.dart';
 import 'package:pos_application/modules/pos/widgets/cart_line_row.dart';
 import 'package:pos_application/modules/pos/widgets/stat_tiles.dart';
-import 'package:pos_application/modules/products/controllers/products_controller.dart';
+import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
 import 'package:pos_application/shared/widgets/action_button.dart';
 import 'package:pos_application/shared/widgets/number_field.dart';
 import 'package:pos_application/shared/widgets/product_image.dart';

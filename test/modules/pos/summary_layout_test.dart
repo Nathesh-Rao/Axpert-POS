@@ -20,7 +20,7 @@ import 'package:pos_application/modules/pos/widgets/summary/payment_section.dart
 import 'package:pos_application/modules/pos/widgets/summary/quick_actions_grid.dart';
 import 'package:pos_application/modules/pos/widgets/summary/totals_card.dart';
 import 'package:pos_application/shared/widgets/app_input_box.dart';
-import 'package:pos_application/modules/products/controllers/products_controller.dart';
+import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
 
 import '../../support/layout_matrix.dart';
 import '../../support/test_app.dart';

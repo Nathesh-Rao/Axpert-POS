@@ -7,7 +7,7 @@ import '../../../core/services/pricing/qty.dart';
 import '../../../core/utils/money_formatter.dart';
 import '../../../shared/controllers/overlay_controller.dart';
 import '../../../shared/controllers/toast_controller.dart';
-import '../../products/controllers/products_controller.dart';
+import '../../../features/products/presentation/controllers/products_controller.dart';
 import '../../sales/controllers/sales_controller.dart';
 import '../../sales/models/sale.dart';
 import '../models/refund_request.dart';

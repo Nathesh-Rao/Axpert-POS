@@ -14,7 +14,7 @@ import 'package:get/get.dart';
 import 'package:pos_application/core/routes/app_routes.dart';
 import 'package:pos_application/shared/controllers/overlay_controller.dart';
 import 'package:pos_application/modules/pos/controllers/cart_actions_controller.dart';
-import 'package:pos_application/modules/products/controllers/products_controller.dart';
+import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
 
 import '../support/test_app.dart';
 import '../support/viewport.dart';

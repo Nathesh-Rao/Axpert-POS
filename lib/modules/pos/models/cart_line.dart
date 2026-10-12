@@ -3,7 +3,7 @@ import '../../../core/services/pricing/currency.dart';
 import '../../../core/services/pricing/currency_registry.dart';
 import '../../../core/services/pricing/money.dart';
 import '../../../core/services/pricing/qty.dart';
-import '../../products/models/product.dart';
+import '../../../features/products/domain/entities/product.dart';
 
 /// One cart line. Keeps a snapshot of the product like the prototype (the
 /// reducer clamps quantity to `product.stock` of the snapshot).

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/routes/app_routes.dart';
-import 'package:pos_application/modules/products/controllers/products_controller.dart';
-import 'package:pos_application/modules/products/controllers/products_page_controller.dart';
+import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
+import 'package:pos_application/features/products/presentation/controllers/products_page_controller.dart';
 import 'package:pos_application/shared/controllers/page_filter_controller.dart';
 import 'package:pos_application/shared/widgets/app_data_table.dart';
 

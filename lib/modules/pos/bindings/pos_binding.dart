@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 
 import '../../../shared/controllers/page_filter_controller.dart';
 import '../../../shared/controllers/search_field_controller.dart';
-import '../../products/controllers/products_controller.dart';
+import '../../../features/products/presentation/controllers/products_controller.dart';
 import '../controllers/catalog_controller.dart';
 
 /// POS route binding. The catalog state (category, subcategory, view mode)

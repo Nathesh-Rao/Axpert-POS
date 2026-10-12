@@ -1,4 +1,4 @@
-import '../../products/models/product.dart';
+import '../../../features/products/domain/entities/product.dart';
 import '../../sales/models/sale.dart';
 import '../models/refund_request.dart';
 

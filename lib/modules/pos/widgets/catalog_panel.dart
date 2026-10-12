@@ -14,7 +14,7 @@ import '../../../shared/controllers/overlay_controller.dart';
 import '../../../shared/widgets/app_panel.dart';
 import '../../../shared/widgets/app_pressable.dart';
 import '../../../shared/widgets/product_image.dart';
-import '../../products/controllers/products_controller.dart';
+import '../../../features/products/presentation/controllers/products_controller.dart';
 import '../controllers/cart_controller.dart';
 import 'catalog_tools.dart';
 import 'customer_select.dart';

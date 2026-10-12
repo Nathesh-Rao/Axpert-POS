@@ -2,8 +2,8 @@ import 'package:get/get.dart';
 
 import '../../../shared/controllers/overlay_controller.dart';
 import '../../../shared/controllers/toast_controller.dart';
-import '../../products/controllers/products_controller.dart';
-import '../../products/repository/product_repository.dart';
+import '../../../features/products/presentation/controllers/products_controller.dart';
+import '../../../features/products/domain/repositories/product_repository.dart';
 import '../../sales/controllers/sales_controller.dart';
 import '../../sales/repository/sale_repository.dart';
 import '../controllers/returns_controller.dart';

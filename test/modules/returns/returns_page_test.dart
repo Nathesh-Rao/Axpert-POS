@@ -9,7 +9,7 @@ import 'package:pos_application/core/services/pricing/money.dart';
 import 'package:pos_application/core/services/pricing/qty.dart';
 import 'package:pos_application/modules/pos/models/cart.dart';
 import 'package:pos_application/modules/pos/models/cart_line.dart';
-import 'package:pos_application/modules/products/controllers/products_controller.dart';
+import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
 import 'package:pos_application/modules/returns/controllers/returns_controller.dart';
 import 'package:pos_application/modules/sales/controllers/sales_controller.dart';
 import 'package:pos_application/modules/sales/models/sale.dart';

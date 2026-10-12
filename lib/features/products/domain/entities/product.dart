@@ -1,9 +1,9 @@
-import '../../../core/services/pricing/basis_points.dart';
-import '../../../core/services/pricing/currency.dart';
-import '../../../core/services/pricing/currency_registry.dart';
-import '../../../core/services/pricing/money.dart';
-import '../../../core/services/pricing/qty.dart';
-import '../../../core/utils/gst_json.dart';
+import '../../../../core/services/pricing/basis_points.dart';
+import '../../../../core/services/pricing/currency.dart';
+import '../../../../core/services/pricing/currency_registry.dart';
+import '../../../../core/services/pricing/money.dart';
+import '../../../../core/services/pricing/qty.dart';
+import '../../../../core/utils/gst_json.dart';
 
 /// Catalog product (prototype `Product`). Price is minor units, `gst` is basis
 /// points, stock is whole units (the prototype never adjusts it).

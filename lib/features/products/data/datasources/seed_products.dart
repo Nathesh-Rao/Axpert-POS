@@ -1,7 +1,7 @@
-import '../../modules/products/models/product.dart';
-import '../services/pricing/basis_points.dart';
-import '../services/pricing/currency_registry.dart';
-import '../services/pricing/money.dart';
+import '../../domain/entities/product.dart';
+import '../../../../core/services/pricing/basis_points.dart';
+import '../../../../core/services/pricing/currency_registry.dart';
+import '../../../../core/services/pricing/money.dart';
 
 /// The prototype's 20 products (`data.ts` `sampleProducts`), prices in rupees
 /// converted to minor units.

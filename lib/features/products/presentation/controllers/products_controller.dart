@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 
-import '../models/product.dart';
-import '../repository/product_repository.dart';
+import '../../domain/entities/product.dart';
+import '../../domain/repositories/product_repository.dart';
 
 /// Permanent product list with prebuilt lookup maps (id, barcode, lowercase
 /// code) and the lowercase "name code" search strings used by the catalog.

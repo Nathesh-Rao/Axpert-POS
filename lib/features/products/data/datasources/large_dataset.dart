@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 
-import '../../modules/products/models/product.dart';
-import '../services/pricing/basis_points.dart';
-import '../services/pricing/currency_registry.dart';
-import '../services/pricing/money.dart';
+import '../../domain/entities/product.dart';
+import '../../../../core/services/pricing/basis_points.dart';
+import '../../../../core/services/pricing/currency_registry.dart';
+import '../../../../core/services/pricing/money.dart';
 
 /// Debug-only large catalog for performance work. Enabled with
 /// `--dart-define=LARGE_DATASET=true` in debug builds; off by default.

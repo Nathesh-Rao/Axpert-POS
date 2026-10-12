@@ -1,10 +1,10 @@
-import '../../../core/constants/storage_keys.dart';
-import '../../../core/mock/mock_delay.dart';
-import '../../../core/mock/seed_products.dart';
-import '../../../core/services/storage/local_store.dart';
-import '../../../core/services/storage/local_store_seeder.dart';
-import '../models/product.dart';
-import 'product_repository.dart';
+import '../../../../core/constants/storage_keys.dart';
+import '../../../../core/mock/mock_delay.dart';
+import '../datasources/seed_products.dart';
+import '../../../../core/services/storage/local_store.dart';
+import '../../../../core/services/storage/local_store_seeder.dart';
+import '../../domain/entities/product.dart';
+import '../../domain/repositories/product_repository.dart';
 
 /// Persists the product list through [LocalStore]; seeds the prototype data
 /// (or [seed], e.g. the debug large dataset) on first run. With [forceSeed]

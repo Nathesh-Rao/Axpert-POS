@@ -3,8 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 import '../../../shared/controllers/search_field_controller.dart';
-import '../../products/controllers/products_controller.dart';
-import '../../products/models/product.dart';
+import '../../../features/products/presentation/controllers/products_controller.dart';
+import '../../../features/products/domain/entities/product.dart';
 import '../services/product_search.dart';
 import 'cart_actions_controller.dart';
 import 'scan_controller.dart';

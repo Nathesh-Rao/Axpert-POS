@@ -6,7 +6,7 @@ import 'package:pos_application/core/services/storage/local_store.dart';
 import 'package:pos_application/modules/pos/controllers/cart_actions_controller.dart';
 import 'package:pos_application/modules/pos/controllers/cart_controller.dart';
 import 'package:pos_application/modules/pos/controllers/cart_selection_controller.dart';
-import 'package:pos_application/modules/products/controllers/products_controller.dart';
+import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
 import 'package:pos_application/shared/controllers/toast_controller.dart';
 
 import 'test_app.dart';

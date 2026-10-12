@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pos_application/shared/widgets/search_text_field.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/modules/pos/controllers/cart_controller.dart';
-import 'package:pos_application/modules/products/controllers/products_controller.dart';
+import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
 import 'package:pos_application/shared/controllers/toast_controller.dart';
 import 'package:pos_application/shared/widgets/product_card.dart';
 

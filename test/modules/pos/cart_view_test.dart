@@ -7,7 +7,7 @@ import 'package:pos_application/modules/pos/controllers/cart_actions_controller.
 import 'package:pos_application/modules/pos/controllers/cart_controller.dart';
 import 'package:pos_application/modules/pos/controllers/cart_selection_controller.dart';
 import 'package:pos_application/modules/pos/widgets/cart_line_row.dart';
-import 'package:pos_application/modules/products/controllers/products_controller.dart';
+import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
 import 'package:pos_application/shared/controllers/toast_controller.dart';
 import 'package:pos_application/shared/widgets/number_field.dart';
 import 'package:pos_application/shared/widgets/quantity_field.dart';

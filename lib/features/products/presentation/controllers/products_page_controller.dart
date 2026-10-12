@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 
-import '../../../shared/controllers/filtered_list_controller.dart';
-import '../models/product.dart';
+import '../../../../shared/controllers/filtered_list_controller.dart';
+import '../../domain/entities/product.dart';
 import 'products_controller.dart';
 
 /// The Products page: the product list filtered by `name code barcode`.

@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 
 import '../../../shared/controllers/page_filter_controller.dart';
 import '../../../shared/controllers/search_field_controller.dart';
-import '../../products/controllers/products_controller.dart';
-import '../../products/models/product.dart';
+import '../../../features/products/presentation/controllers/products_controller.dart';
+import '../../../features/products/domain/entities/product.dart';
 import '../models/catalog_taxonomy.dart';
 
 /// Catalog state: category, subcategory, grid/list and the filtered product

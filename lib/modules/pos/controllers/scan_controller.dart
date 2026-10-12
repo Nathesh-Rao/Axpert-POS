@@ -7,7 +7,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../shared/controllers/overlay_controller.dart';
 import '../../../shared/controllers/search_field_controller.dart';
 import '../../../shared/controllers/toast_controller.dart';
-import '../../products/controllers/products_controller.dart';
+import '../../../features/products/presentation/controllers/products_controller.dart';
 import 'cart_actions_controller.dart';
 
 /// `scanProduct` of the prototype (shared by the top-bar search and the scan

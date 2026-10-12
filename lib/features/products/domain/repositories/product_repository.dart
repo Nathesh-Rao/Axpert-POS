@@ -1,4 +1,4 @@
-import '../models/product.dart';
+import '../entities/product.dart';
 
 abstract interface class ProductRepository {
   Future<List<Product>> load();

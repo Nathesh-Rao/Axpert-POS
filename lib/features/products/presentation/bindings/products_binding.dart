@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../../../shared/controllers/page_filter_controller.dart';
+import '../../../../shared/controllers/page_filter_controller.dart';
 import '../controllers/products_controller.dart';
 import '../controllers/products_page_controller.dart';
 

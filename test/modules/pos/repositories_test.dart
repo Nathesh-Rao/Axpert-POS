@@ -1,15 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pos_application/core/constants/storage_keys.dart';
-import 'package:pos_application/core/mock/large_dataset.dart';
+import 'package:pos_application/features/products/data/datasources/large_dataset.dart';
 import 'package:pos_application/core/mock/mock_delay.dart';
-import 'package:pos_application/core/mock/seed_products.dart';
+import 'package:pos_application/features/products/data/datasources/seed_products.dart';
 import 'package:pos_application/core/services/storage/in_memory_local_store.dart';
 import 'package:pos_application/modules/customers/repository/mock_customer_repository.dart';
 import 'package:pos_application/modules/pos/models/cart.dart';
 import 'package:pos_application/modules/pos/models/held_bill.dart';
 import 'package:pos_application/modules/pos/repository/mock_cart_repository.dart';
 import 'package:pos_application/modules/pos/repository/mock_held_bill_repository.dart';
-import 'package:pos_application/modules/products/repository/mock_product_repository.dart';
+import 'package:pos_application/features/products/data/repositories/mock_product_repository.dart';
 import 'package:pos_application/modules/sales/repository/mock_sale_repository.dart';
 
 void main() {

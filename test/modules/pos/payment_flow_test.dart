@@ -13,7 +13,7 @@ import 'package:pos_application/modules/pos/controllers/member_controller.dart';
 import 'package:pos_application/modules/pos/controllers/payment_controller.dart';
 import 'package:pos_application/modules/pos/models/cart.dart';
 import 'package:pos_application/modules/pos/models/payment_state.dart';
-import 'package:pos_application/modules/products/controllers/products_controller.dart';
+import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
 import 'package:pos_application/modules/sales/controllers/sales_controller.dart';
 import 'package:pos_application/shared/controllers/overlay_controller.dart';
 import 'package:pos_application/shared/controllers/toast_controller.dart';

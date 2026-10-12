@@ -9,7 +9,7 @@ import 'package:pos_application/core/services/pricing/qty.dart';
 import 'package:pos_application/modules/customers/models/customer.dart';
 import 'package:pos_application/modules/pos/models/cart.dart';
 import 'package:pos_application/modules/pos/services/checkout_service.dart';
-import 'package:pos_application/modules/products/models/product.dart';
+import 'package:pos_application/features/products/domain/entities/product.dart';
 
 Money inr(int minor) => Money(minor, CurrencyRegistry.inr);
 

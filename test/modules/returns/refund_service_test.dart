@@ -7,7 +7,7 @@ import 'package:pos_application/core/services/pricing/money.dart';
 import 'package:pos_application/core/services/pricing/qty.dart';
 import 'package:pos_application/modules/pos/models/cart.dart';
 import 'package:pos_application/modules/pos/models/cart_line.dart';
-import 'package:pos_application/modules/products/models/product.dart';
+import 'package:pos_application/features/products/domain/entities/product.dart';
 import 'package:pos_application/modules/returns/models/refund_request.dart';
 import 'package:pos_application/modules/returns/services/refund_service.dart';
 import 'package:pos_application/modules/sales/models/sale.dart';

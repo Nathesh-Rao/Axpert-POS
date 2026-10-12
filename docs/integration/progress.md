@@ -61,3 +61,7 @@ Run and read: format and analyze clean; full VM suite 994/994; no PNG changed ve
 ## Stage D2 (customers in Drift, 2026-10-12)
 - Commits on `integration`: D2.a schema v4 (`610e774`), D2.b migrator (`62ee145`), D2.c repository, flag and binding (`2d57f0e`), D2.d contract suite (`039714b`), D2.e web checks and docs. Details and rollback: DEC-126.
 - No UI, money, pricing, golden or other-repository change; no new package.
+
+## Stage D3 (held bills in Drift, 2026-10-12)
+- Commits on `integration`: D3.a schema v5 (`34c6ad3`), D3.b rows and migrator (`d49177d`), D3.c repository, flag and binding, D3.d contract suite, D3.e start-up timeline (`a39cc9b`), D3.f web checks and docs. Details and rollback: DEC-127.
+- No UI, money, pricing, golden or other-repository change; no new package. Start-up measurement only (flag off by default); KG-189 and KG-190 logged.

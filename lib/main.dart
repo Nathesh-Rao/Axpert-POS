@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/bindings/app_infrastructure.dart';
 import 'core/bindings/initial_binding.dart';
+import 'core/bindings/startup_timeline.dart';
 import 'core/constants/app_strings.dart';
 import 'core/responsive/responsive_layout.dart';
 import 'core/routes/app_pages.dart';
@@ -18,17 +21,34 @@ import 'modules/shift/widgets/signed_out_layer.dart';
 import 'shared/widgets/toast_layer.dart';
 
 Future<void> main() async {
+  StartupTimeline.mark('main start');
   WidgetsFlutterBinding.ensureInitialized();
   configureUrlStrategy();
-  final prefs = await SharedPreferences.getInstance();
-  final infrastructure = await AppInfrastructure.bootstrap();
+  final prefs = await StartupTimeline.measure(
+    'LocalStore open (SharedPreferences)',
+    SharedPreferences.getInstance,
+  );
+  final infrastructure = await StartupTimeline.measure(
+    'bootstrap (database + device context)',
+    AppInfrastructure.bootstrap,
+  );
   final binding = InitialBinding(
     SharedPrefsLocalStore(prefs),
     infrastructure: infrastructure,
   );
-  binding.dependencies();
-  await binding.loadData();
+  StartupTimeline.measureSync('dependencies()', binding.dependencies);
+  await StartupTimeline.measure('loadData (all)', binding.loadData);
+  StartupTimeline.mark('runApp called');
   runApp(PosApp(binding: binding));
+  WidgetsBinding.instance.addPostFrameCallback(
+    (_) => StartupTimeline.mark('first frame built'),
+  );
+  unawaited(
+    WidgetsBinding.instance.waitUntilFirstFrameRasterized.then((_) {
+      StartupTimeline.mark('first frame rasterized');
+      StartupTimeline.report();
+    }),
+  );
 }
 
 class PosApp extends StatelessWidget {

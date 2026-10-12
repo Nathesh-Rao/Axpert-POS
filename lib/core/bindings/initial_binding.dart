@@ -51,6 +51,7 @@ import '../security/authentication_service.dart';
 import '../session/session_controller.dart';
 import 'app_infrastructure.dart';
 import 'startup_diagnostics.dart';
+import 'startup_timeline.dart';
 import '../../features/payment/data/services/mock_payment_service.dart';
 import '../../features/payment/domain/services/payment_service.dart';
 import '../services/audio/audio_service.dart';
@@ -316,14 +317,26 @@ class InitialBinding extends Bindings {
   /// Loads the persisted data of every permanent controller (call once before
   /// `runApp`).
   Future<void> loadData() async {
-    await Get.find<SettingsController>().load();
+    await StartupTimeline.measure(
+      'load settings',
+      Get.find<SettingsController>().load,
+    );
     await Future.wait(<Future<void>>[
-      Get.find<ProductsController>().load(),
-      Get.find<CustomersController>().load(),
-      Get.find<SalesController>().load(),
-      Get.find<HeldBillsController>().load(),
+      StartupTimeline.measure(
+        'load products',
+        Get.find<ProductsController>().load,
+      ),
+      StartupTimeline.measure(
+        'load customers',
+        Get.find<CustomersController>().load,
+      ),
+      StartupTimeline.measure('load sales', Get.find<SalesController>().load),
+      StartupTimeline.measure(
+        'load held bills',
+        Get.find<HeldBillsController>().load,
+      ),
     ]);
-    await Get.find<CartController>().load();
+    await StartupTimeline.measure('load cart', Get.find<CartController>().load);
   }
 
   /// axpert_pos-style infrastructure (DEC-118/119): config, API client, local

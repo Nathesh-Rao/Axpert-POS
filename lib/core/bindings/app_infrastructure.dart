@@ -13,6 +13,7 @@ import '../network/dio_api_client.dart';
 import '../security/authentication_service.dart';
 import '../security/unconfigured_authentication_service.dart';
 import 'startup_diagnostics.dart';
+import 'startup_timeline.dart';
 
 /// The axpert_pos-style infrastructure objects, built once before `runApp`
 /// and registered by `InitialBinding`. `main()` uses [bootstrap]; tests build
@@ -54,8 +55,14 @@ class AppInfrastructure {
       idGenerator: idGenerator ?? UuidV4DeviceIdGenerator(),
     );
     try {
-      await provider.open();
-      await deviceContext.initialize();
+      await StartupTimeline.measure(
+        'database open (incl. schema migrations)',
+        provider.open,
+      );
+      await StartupTimeline.measure(
+        'device context init',
+        deviceContext.initialize,
+      );
     } on Object catch (error, stackTrace) {
       diagnostics.record('database', error, stackTrace);
     }

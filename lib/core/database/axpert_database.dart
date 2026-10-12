@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import '../bindings/startup_timeline.dart';
 import 'tables/customer_entries.dart';
 import 'tables/device_context_entries.dart';
 import 'tables/held_bill_entries.dart';
@@ -29,37 +30,41 @@ class AxpertDatabase extends _$AxpertDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (migrator) async {
-      await migrator.createAll();
-    },
-    onUpgrade: (migrator, from, to) async {
-      if (from < 2 && to >= 2) {
-        await migrator.createTable(deviceContextEntries);
-      }
-      if (from < 3 && to >= 3) {
-        // Drift does not roll back a failed upgrade by itself; one
-        // transaction keeps v3 all-or-nothing.
-        await transaction(() async {
-          await migrator.createTable(settingsEntries);
-          await migrator.createTable(migrationStateEntries);
-        });
-      }
-      if (from < 4 && to >= 4) {
-        await transaction(() async {
-          await migrator.createTable(customerEntries);
-        });
-      }
-      if (from < 5 && to >= 5) {
-        await transaction(() async {
-          await migrator.createTable(heldBillEntries);
-        });
-      }
-    },
+    onCreate: (migrator) =>
+        StartupTimeline.measure('schema create', () => migrator.createAll()),
+    onUpgrade: (migrator, from, to) => StartupTimeline.measure(
+      'schema upgrade v$from to v$to',
+      () => _upgrade(migrator, from, to),
+    ),
     beforeOpen: (_) async {
       // The database design requires SQLite foreign-key checks on each open.
       await customStatement('PRAGMA foreign_keys = ON');
     },
   );
+
+  Future<void> _upgrade(Migrator migrator, int from, int to) async {
+    if (from < 2 && to >= 2) {
+      await migrator.createTable(deviceContextEntries);
+    }
+    if (from < 3 && to >= 3) {
+      // Drift does not roll back a failed upgrade by itself; one
+      // transaction keeps v3 all-or-nothing.
+      await transaction(() async {
+        await migrator.createTable(settingsEntries);
+        await migrator.createTable(migrationStateEntries);
+      });
+    }
+    if (from < 4 && to >= 4) {
+      await transaction(() async {
+        await migrator.createTable(customerEntries);
+      });
+    }
+    if (from < 5 && to >= 5) {
+      await transaction(() async {
+        await migrator.createTable(heldBillEntries);
+      });
+    }
+  }
 
   /// Runs `<body>` in a transaction and makes the commit durable on web.
   ///

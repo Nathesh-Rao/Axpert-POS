@@ -1607,6 +1607,523 @@ class CustomerEntriesCompanion extends UpdateCompanion<CustomerEntry> {
   }
 }
 
+class $HeldBillEntriesTable extends HeldBillEntries
+    with TableInfo<$HeldBillEntriesTable, HeldBillEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $HeldBillEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _refMeta = const VerificationMeta('ref');
+  @override
+  late final GeneratedColumn<String> ref = GeneratedColumn<String>(
+    'ref',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _heldAtMeta = const VerificationMeta('heldAt');
+  @override
+  late final GeneratedColumn<String> heldAt = GeneratedColumn<String>(
+    'held_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cartJsonMeta = const VerificationMeta(
+    'cartJson',
+  );
+  @override
+  late final GeneratedColumn<String> cartJson = GeneratedColumn<String>(
+    'cart_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    ref,
+    position,
+    heldAt,
+    cartJson,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'held_bills';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<HeldBillEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('ref')) {
+      context.handle(
+        _refMeta,
+        ref.isAcceptableOrUnknown(data['ref']!, _refMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_refMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    if (data.containsKey('held_at')) {
+      context.handle(
+        _heldAtMeta,
+        heldAt.isAcceptableOrUnknown(data['held_at']!, _heldAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_heldAtMeta);
+    }
+    if (data.containsKey('cart_json')) {
+      context.handle(
+        _cartJsonMeta,
+        cartJson.isAcceptableOrUnknown(data['cart_json']!, _cartJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_cartJsonMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  HeldBillEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return HeldBillEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      ref: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ref'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      heldAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}held_at'],
+      )!,
+      cartJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cart_json'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $HeldBillEntriesTable createAlias(String alias) {
+    return $HeldBillEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class HeldBillEntry extends DataClass implements Insertable<HeldBillEntry> {
+  final String id;
+  final String ref;
+
+  /// Index in the app's held list (oldest first; the order is observable).
+  final int position;
+
+  /// `HeldBill.time` verbatim (ISO text in the app, never parsed here).
+  final String heldAt;
+
+  /// Canonical JSON of the cart snapshot (full product snapshot per line).
+  final String cartJson;
+
+  /// UTC ISO 8601 text.
+  final String createdAt;
+  final String updatedAt;
+  final String? deletedAt;
+  const HeldBillEntry({
+    required this.id,
+    required this.ref,
+    required this.position,
+    required this.heldAt,
+    required this.cartJson,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['ref'] = Variable<String>(ref);
+    map['position'] = Variable<int>(position);
+    map['held_at'] = Variable<String>(heldAt);
+    map['cart_json'] = Variable<String>(cartJson);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<String>(deletedAt);
+    }
+    return map;
+  }
+
+  HeldBillEntriesCompanion toCompanion(bool nullToAbsent) {
+    return HeldBillEntriesCompanion(
+      id: Value(id),
+      ref: Value(ref),
+      position: Value(position),
+      heldAt: Value(heldAt),
+      cartJson: Value(cartJson),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory HeldBillEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return HeldBillEntry(
+      id: serializer.fromJson<String>(json['id']),
+      ref: serializer.fromJson<String>(json['ref']),
+      position: serializer.fromJson<int>(json['position']),
+      heldAt: serializer.fromJson<String>(json['heldAt']),
+      cartJson: serializer.fromJson<String>(json['cartJson']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'ref': serializer.toJson<String>(ref),
+      'position': serializer.toJson<int>(position),
+      'heldAt': serializer.toJson<String>(heldAt),
+      'cartJson': serializer.toJson<String>(cartJson),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+      'deletedAt': serializer.toJson<String?>(deletedAt),
+    };
+  }
+
+  HeldBillEntry copyWith({
+    String? id,
+    String? ref,
+    int? position,
+    String? heldAt,
+    String? cartJson,
+    String? createdAt,
+    String? updatedAt,
+    Value<String?> deletedAt = const Value.absent(),
+  }) => HeldBillEntry(
+    id: id ?? this.id,
+    ref: ref ?? this.ref,
+    position: position ?? this.position,
+    heldAt: heldAt ?? this.heldAt,
+    cartJson: cartJson ?? this.cartJson,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  HeldBillEntry copyWithCompanion(HeldBillEntriesCompanion data) {
+    return HeldBillEntry(
+      id: data.id.present ? data.id.value : this.id,
+      ref: data.ref.present ? data.ref.value : this.ref,
+      position: data.position.present ? data.position.value : this.position,
+      heldAt: data.heldAt.present ? data.heldAt.value : this.heldAt,
+      cartJson: data.cartJson.present ? data.cartJson.value : this.cartJson,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HeldBillEntry(')
+          ..write('id: $id, ')
+          ..write('ref: $ref, ')
+          ..write('position: $position, ')
+          ..write('heldAt: $heldAt, ')
+          ..write('cartJson: $cartJson, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    ref,
+    position,
+    heldAt,
+    cartJson,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is HeldBillEntry &&
+          other.id == this.id &&
+          other.ref == this.ref &&
+          other.position == this.position &&
+          other.heldAt == this.heldAt &&
+          other.cartJson == this.cartJson &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt);
+}
+
+class HeldBillEntriesCompanion extends UpdateCompanion<HeldBillEntry> {
+  final Value<String> id;
+  final Value<String> ref;
+  final Value<int> position;
+  final Value<String> heldAt;
+  final Value<String> cartJson;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<String?> deletedAt;
+  final Value<int> rowid;
+  const HeldBillEntriesCompanion({
+    this.id = const Value.absent(),
+    this.ref = const Value.absent(),
+    this.position = const Value.absent(),
+    this.heldAt = const Value.absent(),
+    this.cartJson = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  HeldBillEntriesCompanion.insert({
+    required String id,
+    required String ref,
+    required int position,
+    required String heldAt,
+    required String cartJson,
+    required String createdAt,
+    required String updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       ref = Value(ref),
+       position = Value(position),
+       heldAt = Value(heldAt),
+       cartJson = Value(cartJson),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<HeldBillEntry> custom({
+    Expression<String>? id,
+    Expression<String>? ref,
+    Expression<int>? position,
+    Expression<String>? heldAt,
+    Expression<String>? cartJson,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<String>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (ref != null) 'ref': ref,
+      if (position != null) 'position': position,
+      if (heldAt != null) 'held_at': heldAt,
+      if (cartJson != null) 'cart_json': cartJson,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  HeldBillEntriesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? ref,
+    Value<int>? position,
+    Value<String>? heldAt,
+    Value<String>? cartJson,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<String?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return HeldBillEntriesCompanion(
+      id: id ?? this.id,
+      ref: ref ?? this.ref,
+      position: position ?? this.position,
+      heldAt: heldAt ?? this.heldAt,
+      cartJson: cartJson ?? this.cartJson,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (ref.present) {
+      map['ref'] = Variable<String>(ref.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (heldAt.present) {
+      map['held_at'] = Variable<String>(heldAt.value);
+    }
+    if (cartJson.present) {
+      map['cart_json'] = Variable<String>(cartJson.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<String>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HeldBillEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('ref: $ref, ')
+          ..write('position: $position, ')
+          ..write('heldAt: $heldAt, ')
+          ..write('cartJson: $cartJson, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AxpertDatabase extends GeneratedDatabase {
   _$AxpertDatabase(QueryExecutor e) : super(e);
   late final $DeviceContextEntriesTable deviceContextEntries =
@@ -1619,6 +2136,9 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
   late final $CustomerEntriesTable customerEntries = $CustomerEntriesTable(
     this,
   );
+  late final $HeldBillEntriesTable heldBillEntries = $HeldBillEntriesTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1628,5 +2148,6 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
     settingsEntries,
     migrationStateEntries,
     customerEntries,
+    heldBillEntries,
   ];
 }

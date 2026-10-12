@@ -30,12 +30,13 @@ void main() {
       final second = await provider.open();
 
       expect(first, same(second));
-      expect(first.schemaVersion, 4);
+      expect(first.schemaVersion, 5);
       expect(first.allTables.map((table) => table.actualTableName).toSet(), {
         'device_context_entries',
         'settings',
         'migration_state',
         'customers',
+        'held_bills',
       });
       expect(await first.customSelect('SELECT 1').getSingle(), isNotNull);
       final foreignKeys = await first
@@ -57,7 +58,7 @@ void main() {
 
     await store.write(context);
 
-    expect(database.schemaVersion, 4);
+    expect(database.schemaVersion, 5);
     expect(await store.read(), context);
   });
 
@@ -130,7 +131,7 @@ void main() {
 
       expect(names, containsAll(['settings', 'migration_state', 'customers']));
       expect(device.read<String>('device_id'), 'dev-1');
-      expect(version.read<int>('user_version'), 4);
+      expect(version.read<int>('user_version'), 5);
     });
 
     test('failed upgrade rolls back and leaves data intact', () async {
@@ -219,7 +220,7 @@ void main() {
 
       expect(names, contains('customers'));
       expect(setting.read<String>('value_json'), 'true');
-      expect(version.read<int>('user_version'), 4);
+      expect(version.read<int>('user_version'), 5);
     });
 
     test('failed upgrade leaves v3 data and user_version intact', () async {
@@ -256,6 +257,133 @@ void main() {
         'true',
       );
       expect(raw.select('PRAGMA user_version').single['user_version'], 3);
+    });
+  });
+
+  group('schema v4 to v5 upgrade', () {
+    const v4Ddl = [
+      'CREATE TABLE device_context_entries ('
+          'singleton_id INTEGER NOT NULL DEFAULT 1, '
+          'device_id TEXT NOT NULL, outlet_id TEXT NULL, register_id TEXT NULL, '
+          'PRIMARY KEY (singleton_id))',
+      'CREATE TABLE settings (key TEXT NOT NULL, value_json TEXT NOT NULL, '
+          'updated_at TEXT NOT NULL, PRIMARY KEY (key))',
+      'CREATE TABLE migration_state (key TEXT NOT NULL, value TEXT NOT NULL, '
+          'PRIMARY KEY (key))',
+      'CREATE TABLE customers (id TEXT NOT NULL, legacy_id TEXT NOT NULL UNIQUE, '
+          'position INTEGER NOT NULL, name TEXT NOT NULL, phone TEXT NOT NULL, '
+          'email TEXT NOT NULL, member_no TEXT NOT NULL, points INTEGER NOT NULL, '
+          'created_at TEXT NOT NULL, updated_at TEXT NOT NULL, deleted_at TEXT NULL, '
+          'server_id TEXT NULL, server_version INTEGER NULL, device_id TEXT NULL, '
+          'PRIMARY KEY (id))',
+      "INSERT INTO device_context_entries (device_id) VALUES ('dev-1')",
+      "INSERT INTO settings VALUES ('axpert-dark', 'true', 'x')",
+      "INSERT INTO customers (id, legacy_id, position, name, phone, email, "
+          "member_no, points, created_at, updated_at) VALUES "
+          "('u1', 'walk', 0, 'Walk-in', '', '', '', 0, 'x', 'x')",
+    ];
+
+    void seedV4(dynamic database, {String extra = ''}) {
+      for (final sql in v4Ddl) {
+        database.execute(sql);
+      }
+      if (extra.isNotEmpty) database.execute(extra);
+      database.execute('PRAGMA user_version = 4');
+    }
+
+    test('adds held_bills and preserves existing data', () async {
+      final database = AxpertDatabase(
+        NativeDatabase.memory(setup: (db) => seedV4(db)),
+      );
+      addTearDown(database.close);
+
+      final tables = await database
+          .customSelect("SELECT name FROM sqlite_master WHERE type = 'table'")
+          .get();
+      final names = tables.map((row) => row.read<String>('name')).toSet();
+      final setting = await database
+          .customSelect('SELECT value_json FROM settings')
+          .getSingle();
+      final customer = await database
+          .customSelect('SELECT name FROM customers')
+          .getSingle();
+      final version = await database
+          .customSelect('PRAGMA user_version')
+          .getSingle();
+      final columns = await database
+          .customSelect('PRAGMA table_info(held_bills)')
+          .get();
+
+      expect(names, contains('held_bills'));
+      expect(setting.read<String>('value_json'), 'true');
+      expect(customer.read<String>('name'), 'Walk-in');
+      expect(version.read<int>('user_version'), 5);
+      expect(columns.map((c) => c.read<String>('name')).toList(), [
+        'id',
+        'ref',
+        'position',
+        'held_at',
+        'cart_json',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+      ]);
+    });
+
+    test('a database already at v5 opens unchanged', () async {
+      final database = AxpertDatabase(
+        NativeDatabase.memory(setup: (db) => seedV4(db)),
+      );
+      addTearDown(database.close);
+      await database.customSelect('SELECT 1').getSingle();
+      await database.customStatement(
+        "INSERT INTO held_bills VALUES ('u', 'H1', 0, 't', '{}', 'x', 'x', NULL)",
+      );
+      expect(
+        (await database.customSelect('SELECT ref FROM held_bills').getSingle())
+            .read<String>('ref'),
+        'H1',
+      );
+    });
+
+    test('failed upgrade leaves v4 data and user_version intact', () async {
+      dynamic raw;
+      final database = AxpertDatabase(
+        NativeDatabase.memory(
+          setup: (db) {
+            raw = db;
+            seedV4(db, extra: 'CREATE INDEX held_bills ON settings (key)');
+          },
+        ),
+      );
+
+      addTearDown(() async {
+        try {
+          await database.close();
+        } on Object {
+          // The migration failed on purpose; closing may fail too.
+        }
+      });
+
+      await expectLater(
+        database.customSelect('SELECT 1').getSingle(),
+        throwsA(anything),
+      );
+
+      final tables = raw.select(
+        "SELECT name FROM sqlite_master WHERE type = 'table'",
+      );
+      final names = {for (final row in tables) row['name'] as String};
+      expect(names, isNot(contains('held_bills')));
+      expect(
+        raw.select('SELECT value_json FROM settings').single['value_json'],
+        'true',
+      );
+      expect(
+        raw.select('SELECT name FROM customers').single['name'],
+        'Walk-in',
+      );
+      expect(raw.select('PRAGMA user_version').single['user_version'], 4);
     });
   });
 }

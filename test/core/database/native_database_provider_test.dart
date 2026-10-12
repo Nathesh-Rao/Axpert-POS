@@ -3,6 +3,7 @@ import 'package:pos_application/core/database/database_provider.dart';
 import 'package:pos_application/core/database/drift_device_context_store.dart';
 import 'package:pos_application/core/device/device_context.dart';
 import 'package:pos_application/core/database/native_database_provider.dart';
+import 'package:drift/drift.dart' show Variable;
 import 'package:drift/native.dart';
 import 'package:pos_application/core/database/axpert_database.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -30,13 +31,14 @@ void main() {
       final second = await provider.open();
 
       expect(first, same(second));
-      expect(first.schemaVersion, 5);
+      expect(first.schemaVersion, 6);
       expect(first.allTables.map((table) => table.actualTableName).toSet(), {
         'device_context_entries',
         'settings',
         'migration_state',
         'customers',
         'held_bills',
+        'products',
       });
       expect(await first.customSelect('SELECT 1').getSingle(), isNotNull);
       final foreignKeys = await first
@@ -58,7 +60,7 @@ void main() {
 
     await store.write(context);
 
-    expect(database.schemaVersion, 5);
+    expect(database.schemaVersion, 6);
     expect(await store.read(), context);
   });
 
@@ -131,7 +133,7 @@ void main() {
 
       expect(names, containsAll(['settings', 'migration_state', 'customers']));
       expect(device.read<String>('device_id'), 'dev-1');
-      expect(version.read<int>('user_version'), 5);
+      expect(version.read<int>('user_version'), 6);
     });
 
     test('failed upgrade rolls back and leaves data intact', () async {
@@ -220,7 +222,7 @@ void main() {
 
       expect(names, contains('customers'));
       expect(setting.read<String>('value_json'), 'true');
-      expect(version.read<int>('user_version'), 5);
+      expect(version.read<int>('user_version'), 6);
     });
 
     test('failed upgrade leaves v3 data and user_version intact', () async {
@@ -317,7 +319,7 @@ void main() {
       expect(names, contains('held_bills'));
       expect(setting.read<String>('value_json'), 'true');
       expect(customer.read<String>('name'), 'Walk-in');
-      expect(version.read<int>('user_version'), 5);
+      expect(version.read<int>('user_version'), 6);
       expect(columns.map((c) => c.read<String>('name')).toList(), [
         'id',
         'ref',
@@ -384,6 +386,150 @@ void main() {
         'Walk-in',
       );
       expect(raw.select('PRAGMA user_version').single['user_version'], 4);
+    });
+  });
+
+  group('schema v5 to v6 upgrade', () {
+    const v5Ddl = [
+      'CREATE TABLE device_context_entries ('
+          'singleton_id INTEGER NOT NULL DEFAULT 1, '
+          'device_id TEXT NOT NULL, outlet_id TEXT NULL, register_id TEXT NULL, '
+          'PRIMARY KEY (singleton_id))',
+      'CREATE TABLE settings (key TEXT NOT NULL, value_json TEXT NOT NULL, '
+          'updated_at TEXT NOT NULL, PRIMARY KEY (key))',
+      'CREATE TABLE migration_state (key TEXT NOT NULL, value TEXT NOT NULL, '
+          'PRIMARY KEY (key))',
+      'CREATE TABLE held_bills (id TEXT NOT NULL, ref TEXT NOT NULL, '
+          'position INTEGER NOT NULL, held_at TEXT NOT NULL, '
+          'cart_json TEXT NOT NULL, created_at TEXT NOT NULL, '
+          'updated_at TEXT NOT NULL, deleted_at TEXT NULL, PRIMARY KEY (id))',
+      "INSERT INTO settings VALUES ('axpert-dark', 'true', 'x')",
+      "INSERT INTO held_bills VALUES ('u', 'H1', 0, 't', '{}', 'x', 'x', NULL)",
+    ];
+
+    void seedV5(dynamic database, {String extra = ''}) {
+      for (final sql in v5Ddl) {
+        database.execute(sql);
+      }
+      if (extra.isNotEmpty) database.execute(extra);
+      database.execute('PRAGMA user_version = 5');
+    }
+
+    test('adds products with its indexes and preserves data', () async {
+      final database = AxpertDatabase(
+        NativeDatabase.memory(setup: (db) => seedV5(db)),
+      );
+      addTearDown(database.close);
+
+      final columns = await database
+          .customSelect('PRAGMA table_info(products)')
+          .get();
+      final indexes = await database
+          .customSelect(
+            "SELECT name FROM sqlite_master WHERE type = 'index' "
+            "AND tbl_name = 'products'",
+          )
+          .get();
+      final held = await database
+          .customSelect('SELECT ref FROM held_bills')
+          .getSingle();
+      final version = await database
+          .customSelect('PRAGMA user_version')
+          .getSingle();
+
+      expect(columns.map((c) => c.read<String>('name')).toList(), [
+        'id',
+        'legacy_id',
+        'position',
+        'name',
+        'code',
+        'barcode',
+        'price_minor',
+        'currency_code',
+        'category',
+        'sub',
+        'stock',
+        'gst_bp',
+        'image',
+        'favourite',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'server_id',
+        'server_version',
+        'device_id',
+      ]);
+      expect(
+        indexes.map((r) => r.read<String>('name')),
+        contains('products_position'),
+      );
+      expect(held.read<String>('ref'), 'H1');
+      expect(version.read<int>('user_version'), 6);
+    });
+
+    test('legacy_id is unique, code and barcode are not', () async {
+      final database = AxpertDatabase(
+        NativeDatabase.memory(setup: (db) => seedV5(db)),
+      );
+      addTearDown(database.close);
+      const insert =
+          'INSERT INTO products (id, legacy_id, position, name, code, barcode, '
+          "price_minor, category, sub, stock, gst_bp, image, favourite, "
+          "created_at, updated_at) VALUES ('%s', %d, 0, 'n', 'C', 'B', 1, "
+          "'c', 's', 1, 1800, -1, 0, 'x', 'x')";
+
+      await database.customStatement(
+        insert.replaceFirst('%s', 'a').replaceFirst('%d', '1'),
+      );
+      await database.customStatement(
+        insert.replaceFirst('%s', 'b').replaceFirst('%d', '2'),
+      );
+
+      await expectLater(
+        database.customStatement(
+          insert.replaceFirst('%s', 'c').replaceFirst('%d', '2'),
+        ),
+        throwsA(anything),
+      );
+      final row = await database
+          .customSelect(
+            'SELECT currency_code FROM products WHERE id = ?',
+            variables: [Variable.withString('a')],
+          )
+          .getSingle();
+      expect(row.read<String>('currency_code'), 'INR');
+    });
+
+    test('failed upgrade leaves v5 data and user_version intact', () async {
+      dynamic raw;
+      final database = AxpertDatabase(
+        NativeDatabase.memory(
+          setup: (db) {
+            raw = db;
+            seedV5(db, extra: 'CREATE INDEX products ON settings (key)');
+          },
+        ),
+      );
+      addTearDown(() async {
+        try {
+          await database.close();
+        } on Object {
+          // The migration failed on purpose; closing may fail too.
+        }
+      });
+
+      await expectLater(
+        database.customSelect('SELECT 1').getSingle(),
+        throwsA(anything),
+      );
+
+      final tables = raw.select(
+        "SELECT name FROM sqlite_master WHERE type = 'table'",
+      );
+      final names = {for (final row in tables) row['name'] as String};
+      expect(names, isNot(contains('products')));
+      expect(raw.select('SELECT ref FROM held_bills').single['ref'], 'H1');
+      expect(raw.select('PRAGMA user_version').single['user_version'], 5);
     });
   });
 }

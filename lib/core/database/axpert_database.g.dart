@@ -2124,6 +2124,1114 @@ class HeldBillEntriesCompanion extends UpdateCompanion<HeldBillEntry> {
   }
 }
 
+class $ProductEntriesTable extends ProductEntries
+    with TableInfo<$ProductEntriesTable, ProductEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ProductEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _legacyIdMeta = const VerificationMeta(
+    'legacyId',
+  );
+  @override
+  late final GeneratedColumn<int> legacyId = GeneratedColumn<int>(
+    'legacy_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _barcodeMeta = const VerificationMeta(
+    'barcode',
+  );
+  @override
+  late final GeneratedColumn<String> barcode = GeneratedColumn<String>(
+    'barcode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _priceMinorMeta = const VerificationMeta(
+    'priceMinor',
+  );
+  @override
+  late final GeneratedColumn<int> priceMinor = GeneratedColumn<int>(
+    'price_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currencyCodeMeta = const VerificationMeta(
+    'currencyCode',
+  );
+  @override
+  late final GeneratedColumn<String> currencyCode = GeneratedColumn<String>(
+    'currency_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('INR'),
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _subMeta = const VerificationMeta('sub');
+  @override
+  late final GeneratedColumn<String> sub = GeneratedColumn<String>(
+    'sub',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _stockMeta = const VerificationMeta('stock');
+  @override
+  late final GeneratedColumn<int> stock = GeneratedColumn<int>(
+    'stock',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _gstBpMeta = const VerificationMeta('gstBp');
+  @override
+  late final GeneratedColumn<int> gstBp = GeneratedColumn<int>(
+    'gst_bp',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _imageMeta = const VerificationMeta('image');
+  @override
+  late final GeneratedColumn<int> image = GeneratedColumn<int>(
+    'image',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _favouriteMeta = const VerificationMeta(
+    'favourite',
+  );
+  @override
+  late final GeneratedColumn<bool> favourite = GeneratedColumn<bool>(
+    'favourite',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("favourite" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<String> serverId = GeneratedColumn<String>(
+    'server_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _serverVersionMeta = const VerificationMeta(
+    'serverVersion',
+  );
+  @override
+  late final GeneratedColumn<int> serverVersion = GeneratedColumn<int>(
+    'server_version',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    legacyId,
+    position,
+    name,
+    code,
+    barcode,
+    priceMinor,
+    currencyCode,
+    category,
+    sub,
+    stock,
+    gstBp,
+    image,
+    favourite,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    serverId,
+    serverVersion,
+    deviceId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'products';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ProductEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('legacy_id')) {
+      context.handle(
+        _legacyIdMeta,
+        legacyId.isAcceptableOrUnknown(data['legacy_id']!, _legacyIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_legacyIdMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    if (data.containsKey('barcode')) {
+      context.handle(
+        _barcodeMeta,
+        barcode.isAcceptableOrUnknown(data['barcode']!, _barcodeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_barcodeMeta);
+    }
+    if (data.containsKey('price_minor')) {
+      context.handle(
+        _priceMinorMeta,
+        priceMinor.isAcceptableOrUnknown(data['price_minor']!, _priceMinorMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_priceMinorMeta);
+    }
+    if (data.containsKey('currency_code')) {
+      context.handle(
+        _currencyCodeMeta,
+        currencyCode.isAcceptableOrUnknown(
+          data['currency_code']!,
+          _currencyCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('category')) {
+      context.handle(
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryMeta);
+    }
+    if (data.containsKey('sub')) {
+      context.handle(
+        _subMeta,
+        sub.isAcceptableOrUnknown(data['sub']!, _subMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_subMeta);
+    }
+    if (data.containsKey('stock')) {
+      context.handle(
+        _stockMeta,
+        stock.isAcceptableOrUnknown(data['stock']!, _stockMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_stockMeta);
+    }
+    if (data.containsKey('gst_bp')) {
+      context.handle(
+        _gstBpMeta,
+        gstBp.isAcceptableOrUnknown(data['gst_bp']!, _gstBpMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gstBpMeta);
+    }
+    if (data.containsKey('image')) {
+      context.handle(
+        _imageMeta,
+        image.isAcceptableOrUnknown(data['image']!, _imageMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_imageMeta);
+    }
+    if (data.containsKey('favourite')) {
+      context.handle(
+        _favouriteMeta,
+        favourite.isAcceptableOrUnknown(data['favourite']!, _favouriteMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_favouriteMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    }
+    if (data.containsKey('server_version')) {
+      context.handle(
+        _serverVersionMeta,
+        serverVersion.isAcceptableOrUnknown(
+          data['server_version']!,
+          _serverVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ProductEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ProductEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      legacyId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}legacy_id'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      )!,
+      barcode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}barcode'],
+      )!,
+      priceMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}price_minor'],
+      )!,
+      currencyCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency_code'],
+      )!,
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
+      )!,
+      sub: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sub'],
+      )!,
+      stock: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}stock'],
+      )!,
+      gstBp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}gst_bp'],
+      )!,
+      image: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}image'],
+      )!,
+      favourite: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}favourite'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_id'],
+      ),
+      serverVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}server_version'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      ),
+    );
+  }
+
+  @override
+  $ProductEntriesTable createAlias(String alias) {
+    return $ProductEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class ProductEntry extends DataClass implements Insertable<ProductEntry> {
+  final String id;
+  final int legacyId;
+
+  /// Index in the app's product list (the list order is observable).
+  final int position;
+  final String name;
+  final String code;
+  final String barcode;
+  final int priceMinor;
+
+  /// PROPOSED default INR (DEC-124); the price's currency code.
+  final String currencyCode;
+  final String category;
+  final String sub;
+
+  /// Whole units.
+  final int stock;
+
+  /// Basis points; the JSON keeps the prototype's percent number.
+  final int gstBp;
+
+  /// Asset number or -1 for none.
+  final int image;
+  final bool favourite;
+
+  /// UTC ISO 8601 text.
+  final String createdAt;
+  final String updatedAt;
+  final String? deletedAt;
+  final String? serverId;
+  final int? serverVersion;
+  final String? deviceId;
+  const ProductEntry({
+    required this.id,
+    required this.legacyId,
+    required this.position,
+    required this.name,
+    required this.code,
+    required this.barcode,
+    required this.priceMinor,
+    required this.currencyCode,
+    required this.category,
+    required this.sub,
+    required this.stock,
+    required this.gstBp,
+    required this.image,
+    required this.favourite,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+    this.serverId,
+    this.serverVersion,
+    this.deviceId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['legacy_id'] = Variable<int>(legacyId);
+    map['position'] = Variable<int>(position);
+    map['name'] = Variable<String>(name);
+    map['code'] = Variable<String>(code);
+    map['barcode'] = Variable<String>(barcode);
+    map['price_minor'] = Variable<int>(priceMinor);
+    map['currency_code'] = Variable<String>(currencyCode);
+    map['category'] = Variable<String>(category);
+    map['sub'] = Variable<String>(sub);
+    map['stock'] = Variable<int>(stock);
+    map['gst_bp'] = Variable<int>(gstBp);
+    map['image'] = Variable<int>(image);
+    map['favourite'] = Variable<bool>(favourite);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<String>(deletedAt);
+    }
+    if (!nullToAbsent || serverId != null) {
+      map['server_id'] = Variable<String>(serverId);
+    }
+    if (!nullToAbsent || serverVersion != null) {
+      map['server_version'] = Variable<int>(serverVersion);
+    }
+    if (!nullToAbsent || deviceId != null) {
+      map['device_id'] = Variable<String>(deviceId);
+    }
+    return map;
+  }
+
+  ProductEntriesCompanion toCompanion(bool nullToAbsent) {
+    return ProductEntriesCompanion(
+      id: Value(id),
+      legacyId: Value(legacyId),
+      position: Value(position),
+      name: Value(name),
+      code: Value(code),
+      barcode: Value(barcode),
+      priceMinor: Value(priceMinor),
+      currencyCode: Value(currencyCode),
+      category: Value(category),
+      sub: Value(sub),
+      stock: Value(stock),
+      gstBp: Value(gstBp),
+      image: Value(image),
+      favourite: Value(favourite),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      serverId: serverId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverId),
+      serverVersion: serverVersion == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverVersion),
+      deviceId: deviceId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deviceId),
+    );
+  }
+
+  factory ProductEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ProductEntry(
+      id: serializer.fromJson<String>(json['id']),
+      legacyId: serializer.fromJson<int>(json['legacyId']),
+      position: serializer.fromJson<int>(json['position']),
+      name: serializer.fromJson<String>(json['name']),
+      code: serializer.fromJson<String>(json['code']),
+      barcode: serializer.fromJson<String>(json['barcode']),
+      priceMinor: serializer.fromJson<int>(json['priceMinor']),
+      currencyCode: serializer.fromJson<String>(json['currencyCode']),
+      category: serializer.fromJson<String>(json['category']),
+      sub: serializer.fromJson<String>(json['sub']),
+      stock: serializer.fromJson<int>(json['stock']),
+      gstBp: serializer.fromJson<int>(json['gstBp']),
+      image: serializer.fromJson<int>(json['image']),
+      favourite: serializer.fromJson<bool>(json['favourite']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
+      serverId: serializer.fromJson<String?>(json['serverId']),
+      serverVersion: serializer.fromJson<int?>(json['serverVersion']),
+      deviceId: serializer.fromJson<String?>(json['deviceId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'legacyId': serializer.toJson<int>(legacyId),
+      'position': serializer.toJson<int>(position),
+      'name': serializer.toJson<String>(name),
+      'code': serializer.toJson<String>(code),
+      'barcode': serializer.toJson<String>(barcode),
+      'priceMinor': serializer.toJson<int>(priceMinor),
+      'currencyCode': serializer.toJson<String>(currencyCode),
+      'category': serializer.toJson<String>(category),
+      'sub': serializer.toJson<String>(sub),
+      'stock': serializer.toJson<int>(stock),
+      'gstBp': serializer.toJson<int>(gstBp),
+      'image': serializer.toJson<int>(image),
+      'favourite': serializer.toJson<bool>(favourite),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+      'deletedAt': serializer.toJson<String?>(deletedAt),
+      'serverId': serializer.toJson<String?>(serverId),
+      'serverVersion': serializer.toJson<int?>(serverVersion),
+      'deviceId': serializer.toJson<String?>(deviceId),
+    };
+  }
+
+  ProductEntry copyWith({
+    String? id,
+    int? legacyId,
+    int? position,
+    String? name,
+    String? code,
+    String? barcode,
+    int? priceMinor,
+    String? currencyCode,
+    String? category,
+    String? sub,
+    int? stock,
+    int? gstBp,
+    int? image,
+    bool? favourite,
+    String? createdAt,
+    String? updatedAt,
+    Value<String?> deletedAt = const Value.absent(),
+    Value<String?> serverId = const Value.absent(),
+    Value<int?> serverVersion = const Value.absent(),
+    Value<String?> deviceId = const Value.absent(),
+  }) => ProductEntry(
+    id: id ?? this.id,
+    legacyId: legacyId ?? this.legacyId,
+    position: position ?? this.position,
+    name: name ?? this.name,
+    code: code ?? this.code,
+    barcode: barcode ?? this.barcode,
+    priceMinor: priceMinor ?? this.priceMinor,
+    currencyCode: currencyCode ?? this.currencyCode,
+    category: category ?? this.category,
+    sub: sub ?? this.sub,
+    stock: stock ?? this.stock,
+    gstBp: gstBp ?? this.gstBp,
+    image: image ?? this.image,
+    favourite: favourite ?? this.favourite,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    serverId: serverId.present ? serverId.value : this.serverId,
+    serverVersion: serverVersion.present
+        ? serverVersion.value
+        : this.serverVersion,
+    deviceId: deviceId.present ? deviceId.value : this.deviceId,
+  );
+  ProductEntry copyWithCompanion(ProductEntriesCompanion data) {
+    return ProductEntry(
+      id: data.id.present ? data.id.value : this.id,
+      legacyId: data.legacyId.present ? data.legacyId.value : this.legacyId,
+      position: data.position.present ? data.position.value : this.position,
+      name: data.name.present ? data.name.value : this.name,
+      code: data.code.present ? data.code.value : this.code,
+      barcode: data.barcode.present ? data.barcode.value : this.barcode,
+      priceMinor: data.priceMinor.present
+          ? data.priceMinor.value
+          : this.priceMinor,
+      currencyCode: data.currencyCode.present
+          ? data.currencyCode.value
+          : this.currencyCode,
+      category: data.category.present ? data.category.value : this.category,
+      sub: data.sub.present ? data.sub.value : this.sub,
+      stock: data.stock.present ? data.stock.value : this.stock,
+      gstBp: data.gstBp.present ? data.gstBp.value : this.gstBp,
+      image: data.image.present ? data.image.value : this.image,
+      favourite: data.favourite.present ? data.favourite.value : this.favourite,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      serverVersion: data.serverVersion.present
+          ? data.serverVersion.value
+          : this.serverVersion,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProductEntry(')
+          ..write('id: $id, ')
+          ..write('legacyId: $legacyId, ')
+          ..write('position: $position, ')
+          ..write('name: $name, ')
+          ..write('code: $code, ')
+          ..write('barcode: $barcode, ')
+          ..write('priceMinor: $priceMinor, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('category: $category, ')
+          ..write('sub: $sub, ')
+          ..write('stock: $stock, ')
+          ..write('gstBp: $gstBp, ')
+          ..write('image: $image, ')
+          ..write('favourite: $favourite, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('serverId: $serverId, ')
+          ..write('serverVersion: $serverVersion, ')
+          ..write('deviceId: $deviceId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    legacyId,
+    position,
+    name,
+    code,
+    barcode,
+    priceMinor,
+    currencyCode,
+    category,
+    sub,
+    stock,
+    gstBp,
+    image,
+    favourite,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    serverId,
+    serverVersion,
+    deviceId,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ProductEntry &&
+          other.id == this.id &&
+          other.legacyId == this.legacyId &&
+          other.position == this.position &&
+          other.name == this.name &&
+          other.code == this.code &&
+          other.barcode == this.barcode &&
+          other.priceMinor == this.priceMinor &&
+          other.currencyCode == this.currencyCode &&
+          other.category == this.category &&
+          other.sub == this.sub &&
+          other.stock == this.stock &&
+          other.gstBp == this.gstBp &&
+          other.image == this.image &&
+          other.favourite == this.favourite &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.serverId == this.serverId &&
+          other.serverVersion == this.serverVersion &&
+          other.deviceId == this.deviceId);
+}
+
+class ProductEntriesCompanion extends UpdateCompanion<ProductEntry> {
+  final Value<String> id;
+  final Value<int> legacyId;
+  final Value<int> position;
+  final Value<String> name;
+  final Value<String> code;
+  final Value<String> barcode;
+  final Value<int> priceMinor;
+  final Value<String> currencyCode;
+  final Value<String> category;
+  final Value<String> sub;
+  final Value<int> stock;
+  final Value<int> gstBp;
+  final Value<int> image;
+  final Value<bool> favourite;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<String?> deletedAt;
+  final Value<String?> serverId;
+  final Value<int?> serverVersion;
+  final Value<String?> deviceId;
+  final Value<int> rowid;
+  const ProductEntriesCompanion({
+    this.id = const Value.absent(),
+    this.legacyId = const Value.absent(),
+    this.position = const Value.absent(),
+    this.name = const Value.absent(),
+    this.code = const Value.absent(),
+    this.barcode = const Value.absent(),
+    this.priceMinor = const Value.absent(),
+    this.currencyCode = const Value.absent(),
+    this.category = const Value.absent(),
+    this.sub = const Value.absent(),
+    this.stock = const Value.absent(),
+    this.gstBp = const Value.absent(),
+    this.image = const Value.absent(),
+    this.favourite = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.serverId = const Value.absent(),
+    this.serverVersion = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ProductEntriesCompanion.insert({
+    required String id,
+    required int legacyId,
+    required int position,
+    required String name,
+    required String code,
+    required String barcode,
+    required int priceMinor,
+    this.currencyCode = const Value.absent(),
+    required String category,
+    required String sub,
+    required int stock,
+    required int gstBp,
+    required int image,
+    required bool favourite,
+    required String createdAt,
+    required String updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.serverId = const Value.absent(),
+    this.serverVersion = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       legacyId = Value(legacyId),
+       position = Value(position),
+       name = Value(name),
+       code = Value(code),
+       barcode = Value(barcode),
+       priceMinor = Value(priceMinor),
+       category = Value(category),
+       sub = Value(sub),
+       stock = Value(stock),
+       gstBp = Value(gstBp),
+       image = Value(image),
+       favourite = Value(favourite),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<ProductEntry> custom({
+    Expression<String>? id,
+    Expression<int>? legacyId,
+    Expression<int>? position,
+    Expression<String>? name,
+    Expression<String>? code,
+    Expression<String>? barcode,
+    Expression<int>? priceMinor,
+    Expression<String>? currencyCode,
+    Expression<String>? category,
+    Expression<String>? sub,
+    Expression<int>? stock,
+    Expression<int>? gstBp,
+    Expression<int>? image,
+    Expression<bool>? favourite,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<String>? deletedAt,
+    Expression<String>? serverId,
+    Expression<int>? serverVersion,
+    Expression<String>? deviceId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (legacyId != null) 'legacy_id': legacyId,
+      if (position != null) 'position': position,
+      if (name != null) 'name': name,
+      if (code != null) 'code': code,
+      if (barcode != null) 'barcode': barcode,
+      if (priceMinor != null) 'price_minor': priceMinor,
+      if (currencyCode != null) 'currency_code': currencyCode,
+      if (category != null) 'category': category,
+      if (sub != null) 'sub': sub,
+      if (stock != null) 'stock': stock,
+      if (gstBp != null) 'gst_bp': gstBp,
+      if (image != null) 'image': image,
+      if (favourite != null) 'favourite': favourite,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (serverId != null) 'server_id': serverId,
+      if (serverVersion != null) 'server_version': serverVersion,
+      if (deviceId != null) 'device_id': deviceId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ProductEntriesCompanion copyWith({
+    Value<String>? id,
+    Value<int>? legacyId,
+    Value<int>? position,
+    Value<String>? name,
+    Value<String>? code,
+    Value<String>? barcode,
+    Value<int>? priceMinor,
+    Value<String>? currencyCode,
+    Value<String>? category,
+    Value<String>? sub,
+    Value<int>? stock,
+    Value<int>? gstBp,
+    Value<int>? image,
+    Value<bool>? favourite,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<String?>? deletedAt,
+    Value<String?>? serverId,
+    Value<int?>? serverVersion,
+    Value<String?>? deviceId,
+    Value<int>? rowid,
+  }) {
+    return ProductEntriesCompanion(
+      id: id ?? this.id,
+      legacyId: legacyId ?? this.legacyId,
+      position: position ?? this.position,
+      name: name ?? this.name,
+      code: code ?? this.code,
+      barcode: barcode ?? this.barcode,
+      priceMinor: priceMinor ?? this.priceMinor,
+      currencyCode: currencyCode ?? this.currencyCode,
+      category: category ?? this.category,
+      sub: sub ?? this.sub,
+      stock: stock ?? this.stock,
+      gstBp: gstBp ?? this.gstBp,
+      image: image ?? this.image,
+      favourite: favourite ?? this.favourite,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      serverId: serverId ?? this.serverId,
+      serverVersion: serverVersion ?? this.serverVersion,
+      deviceId: deviceId ?? this.deviceId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (legacyId.present) {
+      map['legacy_id'] = Variable<int>(legacyId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (barcode.present) {
+      map['barcode'] = Variable<String>(barcode.value);
+    }
+    if (priceMinor.present) {
+      map['price_minor'] = Variable<int>(priceMinor.value);
+    }
+    if (currencyCode.present) {
+      map['currency_code'] = Variable<String>(currencyCode.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (sub.present) {
+      map['sub'] = Variable<String>(sub.value);
+    }
+    if (stock.present) {
+      map['stock'] = Variable<int>(stock.value);
+    }
+    if (gstBp.present) {
+      map['gst_bp'] = Variable<int>(gstBp.value);
+    }
+    if (image.present) {
+      map['image'] = Variable<int>(image.value);
+    }
+    if (favourite.present) {
+      map['favourite'] = Variable<bool>(favourite.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<String>(deletedAt.value);
+    }
+    if (serverId.present) {
+      map['server_id'] = Variable<String>(serverId.value);
+    }
+    if (serverVersion.present) {
+      map['server_version'] = Variable<int>(serverVersion.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ProductEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('legacyId: $legacyId, ')
+          ..write('position: $position, ')
+          ..write('name: $name, ')
+          ..write('code: $code, ')
+          ..write('barcode: $barcode, ')
+          ..write('priceMinor: $priceMinor, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('category: $category, ')
+          ..write('sub: $sub, ')
+          ..write('stock: $stock, ')
+          ..write('gstBp: $gstBp, ')
+          ..write('image: $image, ')
+          ..write('favourite: $favourite, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('serverId: $serverId, ')
+          ..write('serverVersion: $serverVersion, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AxpertDatabase extends GeneratedDatabase {
   _$AxpertDatabase(QueryExecutor e) : super(e);
   late final $DeviceContextEntriesTable deviceContextEntries =
@@ -2139,6 +3247,11 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
   late final $HeldBillEntriesTable heldBillEntries = $HeldBillEntriesTable(
     this,
   );
+  late final $ProductEntriesTable productEntries = $ProductEntriesTable(this);
+  late final Index productsPosition = Index(
+    'products_position',
+    'CREATE INDEX products_position ON products (position)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2149,5 +3262,7 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
     migrationStateEntries,
     customerEntries,
     heldBillEntries,
+    productEntries,
+    productsPosition,
   ];
 }

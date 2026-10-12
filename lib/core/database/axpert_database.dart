@@ -5,13 +5,14 @@ import 'tables/customer_entries.dart';
 import 'tables/device_context_entries.dart';
 import 'tables/held_bill_entries.dart';
 import 'tables/migration_state_entries.dart';
+import 'tables/product_entries.dart';
 import 'tables/settings_entries.dart';
 
 part 'axpert_database.g.dart';
 
 /// Drift database: device context metadata and device-local settings.
 ///
-/// Schema v3 (settings, migration_state), v4 (customers) and v5 (held_bills) are provisional
+/// Schema v3 (settings, migration_state), v4 (customers), v5 (held_bills) and v6 (products) are provisional
 /// and local-only (DEC-124); they no longer match axpert's schema.
 @DriftDatabase(
   tables: [
@@ -20,13 +21,14 @@ part 'axpert_database.g.dart';
     MigrationStateEntries,
     CustomerEntries,
     HeldBillEntries,
+    ProductEntries,
   ],
 )
 class AxpertDatabase extends _$AxpertDatabase {
   AxpertDatabase(super.executor);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -62,6 +64,12 @@ class AxpertDatabase extends _$AxpertDatabase {
     if (from < 5 && to >= 5) {
       await transaction(() async {
         await migrator.createTable(heldBillEntries);
+      });
+    }
+    if (from < 6 && to >= 6) {
+      await transaction(() async {
+        await migrator.createTable(productEntries);
+        await migrator.createIndex(productsPosition);
       });
     }
   }

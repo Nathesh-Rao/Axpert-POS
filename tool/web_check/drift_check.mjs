@@ -9,8 +9,8 @@
 // console errors, the browser storage the database created (IndexedDB names and
 // OPFS entries), the device_context_entries row (read from a temp copy of the
 // database file rebuilt from the IndexedDB blocks with the `sqlite3` CLI, then
-// deleted), the settings rows, the settings_copy_v1 marker and user_version 5 (plus held_bills and its marker)
-// (D1, D2, D3) and the time until the first Flutter view. Exit 1 on a problem.
+// deleted), the settings rows, the settings_copy_v1 marker and user_version 6 (plus held_bills and products with their markers)
+// (D1 to D4) and the time until the first Flutter view. Exit 1 on a problem.
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -58,6 +58,8 @@ if (seedDuplicates) {
     'flutter.axpert-customers': JSON.stringify(JSON.stringify([cust('walk', 'Walk-in Customer', ''), cust('7', 'Asha', 'MG00007'), cust('7', 'Bela', 'MG00007')])),
     'flutter.axpert-sales': JSON.stringify(JSON.stringify([sale(1, 'Asha'), sale(2, 'Nobody')])),
     // D3: two held bills with the SAME ref (KG-125), both must be imported unchanged.
+    // D4: three products, two share a code (case-insensitive) and two a barcode: all imported, reported.
+    'flutter.axpert-products': JSON.stringify(JSON.stringify([0, 1, 2].map((i) => ({ id: i, name: 'Dup ' + i, code: ['DUP1', 'dup1', 'OTHER'][i], barcode: ['111', '222', '111'][i], priceMinor: 1000 + i, category: 'Snacks', sub: 'Chips', stock: 5 + i, gst: [18, 5.5, 0][i], image: -1, favourite: i === 1 })))),
     'flutter.axpert-held': JSON.stringify(JSON.stringify([held('H111111', 1000), held('H111111', 2000), held('H222222', 3000)])),
   };
   await send('Page.addScriptToEvaluateOnNewDocument', { source: `try{if(!localStorage.getItem('flutter.axpert-customers')){const d=${JSON.stringify(seed)};for(const k in d)localStorage.setItem(k,d[k])}}catch(e){}` });
@@ -74,7 +76,7 @@ const idb = await ev(`new Promise((res)=>{const q=indexedDB.open('axpert_pos');q
 // Drift's IndexedDB file system: store `files` {name,length} (key = file id) and
 // store `blocks` (key [fileId, byteOffset], 4096-byte ArrayBuffers).
 const dump = await ev(`new Promise((res)=>{const q=indexedDB.open('axpert_pos');q.onerror=()=>res(null);q.onsuccess=()=>{const db=q.result;const get=(n)=>new Promise(r=>{const rows=[];db.transaction(n).objectStore(n).openCursor().onsuccess=e=>{const c=e.target.result;if(!c){r(rows);return}rows.push([c.key,c.value]);c.continue()}});(async()=>{const files=await get('files');const blocks=await get('blocks');const b64=(buf)=>{let s='';const a=new Uint8Array(buf);for(let i=0;i<a.length;i++)s+=String.fromCharCode(a[i]);return btoa(s)};db.close();res(JSON.stringify({files:files.map(([k,v])=>({id:k,name:v.name,length:v.length})),blocks:blocks.map(([k,v])=>({file:k[0],offset:k[1],data:b64(v)}))}))})()}})`);
-let row = null, rowProblem = null, settingsRows = null, markerRows = null, userVersion = null, customerRows = null, customersMarker = null, heldRows = null, heldMarker = null;
+let row = null, rowProblem = null, settingsRows = null, markerRows = null, userVersion = null, customerRows = null, customersMarker = null, heldRows = null, heldMarker = null, productRows = null, productsMarker = null;
 const tmp = `/tmp/drift_check_db_${port}.sqlite`;
 try {
   const d = JSON.parse(dump);
@@ -92,11 +94,13 @@ try {
   customersMarker = q("SELECT value FROM migration_state WHERE key = 'customers_copy_v1'");
   heldRows = q('SELECT id, ref, position, held_at, cart_json, deleted_at FROM held_bills ORDER BY position');
   heldMarker = q("SELECT value FROM migration_state WHERE key = 'held_copy_v1'");
+  productRows = q('SELECT id, legacy_id, position, name, code, barcode, price_minor, currency_code, stock, gst_bp, favourite, deleted_at, server_id, server_version, device_id FROM products ORDER BY position');
+  productsMarker = q("SELECT value FROM migration_state WHERE key = 'products_copy_v1'");
   userVersion = q('PRAGMA user_version')[0]?.user_version;
 } catch (e) { rowProblem = String(e).slice(0, 200); } finally { fs.rmSync(tmp, { force: true }); }
 const uuidV4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const rowOk = !!row && row.length === 1 && uuidV4.test(row[0].device_id);
-const settingsOk = !!settingsRows && settingsRows.length === 5 && !!markerRows && markerRows.length === 1 && userVersion === 5;
+const settingsOk = !!settingsRows && settingsRows.length === 5 && !!markerRows && markerRows.length === 1 && userVersion === 6;
 const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const report = customersMarker?.length === 1 ? JSON.parse(JSON.parse(customersMarker[0].value).report ? customersMarker[0].value : '{}').report : null;
 const customersOk = !!customerRows && customersMarker?.length === 1 && customerRows.every((r, i) => uuidRe.test(r.id) && r.position === i && !r.deleted_at && r.server_id === null && r.server_version === null && r.device_id === null)
@@ -108,6 +112,11 @@ const heldOk = !!heldRows && heldMarker?.length === 1 && heldRows.every((r, i) =
   && (seedDuplicates
     ? heldRows.map((r) => r.ref).join(',') === 'H111111,H111111,H222222' && heldRows.map((r) => JSON.parse(r.cart_json).lines[0].qtyMilli).join(',') === '1000,2000,3000' && heldReport.count === 3 && heldReport.report?.duplicate_refs?.H111111 === 2
     : heldRows.length === 0 && heldReport.count === 0);
+const productsReport = productsMarker?.length === 1 ? JSON.parse(productsMarker[0].value) : null;
+const productsOk = !!productRows && productsMarker?.length === 1 && productRows.every((r, i) => uuidRe.test(r.id) && r.position === i && r.legacy_id === i && !r.deleted_at && r.currency_code === 'INR' && r.server_id === null && r.server_version === null && r.device_id === null)
+  && (seedDuplicates
+    ? productRows.length === 3 && productsReport.count === 3 && productRows.map((r) => r.gst_bp).join(',') === '1800,550,0' && productRows[1].favourite === 1 && productRows[2].stock === 7 && JSON.stringify(productsReport.report.duplicate_codes) === '{"dup1":[0,1]}' && JSON.stringify(productsReport.report.duplicate_barcodes) === '{"111":[0,2]}'
+    : productRows.length === 20 && productsReport.count === 20);
 const png = await send('Page.captureScreenshot', { format: 'png' });
 fs.writeFileSync(`${outDir}/drift_check_${width}x${height}.png`, Buffer.from(png.data, 'base64'));
 console.log('first Flutter view after', firstViewMs, 'ms');
@@ -119,11 +128,12 @@ console.log('device_context_entries row:', rowProblem ? 'NOT READ: ' + rowProble
 console.log('schema user_version:', userVersion, '| settings rows:', JSON.stringify(settingsRows));
 console.log('customers rows:', JSON.stringify(customerRows?.map((r) => `${r.position}:${r.legacy_id}:${r.name}:${r.points}`)), '| customers_copy_v1 marker:', customersMarker?.length === 1 ? customersMarker[0].value.slice(0, 400) : 'MISSING', customersOk ? '(customers OK)' : '(CUSTOMERS CHECK FAILED)');
 console.log('held_bills rows:', JSON.stringify(heldRows?.map((r) => `${r.position}:${r.ref}`)), '| held_copy_v1 marker:', heldMarker?.length === 1 ? heldMarker[0].value.slice(0, 200) : 'MISSING', heldOk ? '(held OK)' : '(HELD CHECK FAILED)');
-console.log('settings_copy_v1 marker:', JSON.stringify(markerRows), settingsOk ? '(5 rows, marker present, v5)' : '(SETTINGS CHECK FAILED)');
+console.log('products rows:', JSON.stringify(productRows?.map((r) => `${r.position}:${r.legacy_id}:${r.code}:${r.stock}:${r.gst_bp}`).slice(0, 5)), `(${productRows?.length} rows)`, '| products_copy_v1 marker:', productsMarker?.length === 1 ? productsMarker[0].value.slice(0, 300) : 'MISSING', productsOk ? '(products OK)' : '(PRODUCTS CHECK FAILED)');
+console.log('settings_copy_v1 marker:', JSON.stringify(markerRows), settingsOk ? '(5 rows, marker present, v6)' : '(SETTINGS CHECK FAILED)');
 console.log('console errors:', logs.length, logs.slice(0, 3).join(' | ').slice(0, 300));
 const pr = JSON.parse(probes ?? '{}');
 let stored = 0; try { stored = Object.values(JSON.parse(idb)).filter((n) => n > 0).reduce((a, b) => a + b, 0); } catch {}
-const ok = ['drift_worker.js', 'sqlite3.wasm'].every((n) => pr[n]?.status === 200 && pr[n].bytes > 100000) && pr['sqlite3.wasm']?.type === 'application/wasm' && stored > 0 && rowOk && settingsOk && customersOk && heldOk && logs.length === 0;
+const ok = ['drift_worker.js', 'sqlite3.wasm'].every((n) => pr[n]?.status === 200 && pr[n].bytes > 100000) && pr['sqlite3.wasm']?.type === 'application/wasm' && stored > 0 && rowOk && settingsOk && customersOk && heldOk && productsOk && logs.length === 0;
 console.log(ok ? 'DRIFT CHECK OK' : 'DRIFT CHECK FAILED');
 ws.close(); proc.kill();
 process.exit(ok ? 0 : 1);

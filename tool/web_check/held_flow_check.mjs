@@ -79,7 +79,7 @@ console.log('   Drift rows after reload:', show(r));
 const ref1 = heldBefore?.[0]?.ref;
 check('1 one active row with the held ref, position 0, snapshot kept',
   !r.problem && r.rows.length === 1 && r.rows[0].ref === ref1 && /^H\d{1,6}$/.test(ref1) && r.rows[0].position === 0 && !r.rows[0].deleted_at && uuid.test(r.rows[0].id) && r.rows[0].cart_json.includes('Lays Classic 52g') && r.rows[0].held_at === heldBefore[0].time);
-check('1 marker held_copy_v1 present, user_version 5', !r.problem && r.marker?.length === 1 && r.version === 5);
+check('1 marker held_copy_v1 present, user_version 6', !r.problem && r.marker?.length === 1 && r.version === 6);
 check('1 no stale key', (await ls('axpert-held-drift-stale')) === null);
 
 // ---- 2. recall (bill came from Drift), reload ----

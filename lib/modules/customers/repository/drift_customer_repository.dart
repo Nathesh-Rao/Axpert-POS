@@ -6,6 +6,7 @@ import '../../../core/database/migration/customer_rows.dart';
 import '../../../core/database/migration/customers_migrator.dart';
 import '../../../core/identifiers/uuid_generator.dart';
 import '../../../core/services/storage/local_store.dart';
+import '../../../core/utils/serial_queue.dart';
 import '../models/customer.dart';
 import 'customer_repository.dart';
 import 'mock_customer_repository.dart';
@@ -66,8 +67,14 @@ class DriftCustomerRepository implements CustomerRepository {
     }
   }
 
+  /// Saves run one after another (see [SerialQueue], KG-190).
+  final SerialQueue _saves = SerialQueue();
+
   @override
-  Future<void> save(List<Customer> customers) async {
+  Future<void> save(List<Customer> customers) =>
+      _saves.run(() => _save(customers));
+
+  Future<void> _save(List<Customer> customers) async {
     final db = _db;
     if (db == null) {
       await _markStale();

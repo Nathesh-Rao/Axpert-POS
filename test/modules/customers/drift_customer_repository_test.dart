@@ -188,6 +188,45 @@ void main() {
     expect(diagnostics.hasFailures, isTrue);
   });
 
+  test(
+    'overlapping unawaited saves end at the last value (Drift and LocalStore)',
+    () async {
+      final repository = repo(db);
+      final list = await repository.load();
+      List<Customer> withPoints(int points) => [
+        for (final c in list) c.id == '1' ? _c('1', c.name, points: points) : c,
+      ];
+
+      final a = repository.save(withPoints(1));
+      final b = repository.save(withPoints(2));
+      final c = repository.save(withPoints(3));
+      await Future.wait([a, b, c]);
+
+      expect(await driftPoints('1'), 3);
+      expect(await storePoints('1'), 3);
+    },
+  );
+
+  test(
+    'overlapping saves after a Drift failure stay in order and keep the stale key',
+    () async {
+      final repository = repo(db);
+      final list = await repository.load();
+      await db.customStatement('DROP TABLE customers');
+      List<Customer> withPoints(int points) => [
+        for (final c in list) c.id == '1' ? _c('1', c.name, points: points) : c,
+      ];
+
+      final a = repository.save(withPoints(1));
+      final b = repository.save(withPoints(2));
+      final c = repository.save(withPoints(3));
+      await Future.wait([a, b, c]);
+
+      expect(await storePoints('1'), 3);
+      expect(await store.read(StorageKeys.customersDriftStale), true);
+    },
+  );
+
   group('checkout points deduction with Drift customers', () {
     Future<void> boot(DatabaseProvider provider) async {
       await bootTestApp(

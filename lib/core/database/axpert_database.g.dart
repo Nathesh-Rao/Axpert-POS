@@ -3232,6 +3232,3545 @@ class ProductEntriesCompanion extends UpdateCompanion<ProductEntry> {
   }
 }
 
+class $SaleEntriesTable extends SaleEntries
+    with TableInfo<$SaleEntriesTable, SaleEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SaleEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _numberMeta = const VerificationMeta('number');
+  @override
+  late final GeneratedColumn<String> number = GeneratedColumn<String>(
+    'number',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _occurredAtMeta = const VerificationMeta(
+    'occurredAt',
+  );
+  @override
+  late final GeneratedColumn<String> occurredAt = GeneratedColumn<String>(
+    'occurred_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _storeNameMeta = const VerificationMeta(
+    'storeName',
+  );
+  @override
+  late final GeneratedColumn<String> storeName = GeneratedColumn<String>(
+    'store_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _customerNameMeta = const VerificationMeta(
+    'customerName',
+  );
+  @override
+  late final GeneratedColumn<String> customerName = GeneratedColumn<String>(
+    'customer_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _customerLegacyIdMeta = const VerificationMeta(
+    'customerLegacyId',
+  );
+  @override
+  late final GeneratedColumn<String> customerLegacyId = GeneratedColumn<String>(
+    'customer_legacy_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _customerIdMeta = const VerificationMeta(
+    'customerId',
+  );
+  @override
+  late final GeneratedColumn<String> customerId = GeneratedColumn<String>(
+    'customer_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES customers (id)',
+    ),
+  );
+  static const VerificationMeta _currencyCodeMeta = const VerificationMeta(
+    'currencyCode',
+  );
+  @override
+  late final GeneratedColumn<String> currencyCode = GeneratedColumn<String>(
+    'currency_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('INR'),
+  );
+  static const VerificationMeta _modeMeta = const VerificationMeta('mode');
+  @override
+  late final GeneratedColumn<String> mode = GeneratedColumn<String>(
+    'mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _saleTypeMeta = const VerificationMeta(
+    'saleType',
+  );
+  @override
+  late final GeneratedColumn<String> saleType = GeneratedColumn<String>(
+    'sale_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _billDiscountTypeMeta = const VerificationMeta(
+    'billDiscountType',
+  );
+  @override
+  late final GeneratedColumn<String> billDiscountType = GeneratedColumn<String>(
+    'bill_discount_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _billDiscountBpMeta = const VerificationMeta(
+    'billDiscountBp',
+  );
+  @override
+  late final GeneratedColumn<int> billDiscountBp = GeneratedColumn<int>(
+    'bill_discount_bp',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _billDiscountMinorMeta = const VerificationMeta(
+    'billDiscountMinor',
+  );
+  @override
+  late final GeneratedColumn<int> billDiscountMinor = GeneratedColumn<int>(
+    'bill_discount_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _discountReasonMeta = const VerificationMeta(
+    'discountReason',
+  );
+  @override
+  late final GeneratedColumn<String> discountReason = GeneratedColumn<String>(
+    'discount_reason',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pointsRedeemedMeta = const VerificationMeta(
+    'pointsRedeemed',
+  );
+  @override
+  late final GeneratedColumn<int> pointsRedeemed = GeneratedColumn<int>(
+    'points_redeemed',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _itemsMeta = const VerificationMeta('items');
+  @override
+  late final GeneratedColumn<int> items = GeneratedColumn<int>(
+    'items',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _qtyMilliMeta = const VerificationMeta(
+    'qtyMilli',
+  );
+  @override
+  late final GeneratedColumn<int> qtyMilli = GeneratedColumn<int>(
+    'qty_milli',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueMinorMeta = const VerificationMeta(
+    'valueMinor',
+  );
+  @override
+  late final GeneratedColumn<int> valueMinor = GeneratedColumn<int>(
+    'value_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _subtotalMinorMeta = const VerificationMeta(
+    'subtotalMinor',
+  );
+  @override
+  late final GeneratedColumn<int> subtotalMinor = GeneratedColumn<int>(
+    'subtotal_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _discountMinorMeta = const VerificationMeta(
+    'discountMinor',
+  );
+  @override
+  late final GeneratedColumn<int> discountMinor = GeneratedColumn<int>(
+    'discount_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _taxMinorMeta = const VerificationMeta(
+    'taxMinor',
+  );
+  @override
+  late final GeneratedColumn<int> taxMinor = GeneratedColumn<int>(
+    'tax_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pointsMinorMeta = const VerificationMeta(
+    'pointsMinor',
+  );
+  @override
+  late final GeneratedColumn<int> pointsMinor = GeneratedColumn<int>(
+    'points_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _totalMinorMeta = const VerificationMeta(
+    'totalMinor',
+  );
+  @override
+  late final GeneratedColumn<int> totalMinor = GeneratedColumn<int>(
+    'total_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _tenderedMinorMeta = const VerificationMeta(
+    'tenderedMinor',
+  );
+  @override
+  late final GeneratedColumn<int> tenderedMinor = GeneratedColumn<int>(
+    'tendered_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _changeMinorMeta = const VerificationMeta(
+    'changeMinor',
+  );
+  @override
+  late final GeneratedColumn<int> changeMinor = GeneratedColumn<int>(
+    'change_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _returnedOrderMeta = const VerificationMeta(
+    'returnedOrder',
+  );
+  @override
+  late final GeneratedColumn<String> returnedOrder = GeneratedColumn<String>(
+    'returned_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _serverIdMeta = const VerificationMeta(
+    'serverId',
+  );
+  @override
+  late final GeneratedColumn<String> serverId = GeneratedColumn<String>(
+    'server_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _serverVersionMeta = const VerificationMeta(
+    'serverVersion',
+  );
+  @override
+  late final GeneratedColumn<int> serverVersion = GeneratedColumn<int>(
+    'server_version',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deviceIdMeta = const VerificationMeta(
+    'deviceId',
+  );
+  @override
+  late final GeneratedColumn<String> deviceId = GeneratedColumn<String>(
+    'device_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    number,
+    position,
+    occurredAt,
+    storeName,
+    customerName,
+    customerLegacyId,
+    customerId,
+    currencyCode,
+    mode,
+    saleType,
+    billDiscountType,
+    billDiscountBp,
+    billDiscountMinor,
+    discountReason,
+    pointsRedeemed,
+    note,
+    items,
+    qtyMilli,
+    valueMinor,
+    subtotalMinor,
+    discountMinor,
+    taxMinor,
+    pointsMinor,
+    totalMinor,
+    tenderedMinor,
+    changeMinor,
+    returnedOrder,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    serverId,
+    serverVersion,
+    deviceId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sales';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SaleEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('number')) {
+      context.handle(
+        _numberMeta,
+        number.isAcceptableOrUnknown(data['number']!, _numberMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_numberMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    if (data.containsKey('occurred_at')) {
+      context.handle(
+        _occurredAtMeta,
+        occurredAt.isAcceptableOrUnknown(data['occurred_at']!, _occurredAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_occurredAtMeta);
+    }
+    if (data.containsKey('store_name')) {
+      context.handle(
+        _storeNameMeta,
+        storeName.isAcceptableOrUnknown(data['store_name']!, _storeNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_storeNameMeta);
+    }
+    if (data.containsKey('customer_name')) {
+      context.handle(
+        _customerNameMeta,
+        customerName.isAcceptableOrUnknown(
+          data['customer_name']!,
+          _customerNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_customerNameMeta);
+    }
+    if (data.containsKey('customer_legacy_id')) {
+      context.handle(
+        _customerLegacyIdMeta,
+        customerLegacyId.isAcceptableOrUnknown(
+          data['customer_legacy_id']!,
+          _customerLegacyIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_customerLegacyIdMeta);
+    }
+    if (data.containsKey('customer_id')) {
+      context.handle(
+        _customerIdMeta,
+        customerId.isAcceptableOrUnknown(data['customer_id']!, _customerIdMeta),
+      );
+    }
+    if (data.containsKey('currency_code')) {
+      context.handle(
+        _currencyCodeMeta,
+        currencyCode.isAcceptableOrUnknown(
+          data['currency_code']!,
+          _currencyCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('mode')) {
+      context.handle(
+        _modeMeta,
+        mode.isAcceptableOrUnknown(data['mode']!, _modeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_modeMeta);
+    }
+    if (data.containsKey('sale_type')) {
+      context.handle(
+        _saleTypeMeta,
+        saleType.isAcceptableOrUnknown(data['sale_type']!, _saleTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_saleTypeMeta);
+    }
+    if (data.containsKey('bill_discount_type')) {
+      context.handle(
+        _billDiscountTypeMeta,
+        billDiscountType.isAcceptableOrUnknown(
+          data['bill_discount_type']!,
+          _billDiscountTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_billDiscountTypeMeta);
+    }
+    if (data.containsKey('bill_discount_bp')) {
+      context.handle(
+        _billDiscountBpMeta,
+        billDiscountBp.isAcceptableOrUnknown(
+          data['bill_discount_bp']!,
+          _billDiscountBpMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_billDiscountBpMeta);
+    }
+    if (data.containsKey('bill_discount_minor')) {
+      context.handle(
+        _billDiscountMinorMeta,
+        billDiscountMinor.isAcceptableOrUnknown(
+          data['bill_discount_minor']!,
+          _billDiscountMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_billDiscountMinorMeta);
+    }
+    if (data.containsKey('discount_reason')) {
+      context.handle(
+        _discountReasonMeta,
+        discountReason.isAcceptableOrUnknown(
+          data['discount_reason']!,
+          _discountReasonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_discountReasonMeta);
+    }
+    if (data.containsKey('points_redeemed')) {
+      context.handle(
+        _pointsRedeemedMeta,
+        pointsRedeemed.isAcceptableOrUnknown(
+          data['points_redeemed']!,
+          _pointsRedeemedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_pointsRedeemedMeta);
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_noteMeta);
+    }
+    if (data.containsKey('items')) {
+      context.handle(
+        _itemsMeta,
+        items.isAcceptableOrUnknown(data['items']!, _itemsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_itemsMeta);
+    }
+    if (data.containsKey('qty_milli')) {
+      context.handle(
+        _qtyMilliMeta,
+        qtyMilli.isAcceptableOrUnknown(data['qty_milli']!, _qtyMilliMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_qtyMilliMeta);
+    }
+    if (data.containsKey('value_minor')) {
+      context.handle(
+        _valueMinorMeta,
+        valueMinor.isAcceptableOrUnknown(data['value_minor']!, _valueMinorMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueMinorMeta);
+    }
+    if (data.containsKey('subtotal_minor')) {
+      context.handle(
+        _subtotalMinorMeta,
+        subtotalMinor.isAcceptableOrUnknown(
+          data['subtotal_minor']!,
+          _subtotalMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_subtotalMinorMeta);
+    }
+    if (data.containsKey('discount_minor')) {
+      context.handle(
+        _discountMinorMeta,
+        discountMinor.isAcceptableOrUnknown(
+          data['discount_minor']!,
+          _discountMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_discountMinorMeta);
+    }
+    if (data.containsKey('tax_minor')) {
+      context.handle(
+        _taxMinorMeta,
+        taxMinor.isAcceptableOrUnknown(data['tax_minor']!, _taxMinorMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_taxMinorMeta);
+    }
+    if (data.containsKey('points_minor')) {
+      context.handle(
+        _pointsMinorMeta,
+        pointsMinor.isAcceptableOrUnknown(
+          data['points_minor']!,
+          _pointsMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_pointsMinorMeta);
+    }
+    if (data.containsKey('total_minor')) {
+      context.handle(
+        _totalMinorMeta,
+        totalMinor.isAcceptableOrUnknown(data['total_minor']!, _totalMinorMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_totalMinorMeta);
+    }
+    if (data.containsKey('tendered_minor')) {
+      context.handle(
+        _tenderedMinorMeta,
+        tenderedMinor.isAcceptableOrUnknown(
+          data['tendered_minor']!,
+          _tenderedMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_tenderedMinorMeta);
+    }
+    if (data.containsKey('change_minor')) {
+      context.handle(
+        _changeMinorMeta,
+        changeMinor.isAcceptableOrUnknown(
+          data['change_minor']!,
+          _changeMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_changeMinorMeta);
+    }
+    if (data.containsKey('returned_order')) {
+      context.handle(
+        _returnedOrderMeta,
+        returnedOrder.isAcceptableOrUnknown(
+          data['returned_order']!,
+          _returnedOrderMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('server_id')) {
+      context.handle(
+        _serverIdMeta,
+        serverId.isAcceptableOrUnknown(data['server_id']!, _serverIdMeta),
+      );
+    }
+    if (data.containsKey('server_version')) {
+      context.handle(
+        _serverVersionMeta,
+        serverVersion.isAcceptableOrUnknown(
+          data['server_version']!,
+          _serverVersionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('device_id')) {
+      context.handle(
+        _deviceIdMeta,
+        deviceId.isAcceptableOrUnknown(data['device_id']!, _deviceIdMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SaleEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SaleEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      number: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}number'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      occurredAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}occurred_at'],
+      )!,
+      storeName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}store_name'],
+      )!,
+      customerName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}customer_name'],
+      )!,
+      customerLegacyId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}customer_legacy_id'],
+      )!,
+      customerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}customer_id'],
+      ),
+      currencyCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency_code'],
+      )!,
+      mode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}mode'],
+      )!,
+      saleType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sale_type'],
+      )!,
+      billDiscountType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bill_discount_type'],
+      )!,
+      billDiscountBp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}bill_discount_bp'],
+      )!,
+      billDiscountMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}bill_discount_minor'],
+      )!,
+      discountReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}discount_reason'],
+      )!,
+      pointsRedeemed: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}points_redeemed'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      )!,
+      items: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}items'],
+      )!,
+      qtyMilli: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}qty_milli'],
+      )!,
+      valueMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}value_minor'],
+      )!,
+      subtotalMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}subtotal_minor'],
+      )!,
+      discountMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}discount_minor'],
+      )!,
+      taxMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}tax_minor'],
+      )!,
+      pointsMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}points_minor'],
+      )!,
+      totalMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}total_minor'],
+      )!,
+      tenderedMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}tendered_minor'],
+      )!,
+      changeMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}change_minor'],
+      )!,
+      returnedOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}returned_order'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      serverId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}server_id'],
+      ),
+      serverVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}server_version'],
+      ),
+      deviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}device_id'],
+      ),
+    );
+  }
+
+  @override
+  $SaleEntriesTable createAlias(String alias) {
+    return $SaleEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class SaleEntry extends DataClass implements Insertable<SaleEntry> {
+  final String id;
+  final String number;
+
+  /// Index in the app's sales list (the list order is observable).
+  final int position;
+
+  /// `Sale.date` verbatim (UTC ISO text, never parsed here).
+  final String occurredAt;
+  final String storeName;
+  final String customerName;
+
+  /// `cart.customer` verbatim (the legacy customer id; needed for a byte-exact
+  /// cart snapshot).
+  final String customerLegacyId;
+
+  /// Resolved link to `customers.id`; null until the customer row is known.
+  /// Derived data: filled once, never overwritten.
+  final String? customerId;
+
+  /// PROPOSED default INR (DEC-124).
+  final String currencyCode;
+
+  /// Cash, Card or Credit as stored by the app.
+  final String mode;
+  final String saleType;
+  final String billDiscountType;
+  final int billDiscountBp;
+  final int billDiscountMinor;
+  final String discountReason;
+  final int pointsRedeemed;
+  final String note;
+  final int items;
+  final int qtyMilli;
+  final int valueMinor;
+  final int subtotalMinor;
+  final int discountMinor;
+  final int taxMinor;
+  final int pointsMinor;
+  final int totalMinor;
+  final int tenderedMinor;
+  final int changeMinor;
+
+  /// JSON array of product ids, first returned first.
+  final String returnedOrder;
+
+  /// UTC ISO 8601 text; `updated_at` changes only when a return is applied.
+  final String createdAt;
+  final String updatedAt;
+  final String? deletedAt;
+  final String? serverId;
+  final int? serverVersion;
+  final String? deviceId;
+  const SaleEntry({
+    required this.id,
+    required this.number,
+    required this.position,
+    required this.occurredAt,
+    required this.storeName,
+    required this.customerName,
+    required this.customerLegacyId,
+    this.customerId,
+    required this.currencyCode,
+    required this.mode,
+    required this.saleType,
+    required this.billDiscountType,
+    required this.billDiscountBp,
+    required this.billDiscountMinor,
+    required this.discountReason,
+    required this.pointsRedeemed,
+    required this.note,
+    required this.items,
+    required this.qtyMilli,
+    required this.valueMinor,
+    required this.subtotalMinor,
+    required this.discountMinor,
+    required this.taxMinor,
+    required this.pointsMinor,
+    required this.totalMinor,
+    required this.tenderedMinor,
+    required this.changeMinor,
+    required this.returnedOrder,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+    this.serverId,
+    this.serverVersion,
+    this.deviceId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['number'] = Variable<String>(number);
+    map['position'] = Variable<int>(position);
+    map['occurred_at'] = Variable<String>(occurredAt);
+    map['store_name'] = Variable<String>(storeName);
+    map['customer_name'] = Variable<String>(customerName);
+    map['customer_legacy_id'] = Variable<String>(customerLegacyId);
+    if (!nullToAbsent || customerId != null) {
+      map['customer_id'] = Variable<String>(customerId);
+    }
+    map['currency_code'] = Variable<String>(currencyCode);
+    map['mode'] = Variable<String>(mode);
+    map['sale_type'] = Variable<String>(saleType);
+    map['bill_discount_type'] = Variable<String>(billDiscountType);
+    map['bill_discount_bp'] = Variable<int>(billDiscountBp);
+    map['bill_discount_minor'] = Variable<int>(billDiscountMinor);
+    map['discount_reason'] = Variable<String>(discountReason);
+    map['points_redeemed'] = Variable<int>(pointsRedeemed);
+    map['note'] = Variable<String>(note);
+    map['items'] = Variable<int>(items);
+    map['qty_milli'] = Variable<int>(qtyMilli);
+    map['value_minor'] = Variable<int>(valueMinor);
+    map['subtotal_minor'] = Variable<int>(subtotalMinor);
+    map['discount_minor'] = Variable<int>(discountMinor);
+    map['tax_minor'] = Variable<int>(taxMinor);
+    map['points_minor'] = Variable<int>(pointsMinor);
+    map['total_minor'] = Variable<int>(totalMinor);
+    map['tendered_minor'] = Variable<int>(tenderedMinor);
+    map['change_minor'] = Variable<int>(changeMinor);
+    map['returned_order'] = Variable<String>(returnedOrder);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<String>(deletedAt);
+    }
+    if (!nullToAbsent || serverId != null) {
+      map['server_id'] = Variable<String>(serverId);
+    }
+    if (!nullToAbsent || serverVersion != null) {
+      map['server_version'] = Variable<int>(serverVersion);
+    }
+    if (!nullToAbsent || deviceId != null) {
+      map['device_id'] = Variable<String>(deviceId);
+    }
+    return map;
+  }
+
+  SaleEntriesCompanion toCompanion(bool nullToAbsent) {
+    return SaleEntriesCompanion(
+      id: Value(id),
+      number: Value(number),
+      position: Value(position),
+      occurredAt: Value(occurredAt),
+      storeName: Value(storeName),
+      customerName: Value(customerName),
+      customerLegacyId: Value(customerLegacyId),
+      customerId: customerId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(customerId),
+      currencyCode: Value(currencyCode),
+      mode: Value(mode),
+      saleType: Value(saleType),
+      billDiscountType: Value(billDiscountType),
+      billDiscountBp: Value(billDiscountBp),
+      billDiscountMinor: Value(billDiscountMinor),
+      discountReason: Value(discountReason),
+      pointsRedeemed: Value(pointsRedeemed),
+      note: Value(note),
+      items: Value(items),
+      qtyMilli: Value(qtyMilli),
+      valueMinor: Value(valueMinor),
+      subtotalMinor: Value(subtotalMinor),
+      discountMinor: Value(discountMinor),
+      taxMinor: Value(taxMinor),
+      pointsMinor: Value(pointsMinor),
+      totalMinor: Value(totalMinor),
+      tenderedMinor: Value(tenderedMinor),
+      changeMinor: Value(changeMinor),
+      returnedOrder: Value(returnedOrder),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      serverId: serverId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverId),
+      serverVersion: serverVersion == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverVersion),
+      deviceId: deviceId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deviceId),
+    );
+  }
+
+  factory SaleEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SaleEntry(
+      id: serializer.fromJson<String>(json['id']),
+      number: serializer.fromJson<String>(json['number']),
+      position: serializer.fromJson<int>(json['position']),
+      occurredAt: serializer.fromJson<String>(json['occurredAt']),
+      storeName: serializer.fromJson<String>(json['storeName']),
+      customerName: serializer.fromJson<String>(json['customerName']),
+      customerLegacyId: serializer.fromJson<String>(json['customerLegacyId']),
+      customerId: serializer.fromJson<String?>(json['customerId']),
+      currencyCode: serializer.fromJson<String>(json['currencyCode']),
+      mode: serializer.fromJson<String>(json['mode']),
+      saleType: serializer.fromJson<String>(json['saleType']),
+      billDiscountType: serializer.fromJson<String>(json['billDiscountType']),
+      billDiscountBp: serializer.fromJson<int>(json['billDiscountBp']),
+      billDiscountMinor: serializer.fromJson<int>(json['billDiscountMinor']),
+      discountReason: serializer.fromJson<String>(json['discountReason']),
+      pointsRedeemed: serializer.fromJson<int>(json['pointsRedeemed']),
+      note: serializer.fromJson<String>(json['note']),
+      items: serializer.fromJson<int>(json['items']),
+      qtyMilli: serializer.fromJson<int>(json['qtyMilli']),
+      valueMinor: serializer.fromJson<int>(json['valueMinor']),
+      subtotalMinor: serializer.fromJson<int>(json['subtotalMinor']),
+      discountMinor: serializer.fromJson<int>(json['discountMinor']),
+      taxMinor: serializer.fromJson<int>(json['taxMinor']),
+      pointsMinor: serializer.fromJson<int>(json['pointsMinor']),
+      totalMinor: serializer.fromJson<int>(json['totalMinor']),
+      tenderedMinor: serializer.fromJson<int>(json['tenderedMinor']),
+      changeMinor: serializer.fromJson<int>(json['changeMinor']),
+      returnedOrder: serializer.fromJson<String>(json['returnedOrder']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
+      serverId: serializer.fromJson<String?>(json['serverId']),
+      serverVersion: serializer.fromJson<int?>(json['serverVersion']),
+      deviceId: serializer.fromJson<String?>(json['deviceId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'number': serializer.toJson<String>(number),
+      'position': serializer.toJson<int>(position),
+      'occurredAt': serializer.toJson<String>(occurredAt),
+      'storeName': serializer.toJson<String>(storeName),
+      'customerName': serializer.toJson<String>(customerName),
+      'customerLegacyId': serializer.toJson<String>(customerLegacyId),
+      'customerId': serializer.toJson<String?>(customerId),
+      'currencyCode': serializer.toJson<String>(currencyCode),
+      'mode': serializer.toJson<String>(mode),
+      'saleType': serializer.toJson<String>(saleType),
+      'billDiscountType': serializer.toJson<String>(billDiscountType),
+      'billDiscountBp': serializer.toJson<int>(billDiscountBp),
+      'billDiscountMinor': serializer.toJson<int>(billDiscountMinor),
+      'discountReason': serializer.toJson<String>(discountReason),
+      'pointsRedeemed': serializer.toJson<int>(pointsRedeemed),
+      'note': serializer.toJson<String>(note),
+      'items': serializer.toJson<int>(items),
+      'qtyMilli': serializer.toJson<int>(qtyMilli),
+      'valueMinor': serializer.toJson<int>(valueMinor),
+      'subtotalMinor': serializer.toJson<int>(subtotalMinor),
+      'discountMinor': serializer.toJson<int>(discountMinor),
+      'taxMinor': serializer.toJson<int>(taxMinor),
+      'pointsMinor': serializer.toJson<int>(pointsMinor),
+      'totalMinor': serializer.toJson<int>(totalMinor),
+      'tenderedMinor': serializer.toJson<int>(tenderedMinor),
+      'changeMinor': serializer.toJson<int>(changeMinor),
+      'returnedOrder': serializer.toJson<String>(returnedOrder),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+      'deletedAt': serializer.toJson<String?>(deletedAt),
+      'serverId': serializer.toJson<String?>(serverId),
+      'serverVersion': serializer.toJson<int?>(serverVersion),
+      'deviceId': serializer.toJson<String?>(deviceId),
+    };
+  }
+
+  SaleEntry copyWith({
+    String? id,
+    String? number,
+    int? position,
+    String? occurredAt,
+    String? storeName,
+    String? customerName,
+    String? customerLegacyId,
+    Value<String?> customerId = const Value.absent(),
+    String? currencyCode,
+    String? mode,
+    String? saleType,
+    String? billDiscountType,
+    int? billDiscountBp,
+    int? billDiscountMinor,
+    String? discountReason,
+    int? pointsRedeemed,
+    String? note,
+    int? items,
+    int? qtyMilli,
+    int? valueMinor,
+    int? subtotalMinor,
+    int? discountMinor,
+    int? taxMinor,
+    int? pointsMinor,
+    int? totalMinor,
+    int? tenderedMinor,
+    int? changeMinor,
+    String? returnedOrder,
+    String? createdAt,
+    String? updatedAt,
+    Value<String?> deletedAt = const Value.absent(),
+    Value<String?> serverId = const Value.absent(),
+    Value<int?> serverVersion = const Value.absent(),
+    Value<String?> deviceId = const Value.absent(),
+  }) => SaleEntry(
+    id: id ?? this.id,
+    number: number ?? this.number,
+    position: position ?? this.position,
+    occurredAt: occurredAt ?? this.occurredAt,
+    storeName: storeName ?? this.storeName,
+    customerName: customerName ?? this.customerName,
+    customerLegacyId: customerLegacyId ?? this.customerLegacyId,
+    customerId: customerId.present ? customerId.value : this.customerId,
+    currencyCode: currencyCode ?? this.currencyCode,
+    mode: mode ?? this.mode,
+    saleType: saleType ?? this.saleType,
+    billDiscountType: billDiscountType ?? this.billDiscountType,
+    billDiscountBp: billDiscountBp ?? this.billDiscountBp,
+    billDiscountMinor: billDiscountMinor ?? this.billDiscountMinor,
+    discountReason: discountReason ?? this.discountReason,
+    pointsRedeemed: pointsRedeemed ?? this.pointsRedeemed,
+    note: note ?? this.note,
+    items: items ?? this.items,
+    qtyMilli: qtyMilli ?? this.qtyMilli,
+    valueMinor: valueMinor ?? this.valueMinor,
+    subtotalMinor: subtotalMinor ?? this.subtotalMinor,
+    discountMinor: discountMinor ?? this.discountMinor,
+    taxMinor: taxMinor ?? this.taxMinor,
+    pointsMinor: pointsMinor ?? this.pointsMinor,
+    totalMinor: totalMinor ?? this.totalMinor,
+    tenderedMinor: tenderedMinor ?? this.tenderedMinor,
+    changeMinor: changeMinor ?? this.changeMinor,
+    returnedOrder: returnedOrder ?? this.returnedOrder,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    serverId: serverId.present ? serverId.value : this.serverId,
+    serverVersion: serverVersion.present
+        ? serverVersion.value
+        : this.serverVersion,
+    deviceId: deviceId.present ? deviceId.value : this.deviceId,
+  );
+  SaleEntry copyWithCompanion(SaleEntriesCompanion data) {
+    return SaleEntry(
+      id: data.id.present ? data.id.value : this.id,
+      number: data.number.present ? data.number.value : this.number,
+      position: data.position.present ? data.position.value : this.position,
+      occurredAt: data.occurredAt.present
+          ? data.occurredAt.value
+          : this.occurredAt,
+      storeName: data.storeName.present ? data.storeName.value : this.storeName,
+      customerName: data.customerName.present
+          ? data.customerName.value
+          : this.customerName,
+      customerLegacyId: data.customerLegacyId.present
+          ? data.customerLegacyId.value
+          : this.customerLegacyId,
+      customerId: data.customerId.present
+          ? data.customerId.value
+          : this.customerId,
+      currencyCode: data.currencyCode.present
+          ? data.currencyCode.value
+          : this.currencyCode,
+      mode: data.mode.present ? data.mode.value : this.mode,
+      saleType: data.saleType.present ? data.saleType.value : this.saleType,
+      billDiscountType: data.billDiscountType.present
+          ? data.billDiscountType.value
+          : this.billDiscountType,
+      billDiscountBp: data.billDiscountBp.present
+          ? data.billDiscountBp.value
+          : this.billDiscountBp,
+      billDiscountMinor: data.billDiscountMinor.present
+          ? data.billDiscountMinor.value
+          : this.billDiscountMinor,
+      discountReason: data.discountReason.present
+          ? data.discountReason.value
+          : this.discountReason,
+      pointsRedeemed: data.pointsRedeemed.present
+          ? data.pointsRedeemed.value
+          : this.pointsRedeemed,
+      note: data.note.present ? data.note.value : this.note,
+      items: data.items.present ? data.items.value : this.items,
+      qtyMilli: data.qtyMilli.present ? data.qtyMilli.value : this.qtyMilli,
+      valueMinor: data.valueMinor.present
+          ? data.valueMinor.value
+          : this.valueMinor,
+      subtotalMinor: data.subtotalMinor.present
+          ? data.subtotalMinor.value
+          : this.subtotalMinor,
+      discountMinor: data.discountMinor.present
+          ? data.discountMinor.value
+          : this.discountMinor,
+      taxMinor: data.taxMinor.present ? data.taxMinor.value : this.taxMinor,
+      pointsMinor: data.pointsMinor.present
+          ? data.pointsMinor.value
+          : this.pointsMinor,
+      totalMinor: data.totalMinor.present
+          ? data.totalMinor.value
+          : this.totalMinor,
+      tenderedMinor: data.tenderedMinor.present
+          ? data.tenderedMinor.value
+          : this.tenderedMinor,
+      changeMinor: data.changeMinor.present
+          ? data.changeMinor.value
+          : this.changeMinor,
+      returnedOrder: data.returnedOrder.present
+          ? data.returnedOrder.value
+          : this.returnedOrder,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      serverId: data.serverId.present ? data.serverId.value : this.serverId,
+      serverVersion: data.serverVersion.present
+          ? data.serverVersion.value
+          : this.serverVersion,
+      deviceId: data.deviceId.present ? data.deviceId.value : this.deviceId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SaleEntry(')
+          ..write('id: $id, ')
+          ..write('number: $number, ')
+          ..write('position: $position, ')
+          ..write('occurredAt: $occurredAt, ')
+          ..write('storeName: $storeName, ')
+          ..write('customerName: $customerName, ')
+          ..write('customerLegacyId: $customerLegacyId, ')
+          ..write('customerId: $customerId, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('mode: $mode, ')
+          ..write('saleType: $saleType, ')
+          ..write('billDiscountType: $billDiscountType, ')
+          ..write('billDiscountBp: $billDiscountBp, ')
+          ..write('billDiscountMinor: $billDiscountMinor, ')
+          ..write('discountReason: $discountReason, ')
+          ..write('pointsRedeemed: $pointsRedeemed, ')
+          ..write('note: $note, ')
+          ..write('items: $items, ')
+          ..write('qtyMilli: $qtyMilli, ')
+          ..write('valueMinor: $valueMinor, ')
+          ..write('subtotalMinor: $subtotalMinor, ')
+          ..write('discountMinor: $discountMinor, ')
+          ..write('taxMinor: $taxMinor, ')
+          ..write('pointsMinor: $pointsMinor, ')
+          ..write('totalMinor: $totalMinor, ')
+          ..write('tenderedMinor: $tenderedMinor, ')
+          ..write('changeMinor: $changeMinor, ')
+          ..write('returnedOrder: $returnedOrder, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('serverId: $serverId, ')
+          ..write('serverVersion: $serverVersion, ')
+          ..write('deviceId: $deviceId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    number,
+    position,
+    occurredAt,
+    storeName,
+    customerName,
+    customerLegacyId,
+    customerId,
+    currencyCode,
+    mode,
+    saleType,
+    billDiscountType,
+    billDiscountBp,
+    billDiscountMinor,
+    discountReason,
+    pointsRedeemed,
+    note,
+    items,
+    qtyMilli,
+    valueMinor,
+    subtotalMinor,
+    discountMinor,
+    taxMinor,
+    pointsMinor,
+    totalMinor,
+    tenderedMinor,
+    changeMinor,
+    returnedOrder,
+    createdAt,
+    updatedAt,
+    deletedAt,
+    serverId,
+    serverVersion,
+    deviceId,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SaleEntry &&
+          other.id == this.id &&
+          other.number == this.number &&
+          other.position == this.position &&
+          other.occurredAt == this.occurredAt &&
+          other.storeName == this.storeName &&
+          other.customerName == this.customerName &&
+          other.customerLegacyId == this.customerLegacyId &&
+          other.customerId == this.customerId &&
+          other.currencyCode == this.currencyCode &&
+          other.mode == this.mode &&
+          other.saleType == this.saleType &&
+          other.billDiscountType == this.billDiscountType &&
+          other.billDiscountBp == this.billDiscountBp &&
+          other.billDiscountMinor == this.billDiscountMinor &&
+          other.discountReason == this.discountReason &&
+          other.pointsRedeemed == this.pointsRedeemed &&
+          other.note == this.note &&
+          other.items == this.items &&
+          other.qtyMilli == this.qtyMilli &&
+          other.valueMinor == this.valueMinor &&
+          other.subtotalMinor == this.subtotalMinor &&
+          other.discountMinor == this.discountMinor &&
+          other.taxMinor == this.taxMinor &&
+          other.pointsMinor == this.pointsMinor &&
+          other.totalMinor == this.totalMinor &&
+          other.tenderedMinor == this.tenderedMinor &&
+          other.changeMinor == this.changeMinor &&
+          other.returnedOrder == this.returnedOrder &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt &&
+          other.serverId == this.serverId &&
+          other.serverVersion == this.serverVersion &&
+          other.deviceId == this.deviceId);
+}
+
+class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
+  final Value<String> id;
+  final Value<String> number;
+  final Value<int> position;
+  final Value<String> occurredAt;
+  final Value<String> storeName;
+  final Value<String> customerName;
+  final Value<String> customerLegacyId;
+  final Value<String?> customerId;
+  final Value<String> currencyCode;
+  final Value<String> mode;
+  final Value<String> saleType;
+  final Value<String> billDiscountType;
+  final Value<int> billDiscountBp;
+  final Value<int> billDiscountMinor;
+  final Value<String> discountReason;
+  final Value<int> pointsRedeemed;
+  final Value<String> note;
+  final Value<int> items;
+  final Value<int> qtyMilli;
+  final Value<int> valueMinor;
+  final Value<int> subtotalMinor;
+  final Value<int> discountMinor;
+  final Value<int> taxMinor;
+  final Value<int> pointsMinor;
+  final Value<int> totalMinor;
+  final Value<int> tenderedMinor;
+  final Value<int> changeMinor;
+  final Value<String> returnedOrder;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<String?> deletedAt;
+  final Value<String?> serverId;
+  final Value<int?> serverVersion;
+  final Value<String?> deviceId;
+  final Value<int> rowid;
+  const SaleEntriesCompanion({
+    this.id = const Value.absent(),
+    this.number = const Value.absent(),
+    this.position = const Value.absent(),
+    this.occurredAt = const Value.absent(),
+    this.storeName = const Value.absent(),
+    this.customerName = const Value.absent(),
+    this.customerLegacyId = const Value.absent(),
+    this.customerId = const Value.absent(),
+    this.currencyCode = const Value.absent(),
+    this.mode = const Value.absent(),
+    this.saleType = const Value.absent(),
+    this.billDiscountType = const Value.absent(),
+    this.billDiscountBp = const Value.absent(),
+    this.billDiscountMinor = const Value.absent(),
+    this.discountReason = const Value.absent(),
+    this.pointsRedeemed = const Value.absent(),
+    this.note = const Value.absent(),
+    this.items = const Value.absent(),
+    this.qtyMilli = const Value.absent(),
+    this.valueMinor = const Value.absent(),
+    this.subtotalMinor = const Value.absent(),
+    this.discountMinor = const Value.absent(),
+    this.taxMinor = const Value.absent(),
+    this.pointsMinor = const Value.absent(),
+    this.totalMinor = const Value.absent(),
+    this.tenderedMinor = const Value.absent(),
+    this.changeMinor = const Value.absent(),
+    this.returnedOrder = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.serverId = const Value.absent(),
+    this.serverVersion = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SaleEntriesCompanion.insert({
+    required String id,
+    required String number,
+    required int position,
+    required String occurredAt,
+    required String storeName,
+    required String customerName,
+    required String customerLegacyId,
+    this.customerId = const Value.absent(),
+    this.currencyCode = const Value.absent(),
+    required String mode,
+    required String saleType,
+    required String billDiscountType,
+    required int billDiscountBp,
+    required int billDiscountMinor,
+    required String discountReason,
+    required int pointsRedeemed,
+    required String note,
+    required int items,
+    required int qtyMilli,
+    required int valueMinor,
+    required int subtotalMinor,
+    required int discountMinor,
+    required int taxMinor,
+    required int pointsMinor,
+    required int totalMinor,
+    required int tenderedMinor,
+    required int changeMinor,
+    this.returnedOrder = const Value.absent(),
+    required String createdAt,
+    required String updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.serverId = const Value.absent(),
+    this.serverVersion = const Value.absent(),
+    this.deviceId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       number = Value(number),
+       position = Value(position),
+       occurredAt = Value(occurredAt),
+       storeName = Value(storeName),
+       customerName = Value(customerName),
+       customerLegacyId = Value(customerLegacyId),
+       mode = Value(mode),
+       saleType = Value(saleType),
+       billDiscountType = Value(billDiscountType),
+       billDiscountBp = Value(billDiscountBp),
+       billDiscountMinor = Value(billDiscountMinor),
+       discountReason = Value(discountReason),
+       pointsRedeemed = Value(pointsRedeemed),
+       note = Value(note),
+       items = Value(items),
+       qtyMilli = Value(qtyMilli),
+       valueMinor = Value(valueMinor),
+       subtotalMinor = Value(subtotalMinor),
+       discountMinor = Value(discountMinor),
+       taxMinor = Value(taxMinor),
+       pointsMinor = Value(pointsMinor),
+       totalMinor = Value(totalMinor),
+       tenderedMinor = Value(tenderedMinor),
+       changeMinor = Value(changeMinor),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<SaleEntry> custom({
+    Expression<String>? id,
+    Expression<String>? number,
+    Expression<int>? position,
+    Expression<String>? occurredAt,
+    Expression<String>? storeName,
+    Expression<String>? customerName,
+    Expression<String>? customerLegacyId,
+    Expression<String>? customerId,
+    Expression<String>? currencyCode,
+    Expression<String>? mode,
+    Expression<String>? saleType,
+    Expression<String>? billDiscountType,
+    Expression<int>? billDiscountBp,
+    Expression<int>? billDiscountMinor,
+    Expression<String>? discountReason,
+    Expression<int>? pointsRedeemed,
+    Expression<String>? note,
+    Expression<int>? items,
+    Expression<int>? qtyMilli,
+    Expression<int>? valueMinor,
+    Expression<int>? subtotalMinor,
+    Expression<int>? discountMinor,
+    Expression<int>? taxMinor,
+    Expression<int>? pointsMinor,
+    Expression<int>? totalMinor,
+    Expression<int>? tenderedMinor,
+    Expression<int>? changeMinor,
+    Expression<String>? returnedOrder,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<String>? deletedAt,
+    Expression<String>? serverId,
+    Expression<int>? serverVersion,
+    Expression<String>? deviceId,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (number != null) 'number': number,
+      if (position != null) 'position': position,
+      if (occurredAt != null) 'occurred_at': occurredAt,
+      if (storeName != null) 'store_name': storeName,
+      if (customerName != null) 'customer_name': customerName,
+      if (customerLegacyId != null) 'customer_legacy_id': customerLegacyId,
+      if (customerId != null) 'customer_id': customerId,
+      if (currencyCode != null) 'currency_code': currencyCode,
+      if (mode != null) 'mode': mode,
+      if (saleType != null) 'sale_type': saleType,
+      if (billDiscountType != null) 'bill_discount_type': billDiscountType,
+      if (billDiscountBp != null) 'bill_discount_bp': billDiscountBp,
+      if (billDiscountMinor != null) 'bill_discount_minor': billDiscountMinor,
+      if (discountReason != null) 'discount_reason': discountReason,
+      if (pointsRedeemed != null) 'points_redeemed': pointsRedeemed,
+      if (note != null) 'note': note,
+      if (items != null) 'items': items,
+      if (qtyMilli != null) 'qty_milli': qtyMilli,
+      if (valueMinor != null) 'value_minor': valueMinor,
+      if (subtotalMinor != null) 'subtotal_minor': subtotalMinor,
+      if (discountMinor != null) 'discount_minor': discountMinor,
+      if (taxMinor != null) 'tax_minor': taxMinor,
+      if (pointsMinor != null) 'points_minor': pointsMinor,
+      if (totalMinor != null) 'total_minor': totalMinor,
+      if (tenderedMinor != null) 'tendered_minor': tenderedMinor,
+      if (changeMinor != null) 'change_minor': changeMinor,
+      if (returnedOrder != null) 'returned_order': returnedOrder,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (serverId != null) 'server_id': serverId,
+      if (serverVersion != null) 'server_version': serverVersion,
+      if (deviceId != null) 'device_id': deviceId,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SaleEntriesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? number,
+    Value<int>? position,
+    Value<String>? occurredAt,
+    Value<String>? storeName,
+    Value<String>? customerName,
+    Value<String>? customerLegacyId,
+    Value<String?>? customerId,
+    Value<String>? currencyCode,
+    Value<String>? mode,
+    Value<String>? saleType,
+    Value<String>? billDiscountType,
+    Value<int>? billDiscountBp,
+    Value<int>? billDiscountMinor,
+    Value<String>? discountReason,
+    Value<int>? pointsRedeemed,
+    Value<String>? note,
+    Value<int>? items,
+    Value<int>? qtyMilli,
+    Value<int>? valueMinor,
+    Value<int>? subtotalMinor,
+    Value<int>? discountMinor,
+    Value<int>? taxMinor,
+    Value<int>? pointsMinor,
+    Value<int>? totalMinor,
+    Value<int>? tenderedMinor,
+    Value<int>? changeMinor,
+    Value<String>? returnedOrder,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<String?>? deletedAt,
+    Value<String?>? serverId,
+    Value<int?>? serverVersion,
+    Value<String?>? deviceId,
+    Value<int>? rowid,
+  }) {
+    return SaleEntriesCompanion(
+      id: id ?? this.id,
+      number: number ?? this.number,
+      position: position ?? this.position,
+      occurredAt: occurredAt ?? this.occurredAt,
+      storeName: storeName ?? this.storeName,
+      customerName: customerName ?? this.customerName,
+      customerLegacyId: customerLegacyId ?? this.customerLegacyId,
+      customerId: customerId ?? this.customerId,
+      currencyCode: currencyCode ?? this.currencyCode,
+      mode: mode ?? this.mode,
+      saleType: saleType ?? this.saleType,
+      billDiscountType: billDiscountType ?? this.billDiscountType,
+      billDiscountBp: billDiscountBp ?? this.billDiscountBp,
+      billDiscountMinor: billDiscountMinor ?? this.billDiscountMinor,
+      discountReason: discountReason ?? this.discountReason,
+      pointsRedeemed: pointsRedeemed ?? this.pointsRedeemed,
+      note: note ?? this.note,
+      items: items ?? this.items,
+      qtyMilli: qtyMilli ?? this.qtyMilli,
+      valueMinor: valueMinor ?? this.valueMinor,
+      subtotalMinor: subtotalMinor ?? this.subtotalMinor,
+      discountMinor: discountMinor ?? this.discountMinor,
+      taxMinor: taxMinor ?? this.taxMinor,
+      pointsMinor: pointsMinor ?? this.pointsMinor,
+      totalMinor: totalMinor ?? this.totalMinor,
+      tenderedMinor: tenderedMinor ?? this.tenderedMinor,
+      changeMinor: changeMinor ?? this.changeMinor,
+      returnedOrder: returnedOrder ?? this.returnedOrder,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      serverId: serverId ?? this.serverId,
+      serverVersion: serverVersion ?? this.serverVersion,
+      deviceId: deviceId ?? this.deviceId,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (number.present) {
+      map['number'] = Variable<String>(number.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (occurredAt.present) {
+      map['occurred_at'] = Variable<String>(occurredAt.value);
+    }
+    if (storeName.present) {
+      map['store_name'] = Variable<String>(storeName.value);
+    }
+    if (customerName.present) {
+      map['customer_name'] = Variable<String>(customerName.value);
+    }
+    if (customerLegacyId.present) {
+      map['customer_legacy_id'] = Variable<String>(customerLegacyId.value);
+    }
+    if (customerId.present) {
+      map['customer_id'] = Variable<String>(customerId.value);
+    }
+    if (currencyCode.present) {
+      map['currency_code'] = Variable<String>(currencyCode.value);
+    }
+    if (mode.present) {
+      map['mode'] = Variable<String>(mode.value);
+    }
+    if (saleType.present) {
+      map['sale_type'] = Variable<String>(saleType.value);
+    }
+    if (billDiscountType.present) {
+      map['bill_discount_type'] = Variable<String>(billDiscountType.value);
+    }
+    if (billDiscountBp.present) {
+      map['bill_discount_bp'] = Variable<int>(billDiscountBp.value);
+    }
+    if (billDiscountMinor.present) {
+      map['bill_discount_minor'] = Variable<int>(billDiscountMinor.value);
+    }
+    if (discountReason.present) {
+      map['discount_reason'] = Variable<String>(discountReason.value);
+    }
+    if (pointsRedeemed.present) {
+      map['points_redeemed'] = Variable<int>(pointsRedeemed.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (items.present) {
+      map['items'] = Variable<int>(items.value);
+    }
+    if (qtyMilli.present) {
+      map['qty_milli'] = Variable<int>(qtyMilli.value);
+    }
+    if (valueMinor.present) {
+      map['value_minor'] = Variable<int>(valueMinor.value);
+    }
+    if (subtotalMinor.present) {
+      map['subtotal_minor'] = Variable<int>(subtotalMinor.value);
+    }
+    if (discountMinor.present) {
+      map['discount_minor'] = Variable<int>(discountMinor.value);
+    }
+    if (taxMinor.present) {
+      map['tax_minor'] = Variable<int>(taxMinor.value);
+    }
+    if (pointsMinor.present) {
+      map['points_minor'] = Variable<int>(pointsMinor.value);
+    }
+    if (totalMinor.present) {
+      map['total_minor'] = Variable<int>(totalMinor.value);
+    }
+    if (tenderedMinor.present) {
+      map['tendered_minor'] = Variable<int>(tenderedMinor.value);
+    }
+    if (changeMinor.present) {
+      map['change_minor'] = Variable<int>(changeMinor.value);
+    }
+    if (returnedOrder.present) {
+      map['returned_order'] = Variable<String>(returnedOrder.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<String>(deletedAt.value);
+    }
+    if (serverId.present) {
+      map['server_id'] = Variable<String>(serverId.value);
+    }
+    if (serverVersion.present) {
+      map['server_version'] = Variable<int>(serverVersion.value);
+    }
+    if (deviceId.present) {
+      map['device_id'] = Variable<String>(deviceId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SaleEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('number: $number, ')
+          ..write('position: $position, ')
+          ..write('occurredAt: $occurredAt, ')
+          ..write('storeName: $storeName, ')
+          ..write('customerName: $customerName, ')
+          ..write('customerLegacyId: $customerLegacyId, ')
+          ..write('customerId: $customerId, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('mode: $mode, ')
+          ..write('saleType: $saleType, ')
+          ..write('billDiscountType: $billDiscountType, ')
+          ..write('billDiscountBp: $billDiscountBp, ')
+          ..write('billDiscountMinor: $billDiscountMinor, ')
+          ..write('discountReason: $discountReason, ')
+          ..write('pointsRedeemed: $pointsRedeemed, ')
+          ..write('note: $note, ')
+          ..write('items: $items, ')
+          ..write('qtyMilli: $qtyMilli, ')
+          ..write('valueMinor: $valueMinor, ')
+          ..write('subtotalMinor: $subtotalMinor, ')
+          ..write('discountMinor: $discountMinor, ')
+          ..write('taxMinor: $taxMinor, ')
+          ..write('pointsMinor: $pointsMinor, ')
+          ..write('totalMinor: $totalMinor, ')
+          ..write('tenderedMinor: $tenderedMinor, ')
+          ..write('changeMinor: $changeMinor, ')
+          ..write('returnedOrder: $returnedOrder, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('serverId: $serverId, ')
+          ..write('serverVersion: $serverVersion, ')
+          ..write('deviceId: $deviceId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SaleLineEntriesTable extends SaleLineEntries
+    with TableInfo<$SaleLineEntriesTable, SaleLineEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SaleLineEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _saleIdMeta = const VerificationMeta('saleId');
+  @override
+  late final GeneratedColumn<String> saleId = GeneratedColumn<String>(
+    'sale_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES sales (id)',
+    ),
+  );
+  static const VerificationMeta _lineNoMeta = const VerificationMeta('lineNo');
+  @override
+  late final GeneratedColumn<int> lineNo = GeneratedColumn<int>(
+    'line_no',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _productIdMeta = const VerificationMeta(
+    'productId',
+  );
+  @override
+  late final GeneratedColumn<String> productId = GeneratedColumn<String>(
+    'product_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES products (id)',
+    ),
+  );
+  static const VerificationMeta _productLegacyIdMeta = const VerificationMeta(
+    'productLegacyId',
+  );
+  @override
+  late final GeneratedColumn<int> productLegacyId = GeneratedColumn<int>(
+    'product_legacy_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _productNameMeta = const VerificationMeta(
+    'productName',
+  );
+  @override
+  late final GeneratedColumn<String> productName = GeneratedColumn<String>(
+    'product_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _productCodeMeta = const VerificationMeta(
+    'productCode',
+  );
+  @override
+  late final GeneratedColumn<String> productCode = GeneratedColumn<String>(
+    'product_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _productBarcodeMeta = const VerificationMeta(
+    'productBarcode',
+  );
+  @override
+  late final GeneratedColumn<String> productBarcode = GeneratedColumn<String>(
+    'product_barcode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _productPriceMinorMeta = const VerificationMeta(
+    'productPriceMinor',
+  );
+  @override
+  late final GeneratedColumn<int> productPriceMinor = GeneratedColumn<int>(
+    'product_price_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _productCategoryMeta = const VerificationMeta(
+    'productCategory',
+  );
+  @override
+  late final GeneratedColumn<String> productCategory = GeneratedColumn<String>(
+    'product_category',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _productSubMeta = const VerificationMeta(
+    'productSub',
+  );
+  @override
+  late final GeneratedColumn<String> productSub = GeneratedColumn<String>(
+    'product_sub',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _productStockMeta = const VerificationMeta(
+    'productStock',
+  );
+  @override
+  late final GeneratedColumn<int> productStock = GeneratedColumn<int>(
+    'product_stock',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _productGstBpMeta = const VerificationMeta(
+    'productGstBp',
+  );
+  @override
+  late final GeneratedColumn<int> productGstBp = GeneratedColumn<int>(
+    'product_gst_bp',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _productImageMeta = const VerificationMeta(
+    'productImage',
+  );
+  @override
+  late final GeneratedColumn<int> productImage = GeneratedColumn<int>(
+    'product_image',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _productFavouriteMeta = const VerificationMeta(
+    'productFavourite',
+  );
+  @override
+  late final GeneratedColumn<bool> productFavourite = GeneratedColumn<bool>(
+    'product_favourite',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("product_favourite" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _priceMinorMeta = const VerificationMeta(
+    'priceMinor',
+  );
+  @override
+  late final GeneratedColumn<int> priceMinor = GeneratedColumn<int>(
+    'price_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _qtyMilliMeta = const VerificationMeta(
+    'qtyMilli',
+  );
+  @override
+  late final GeneratedColumn<int> qtyMilli = GeneratedColumn<int>(
+    'qty_milli',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _discountBpMeta = const VerificationMeta(
+    'discountBp',
+  );
+  @override
+  late final GeneratedColumn<int> discountBp = GeneratedColumn<int>(
+    'discount_bp',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _returnedQtyMilliMeta = const VerificationMeta(
+    'returnedQtyMilli',
+  );
+  @override
+  late final GeneratedColumn<int> returnedQtyMilli = GeneratedColumn<int>(
+    'returned_qty_milli',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    saleId,
+    lineNo,
+    productId,
+    productLegacyId,
+    productName,
+    productCode,
+    productBarcode,
+    productPriceMinor,
+    productCategory,
+    productSub,
+    productStock,
+    productGstBp,
+    productImage,
+    productFavourite,
+    priceMinor,
+    qtyMilli,
+    discountBp,
+    returnedQtyMilli,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sale_lines';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SaleLineEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('sale_id')) {
+      context.handle(
+        _saleIdMeta,
+        saleId.isAcceptableOrUnknown(data['sale_id']!, _saleIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_saleIdMeta);
+    }
+    if (data.containsKey('line_no')) {
+      context.handle(
+        _lineNoMeta,
+        lineNo.isAcceptableOrUnknown(data['line_no']!, _lineNoMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_lineNoMeta);
+    }
+    if (data.containsKey('product_id')) {
+      context.handle(
+        _productIdMeta,
+        productId.isAcceptableOrUnknown(data['product_id']!, _productIdMeta),
+      );
+    }
+    if (data.containsKey('product_legacy_id')) {
+      context.handle(
+        _productLegacyIdMeta,
+        productLegacyId.isAcceptableOrUnknown(
+          data['product_legacy_id']!,
+          _productLegacyIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_productLegacyIdMeta);
+    }
+    if (data.containsKey('product_name')) {
+      context.handle(
+        _productNameMeta,
+        productName.isAcceptableOrUnknown(
+          data['product_name']!,
+          _productNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_productNameMeta);
+    }
+    if (data.containsKey('product_code')) {
+      context.handle(
+        _productCodeMeta,
+        productCode.isAcceptableOrUnknown(
+          data['product_code']!,
+          _productCodeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_productCodeMeta);
+    }
+    if (data.containsKey('product_barcode')) {
+      context.handle(
+        _productBarcodeMeta,
+        productBarcode.isAcceptableOrUnknown(
+          data['product_barcode']!,
+          _productBarcodeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_productBarcodeMeta);
+    }
+    if (data.containsKey('product_price_minor')) {
+      context.handle(
+        _productPriceMinorMeta,
+        productPriceMinor.isAcceptableOrUnknown(
+          data['product_price_minor']!,
+          _productPriceMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_productPriceMinorMeta);
+    }
+    if (data.containsKey('product_category')) {
+      context.handle(
+        _productCategoryMeta,
+        productCategory.isAcceptableOrUnknown(
+          data['product_category']!,
+          _productCategoryMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_productCategoryMeta);
+    }
+    if (data.containsKey('product_sub')) {
+      context.handle(
+        _productSubMeta,
+        productSub.isAcceptableOrUnknown(data['product_sub']!, _productSubMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_productSubMeta);
+    }
+    if (data.containsKey('product_stock')) {
+      context.handle(
+        _productStockMeta,
+        productStock.isAcceptableOrUnknown(
+          data['product_stock']!,
+          _productStockMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_productStockMeta);
+    }
+    if (data.containsKey('product_gst_bp')) {
+      context.handle(
+        _productGstBpMeta,
+        productGstBp.isAcceptableOrUnknown(
+          data['product_gst_bp']!,
+          _productGstBpMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_productGstBpMeta);
+    }
+    if (data.containsKey('product_image')) {
+      context.handle(
+        _productImageMeta,
+        productImage.isAcceptableOrUnknown(
+          data['product_image']!,
+          _productImageMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_productImageMeta);
+    }
+    if (data.containsKey('product_favourite')) {
+      context.handle(
+        _productFavouriteMeta,
+        productFavourite.isAcceptableOrUnknown(
+          data['product_favourite']!,
+          _productFavouriteMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_productFavouriteMeta);
+    }
+    if (data.containsKey('price_minor')) {
+      context.handle(
+        _priceMinorMeta,
+        priceMinor.isAcceptableOrUnknown(data['price_minor']!, _priceMinorMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_priceMinorMeta);
+    }
+    if (data.containsKey('qty_milli')) {
+      context.handle(
+        _qtyMilliMeta,
+        qtyMilli.isAcceptableOrUnknown(data['qty_milli']!, _qtyMilliMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_qtyMilliMeta);
+    }
+    if (data.containsKey('discount_bp')) {
+      context.handle(
+        _discountBpMeta,
+        discountBp.isAcceptableOrUnknown(data['discount_bp']!, _discountBpMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_discountBpMeta);
+    }
+    if (data.containsKey('returned_qty_milli')) {
+      context.handle(
+        _returnedQtyMilliMeta,
+        returnedQtyMilli.isAcceptableOrUnknown(
+          data['returned_qty_milli']!,
+          _returnedQtyMilliMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SaleLineEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SaleLineEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      saleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sale_id'],
+      )!,
+      lineNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}line_no'],
+      )!,
+      productId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}product_id'],
+      ),
+      productLegacyId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}product_legacy_id'],
+      )!,
+      productName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}product_name'],
+      )!,
+      productCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}product_code'],
+      )!,
+      productBarcode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}product_barcode'],
+      )!,
+      productPriceMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}product_price_minor'],
+      )!,
+      productCategory: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}product_category'],
+      )!,
+      productSub: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}product_sub'],
+      )!,
+      productStock: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}product_stock'],
+      )!,
+      productGstBp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}product_gst_bp'],
+      )!,
+      productImage: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}product_image'],
+      )!,
+      productFavourite: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}product_favourite'],
+      )!,
+      priceMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}price_minor'],
+      )!,
+      qtyMilli: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}qty_milli'],
+      )!,
+      discountBp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}discount_bp'],
+      )!,
+      returnedQtyMilli: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}returned_qty_milli'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SaleLineEntriesTable createAlias(String alias) {
+    return $SaleLineEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class SaleLineEntry extends DataClass implements Insertable<SaleLineEntry> {
+  final String id;
+  final String saleId;
+  final int lineNo;
+
+  /// Resolved link to `products.id`; null until the row is known.
+  final String? productId;
+  final int productLegacyId;
+  final String productName;
+  final String productCode;
+  final String productBarcode;
+  final int productPriceMinor;
+  final String productCategory;
+  final String productSub;
+  final int productStock;
+
+  /// Basis points; the JSON keeps the prototype's percent number.
+  final int productGstBp;
+  final int productImage;
+  final bool productFavourite;
+  final int priceMinor;
+  final int qtyMilli;
+  final int discountBp;
+  final int returnedQtyMilli;
+  final String createdAt;
+  const SaleLineEntry({
+    required this.id,
+    required this.saleId,
+    required this.lineNo,
+    this.productId,
+    required this.productLegacyId,
+    required this.productName,
+    required this.productCode,
+    required this.productBarcode,
+    required this.productPriceMinor,
+    required this.productCategory,
+    required this.productSub,
+    required this.productStock,
+    required this.productGstBp,
+    required this.productImage,
+    required this.productFavourite,
+    required this.priceMinor,
+    required this.qtyMilli,
+    required this.discountBp,
+    required this.returnedQtyMilli,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['sale_id'] = Variable<String>(saleId);
+    map['line_no'] = Variable<int>(lineNo);
+    if (!nullToAbsent || productId != null) {
+      map['product_id'] = Variable<String>(productId);
+    }
+    map['product_legacy_id'] = Variable<int>(productLegacyId);
+    map['product_name'] = Variable<String>(productName);
+    map['product_code'] = Variable<String>(productCode);
+    map['product_barcode'] = Variable<String>(productBarcode);
+    map['product_price_minor'] = Variable<int>(productPriceMinor);
+    map['product_category'] = Variable<String>(productCategory);
+    map['product_sub'] = Variable<String>(productSub);
+    map['product_stock'] = Variable<int>(productStock);
+    map['product_gst_bp'] = Variable<int>(productGstBp);
+    map['product_image'] = Variable<int>(productImage);
+    map['product_favourite'] = Variable<bool>(productFavourite);
+    map['price_minor'] = Variable<int>(priceMinor);
+    map['qty_milli'] = Variable<int>(qtyMilli);
+    map['discount_bp'] = Variable<int>(discountBp);
+    map['returned_qty_milli'] = Variable<int>(returnedQtyMilli);
+    map['created_at'] = Variable<String>(createdAt);
+    return map;
+  }
+
+  SaleLineEntriesCompanion toCompanion(bool nullToAbsent) {
+    return SaleLineEntriesCompanion(
+      id: Value(id),
+      saleId: Value(saleId),
+      lineNo: Value(lineNo),
+      productId: productId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(productId),
+      productLegacyId: Value(productLegacyId),
+      productName: Value(productName),
+      productCode: Value(productCode),
+      productBarcode: Value(productBarcode),
+      productPriceMinor: Value(productPriceMinor),
+      productCategory: Value(productCategory),
+      productSub: Value(productSub),
+      productStock: Value(productStock),
+      productGstBp: Value(productGstBp),
+      productImage: Value(productImage),
+      productFavourite: Value(productFavourite),
+      priceMinor: Value(priceMinor),
+      qtyMilli: Value(qtyMilli),
+      discountBp: Value(discountBp),
+      returnedQtyMilli: Value(returnedQtyMilli),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory SaleLineEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SaleLineEntry(
+      id: serializer.fromJson<String>(json['id']),
+      saleId: serializer.fromJson<String>(json['saleId']),
+      lineNo: serializer.fromJson<int>(json['lineNo']),
+      productId: serializer.fromJson<String?>(json['productId']),
+      productLegacyId: serializer.fromJson<int>(json['productLegacyId']),
+      productName: serializer.fromJson<String>(json['productName']),
+      productCode: serializer.fromJson<String>(json['productCode']),
+      productBarcode: serializer.fromJson<String>(json['productBarcode']),
+      productPriceMinor: serializer.fromJson<int>(json['productPriceMinor']),
+      productCategory: serializer.fromJson<String>(json['productCategory']),
+      productSub: serializer.fromJson<String>(json['productSub']),
+      productStock: serializer.fromJson<int>(json['productStock']),
+      productGstBp: serializer.fromJson<int>(json['productGstBp']),
+      productImage: serializer.fromJson<int>(json['productImage']),
+      productFavourite: serializer.fromJson<bool>(json['productFavourite']),
+      priceMinor: serializer.fromJson<int>(json['priceMinor']),
+      qtyMilli: serializer.fromJson<int>(json['qtyMilli']),
+      discountBp: serializer.fromJson<int>(json['discountBp']),
+      returnedQtyMilli: serializer.fromJson<int>(json['returnedQtyMilli']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'saleId': serializer.toJson<String>(saleId),
+      'lineNo': serializer.toJson<int>(lineNo),
+      'productId': serializer.toJson<String?>(productId),
+      'productLegacyId': serializer.toJson<int>(productLegacyId),
+      'productName': serializer.toJson<String>(productName),
+      'productCode': serializer.toJson<String>(productCode),
+      'productBarcode': serializer.toJson<String>(productBarcode),
+      'productPriceMinor': serializer.toJson<int>(productPriceMinor),
+      'productCategory': serializer.toJson<String>(productCategory),
+      'productSub': serializer.toJson<String>(productSub),
+      'productStock': serializer.toJson<int>(productStock),
+      'productGstBp': serializer.toJson<int>(productGstBp),
+      'productImage': serializer.toJson<int>(productImage),
+      'productFavourite': serializer.toJson<bool>(productFavourite),
+      'priceMinor': serializer.toJson<int>(priceMinor),
+      'qtyMilli': serializer.toJson<int>(qtyMilli),
+      'discountBp': serializer.toJson<int>(discountBp),
+      'returnedQtyMilli': serializer.toJson<int>(returnedQtyMilli),
+      'createdAt': serializer.toJson<String>(createdAt),
+    };
+  }
+
+  SaleLineEntry copyWith({
+    String? id,
+    String? saleId,
+    int? lineNo,
+    Value<String?> productId = const Value.absent(),
+    int? productLegacyId,
+    String? productName,
+    String? productCode,
+    String? productBarcode,
+    int? productPriceMinor,
+    String? productCategory,
+    String? productSub,
+    int? productStock,
+    int? productGstBp,
+    int? productImage,
+    bool? productFavourite,
+    int? priceMinor,
+    int? qtyMilli,
+    int? discountBp,
+    int? returnedQtyMilli,
+    String? createdAt,
+  }) => SaleLineEntry(
+    id: id ?? this.id,
+    saleId: saleId ?? this.saleId,
+    lineNo: lineNo ?? this.lineNo,
+    productId: productId.present ? productId.value : this.productId,
+    productLegacyId: productLegacyId ?? this.productLegacyId,
+    productName: productName ?? this.productName,
+    productCode: productCode ?? this.productCode,
+    productBarcode: productBarcode ?? this.productBarcode,
+    productPriceMinor: productPriceMinor ?? this.productPriceMinor,
+    productCategory: productCategory ?? this.productCategory,
+    productSub: productSub ?? this.productSub,
+    productStock: productStock ?? this.productStock,
+    productGstBp: productGstBp ?? this.productGstBp,
+    productImage: productImage ?? this.productImage,
+    productFavourite: productFavourite ?? this.productFavourite,
+    priceMinor: priceMinor ?? this.priceMinor,
+    qtyMilli: qtyMilli ?? this.qtyMilli,
+    discountBp: discountBp ?? this.discountBp,
+    returnedQtyMilli: returnedQtyMilli ?? this.returnedQtyMilli,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  SaleLineEntry copyWithCompanion(SaleLineEntriesCompanion data) {
+    return SaleLineEntry(
+      id: data.id.present ? data.id.value : this.id,
+      saleId: data.saleId.present ? data.saleId.value : this.saleId,
+      lineNo: data.lineNo.present ? data.lineNo.value : this.lineNo,
+      productId: data.productId.present ? data.productId.value : this.productId,
+      productLegacyId: data.productLegacyId.present
+          ? data.productLegacyId.value
+          : this.productLegacyId,
+      productName: data.productName.present
+          ? data.productName.value
+          : this.productName,
+      productCode: data.productCode.present
+          ? data.productCode.value
+          : this.productCode,
+      productBarcode: data.productBarcode.present
+          ? data.productBarcode.value
+          : this.productBarcode,
+      productPriceMinor: data.productPriceMinor.present
+          ? data.productPriceMinor.value
+          : this.productPriceMinor,
+      productCategory: data.productCategory.present
+          ? data.productCategory.value
+          : this.productCategory,
+      productSub: data.productSub.present
+          ? data.productSub.value
+          : this.productSub,
+      productStock: data.productStock.present
+          ? data.productStock.value
+          : this.productStock,
+      productGstBp: data.productGstBp.present
+          ? data.productGstBp.value
+          : this.productGstBp,
+      productImage: data.productImage.present
+          ? data.productImage.value
+          : this.productImage,
+      productFavourite: data.productFavourite.present
+          ? data.productFavourite.value
+          : this.productFavourite,
+      priceMinor: data.priceMinor.present
+          ? data.priceMinor.value
+          : this.priceMinor,
+      qtyMilli: data.qtyMilli.present ? data.qtyMilli.value : this.qtyMilli,
+      discountBp: data.discountBp.present
+          ? data.discountBp.value
+          : this.discountBp,
+      returnedQtyMilli: data.returnedQtyMilli.present
+          ? data.returnedQtyMilli.value
+          : this.returnedQtyMilli,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SaleLineEntry(')
+          ..write('id: $id, ')
+          ..write('saleId: $saleId, ')
+          ..write('lineNo: $lineNo, ')
+          ..write('productId: $productId, ')
+          ..write('productLegacyId: $productLegacyId, ')
+          ..write('productName: $productName, ')
+          ..write('productCode: $productCode, ')
+          ..write('productBarcode: $productBarcode, ')
+          ..write('productPriceMinor: $productPriceMinor, ')
+          ..write('productCategory: $productCategory, ')
+          ..write('productSub: $productSub, ')
+          ..write('productStock: $productStock, ')
+          ..write('productGstBp: $productGstBp, ')
+          ..write('productImage: $productImage, ')
+          ..write('productFavourite: $productFavourite, ')
+          ..write('priceMinor: $priceMinor, ')
+          ..write('qtyMilli: $qtyMilli, ')
+          ..write('discountBp: $discountBp, ')
+          ..write('returnedQtyMilli: $returnedQtyMilli, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    saleId,
+    lineNo,
+    productId,
+    productLegacyId,
+    productName,
+    productCode,
+    productBarcode,
+    productPriceMinor,
+    productCategory,
+    productSub,
+    productStock,
+    productGstBp,
+    productImage,
+    productFavourite,
+    priceMinor,
+    qtyMilli,
+    discountBp,
+    returnedQtyMilli,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SaleLineEntry &&
+          other.id == this.id &&
+          other.saleId == this.saleId &&
+          other.lineNo == this.lineNo &&
+          other.productId == this.productId &&
+          other.productLegacyId == this.productLegacyId &&
+          other.productName == this.productName &&
+          other.productCode == this.productCode &&
+          other.productBarcode == this.productBarcode &&
+          other.productPriceMinor == this.productPriceMinor &&
+          other.productCategory == this.productCategory &&
+          other.productSub == this.productSub &&
+          other.productStock == this.productStock &&
+          other.productGstBp == this.productGstBp &&
+          other.productImage == this.productImage &&
+          other.productFavourite == this.productFavourite &&
+          other.priceMinor == this.priceMinor &&
+          other.qtyMilli == this.qtyMilli &&
+          other.discountBp == this.discountBp &&
+          other.returnedQtyMilli == this.returnedQtyMilli &&
+          other.createdAt == this.createdAt);
+}
+
+class SaleLineEntriesCompanion extends UpdateCompanion<SaleLineEntry> {
+  final Value<String> id;
+  final Value<String> saleId;
+  final Value<int> lineNo;
+  final Value<String?> productId;
+  final Value<int> productLegacyId;
+  final Value<String> productName;
+  final Value<String> productCode;
+  final Value<String> productBarcode;
+  final Value<int> productPriceMinor;
+  final Value<String> productCategory;
+  final Value<String> productSub;
+  final Value<int> productStock;
+  final Value<int> productGstBp;
+  final Value<int> productImage;
+  final Value<bool> productFavourite;
+  final Value<int> priceMinor;
+  final Value<int> qtyMilli;
+  final Value<int> discountBp;
+  final Value<int> returnedQtyMilli;
+  final Value<String> createdAt;
+  final Value<int> rowid;
+  const SaleLineEntriesCompanion({
+    this.id = const Value.absent(),
+    this.saleId = const Value.absent(),
+    this.lineNo = const Value.absent(),
+    this.productId = const Value.absent(),
+    this.productLegacyId = const Value.absent(),
+    this.productName = const Value.absent(),
+    this.productCode = const Value.absent(),
+    this.productBarcode = const Value.absent(),
+    this.productPriceMinor = const Value.absent(),
+    this.productCategory = const Value.absent(),
+    this.productSub = const Value.absent(),
+    this.productStock = const Value.absent(),
+    this.productGstBp = const Value.absent(),
+    this.productImage = const Value.absent(),
+    this.productFavourite = const Value.absent(),
+    this.priceMinor = const Value.absent(),
+    this.qtyMilli = const Value.absent(),
+    this.discountBp = const Value.absent(),
+    this.returnedQtyMilli = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SaleLineEntriesCompanion.insert({
+    required String id,
+    required String saleId,
+    required int lineNo,
+    this.productId = const Value.absent(),
+    required int productLegacyId,
+    required String productName,
+    required String productCode,
+    required String productBarcode,
+    required int productPriceMinor,
+    required String productCategory,
+    required String productSub,
+    required int productStock,
+    required int productGstBp,
+    required int productImage,
+    required bool productFavourite,
+    required int priceMinor,
+    required int qtyMilli,
+    required int discountBp,
+    this.returnedQtyMilli = const Value.absent(),
+    required String createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       saleId = Value(saleId),
+       lineNo = Value(lineNo),
+       productLegacyId = Value(productLegacyId),
+       productName = Value(productName),
+       productCode = Value(productCode),
+       productBarcode = Value(productBarcode),
+       productPriceMinor = Value(productPriceMinor),
+       productCategory = Value(productCategory),
+       productSub = Value(productSub),
+       productStock = Value(productStock),
+       productGstBp = Value(productGstBp),
+       productImage = Value(productImage),
+       productFavourite = Value(productFavourite),
+       priceMinor = Value(priceMinor),
+       qtyMilli = Value(qtyMilli),
+       discountBp = Value(discountBp),
+       createdAt = Value(createdAt);
+  static Insertable<SaleLineEntry> custom({
+    Expression<String>? id,
+    Expression<String>? saleId,
+    Expression<int>? lineNo,
+    Expression<String>? productId,
+    Expression<int>? productLegacyId,
+    Expression<String>? productName,
+    Expression<String>? productCode,
+    Expression<String>? productBarcode,
+    Expression<int>? productPriceMinor,
+    Expression<String>? productCategory,
+    Expression<String>? productSub,
+    Expression<int>? productStock,
+    Expression<int>? productGstBp,
+    Expression<int>? productImage,
+    Expression<bool>? productFavourite,
+    Expression<int>? priceMinor,
+    Expression<int>? qtyMilli,
+    Expression<int>? discountBp,
+    Expression<int>? returnedQtyMilli,
+    Expression<String>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (saleId != null) 'sale_id': saleId,
+      if (lineNo != null) 'line_no': lineNo,
+      if (productId != null) 'product_id': productId,
+      if (productLegacyId != null) 'product_legacy_id': productLegacyId,
+      if (productName != null) 'product_name': productName,
+      if (productCode != null) 'product_code': productCode,
+      if (productBarcode != null) 'product_barcode': productBarcode,
+      if (productPriceMinor != null) 'product_price_minor': productPriceMinor,
+      if (productCategory != null) 'product_category': productCategory,
+      if (productSub != null) 'product_sub': productSub,
+      if (productStock != null) 'product_stock': productStock,
+      if (productGstBp != null) 'product_gst_bp': productGstBp,
+      if (productImage != null) 'product_image': productImage,
+      if (productFavourite != null) 'product_favourite': productFavourite,
+      if (priceMinor != null) 'price_minor': priceMinor,
+      if (qtyMilli != null) 'qty_milli': qtyMilli,
+      if (discountBp != null) 'discount_bp': discountBp,
+      if (returnedQtyMilli != null) 'returned_qty_milli': returnedQtyMilli,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SaleLineEntriesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? saleId,
+    Value<int>? lineNo,
+    Value<String?>? productId,
+    Value<int>? productLegacyId,
+    Value<String>? productName,
+    Value<String>? productCode,
+    Value<String>? productBarcode,
+    Value<int>? productPriceMinor,
+    Value<String>? productCategory,
+    Value<String>? productSub,
+    Value<int>? productStock,
+    Value<int>? productGstBp,
+    Value<int>? productImage,
+    Value<bool>? productFavourite,
+    Value<int>? priceMinor,
+    Value<int>? qtyMilli,
+    Value<int>? discountBp,
+    Value<int>? returnedQtyMilli,
+    Value<String>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return SaleLineEntriesCompanion(
+      id: id ?? this.id,
+      saleId: saleId ?? this.saleId,
+      lineNo: lineNo ?? this.lineNo,
+      productId: productId ?? this.productId,
+      productLegacyId: productLegacyId ?? this.productLegacyId,
+      productName: productName ?? this.productName,
+      productCode: productCode ?? this.productCode,
+      productBarcode: productBarcode ?? this.productBarcode,
+      productPriceMinor: productPriceMinor ?? this.productPriceMinor,
+      productCategory: productCategory ?? this.productCategory,
+      productSub: productSub ?? this.productSub,
+      productStock: productStock ?? this.productStock,
+      productGstBp: productGstBp ?? this.productGstBp,
+      productImage: productImage ?? this.productImage,
+      productFavourite: productFavourite ?? this.productFavourite,
+      priceMinor: priceMinor ?? this.priceMinor,
+      qtyMilli: qtyMilli ?? this.qtyMilli,
+      discountBp: discountBp ?? this.discountBp,
+      returnedQtyMilli: returnedQtyMilli ?? this.returnedQtyMilli,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (saleId.present) {
+      map['sale_id'] = Variable<String>(saleId.value);
+    }
+    if (lineNo.present) {
+      map['line_no'] = Variable<int>(lineNo.value);
+    }
+    if (productId.present) {
+      map['product_id'] = Variable<String>(productId.value);
+    }
+    if (productLegacyId.present) {
+      map['product_legacy_id'] = Variable<int>(productLegacyId.value);
+    }
+    if (productName.present) {
+      map['product_name'] = Variable<String>(productName.value);
+    }
+    if (productCode.present) {
+      map['product_code'] = Variable<String>(productCode.value);
+    }
+    if (productBarcode.present) {
+      map['product_barcode'] = Variable<String>(productBarcode.value);
+    }
+    if (productPriceMinor.present) {
+      map['product_price_minor'] = Variable<int>(productPriceMinor.value);
+    }
+    if (productCategory.present) {
+      map['product_category'] = Variable<String>(productCategory.value);
+    }
+    if (productSub.present) {
+      map['product_sub'] = Variable<String>(productSub.value);
+    }
+    if (productStock.present) {
+      map['product_stock'] = Variable<int>(productStock.value);
+    }
+    if (productGstBp.present) {
+      map['product_gst_bp'] = Variable<int>(productGstBp.value);
+    }
+    if (productImage.present) {
+      map['product_image'] = Variable<int>(productImage.value);
+    }
+    if (productFavourite.present) {
+      map['product_favourite'] = Variable<bool>(productFavourite.value);
+    }
+    if (priceMinor.present) {
+      map['price_minor'] = Variable<int>(priceMinor.value);
+    }
+    if (qtyMilli.present) {
+      map['qty_milli'] = Variable<int>(qtyMilli.value);
+    }
+    if (discountBp.present) {
+      map['discount_bp'] = Variable<int>(discountBp.value);
+    }
+    if (returnedQtyMilli.present) {
+      map['returned_qty_milli'] = Variable<int>(returnedQtyMilli.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SaleLineEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('saleId: $saleId, ')
+          ..write('lineNo: $lineNo, ')
+          ..write('productId: $productId, ')
+          ..write('productLegacyId: $productLegacyId, ')
+          ..write('productName: $productName, ')
+          ..write('productCode: $productCode, ')
+          ..write('productBarcode: $productBarcode, ')
+          ..write('productPriceMinor: $productPriceMinor, ')
+          ..write('productCategory: $productCategory, ')
+          ..write('productSub: $productSub, ')
+          ..write('productStock: $productStock, ')
+          ..write('productGstBp: $productGstBp, ')
+          ..write('productImage: $productImage, ')
+          ..write('productFavourite: $productFavourite, ')
+          ..write('priceMinor: $priceMinor, ')
+          ..write('qtyMilli: $qtyMilli, ')
+          ..write('discountBp: $discountBp, ')
+          ..write('returnedQtyMilli: $returnedQtyMilli, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PaymentEntriesTable extends PaymentEntries
+    with TableInfo<$PaymentEntriesTable, PaymentEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PaymentEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _saleIdMeta = const VerificationMeta('saleId');
+  @override
+  late final GeneratedColumn<String> saleId = GeneratedColumn<String>(
+    'sale_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES sales (id)',
+    ),
+  );
+  static const VerificationMeta _methodMeta = const VerificationMeta('method');
+  @override
+  late final GeneratedColumn<String> method = GeneratedColumn<String>(
+    'method',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _amountMinorMeta = const VerificationMeta(
+    'amountMinor',
+  );
+  @override
+  late final GeneratedColumn<int> amountMinor = GeneratedColumn<int>(
+    'amount_minor',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _currencyCodeMeta = const VerificationMeta(
+    'currencyCode',
+  );
+  @override
+  late final GeneratedColumn<String> currencyCode = GeneratedColumn<String>(
+    'currency_code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('INR'),
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _occurredAtMeta = const VerificationMeta(
+    'occurredAt',
+  );
+  @override
+  late final GeneratedColumn<String> occurredAt = GeneratedColumn<String>(
+    'occurred_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    saleId,
+    method,
+    amountMinor,
+    currencyCode,
+    status,
+    occurredAt,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'payments';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PaymentEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('sale_id')) {
+      context.handle(
+        _saleIdMeta,
+        saleId.isAcceptableOrUnknown(data['sale_id']!, _saleIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_saleIdMeta);
+    }
+    if (data.containsKey('method')) {
+      context.handle(
+        _methodMeta,
+        method.isAcceptableOrUnknown(data['method']!, _methodMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_methodMeta);
+    }
+    if (data.containsKey('amount_minor')) {
+      context.handle(
+        _amountMinorMeta,
+        amountMinor.isAcceptableOrUnknown(
+          data['amount_minor']!,
+          _amountMinorMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_amountMinorMeta);
+    }
+    if (data.containsKey('currency_code')) {
+      context.handle(
+        _currencyCodeMeta,
+        currencyCode.isAcceptableOrUnknown(
+          data['currency_code']!,
+          _currencyCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('occurred_at')) {
+      context.handle(
+        _occurredAtMeta,
+        occurredAt.isAcceptableOrUnknown(data['occurred_at']!, _occurredAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_occurredAtMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PaymentEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PaymentEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      saleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sale_id'],
+      )!,
+      method: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}method'],
+      )!,
+      amountMinor: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_minor'],
+      )!,
+      currencyCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}currency_code'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      occurredAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}occurred_at'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PaymentEntriesTable createAlias(String alias) {
+    return $PaymentEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
+  final String id;
+  final String saleId;
+
+  /// `cash` or `card`.
+  final String method;
+  final int amountMinor;
+  final String currencyCode;
+
+  /// `succeeded` (the only value written today).
+  final String status;
+  final String occurredAt;
+  final String createdAt;
+  const PaymentEntry({
+    required this.id,
+    required this.saleId,
+    required this.method,
+    required this.amountMinor,
+    required this.currencyCode,
+    required this.status,
+    required this.occurredAt,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['sale_id'] = Variable<String>(saleId);
+    map['method'] = Variable<String>(method);
+    map['amount_minor'] = Variable<int>(amountMinor);
+    map['currency_code'] = Variable<String>(currencyCode);
+    map['status'] = Variable<String>(status);
+    map['occurred_at'] = Variable<String>(occurredAt);
+    map['created_at'] = Variable<String>(createdAt);
+    return map;
+  }
+
+  PaymentEntriesCompanion toCompanion(bool nullToAbsent) {
+    return PaymentEntriesCompanion(
+      id: Value(id),
+      saleId: Value(saleId),
+      method: Value(method),
+      amountMinor: Value(amountMinor),
+      currencyCode: Value(currencyCode),
+      status: Value(status),
+      occurredAt: Value(occurredAt),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory PaymentEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PaymentEntry(
+      id: serializer.fromJson<String>(json['id']),
+      saleId: serializer.fromJson<String>(json['saleId']),
+      method: serializer.fromJson<String>(json['method']),
+      amountMinor: serializer.fromJson<int>(json['amountMinor']),
+      currencyCode: serializer.fromJson<String>(json['currencyCode']),
+      status: serializer.fromJson<String>(json['status']),
+      occurredAt: serializer.fromJson<String>(json['occurredAt']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'saleId': serializer.toJson<String>(saleId),
+      'method': serializer.toJson<String>(method),
+      'amountMinor': serializer.toJson<int>(amountMinor),
+      'currencyCode': serializer.toJson<String>(currencyCode),
+      'status': serializer.toJson<String>(status),
+      'occurredAt': serializer.toJson<String>(occurredAt),
+      'createdAt': serializer.toJson<String>(createdAt),
+    };
+  }
+
+  PaymentEntry copyWith({
+    String? id,
+    String? saleId,
+    String? method,
+    int? amountMinor,
+    String? currencyCode,
+    String? status,
+    String? occurredAt,
+    String? createdAt,
+  }) => PaymentEntry(
+    id: id ?? this.id,
+    saleId: saleId ?? this.saleId,
+    method: method ?? this.method,
+    amountMinor: amountMinor ?? this.amountMinor,
+    currencyCode: currencyCode ?? this.currencyCode,
+    status: status ?? this.status,
+    occurredAt: occurredAt ?? this.occurredAt,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  PaymentEntry copyWithCompanion(PaymentEntriesCompanion data) {
+    return PaymentEntry(
+      id: data.id.present ? data.id.value : this.id,
+      saleId: data.saleId.present ? data.saleId.value : this.saleId,
+      method: data.method.present ? data.method.value : this.method,
+      amountMinor: data.amountMinor.present
+          ? data.amountMinor.value
+          : this.amountMinor,
+      currencyCode: data.currencyCode.present
+          ? data.currencyCode.value
+          : this.currencyCode,
+      status: data.status.present ? data.status.value : this.status,
+      occurredAt: data.occurredAt.present
+          ? data.occurredAt.value
+          : this.occurredAt,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PaymentEntry(')
+          ..write('id: $id, ')
+          ..write('saleId: $saleId, ')
+          ..write('method: $method, ')
+          ..write('amountMinor: $amountMinor, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('status: $status, ')
+          ..write('occurredAt: $occurredAt, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    saleId,
+    method,
+    amountMinor,
+    currencyCode,
+    status,
+    occurredAt,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PaymentEntry &&
+          other.id == this.id &&
+          other.saleId == this.saleId &&
+          other.method == this.method &&
+          other.amountMinor == this.amountMinor &&
+          other.currencyCode == this.currencyCode &&
+          other.status == this.status &&
+          other.occurredAt == this.occurredAt &&
+          other.createdAt == this.createdAt);
+}
+
+class PaymentEntriesCompanion extends UpdateCompanion<PaymentEntry> {
+  final Value<String> id;
+  final Value<String> saleId;
+  final Value<String> method;
+  final Value<int> amountMinor;
+  final Value<String> currencyCode;
+  final Value<String> status;
+  final Value<String> occurredAt;
+  final Value<String> createdAt;
+  final Value<int> rowid;
+  const PaymentEntriesCompanion({
+    this.id = const Value.absent(),
+    this.saleId = const Value.absent(),
+    this.method = const Value.absent(),
+    this.amountMinor = const Value.absent(),
+    this.currencyCode = const Value.absent(),
+    this.status = const Value.absent(),
+    this.occurredAt = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PaymentEntriesCompanion.insert({
+    required String id,
+    required String saleId,
+    required String method,
+    required int amountMinor,
+    this.currencyCode = const Value.absent(),
+    required String status,
+    required String occurredAt,
+    required String createdAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       saleId = Value(saleId),
+       method = Value(method),
+       amountMinor = Value(amountMinor),
+       status = Value(status),
+       occurredAt = Value(occurredAt),
+       createdAt = Value(createdAt);
+  static Insertable<PaymentEntry> custom({
+    Expression<String>? id,
+    Expression<String>? saleId,
+    Expression<String>? method,
+    Expression<int>? amountMinor,
+    Expression<String>? currencyCode,
+    Expression<String>? status,
+    Expression<String>? occurredAt,
+    Expression<String>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (saleId != null) 'sale_id': saleId,
+      if (method != null) 'method': method,
+      if (amountMinor != null) 'amount_minor': amountMinor,
+      if (currencyCode != null) 'currency_code': currencyCode,
+      if (status != null) 'status': status,
+      if (occurredAt != null) 'occurred_at': occurredAt,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PaymentEntriesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? saleId,
+    Value<String>? method,
+    Value<int>? amountMinor,
+    Value<String>? currencyCode,
+    Value<String>? status,
+    Value<String>? occurredAt,
+    Value<String>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return PaymentEntriesCompanion(
+      id: id ?? this.id,
+      saleId: saleId ?? this.saleId,
+      method: method ?? this.method,
+      amountMinor: amountMinor ?? this.amountMinor,
+      currencyCode: currencyCode ?? this.currencyCode,
+      status: status ?? this.status,
+      occurredAt: occurredAt ?? this.occurredAt,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (saleId.present) {
+      map['sale_id'] = Variable<String>(saleId.value);
+    }
+    if (method.present) {
+      map['method'] = Variable<String>(method.value);
+    }
+    if (amountMinor.present) {
+      map['amount_minor'] = Variable<int>(amountMinor.value);
+    }
+    if (currencyCode.present) {
+      map['currency_code'] = Variable<String>(currencyCode.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (occurredAt.present) {
+      map['occurred_at'] = Variable<String>(occurredAt.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PaymentEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('saleId: $saleId, ')
+          ..write('method: $method, ')
+          ..write('amountMinor: $amountMinor, ')
+          ..write('currencyCode: $currencyCode, ')
+          ..write('status: $status, ')
+          ..write('occurredAt: $occurredAt, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AxpertDatabase extends GeneratedDatabase {
   _$AxpertDatabase(QueryExecutor e) : super(e);
   late final $DeviceContextEntriesTable deviceContextEntries =
@@ -3248,9 +6787,18 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
     this,
   );
   late final $ProductEntriesTable productEntries = $ProductEntriesTable(this);
+  late final $SaleEntriesTable saleEntries = $SaleEntriesTable(this);
+  late final $SaleLineEntriesTable saleLineEntries = $SaleLineEntriesTable(
+    this,
+  );
+  late final $PaymentEntriesTable paymentEntries = $PaymentEntriesTable(this);
   late final Index productsPosition = Index(
     'products_position',
     'CREATE INDEX products_position ON products (position)',
+  );
+  late final Index salesPosition = Index(
+    'sales_position',
+    'CREATE INDEX sales_position ON sales (position)',
   );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -3263,6 +6811,10 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
     customerEntries,
     heldBillEntries,
     productEntries,
+    saleEntries,
+    saleLineEntries,
+    paymentEntries,
     productsPosition,
+    salesPosition,
   ];
 }

@@ -31,7 +31,7 @@ void main() {
       final second = await provider.open();
 
       expect(first, same(second));
-      expect(first.schemaVersion, 6);
+      expect(first.schemaVersion, 7);
       expect(first.allTables.map((table) => table.actualTableName).toSet(), {
         'device_context_entries',
         'settings',
@@ -39,6 +39,9 @@ void main() {
         'customers',
         'held_bills',
         'products',
+        'sales',
+        'sale_lines',
+        'payments',
       });
       expect(await first.customSelect('SELECT 1').getSingle(), isNotNull);
       final foreignKeys = await first
@@ -60,7 +63,7 @@ void main() {
 
     await store.write(context);
 
-    expect(database.schemaVersion, 6);
+    expect(database.schemaVersion, 7);
     expect(await store.read(), context);
   });
 
@@ -133,7 +136,7 @@ void main() {
 
       expect(names, containsAll(['settings', 'migration_state', 'customers']));
       expect(device.read<String>('device_id'), 'dev-1');
-      expect(version.read<int>('user_version'), 6);
+      expect(version.read<int>('user_version'), 7);
     });
 
     test('failed upgrade rolls back and leaves data intact', () async {
@@ -222,7 +225,7 @@ void main() {
 
       expect(names, contains('customers'));
       expect(setting.read<String>('value_json'), 'true');
-      expect(version.read<int>('user_version'), 6);
+      expect(version.read<int>('user_version'), 7);
     });
 
     test('failed upgrade leaves v3 data and user_version intact', () async {
@@ -319,7 +322,7 @@ void main() {
       expect(names, contains('held_bills'));
       expect(setting.read<String>('value_json'), 'true');
       expect(customer.read<String>('name'), 'Walk-in');
-      expect(version.read<int>('user_version'), 6);
+      expect(version.read<int>('user_version'), 7);
       expect(columns.map((c) => c.read<String>('name')).toList(), [
         'id',
         'ref',
@@ -464,7 +467,7 @@ void main() {
         contains('products_position'),
       );
       expect(held.read<String>('ref'), 'H1');
-      expect(version.read<int>('user_version'), 6);
+      expect(version.read<int>('user_version'), 7);
     });
 
     test('legacy_id is unique, code and barcode are not', () async {
@@ -530,6 +533,202 @@ void main() {
       expect(names, isNot(contains('products')));
       expect(raw.select('SELECT ref FROM held_bills').single['ref'], 'H1');
       expect(raw.select('PRAGMA user_version').single['user_version'], 5);
+    });
+  });
+
+  group('schema v6 to v7 upgrade', () {
+    const v6Ddl = [
+      'CREATE TABLE settings (key TEXT NOT NULL, value_json TEXT NOT NULL, '
+          'updated_at TEXT NOT NULL, PRIMARY KEY (key))',
+      'CREATE TABLE migration_state (key TEXT NOT NULL, value TEXT NOT NULL, '
+          'PRIMARY KEY (key))',
+      'CREATE TABLE customers (id TEXT NOT NULL, legacy_id TEXT NOT NULL UNIQUE, '
+          'position INTEGER NOT NULL, name TEXT NOT NULL, phone TEXT NOT NULL, '
+          'email TEXT NOT NULL, member_no TEXT NOT NULL, points INTEGER NOT NULL, '
+          'created_at TEXT NOT NULL, updated_at TEXT NOT NULL, '
+          'deleted_at TEXT NULL, server_id TEXT NULL, '
+          'server_version INTEGER NULL, device_id TEXT NULL, PRIMARY KEY (id))',
+      'CREATE TABLE products (id TEXT NOT NULL, legacy_id INTEGER NOT NULL UNIQUE, '
+          'position INTEGER NOT NULL, name TEXT NOT NULL, code TEXT NOT NULL, '
+          'barcode TEXT NOT NULL, price_minor INTEGER NOT NULL, '
+          "currency_code TEXT NOT NULL DEFAULT 'INR', category TEXT NOT NULL, "
+          'sub TEXT NOT NULL, stock INTEGER NOT NULL, gst_bp INTEGER NOT NULL, '
+          'image INTEGER NOT NULL, favourite INTEGER NOT NULL, '
+          'created_at TEXT NOT NULL, updated_at TEXT NOT NULL, '
+          'deleted_at TEXT NULL, server_id TEXT NULL, '
+          'server_version INTEGER NULL, device_id TEXT NULL, PRIMARY KEY (id))',
+      "INSERT INTO settings VALUES ('axpert-dark', 'true', 'x')",
+      "INSERT INTO customers VALUES ('c1', 'walk', 0, 'Walk-in', '', '', '', 0, "
+          "'x', 'x', NULL, NULL, NULL, NULL)",
+    ];
+
+    void seedV6(dynamic database, {String extra = ''}) {
+      for (final sql in v6Ddl) {
+        database.execute(sql);
+      }
+      if (extra.isNotEmpty) database.execute(extra);
+      database.execute('PRAGMA user_version = 6');
+    }
+
+    test('adds sales, sale_lines and payments and preserves data', () async {
+      final database = AxpertDatabase(
+        NativeDatabase.memory(setup: (db) => seedV6(db)),
+      );
+      addTearDown(database.close);
+
+      Future<List<String>> columns(String table) async => [
+        for (final r
+            in await database.customSelect('PRAGMA table_info($table)').get())
+          r.read<String>('name'),
+      ];
+
+      expect(await columns('sales'), [
+        'id',
+        'number',
+        'position',
+        'occurred_at',
+        'store_name',
+        'customer_name',
+        'customer_legacy_id',
+        'customer_id',
+        'currency_code',
+        'mode',
+        'sale_type',
+        'bill_discount_type',
+        'bill_discount_bp',
+        'bill_discount_minor',
+        'discount_reason',
+        'points_redeemed',
+        'note',
+        'items',
+        'qty_milli',
+        'value_minor',
+        'subtotal_minor',
+        'discount_minor',
+        'tax_minor',
+        'points_minor',
+        'total_minor',
+        'tendered_minor',
+        'change_minor',
+        'returned_order',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'server_id',
+        'server_version',
+        'device_id',
+      ]);
+      expect(await columns('sale_lines'), [
+        'id',
+        'sale_id',
+        'line_no',
+        'product_id',
+        'product_legacy_id',
+        'product_name',
+        'product_code',
+        'product_barcode',
+        'product_price_minor',
+        'product_category',
+        'product_sub',
+        'product_stock',
+        'product_gst_bp',
+        'product_image',
+        'product_favourite',
+        'price_minor',
+        'qty_milli',
+        'discount_bp',
+        'returned_qty_milli',
+        'created_at',
+      ]);
+      expect(await columns('payments'), [
+        'id',
+        'sale_id',
+        'method',
+        'amount_minor',
+        'currency_code',
+        'status',
+        'occurred_at',
+        'created_at',
+      ]);
+      final indexes = await database
+          .customSelect(
+            "SELECT name FROM sqlite_master WHERE type = 'index' "
+            "AND tbl_name = 'sales'",
+          )
+          .get();
+      expect(
+        indexes.map((r) => r.read<String>('name')),
+        contains('sales_position'),
+      );
+      final customer = await database
+          .customSelect('SELECT legacy_id FROM customers')
+          .getSingle();
+      final version = await database
+          .customSelect('PRAGMA user_version')
+          .getSingle();
+      expect(customer.read<String>('legacy_id'), 'walk');
+      expect(version.read<int>('user_version'), 7);
+    });
+
+    test('number is not unique and a link must point at a real row', () async {
+      final database = AxpertDatabase(
+        NativeDatabase.memory(setup: (db) => seedV6(db)),
+      );
+      addTearDown(database.close);
+      String insert(String id, {String customer = 'NULL'}) =>
+          'INSERT INTO sales (id, number, position, occurred_at, store_name, '
+          'customer_name, customer_legacy_id, customer_id, mode, sale_type, '
+          'bill_discount_type, bill_discount_bp, bill_discount_minor, '
+          'discount_reason, points_redeemed, note, items, qty_milli, '
+          'value_minor, subtotal_minor, discount_minor, tax_minor, '
+          'points_minor, total_minor, tendered_minor, change_minor, '
+          "created_at, updated_at) VALUES ('$id', 'AX000001', 0, 't', 's', "
+          "'n', 'walk', $customer, 'Cash', 'Cash', 'flat', 0, 0, '', 0, '', "
+          "1, 1000, 1, 1, 0, 0, 0, 1, 1, 0, 'x', 'x')";
+
+      await database.customStatement(insert('a'));
+      await database.customStatement(insert('b'));
+      await database.customStatement(insert('c', customer: "'c1'"));
+      await expectLater(
+        database.customStatement(insert('d', customer: "'missing'")),
+        throwsA(anything),
+      );
+    });
+
+    test('failed upgrade leaves v6 data and user_version intact', () async {
+      dynamic raw;
+      final database = AxpertDatabase(
+        NativeDatabase.memory(
+          setup: (db) {
+            raw = db;
+            seedV6(db, extra: 'CREATE INDEX sale_lines ON settings (key)');
+          },
+        ),
+      );
+      addTearDown(() async {
+        try {
+          await database.close();
+        } on Object {
+          // The migration failed on purpose; closing may fail too.
+        }
+      });
+
+      await expectLater(
+        database.customSelect('SELECT 1').getSingle(),
+        throwsA(anything),
+      );
+
+      final tables = raw.select(
+        "SELECT name FROM sqlite_master WHERE type = 'table'",
+      );
+      final names = {for (final row in tables) row['name'] as String};
+      expect(names, isNot(contains('sales')));
+      expect(names, isNot(contains('payments')));
+      expect(
+        raw.select('SELECT key FROM settings').single['key'],
+        'axpert-dark',
+      );
+      expect(raw.select('PRAGMA user_version').single['user_version'], 6);
     });
   });
 }

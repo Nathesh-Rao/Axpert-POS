@@ -122,6 +122,28 @@ class DriftProductRepository implements ProductRepository {
       await _degrade('products save', error, stackTrace);
       return _fallback.save(products);
     }
+    await mirror(products);
+  }
+
+  // ---- participation in the checkout and refund transactions (DEC-129) ----
+
+  /// The open database, or null when this session is on the LocalStore path.
+  AxpertDatabase? get database => _db;
+
+  /// Plans the row writes for [products] against the snapshot (no database
+  /// access); the caller writes it inside its own transaction and calls
+  /// [adopt] after the commit.
+  ProductWrite stage(List<Product> products, {required String now}) =>
+      ProductRows.plan(products, _known, now: now, uuid: _uuid);
+
+  /// Replaces the snapshot after the caller's transaction committed.
+  void adopt(ProductWrite plan) => _known = plan.next;
+
+  /// A save without the queue, for callers that already run inside it.
+  Future<void> saveNow(List<Product> products) => _save(products);
+
+  /// Writes the LocalStore copy (the rollback mirror).
+  Future<void> mirror(List<Product> products) async {
     try {
       await StartupTimeline.logged(
         'products save mirror',
@@ -134,6 +156,13 @@ class DriftProductRepository implements ProductRepository {
       _diagnostics.record('products dual-write', error, stackTrace);
     }
   }
+
+  /// The LocalStore-only save used after a failure.
+  Future<void> saveFallback(List<Product> products) => _fallback.save(products);
+
+  /// Leaves Drift for the rest of the session and marks it stale.
+  Future<void> degrade(String stage, Object error, StackTrace stackTrace) =>
+      _degrade(stage, error, stackTrace);
 
   Future<void> _degrade(String stage, Object error, StackTrace stackTrace) {
     _db = null;

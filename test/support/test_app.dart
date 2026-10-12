@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/repository/checkout_repository.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/bindings/app_infrastructure.dart';
 import 'package:pos_application/core/bindings/initial_binding.dart';
@@ -17,6 +18,8 @@ Future<InitialBinding> bootTestApp({
   LocalStore? store,
   PaymentService? payments,
   AppInfrastructure? infrastructure,
+  CheckoutRepository? checkout,
+  bool? commitBeforeReceipt,
 }) async {
   AppTypography.useBundledFonts = true;
   MockDelay.provider = () => Duration.zero;
@@ -26,6 +29,8 @@ Future<InitialBinding> bootTestApp({
     infrastructure: infrastructure ?? testInfrastructure(),
     audio: RecordingAudioService(),
     payments: payments,
+    checkoutOverride: checkout,
+    commitBeforeReceipt: commitBeforeReceipt,
   );
   binding.dependencies();
   await binding.loadData();

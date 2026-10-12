@@ -1,3 +1,4 @@
+import '../../../core/database/persist_outcome.dart';
 import '../../../features/products/domain/entities/product.dart';
 import '../../sales/models/sale.dart';
 import '../models/refund_request.dart';
@@ -20,6 +21,7 @@ class RefundCommit {
 }
 
 abstract interface class ReturnRepository {
-  /// Saves both lists as one unit.
-  Future<void> applyRefund(RefundCommit commit);
+  /// Saves both lists as one unit (one Drift transaction on the Drift path).
+  /// Never throws for a storage failure: the outcome says what happened.
+  Future<PersistOutcome> applyRefund(RefundCommit commit);
 }

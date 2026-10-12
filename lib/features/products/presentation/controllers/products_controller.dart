@@ -55,6 +55,12 @@ class ProductsController extends GetxController {
 
   /// Subtracts sold units (`stock - qty`, as `complete()` does) and persists.
   Future<void> applyStockDeltas(Map<int, int> deltas) {
+    applyStockDeltasInMemory(deltas);
+    return _repository.save(products.toList());
+  }
+
+  /// The memory part of [applyStockDeltas]; the caller persists (DEC-129).
+  void applyStockDeltasInMemory(Map<int, int> deltas) {
     for (var i = 0; i < products.length; i++) {
       final delta = deltas[products[i].id];
       if (delta == null) continue;
@@ -64,7 +70,6 @@ class ProductsController extends GetxController {
       _byCode[updated.code.toLowerCase()] = updated;
       products[i] = updated;
     }
-    return _repository.save(products.toList());
   }
 
   /// Adds returned whole units to the stock in memory (a refund, App.tsx

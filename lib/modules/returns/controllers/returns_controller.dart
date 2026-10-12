@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/app_strings.dart';
+import '../../../core/database/persist_outcome.dart';
 import '../../../core/services/pricing/decimal_parser.dart';
 import '../../../core/services/pricing/qty.dart';
 import '../../../core/utils/money_formatter.dart';
@@ -138,21 +139,29 @@ class ReturnsController extends GetxController {
     }
   }
 
-  Future<void> _commit(Sale found, Map<int, Qty> typed, String amount) {
+  Future<void> _commit(Sale found, Map<int, Qty> typed, String amount) async {
     products.restock(RefundService.restockUnits(typed));
     sales.replace(RefundService.applyReturned(found, typed));
     _clearQty();
     toasts.show(_s.toastRefundDone(amount));
-    return repository.applyRefund(
-      RefundCommit(
-        request: RefundRequest(
-          saleNumber: found.number,
-          entries: Map<int, Qty>.of(typed),
+    PersistOutcome outcome;
+    try {
+      outcome = await repository.applyRefund(
+        RefundCommit(
+          request: RefundRequest(
+            saleNumber: found.number,
+            entries: Map<int, Qty>.of(typed),
+          ),
+          sales: sales.sales.toList(),
+          products: products.products.toList(),
         ),
-        sales: sales.sales.toList(),
-        products: products.products.toList(),
-      ),
-    );
+      );
+    } on Object {
+      outcome = PersistOutcome.failed;
+    }
+    if (outcome == PersistOutcome.failed) {
+      toasts.show(_s.toastSaveFailed(), kind: ToastKind.error);
+    }
   }
 
   @override

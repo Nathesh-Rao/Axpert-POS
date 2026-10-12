@@ -39,6 +39,9 @@ import '../../features/products/presentation/controllers/products_controller.dar
 import '../../features/products/data/repositories/drift_product_repository.dart';
 import '../../features/products/data/repositories/mock_product_repository.dart';
 import '../../features/products/domain/repositories/product_repository.dart';
+import '../../modules/pos/repository/checkout_repository.dart';
+import '../../modules/returns/repository/return_repository.dart';
+import '../../modules/sales/repository/drift_ledger_repository.dart';
 import '../../modules/sales/repository/drift_sale_repository.dart';
 import '../../modules/sales/repository/mock_sale_repository.dart';
 import '../../modules/sales/repository/sale_repository.dart';
@@ -83,6 +86,8 @@ class InitialBinding extends Bindings {
     required this.infrastructure,
     AudioService? audio,
     PaymentService? payments,
+    this.checkoutOverride,
+    this.commitBeforeReceipt,
   }) : audio = audio ?? createPlatformAudioService(),
        payments = payments ?? const MockPaymentService();
 
@@ -92,6 +97,13 @@ class InitialBinding extends Bindings {
 
   /// The payment boundary; a mock until a provider exists (DEC-123).
   final PaymentService payments;
+
+  /// Test seams (DEC-129): a checkout repository replacing the one built from
+  /// the data backends, and the b1/b2 switch of `CheckoutPolicy`.
+  @visibleForTesting
+  final CheckoutRepository? checkoutOverride;
+  @visibleForTesting
+  final bool? commitBeforeReceipt;
 
   /// One queue for every write of products, customers, sales, checkout and
   /// refund, so their LocalStore mirrors cannot finish out of order (DEC-129).
@@ -159,6 +171,42 @@ class InitialBinding extends Bindings {
         SalesBackend.mock => MockSaleRepository(store),
       };
 
+  /// The checkout (and refund) as one Drift transaction when sales, products
+  /// and customers are all on Drift; otherwise the independent saves exactly
+  /// as before (rollback flags, tests, the debug large dataset).
+  void _putCheckoutRepositories() {
+    final override = checkoutOverride;
+    if (override != null) {
+      _put<CheckoutRepository>(override);
+      return;
+    }
+    final sales = Get.find<SaleRepository>();
+    final products = Get.find<ProductRepository>();
+    final customers = Get.find<CustomerRepository>();
+    if (sales is DriftSaleRepository &&
+        products is DriftProductRepository &&
+        customers is DriftCustomerRepository) {
+      final ledger = DriftLedgerRepository(
+        sales: sales,
+        products: products,
+        customers: customers,
+        queue: _ledgerQueue,
+        uuid: infrastructure.uuid,
+        diagnostics: infrastructure.diagnostics,
+      );
+      _put<CheckoutRepository>(ledger);
+      _put<ReturnRepository>(ledger);
+      return;
+    }
+    _put<CheckoutRepository>(
+      IndependentCheckoutRepository(
+        sales: sales,
+        products: products,
+        customers: customers,
+      ),
+    );
+  }
+
   HeldBillRepository _heldBillRepository() =>
       switch (infrastructure.config.heldBackend) {
         HeldBackend.drift => DriftHeldBillRepository(
@@ -190,6 +238,7 @@ class InitialBinding extends Bindings {
     _put<CartRepository>(MockCartRepository(store));
     _put<HeldBillRepository>(_heldBillRepository());
     _put<SaleRepository>(_saleRepository());
+    _putCheckoutRepositories();
     _put<AudioService>(audio);
     _put<BeepService>(
       SettingBeepService(
@@ -251,6 +300,8 @@ class InitialBinding extends Bindings {
         toasts: Get.find(),
         overlay: Get.find(),
         search: Get.find(),
+        checkout: Get.find(),
+        commitBeforeReceipt: commitBeforeReceipt,
       ),
     );
     _put<OrderMenuController>(

@@ -147,6 +147,9 @@ class DriftSaleRepository implements SaleRepository {
   /// Replaces the snapshot after the caller's transaction committed.
   void adopt(SaleWrite plan) => _known = plan.next;
 
+  /// A save without the queue, for callers that already run inside it.
+  Future<void> saveNow(List<Sale> sales) => _save(sales);
+
   /// Writes the LocalStore copy (the rollback mirror).
   Future<void> mirror(List<Sale> sales) async {
     try {

@@ -13,12 +13,15 @@ import '../repository/return_repository.dart';
 class ReturnsBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<ReturnRepository>(
-      () => MockReturnRepository(
-        sales: Get.find<SaleRepository>(),
-        products: Get.find<ProductRepository>(),
-      ),
-    );
+    // The Drift ledger registers the transactional refund in InitialBinding.
+    if (!Get.isRegistered<ReturnRepository>()) {
+      Get.lazyPut<ReturnRepository>(
+        () => MockReturnRepository(
+          sales: Get.find<SaleRepository>(),
+          products: Get.find<ProductRepository>(),
+        ),
+      );
+    }
     Get.lazyPut<ReturnsController>(
       () => ReturnsController(
         sales: Get.find<SalesController>(),

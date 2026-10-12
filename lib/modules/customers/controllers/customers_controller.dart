@@ -29,8 +29,15 @@ class CustomersController extends GetxController {
 
   /// Subtracts redeemed points (`points - totals.points`) and persists.
   Future<void> deductPoints(String id, int points) {
+    if (!deductPointsInMemory(id, points)) return Future<void>.value();
+    return save();
+  }
+
+  /// The memory part of [deductPoints] (true when something changed); the
+  /// caller persists (DEC-129).
+  bool deductPointsInMemory(String id, int points) {
     final index = customers.indexWhere((c) => c.id == id);
-    if (index < 0 || points == 0) return Future<void>.value();
+    if (index < 0 || points == 0) return false;
     final c = customers[index];
     customers[index] = Customer(
       id: c.id,
@@ -40,7 +47,7 @@ class CustomersController extends GetxController {
       member: c.member,
       points: c.points - points,
     );
-    return save();
+    return true;
   }
 
   Future<void> save() => _repository.save(customers.toList());

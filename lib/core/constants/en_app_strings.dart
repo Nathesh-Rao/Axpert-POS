@@ -487,6 +487,10 @@ class EnAppStrings extends AppStrings {
   String toastPaymentFailed() => 'Payment failed';
 
   @override
+  String toastSaveFailed() =>
+      'Could not save. The data is only in this session.';
+
+  @override
   String toastSavedOnCredit() => 'Saved on credit';
 
   @override

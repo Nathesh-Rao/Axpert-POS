@@ -16,8 +16,12 @@ class SalesController extends GetxController {
     sales.assignAll(await _repository.load());
   }
 
+  /// Appends in memory only; the caller persists (the checkout writes the
+  /// sale together with stock and points, DEC-129).
+  void addInMemory(Sale sale) => sales.add(sale);
+
   Future<void> add(Sale sale) {
-    sales.add(sale);
+    addInMemory(sale);
     return _repository.save(sales.toList());
   }
 

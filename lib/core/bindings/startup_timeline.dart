@@ -94,6 +94,15 @@ abstract final class StartupTimeline {
     }
   }
 
+  /// Prints the elapsed time of a synchronous span as one `[perf]` line (the
+  /// checkout receipt). Off: does nothing.
+  static void logElapsed(String name, Stopwatch watch) {
+    if (!enabled) return;
+    debugPrint(
+      '[perf] ${jsonEncode(<String, Object?>{'name': name, 'ms': watch.elapsedMicroseconds / 1000})}',
+    );
+  }
+
   /// Prints the collected phases once.
   static void report() {
     if (!enabled) return;

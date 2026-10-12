@@ -93,6 +93,33 @@ class DriftCustomerRepository implements CustomerRepository {
       await _degrade('customers save', error, stackTrace);
       return _fallback.save(customers);
     }
+    await mirror(normalized);
+  }
+
+  // ---- participation in the checkout transaction (DEC-129) ----
+
+  /// The open database, or null when this session is on the LocalStore path.
+  AxpertDatabase? get database => _db;
+
+  /// A save without the queue, for callers that already run inside it.
+  Future<void> saveNow(List<Customer> customers) => _save(customers);
+
+  /// Writes [customers] (normalized as in a save) inside the caller's
+  /// transaction.
+  Future<void> writeWithin(
+    AxpertDatabase db,
+    List<Customer> customers, {
+    required String now,
+  }) => CustomerRows.apply(
+    db,
+    CustomerRows.normalize(customers).customers,
+    now: now,
+    uuid: _uuid,
+  );
+
+  /// Writes the LocalStore copy (the rollback mirror) of the normalized list.
+  Future<void> mirror(List<Customer> customers) async {
+    final normalized = CustomerRows.normalize(customers).customers;
     try {
       await _store.write(StorageKeys.customers, <Map<String, dynamic>>[
         for (final c in normalized) c.toJson(),
@@ -102,6 +129,14 @@ class DriftCustomerRepository implements CustomerRepository {
       _diagnostics.record('customers dual-write', error, stackTrace);
     }
   }
+
+  /// The LocalStore-only save used after a failure.
+  Future<void> saveFallback(List<Customer> customers) =>
+      _fallback.save(customers);
+
+  /// Leaves Drift for the rest of the session and marks it stale.
+  Future<void> degrade(String stage, Object error, StackTrace stackTrace) =>
+      _degrade(stage, error, stackTrace);
 
   Future<void> _degrade(String stage, Object error, StackTrace stackTrace) {
     _db = null;

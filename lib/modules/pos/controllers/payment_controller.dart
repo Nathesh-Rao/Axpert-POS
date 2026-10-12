@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
+import '../../../core/config/checkout_policy.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/database/persist_outcome.dart';
 import '../../../core/identifiers/uuid_generator.dart';
 import '../../../core/identifiers/uuid_v4_generator.dart';
 import '../../../core/services/pricing/money.dart';
@@ -11,6 +13,7 @@ import '../../../core/services/pricing/qty.dart';
 import '../../../core/utils/decimal_input.dart';
 import '../../../core/utils/decimal_text.dart';
 import '../../../core/utils/money_formatter.dart';
+import '../../../core/bindings/startup_timeline.dart';
 import '../../../shared/controllers/overlay_controller.dart';
 import '../../../shared/controllers/search_field_controller.dart';
 import '../../../shared/controllers/toast_controller.dart';
@@ -18,12 +21,14 @@ import '../../customers/controllers/customers_controller.dart';
 import '../../../features/payment/data/services/mock_payment_service.dart';
 import '../../../features/payment/domain/entities/payment_method.dart';
 import '../../../features/payment/domain/entities/payment_request.dart';
+import '../../../features/payment/domain/entities/payment_result.dart';
 import '../../../features/payment/domain/services/payment_service.dart';
 import '../../../features/products/presentation/controllers/products_controller.dart';
 import '../../sales/controllers/sales_controller.dart';
 import '../../shell/controllers/settings_controller.dart';
 import '../models/cart.dart';
 import '../models/payment_state.dart';
+import '../repository/checkout_repository.dart';
 import '../services/checkout_service.dart';
 import 'cart_controller.dart';
 import 'cart_meta_controller.dart';
@@ -41,13 +46,17 @@ class PaymentController extends GetxController {
     required this.toasts,
     required this.overlay,
     required this.search,
+    required this.checkout,
     this.service = const CheckoutService(),
     this.payments = const MockPaymentService(),
     UuidGenerator? uuid,
     this.terminalDelay = const Duration(seconds: 2),
     DateTime Function()? now,
+    bool? commitBeforeReceipt,
   }) : _uuid = uuid ?? UuidV4Generator(),
-       _now = now ?? DateTime.now;
+       _now = now ?? DateTime.now,
+       _commitBeforeReceipt =
+           commitBeforeReceipt ?? CheckoutPolicy.commitBeforeReceipt;
 
   static const Duration tenderedFocusDelay = Duration(milliseconds: 40);
 
@@ -62,12 +71,16 @@ class PaymentController extends GetxController {
   final SearchFieldController search;
   final CheckoutService service;
 
+  /// Persists the checkout (one Drift transaction, or the independent saves).
+  final CheckoutRepository checkout;
+
   /// The payment boundary (DEC-123): cash and card sales go through it,
   /// credit sales do not.
   final PaymentService payments;
   final UuidGenerator _uuid;
   final Duration terminalDelay;
   final DateTime Function() _now;
+  final bool _commitBeforeReceipt;
 
   final Rx<PaymentMode> mode = PaymentMode.cash.obs;
   final Rx<TerminalState> terminal = TerminalState.waiting.obs;
@@ -265,13 +278,33 @@ class PaymentController extends GetxController {
           toasts.show(_s.toastStockChanged(), kind: ToastKind.error);
         case CheckoutDone():
           // Credit sales are not paid at the till: no payment service call.
-          if (saleMode != SaleMode.credit && !await _pay(result, saleMode)) {
-            toasts.show(_s.toastPaymentFailed(), kind: ToastKind.error);
-            return;
+          PaymentResult? payment;
+          if (saleMode != SaleMode.credit) {
+            payment = await _pay(result, saleMode);
+            if (payment == null) {
+              toasts.show(_s.toastPaymentFailed(), kind: ToastKind.error);
+              return;
+            }
           }
-          sales.add(result.sale);
-          products.applyStockDeltas(result.stockDeltas);
-          customers.deductPoints(meta.customer.id, result.pointsDeducted);
+          final receiptWatch = Stopwatch()..start();
+          // Memory first (DEC-129): the user-visible effects do not wait for
+          // the database. The three lists are persisted as one unit.
+          sales.addInMemory(result.sale);
+          products.applyStockDeltasInMemory(result.stockDeltas);
+          customers.deductPointsInMemory(
+            meta.customer.id,
+            result.pointsDeducted,
+          );
+          final persisted = _persist(
+            CheckoutCommit(
+              sale: result.sale,
+              payment: payment,
+              salesAfter: sales.sales.toList(),
+              productsAfter: products.products.toList(),
+              customersAfter: customers.customers.toList(),
+            ),
+          );
+          if (_commitBeforeReceipt) await persisted;
           cart.clear();
           search.refocus();
           overlay.open('receipt', payload: result.sale);
@@ -280,15 +313,32 @@ class PaymentController extends GetxController {
                 ? _s.toastSavedOnCredit()
                 : _s.toastPaymentCompleted(),
           );
+          StartupTimeline.logElapsed('checkout receipt', receiptWatch);
       }
     } finally {
       _processing = false;
     }
   }
 
+  /// Persists the checkout; a fully failed save (neither Drift nor the
+  /// LocalStore fallback) is the only case the user is told about.
+  Future<PersistOutcome> _persist(CheckoutCommit commit) async {
+    PersistOutcome outcome;
+    try {
+      outcome = await checkout.commit(commit);
+    } on Object {
+      outcome = PersistOutcome.failed;
+    }
+    if (outcome == PersistOutcome.failed) {
+      toasts.show(_s.toastSaveFailed(), kind: ToastKind.error);
+    }
+    return outcome;
+  }
+
   /// Asks the payment service for the amount due (`sale.totals.total`, for
-  /// cash and card); tendered and change stay on the sale only.
-  Future<bool> _pay(CheckoutDone done, String saleMode) async {
+  /// cash and card); tendered and change stay on the sale only. Returns the
+  /// payment when it succeeded, else null.
+  Future<PaymentResult?> _pay(CheckoutDone done, String saleMode) async {
     final outcome = await payments.process(
       PaymentRequest(
         paymentId: _uuid.generate(),
@@ -300,8 +350,8 @@ class PaymentController extends GetxController {
       ),
     );
     return outcome.fold(
-      onSuccess: (payment) => payment.succeeded,
-      onFailure: (_) => false,
+      onSuccess: (payment) => payment.succeeded ? payment : null,
+      onFailure: (_) => null,
     );
   }
 

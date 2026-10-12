@@ -50,3 +50,6 @@ Decision (owner): keep our money core exactly as is, no adapter now (DEC-116, KG
 
 ## Stage 8 (final verification, 2026-10-12)
 Run and read: format and analyze clean; full VM suite 994/994; no PNG changed versus main; debug click-through 66/66 in normal and `--semantics`; release web build with `web_check` at 950x733, 1280x720, 1868x1035 and `drift_check.mjs` (worker, wasm, content types, device-context row); macOS debug launch (database file present, same device id before and after); axpert_pos status hash unchanged. Details and open items: `final_report.md`.
+
+## Database and sync planning (2026-10-12, documents only)
+`axpert_db_sync_digest.md` (what axpert_pos decides, proposes and leaves open about tables, ids, money, offline and sync, with sources) and `database_plan.md` (LocalStore inventory, provisional tables, sync-readiness columns, no-data-loss migration, repository replacement order, risks, open questions) written; DEC-124 records the recommended provisional local-only schema. No code, schema or persistence changed; axpert_pos untouched; the owner has not yet approved any implementation stage.

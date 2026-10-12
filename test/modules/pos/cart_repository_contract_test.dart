@@ -1,6 +1,10 @@
-// CartRepository contract (D6.a for the Mock; D6.d adds Drift): the stored cart is read back
+// CartRepository contract (D6.a Mock, D6.d Drift): the stored cart is read back
 // as saved, and ANY read problem resets silently to the empty cart (no throw, no UI).
+import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/core/bindings/startup_diagnostics.dart';
+import 'package:pos_application/core/database/axpert_database.dart';
+import 'package:pos_application/core/database/database_provider.dart';
 import 'package:pos_application/core/constants/storage_keys.dart';
 import 'package:pos_application/core/mock/mock_delay.dart';
 import 'package:pos_application/core/services/pricing/basis_points.dart';
@@ -10,9 +14,22 @@ import 'package:pos_application/core/services/storage/in_memory_local_store.dart
 import 'package:pos_application/core/services/storage/local_store.dart';
 import 'package:pos_application/modules/pos/models/cart.dart';
 import 'package:pos_application/modules/pos/repository/cart_repository.dart';
+import 'package:pos_application/modules/pos/repository/drift_cart_repository.dart';
 import 'package:pos_application/modules/pos/repository/mock_cart_repository.dart';
 
 import '../../support/product_fixtures.dart';
+
+class _Provider implements DatabaseProvider {
+  _Provider(this.db);
+
+  final AxpertDatabase db;
+
+  @override
+  Future<AxpertDatabase> open() async => db;
+
+  @override
+  Future<void> close() async {}
+}
 
 /// One backend under test: [create] builds a repository over the shared
 /// [store] (a new call is a "restart" on the same persisted data).
@@ -24,6 +41,18 @@ class _Backend {
 }
 
 _Backend _mock() => _Backend(MockCartRepository.new, () async {});
+
+_Backend _drift() {
+  final db = AxpertDatabase(NativeDatabase.memory());
+  return _Backend(
+    (store) => DriftCartRepository(
+      provider: _Provider(db),
+      store: store,
+      diagnostics: StartupDiagnostics(),
+    ),
+    db.close,
+  );
+}
 
 Cart _full() => Cart.empty
     .addItem(prod(1))
@@ -40,7 +69,10 @@ Cart _full() => Cart.empty
 void main() {
   setUp(() => MockDelay.provider = () => Duration.zero);
 
-  final backends = <String, _Backend Function()>{'Mock': _mock};
+  final backends = <String, _Backend Function()>{
+    'Mock': _mock,
+    'Drift (in-memory)': _drift,
+  };
   for (final entry in backends.entries) {
     final make = entry.value;
     group('CartRepository contract: ${entry.key}', () {

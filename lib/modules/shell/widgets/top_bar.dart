@@ -8,7 +8,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/constants/app_strings_x.dart';
 import '../../../core/responsive/app_metrics_scope.dart';
 import '../../../core/theme/theme_x.dart';
-import '../../../shared/widgets/brand_mark.dart';
+import '../../../shared/widgets/brand_logo.dart';
 import '../../../core/theme/tokens/app_radii.dart';
 import '../../../core/theme/tokens/app_sizes.dart';
 import '../../../core/theme/tokens/app_spacing.dart';
@@ -77,7 +77,10 @@ class _Brand extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        BrandMark(width: m.brandMarkWidth, fontSize: m.brandMarkFont),
+        SizedBox(
+          width: m.brandMarkWidth,
+          child: Center(child: BrandLogo(size: m.brandLogoSize)),
+        ),
         SizedBox(width: m.brandGap),
         Text(
           s.brandName(),

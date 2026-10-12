@@ -67,3 +67,5 @@ flutter:
 
   assets:
     - assets/products/
+    - assets/logo/
+    - assets/bg/

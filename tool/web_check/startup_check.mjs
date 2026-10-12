@@ -1,3 +1,4 @@
+// Needs a build/run WITH --dart-define=SKIP_ENTRY=true (starts on the POS page, no splash/login); see entry.mjs.
 // Start-up phase table for the release web build (D3, measurement only).
 //
 // Build with the timeline on (default builds print nothing):

@@ -1,3 +1,4 @@
+// Needs a build/run WITH --dart-define=SKIP_ENTRY=true (starts on the POS page, no splash/login); see entry.mjs.
 // Browser performance probe (S7). Headless Chrome over the DevTools protocol,
 // no packages. Measures what a canvas app lets us see from outside: page-clock
 // requestAnimationFrame gaps (a long gap = a blocked main thread = a janky

@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'core/bindings/app_infrastructure.dart';
 import 'core/bindings/initial_binding.dart';
 import 'core/bindings/startup_timeline.dart';
+import 'core/config/entry_config.dart';
 import 'core/constants/app_strings.dart';
 import 'core/responsive/responsive_layout.dart';
 import 'core/routes/app_pages.dart';
@@ -52,9 +53,12 @@ Future<void> main() async {
 }
 
 class PosApp extends StatelessWidget {
-  const PosApp({required this.binding, super.key});
+  const PosApp({required this.binding, this.initialRoute, super.key});
 
   final InitialBinding binding;
+
+  /// Defaults to [EntryConfig.initialRoute] (splash, or POS with SKIP_ENTRY).
+  final String? initialRoute;
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +86,7 @@ class PosApp extends StatelessWidget {
             ],
           ),
         ),
+        initialRoute: initialRoute ?? EntryConfig.initialRoute,
         getPages: AppPages.pages,
         unknownRoute: AppPages.unknown,
       ),

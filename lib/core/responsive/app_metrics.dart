@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui' show Size;
 
 import '../theme/tokens/app_sizes.dart';
@@ -99,6 +100,10 @@ class AppMetrics {
   double get topbarGap => atMost1280 ? 8 : _c.vw(8, .8, 16);
   double get brandGap => atMost1100 ? 6 : _c.vw(9, 1.25, 24);
   double get brandFont => atMost1100 ? 19 : _c.vw(19, 1.65, 26);
+
+  /// The logo sits centred in the brand-mark box, never wider than it.
+  double get brandLogoSize =>
+      math.min(brandMarkWidth, atMost1100 ? 28 : _c.vw(32, 2.2, 40));
   double get brandMarkWidth => atMost1100 ? 28 : _c.vw(30, 3, 58);
   double get brandMarkFont => atMost1100 ? 30 : _c.vw(32, 2.7, 42);
   double get storeWidth => atMost1100 ? 160 : _c.vw(160, 15, 250);

@@ -23,6 +23,28 @@ abstract class AppStrings {
   String titleSettings();
   String workspaceEyebrow();
 
+  // Splash and login (demo entry flow, no real authentication)
+  String splashSemantics();
+  String loginWelcome();
+  String loginSubtitle();
+  String loginUsernameLabel();
+  String loginUsernameHint();
+  String loginPasswordLabel();
+  String loginPasswordHint();
+  String loginUsernameRequired();
+  String loginPasswordRequired();
+  String loginShowPassword();
+  String loginHidePassword();
+  String loginRememberMe();
+  String loginForgotPassword();
+  String loginSignIn();
+  String loginSigningIn();
+  String loginOr();
+  String loginWithQr();
+  String loginNoAccount();
+  String loginLanguage();
+  String loginDemoToast(String feature);
+
   // Top bar
   String brandMark();
   String brandName();

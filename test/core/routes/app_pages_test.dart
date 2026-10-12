@@ -15,7 +15,7 @@ import '../../support/test_app.dart';
 void main() {
   useTestApp();
 
-  test('seven named routes without transition', () {
+  test('seven named routes plus splash and login, without transition', () {
     expect(AppPages.pages.map((p) => p.name), <String>[
       '/',
       '/products',
@@ -24,6 +24,8 @@ void main() {
       '/returns',
       '/reports',
       '/more',
+      '/splash',
+      '/login',
     ]);
     for (final page in AppPages.pages) {
       expect(page.transition, Transition.noTransition);

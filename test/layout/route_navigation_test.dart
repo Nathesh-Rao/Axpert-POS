@@ -219,4 +219,45 @@ void main() {
       FlutterError.onError = previous;
     }
   });
+
+  testWidgets('entry flow (splash, login, landing) raises no error', (
+    tester,
+  ) async {
+    useLogicalViewport(tester, const Size(1280, 720));
+    final binding = await bootInWidgetTest(tester, store: _seededStore());
+    final errors = <String>[];
+    final previous = FlutterError.onError;
+    FlutterError.onError = (details) => errors.add(details.exceptionAsString());
+    try {
+      void check(String step) {
+        expect(errors, isEmpty, reason: 'errors after "$step": $errors');
+        expect(find.byType(ErrorWidget), findsNothing, reason: step);
+        expect(RxInterface.proxy, isNull, reason: step);
+      }
+
+      await tester.pumpWidget(testApp(binding, initialRoute: '/splash'));
+      await tester.pump(const Duration(milliseconds: 1000));
+      check('splash');
+      await tester.pump(const Duration(milliseconds: 1000));
+      await tester.pump(const Duration(seconds: 2));
+      check('splash to login');
+      expect(find.text('Welcome Back'), findsOneWidget);
+      await tester.tap(find.text('Sign In'));
+      await tester.pump();
+      check('empty submit');
+      await tester.enterText(find.byType(TextField).first, 'cashier');
+      await tester.enterText(find.byType(TextField).last, 'demo');
+      await tester.tap(find.text('Sign In'));
+      await tester.pump(const Duration(milliseconds: 300));
+      check('loading');
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
+      check('login to landing');
+      expect(find.text('Welcome Back'), findsNothing);
+      Get.find<ToastController>().toasts.clear();
+      await tester.pump(const Duration(milliseconds: 100));
+    } finally {
+      FlutterError.onError = previous;
+    }
+  });
 }

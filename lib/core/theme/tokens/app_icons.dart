@@ -17,6 +17,41 @@ abstract final class AppIcons {
   static const String _family = 'Lucide';
   static const String _package = 'lucide_icons_flutter';
 
+  static const IconData user = IconData(
+    57759,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData lock = IconData(
+    57611,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData eye = IconData(
+    57530,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData eyeOff = IconData(
+    57531,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData arrowRight = IconData(
+    57417,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData qrCode = IconData(
+    57823,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData globe = IconData(
+    57576,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
   static const IconData barcode = IconData(
     58675,
     fontFamily: _family,
@@ -266,5 +301,12 @@ abstract final class AppIcons {
     'clock': clock,
     'mail': mail,
     'smartphone': smartphone,
+    'user': user,
+    'lock': lock,
+    'eye': eye,
+    'eyeOff': eyeOff,
+    'arrowRight': arrowRight,
+    'qrCode': qrCode,
+    'globe': globe,
   };
 }

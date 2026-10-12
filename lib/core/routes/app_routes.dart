@@ -20,6 +20,8 @@ enum AppPage {
 }
 
 abstract final class AppRoutes {
+  static const String splash = '/splash';
+  static const String login = '/login';
   static const String pos = '/';
   static const String products = '/products';
   static const String customers = '/customers';

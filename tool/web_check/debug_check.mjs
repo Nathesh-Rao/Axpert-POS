@@ -6,8 +6,11 @@
 // Release builds cannot show these (they are debug-only asserts).
 //
 // usage:
-//   flutter run -d web-server --web-port=8170 --web-hostname=127.0.0.1   (wait: "is being served")
-//   node --experimental-websocket tool/web_check/debug_check.mjs http://127.0.0.1:8170/ [outDir] [width height] [--semantics]
+//   flutter run -d web-server --web-port=8170 --web-hostname=127.0.0.1 --dart-define=SKIP_ENTRY=true   (wait: "is being served")
+//   node --experimental-websocket tool/web_check/debug_check.mjs http://127.0.0.1:8170/ [outDir] [width height] [--semantics] [--entry]
+// Default: the app is run WITH SKIP_ENTRY (starts on POS). --entry: run it
+// WITHOUT the define; the script walks the real splash and login first
+// (entry.mjs), then does the same click-through.
 // --semantics turns web accessibility ON right after load (what pressing Tab
 // at load does: it activates the `flt-semantics-placeholder` element), then
 // runs the same click-through. Run BOTH modes when the widget structure
@@ -21,8 +24,10 @@
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import zlib from 'node:zlib';
+import { signInThroughEntry } from './entry.mjs';
 
 const semanticsOn = process.argv.includes('--semantics');
+const entryOn = process.argv.includes('--entry');
 const [url, outDir = '/tmp/debug_check', widthArg = '1280', heightArg = '720'] = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 const width = Number(widthArg), height = Number(heightArg);
 fs.mkdirSync(outDir, { recursive: true });
@@ -98,7 +103,7 @@ function redFraction(png) {
 await send('Page.navigate', { url });
 const t0 = Date.now();
 while (Date.now() - t0 < 240000) { if (await (async () => (await send('Runtime.evaluate', { expression: "!!document.querySelector('flt-glass-pane, flutter-view')", returnByValue: true })).result?.value)()) break; await sleep(500); }
-await sleep(6000);
+await sleep(entryOn ? 500 : 6000); // --entry: do not miss the splash
 if (semanticsOn) {
   const r = await send('Runtime.evaluate', { expression: "(()=>{const p=document.querySelector('flt-semantics-placeholder'); if(!p) return 'no placeholder'; p.click(); return 'enabled'})()", returnByValue: true });
   console.log('web accessibility:', r.result?.value);
@@ -123,6 +128,7 @@ const NAV = { POS: [32, 95], Products: [32, 170], Customers: [32, 245], Sales: [
 const page = (n) => step(`page ${n}`, () => click(...NAV[n]));
 const esc = async () => { await key('Escape', 27); await sleep(500); };
 
+if (entryOn) await signInThroughEntry({ step, insert, key, click, sleep, width, height });
 await step(semanticsOn ? 'start on POS (semantics on)' : 'start on POS', async () => {});
 await step('add 3 items', async () => { await click(width / 2, 28); for (const code of ['8901234567895', '8901234567896', '8901234567897']) { await insert(code); await key('Enter', 13); await sleep(900); } });
 await step('beep on add (Web Audio: sine 1100 Hz, gain 0.04, 80 ms)', async () => {

@@ -1,5 +1,7 @@
 # Real-browser check (no packages, no pubspec change)
 
+**Entry flow switch.** The app starts on a demo splash and login. Every check that loads the page and expects the POS screen needs a build or run with `--dart-define=SKIP_ENTRY=true` (`flutter build web --dart-define=SKIP_ENTRY=true`, `flutter run ... --dart-define=SKIP_ENTRY=true`); this covers `cdp.mjs`, `debug_check.mjs`, the flow checks, `drift_check.mjs`, `theme_check.mjs`, `startup_check.mjs`, `perf.mjs` and the products checks. To check the real flow, build WITHOUT the define and use `debug_check.mjs ... --entry` (see `entry.mjs`) or screenshots of `/` through `cdp.mjs`.
+
 Drives the served release build in headless Chrome over the DevTools protocol:
 clicks, typing, screenshots and the console. Needs macOS Chrome and Node 20+.
 

@@ -1,3 +1,4 @@
+// Needs a build/run WITH --dart-define=SKIP_ENTRY=true (starts on the POS page, no splash/login); see entry.mjs.
 // Release-build check that the cart draft really persists in Drift (D6, DEC-130). Use the build
 // WITH the timeline define (it prints a `[perf]` line per Drift cart write):
 //   flutter build web --dart-define=STARTUP_TIMELINE=true -o build/web_timeline

@@ -33,6 +33,69 @@ class EnAppStrings extends AppStrings {
   @override
   String workspaceEyebrow() => 'MAISON GALAXY / RETAIL WORKSPACE';
 
+  // Splash and login
+  @override
+  String splashSemantics() => 'Axpert POS is loading';
+
+  @override
+  String loginWelcome() => 'Welcome Back';
+
+  @override
+  String loginSubtitle() => 'Sign in to continue to Axpert POS';
+
+  @override
+  String loginUsernameLabel() => 'Username or Email';
+
+  @override
+  String loginUsernameHint() => 'Enter your username or email';
+
+  @override
+  String loginPasswordLabel() => 'Password';
+
+  @override
+  String loginPasswordHint() => 'Enter your password';
+
+  @override
+  String loginUsernameRequired() => 'Enter your username or email';
+
+  @override
+  String loginPasswordRequired() => 'Enter your password';
+
+  @override
+  String loginShowPassword() => 'Show password';
+
+  @override
+  String loginHidePassword() => 'Hide password';
+
+  @override
+  String loginRememberMe() => 'Remember me';
+
+  @override
+  String loginForgotPassword() => 'Forgot Password?';
+
+  @override
+  String loginSignIn() => 'Sign In';
+
+  @override
+  String loginSigningIn() => 'Signing in';
+
+  @override
+  String loginOr() => 'or';
+
+  @override
+  String loginWithQr() => 'Login with QR Code';
+
+  @override
+  String loginNoAccount() =>
+      "Don't have an account? Contact your administrator.";
+
+  @override
+  String loginLanguage() => 'English';
+
+  @override
+  String loginDemoToast(String feature) =>
+      '$feature is not available in this demo';
+
   @override
   String brandMark() => 'A';
 

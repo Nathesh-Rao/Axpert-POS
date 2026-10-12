@@ -1,6 +1,10 @@
 import 'package:get/get.dart';
 
 import '../../modules/customers/bindings/customers_binding.dart';
+import '../../modules/entry/bindings/login_binding.dart';
+import '../../modules/entry/bindings/splash_binding.dart';
+import '../../modules/entry/views/login_view.dart';
+import '../../modules/entry/views/splash_view.dart';
 import '../../modules/customers/views/customers_view.dart';
 import '../../modules/pos/bindings/pos_binding.dart';
 import '../../modules/pos/views/pos_view.dart';
@@ -15,7 +19,7 @@ import '../../modules/returns/views/returns_view.dart';
 import '../../modules/settings/views/settings_view.dart';
 import 'app_routes.dart';
 
-/// Seven named routes, no transition. Unknown paths fall through to POS.
+/// Seven named routes plus splash and login, no transition. Unknown paths fall through to POS.
 abstract final class AppPages {
   static const String initial = AppRoutes.pos;
 
@@ -23,6 +27,19 @@ abstract final class AppPages {
 
   static final List<GetPage<dynamic>> pages = <GetPage<dynamic>>[
     for (final page in AppPage.values) _page(page),
+    // Demo entry flow; the animated hops are in EntryNavigation.
+    GetPage<dynamic>(
+      name: AppRoutes.splash,
+      page: SplashView.new,
+      binding: SplashBinding(),
+      transition: Transition.noTransition,
+    ),
+    GetPage<dynamic>(
+      name: AppRoutes.login,
+      page: LoginView.new,
+      binding: LoginBinding(),
+      transition: Transition.noTransition,
+    ),
   ];
 
   static GetPage<dynamic> _page(AppPage page, {String? name}) =>

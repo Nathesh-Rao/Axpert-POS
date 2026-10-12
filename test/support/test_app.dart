@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:pos_application/core/bindings/app_infrastructure.dart';
 import 'package:pos_application/core/bindings/initial_binding.dart';
 import 'package:pos_application/core/mock/mock_delay.dart';
+import 'package:pos_application/core/routes/app_routes.dart';
 import 'package:pos_application/core/services/audio/audio_service.dart';
 import 'package:pos_application/core/services/storage/in_memory_local_store.dart';
 import 'package:pos_application/core/services/storage/local_store.dart';
@@ -44,7 +45,10 @@ void useTestApp() {
   });
 }
 
-PosApp testApp(InitialBinding binding) => PosApp(binding: binding);
+/// Starts on the landing page (like `--dart-define=SKIP_ENTRY=true`); pass
+/// [AppRoutes.splash] to test the entry flow.
+PosApp testApp(InitialBinding binding, {String initialRoute = AppRoutes.pos}) =>
+    PosApp(binding: binding, initialRoute: initialRoute);
 
 /// `bootTestApp` for `testWidgets`: the store awaits real futures, which
 /// would hang inside the fake-async zone.

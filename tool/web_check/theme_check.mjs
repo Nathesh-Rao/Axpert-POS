@@ -1,3 +1,4 @@
+// Needs a build/run WITH --dart-define=SKIP_ENTRY=true (starts on the POS page, no splash/login); see entry.mjs.
 // First-frame theme check for the Drift settings (D1): with dark=true saved,
 // a reload must not paint a light Flutter frame.
 //   python3 tool/web_check/serve.py build/web 8300 &

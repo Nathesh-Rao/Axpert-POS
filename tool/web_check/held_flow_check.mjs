@@ -1,3 +1,4 @@
+// Needs a build/run WITH --dart-define=SKIP_ENTRY=true (starts on the POS page, no splash/login); see entry.mjs.
 // Release-build check that held bills persist in Drift (D3):
 //   python3 tool/web_check/serve.py build/web 8300 &
 //   node --experimental-websocket tool/web_check/held_flow_check.mjs http://127.0.0.1:8300/ <outDir>

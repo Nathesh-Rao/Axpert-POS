@@ -52,6 +52,13 @@ void main() {
     'clock': LucideIcons.clock,
     'mail': LucideIcons.mail,
     'smartphone': LucideIcons.smartphone,
+    'user': LucideIcons.user,
+    'lock': LucideIcons.lock,
+    'eye': LucideIcons.eye,
+    'eyeOff': LucideIcons.eyeOff,
+    'arrowRight': LucideIcons.arrowRight,
+    'qrCode': LucideIcons.qrCode,
+    'globe': LucideIcons.globe,
   };
 
   test('AppIcons equals the lucide_icons_flutter constants', () {

@@ -1,3 +1,4 @@
+// Needs a build/run WITH --dart-define=SKIP_ENTRY=true (starts on the POS page, no splash/login); see entry.mjs.
 // Release-build timing of 10,000 products in Drift (D4). Needs a build with the timeline on:
 //   flutter build web --dart-define=STARTUP_TIMELINE=true -o build/web_timeline
 //   python3 tool/web_check/serve.py build/web_timeline 8301 &

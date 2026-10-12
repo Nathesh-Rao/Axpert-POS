@@ -99,6 +99,15 @@ pos_application/lib/
 - Keyboard-first checkout: every core action reachable by keyboard.
 - Design for later, interfaces and stubs only now: offline-first local DB, receipt printing (`ReceiptDocument` model + `ReceiptPrinter` interface; build the receipt preview UI), barcode scanner input, cash drawer, payment terminals, beep, email/WhatsApp receipts (demo toasts like the prototype), roles/permissions, shifts, reports, audit logs.
 
+## Integration workflow (axpert_pos infrastructure, branch `integration`)
+
+- Full details: `docs/integration/{integration_plan,codex_workflow,progress}.md`. `../axpert_pos/` is READ-ONLY reference: never edit it, never run flutter/dart/git-writing commands in it (timing runs only in a /tmp copy, deleted afterwards).
+- Work in batches and stop only at batch ends. Commit only when I say "commit" (local commit on `integration` with the two trailers), push only when I say "push".
+- Verification levels. Change: `dart format <touched files>`, `flutter analyze`, `flutter test <touched file or folder>`. Feature: + the module's tests, `test/layout/route_navigation_test.dart`, `semantics_reparent_test.dart` if widget structure changed, goldens of touched screens (byte-identical unless I approve). Milestone (batch end): `dart format --output=none --set-exit-if-changed .`, `flutter analyze`, full `flutter test` once, debug click-through in both modes if bindings, bootstrap or widget structure changed, release web build if packages or web assets changed. Finish: all of it plus release `web_check` for new screens and a macOS debug launch; Windows cannot be built here.
+- Never rerun a check on unchanged code. Never report a result that was not run and read.
+- Packages approved for the integration: dio, drift, drift_dev (dev), build_runner (dev), path, path_provider (web-unsupported: only behind the conditional import, with a web release build check, DEC exception). Versions follow axpert_pos's lock (drift 2.34.4 family). Any other package needs approval.
+- Money core stays ours (`Money` with currency, `Qty`, `Bp`, `PricingService`, golden vectors); axpert's `Money`/`Quantity` are a subset. Existing mock ids stay; UUID v4 only for new entities. A module moves to `features/<f>/{domain,data,presentation}` (git mv) only in the stage where it gets a real data layer; never keep a module in both layouts. `LocalStore` stays the mock persistence; Drift only for device context until the ADR-014 gate opens.
+
 ## Plans and docs
 
 - Every plan is saved to `docs/plan_<task>.md` after I approve it, so it survives /clear and is tracked in git. Phase A plans (plan_s1_s2.md to plan_s4_0.md, migration_plan.md) are history.

@@ -1,4 +1,5 @@
 import '../../../../core/bindings/startup_diagnostics.dart';
+import '../../../../core/bindings/startup_timeline.dart';
 import '../../../../core/constants/storage_keys.dart';
 import '../../../../core/database/axpert_database.dart';
 import '../../../../core/database/database_provider.dart';
@@ -59,7 +60,10 @@ class DriftProductRepository implements ProductRepository {
   Future<List<Product>> load() async {
     try {
       final db = await _provider.open();
-      final outcome = await _migrator.ensureCopied(db, _store);
+      final outcome = await StartupTimeline.measure(
+        'products drift copy',
+        () => _migrator.ensureCopied(db, _store),
+      );
       final report = outcome.report;
       if (report != null && report.hasFindings) {
         _diagnostics.record(
@@ -68,7 +72,10 @@ class DriftProductRepository implements ProductRepository {
           StackTrace.empty,
         );
       }
-      final read = await ProductRows.read(db);
+      final read = await StartupTimeline.measure(
+        'products drift read',
+        () => ProductRows.read(db),
+      );
       _known = read.known;
       _db = db;
       return read.list;
@@ -99,8 +106,11 @@ class DriftProductRepository implements ProductRepository {
       final now = _now().toUtc().toIso8601String();
       final plan = ProductRows.plan(products, _known, now: now, uuid: _uuid);
       if (!plan.isEmpty) {
-        await db.durableTransaction(
-          () => ProductRows.write(db, plan, now: now),
+        await StartupTimeline.logged(
+          'products save drift (${plan.rowCount} rows)',
+          () => db.durableTransaction(
+            () => ProductRows.write(db, plan, now: now),
+          ),
         );
       }
       // Only after the commit: a failed write leaves the snapshot unchanged.
@@ -110,9 +120,12 @@ class DriftProductRepository implements ProductRepository {
       return _fallback.save(products);
     }
     try {
-      await _store.write(StorageKeys.products, <Map<String, dynamic>>[
-        for (final p in products) p.toJson(),
-      ]);
+      await StartupTimeline.logged(
+        'products save mirror',
+        () => _store.write(StorageKeys.products, <Map<String, dynamic>>[
+          for (final p in products) p.toJson(),
+        ]),
+      );
     } on Object catch (error, stackTrace) {
       // Drift is already saved; only the rollback copy is behind.
       _diagnostics.record('products dual-write', error, stackTrace);

@@ -79,6 +79,21 @@ abstract final class StartupTimeline {
     _mockDelayMs[phase] = (_mockDelayMs[phase] ?? 0) + delay.inMilliseconds;
   }
 
+  /// Times [body] and prints one `[perf] {json}` console line at once (for work
+  /// that happens after the first frame, e.g. a save at checkout). Off: runs
+  /// [body] only.
+  static Future<T> logged<T>(String name, Future<T> Function() body) async {
+    if (!enabled) return body();
+    final watch = Stopwatch()..start();
+    try {
+      return await body();
+    } finally {
+      debugPrint(
+        '[perf] ${jsonEncode(<String, Object?>{'name': name, 'ms': watch.elapsedMicroseconds / 1000})}',
+      );
+    }
+  }
+
   /// Prints the collected phases once.
   static void report() {
     if (!enabled) return;

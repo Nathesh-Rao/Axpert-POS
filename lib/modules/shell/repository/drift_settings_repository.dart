@@ -6,6 +6,7 @@ import '../../../core/database/axpert_database.dart';
 import '../../../core/database/database_provider.dart';
 import '../../../core/database/migration/settings_migrator.dart';
 import '../../../core/services/storage/local_store.dart';
+import '../../../core/utils/serial_queue.dart';
 import '../models/app_settings.dart';
 import 'mock_settings_repository.dart';
 import 'settings_repository.dart';
@@ -54,8 +55,13 @@ class DriftSettingsRepository implements SettingsRepository {
     }
   }
 
+  /// Saves run one after another (see [SerialQueue], KG-190).
+  final SerialQueue _saves = SerialQueue();
+
   @override
-  Future<void> save(AppSettings settings) async {
+  Future<void> save(AppSettings settings) => _saves.run(() => _save(settings));
+
+  Future<void> _save(AppSettings settings) async {
     final db = _db;
     if (db == null) {
       await _markStale();

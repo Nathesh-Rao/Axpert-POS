@@ -135,4 +135,39 @@ void main() {
     expect(await store.read(StorageKeys.settingsDriftStale), true);
     expect(diagnostics.hasFailures, isTrue);
   });
+
+  test(
+    'overlapping unawaited saves end at the last value (Drift and LocalStore)',
+    () async {
+      final repository = repo(db);
+      final loaded = await repository.load();
+
+      final a = repository.save(loaded.copyWith(counter: 'C1', rateMilli: 1));
+      final b = repository.save(loaded.copyWith(counter: 'C2', rateMilli: 2));
+      final c = repository.save(loaded.copyWith(counter: 'C3', rateMilli: 3));
+      await Future.wait([a, b, c]);
+
+      expect(await driftValue(StorageKeys.counter), 'C3');
+      expect(await driftValue(StorageKeys.rate), 3);
+      expect(await store.read(StorageKeys.counter), 'C3');
+      expect(await store.read(StorageKeys.rate), 3);
+    },
+  );
+
+  test(
+    'overlapping saves after a Drift failure stay in order and keep the stale key',
+    () async {
+      final repository = repo(db);
+      final loaded = await repository.load();
+      await db.customStatement('DROP TABLE settings');
+
+      final a = repository.save(loaded.copyWith(counter: 'C1'));
+      final b = repository.save(loaded.copyWith(counter: 'C2'));
+      final c = repository.save(loaded.copyWith(counter: 'C3'));
+      await Future.wait([a, b, c]);
+
+      expect(await store.read(StorageKeys.counter), 'C3');
+      expect(await store.read(StorageKeys.settingsDriftStale), true);
+    },
+  );
 }

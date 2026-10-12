@@ -6826,6 +6826,258 @@ class PaymentEntriesCompanion extends UpdateCompanion<PaymentEntry> {
   }
 }
 
+class $CurrentCartEntriesTable extends CurrentCartEntries
+    with TableInfo<$CurrentCartEntriesTable, CurrentCartEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CurrentCartEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    check: () => id.equals(1),
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _cartJsonMeta = const VerificationMeta(
+    'cartJson',
+  );
+  @override
+  late final GeneratedColumn<String> cartJson = GeneratedColumn<String>(
+    'cart_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, cartJson, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'current_cart';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<CurrentCartEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('cart_json')) {
+      context.handle(
+        _cartJsonMeta,
+        cartJson.isAcceptableOrUnknown(data['cart_json']!, _cartJsonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_cartJsonMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CurrentCartEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CurrentCartEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      cartJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cart_json'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CurrentCartEntriesTable createAlias(String alias) {
+    return $CurrentCartEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class CurrentCartEntry extends DataClass
+    implements Insertable<CurrentCartEntry> {
+  final int id;
+  final String cartJson;
+
+  /// UTC ISO 8601 text.
+  final String updatedAt;
+  const CurrentCartEntry({
+    required this.id,
+    required this.cartJson,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['cart_json'] = Variable<String>(cartJson);
+    map['updated_at'] = Variable<String>(updatedAt);
+    return map;
+  }
+
+  CurrentCartEntriesCompanion toCompanion(bool nullToAbsent) {
+    return CurrentCartEntriesCompanion(
+      id: Value(id),
+      cartJson: Value(cartJson),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory CurrentCartEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CurrentCartEntry(
+      id: serializer.fromJson<int>(json['id']),
+      cartJson: serializer.fromJson<String>(json['cartJson']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'cartJson': serializer.toJson<String>(cartJson),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+    };
+  }
+
+  CurrentCartEntry copyWith({int? id, String? cartJson, String? updatedAt}) =>
+      CurrentCartEntry(
+        id: id ?? this.id,
+        cartJson: cartJson ?? this.cartJson,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
+  CurrentCartEntry copyWithCompanion(CurrentCartEntriesCompanion data) {
+    return CurrentCartEntry(
+      id: data.id.present ? data.id.value : this.id,
+      cartJson: data.cartJson.present ? data.cartJson.value : this.cartJson,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CurrentCartEntry(')
+          ..write('id: $id, ')
+          ..write('cartJson: $cartJson, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, cartJson, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CurrentCartEntry &&
+          other.id == this.id &&
+          other.cartJson == this.cartJson &&
+          other.updatedAt == this.updatedAt);
+}
+
+class CurrentCartEntriesCompanion extends UpdateCompanion<CurrentCartEntry> {
+  final Value<int> id;
+  final Value<String> cartJson;
+  final Value<String> updatedAt;
+  const CurrentCartEntriesCompanion({
+    this.id = const Value.absent(),
+    this.cartJson = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  CurrentCartEntriesCompanion.insert({
+    this.id = const Value.absent(),
+    required String cartJson,
+    required String updatedAt,
+  }) : cartJson = Value(cartJson),
+       updatedAt = Value(updatedAt);
+  static Insertable<CurrentCartEntry> custom({
+    Expression<int>? id,
+    Expression<String>? cartJson,
+    Expression<String>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (cartJson != null) 'cart_json': cartJson,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  CurrentCartEntriesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? cartJson,
+    Value<String>? updatedAt,
+  }) {
+    return CurrentCartEntriesCompanion(
+      id: id ?? this.id,
+      cartJson: cartJson ?? this.cartJson,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (cartJson.present) {
+      map['cart_json'] = Variable<String>(cartJson.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CurrentCartEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('cartJson: $cartJson, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AxpertDatabase extends GeneratedDatabase {
   _$AxpertDatabase(QueryExecutor e) : super(e);
   late final $DeviceContextEntriesTable deviceContextEntries =
@@ -6847,6 +7099,8 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
     this,
   );
   late final $PaymentEntriesTable paymentEntries = $PaymentEntriesTable(this);
+  late final $CurrentCartEntriesTable currentCartEntries =
+      $CurrentCartEntriesTable(this);
   late final Index productsPosition = Index(
     'products_position',
     'CREATE INDEX products_position ON products (position)',
@@ -6869,6 +7123,7 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
     saleEntries,
     saleLineEntries,
     paymentEntries,
+    currentCartEntries,
     productsPosition,
     salesPosition,
   ];

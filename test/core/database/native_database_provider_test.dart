@@ -31,7 +31,7 @@ void main() {
       final second = await provider.open();
 
       expect(first, same(second));
-      expect(first.schemaVersion, 7);
+      expect(first.schemaVersion, 8);
       expect(first.allTables.map((table) => table.actualTableName).toSet(), {
         'device_context_entries',
         'settings',
@@ -42,6 +42,7 @@ void main() {
         'sales',
         'sale_lines',
         'payments',
+        'current_cart',
       });
       expect(await first.customSelect('SELECT 1').getSingle(), isNotNull);
       final foreignKeys = await first
@@ -63,7 +64,7 @@ void main() {
 
     await store.write(context);
 
-    expect(database.schemaVersion, 7);
+    expect(database.schemaVersion, 8);
     expect(await store.read(), context);
   });
 
@@ -136,7 +137,7 @@ void main() {
 
       expect(names, containsAll(['settings', 'migration_state', 'customers']));
       expect(device.read<String>('device_id'), 'dev-1');
-      expect(version.read<int>('user_version'), 7);
+      expect(version.read<int>('user_version'), 8);
     });
 
     test('failed upgrade rolls back and leaves data intact', () async {
@@ -225,7 +226,7 @@ void main() {
 
       expect(names, contains('customers'));
       expect(setting.read<String>('value_json'), 'true');
-      expect(version.read<int>('user_version'), 7);
+      expect(version.read<int>('user_version'), 8);
     });
 
     test('failed upgrade leaves v3 data and user_version intact', () async {
@@ -322,7 +323,7 @@ void main() {
       expect(names, contains('held_bills'));
       expect(setting.read<String>('value_json'), 'true');
       expect(customer.read<String>('name'), 'Walk-in');
-      expect(version.read<int>('user_version'), 7);
+      expect(version.read<int>('user_version'), 8);
       expect(columns.map((c) => c.read<String>('name')).toList(), [
         'id',
         'ref',
@@ -467,7 +468,7 @@ void main() {
         contains('products_position'),
       );
       expect(held.read<String>('ref'), 'H1');
-      expect(version.read<int>('user_version'), 7);
+      expect(version.read<int>('user_version'), 8);
     });
 
     test('legacy_id is unique, code and barcode are not', () async {
@@ -668,7 +669,7 @@ void main() {
           .customSelect('PRAGMA user_version')
           .getSingle();
       expect(customer.read<String>('legacy_id'), 'walk');
-      expect(version.read<int>('user_version'), 7);
+      expect(version.read<int>('user_version'), 8);
     });
 
     test('number is not unique and a link must point at a real row', () async {
@@ -730,6 +731,103 @@ void main() {
         'axpert-dark',
       );
       expect(raw.select('PRAGMA user_version').single['user_version'], 6);
+    });
+  });
+
+  group('schema v7 to v8 upgrade', () {
+    const v7Ddl = [
+      'CREATE TABLE settings (key TEXT NOT NULL, value_json TEXT NOT NULL, '
+          'updated_at TEXT NOT NULL, PRIMARY KEY (key))',
+      'CREATE TABLE migration_state (key TEXT NOT NULL, value TEXT NOT NULL, '
+          'PRIMARY KEY (key))',
+      "INSERT INTO settings VALUES ('axpert-dark', 'true', 'x')",
+    ];
+
+    void seedV7(dynamic database, {String extra = ''}) {
+      for (final sql in v7Ddl) {
+        database.execute(sql);
+      }
+      if (extra.isNotEmpty) database.execute(extra);
+      database.execute('PRAGMA user_version = 7');
+    }
+
+    test('adds current_cart and preserves data', () async {
+      final database = AxpertDatabase(
+        NativeDatabase.memory(setup: (db) => seedV7(db)),
+      );
+      addTearDown(database.close);
+
+      final columns = await database
+          .customSelect('PRAGMA table_info(current_cart)')
+          .get();
+      final settings = await database
+          .customSelect('SELECT key FROM settings')
+          .getSingle();
+      final version = await database
+          .customSelect('PRAGMA user_version')
+          .getSingle();
+
+      expect(columns.map((c) => c.read<String>('name')).toList(), [
+        'id',
+        'cart_json',
+        'updated_at',
+      ]);
+      expect(settings.read<String>('key'), 'axpert-dark');
+      expect(version.read<int>('user_version'), 8);
+    });
+
+    test('only one row (id 1) is allowed', () async {
+      final database = AxpertDatabase(
+        NativeDatabase.memory(setup: (db) => seedV7(db)),
+      );
+      addTearDown(database.close);
+
+      await database.customStatement(
+        "INSERT INTO current_cart (cart_json, updated_at) VALUES ('{}', 'x')",
+      );
+      await expectLater(
+        database.customStatement(
+          "INSERT INTO current_cart (id, cart_json, updated_at) "
+          "VALUES (2, '{}', 'x')",
+        ),
+        throwsA(anything),
+      );
+      await expectLater(
+        database.customStatement(
+          "INSERT INTO current_cart (cart_json, updated_at) VALUES ('{}', 'x')",
+        ),
+        throwsA(anything),
+      );
+    });
+
+    test('failed upgrade leaves v7 data and user_version intact', () async {
+      dynamic raw;
+      final database = AxpertDatabase(
+        NativeDatabase.memory(
+          setup: (db) {
+            raw = db;
+            seedV7(db, extra: 'CREATE INDEX current_cart ON settings (key)');
+          },
+        ),
+      );
+      addTearDown(() async {
+        try {
+          await database.close();
+        } on Object {
+          // The migration failed on purpose; closing may fail too.
+        }
+      });
+
+      await expectLater(
+        database.customSelect('SELECT 1').getSingle(),
+        throwsA(anything),
+      );
+
+      expect(
+        raw.select('SELECT key FROM settings').single['key'],
+        'axpert-dark',
+      );
+      expect(raw.select('PRAGMA user_version').single['user_version'], 7);
     });
   });
 }

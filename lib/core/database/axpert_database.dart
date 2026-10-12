@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../bindings/startup_timeline.dart';
+import 'tables/current_cart_entries.dart';
 import 'tables/customer_entries.dart';
 import 'tables/device_context_entries.dart';
 import 'tables/held_bill_entries.dart';
@@ -15,7 +16,8 @@ part 'axpert_database.g.dart';
 
 /// Drift database: device context metadata and device-local settings.
 ///
-/// Schema v3 (settings, migration_state), v4 (customers), v5 (held_bills), v6 (products) and v7 (sales, sale_lines, payments) are provisional
+/// Schema v3 (settings, migration_state), v4 (customers), v5 (held_bills), v6 (products), v7 (sales, sale_lines, payments)
+/// and v8 (current_cart) are provisional
 /// and local-only (DEC-124); they no longer match axpert's schema.
 @DriftDatabase(
   tables: [
@@ -28,13 +30,14 @@ part 'axpert_database.g.dart';
     SaleEntries,
     SaleLineEntries,
     PaymentEntries,
+    CurrentCartEntries,
   ],
 )
 class AxpertDatabase extends _$AxpertDatabase {
   AxpertDatabase(super.executor);
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -84,6 +87,11 @@ class AxpertDatabase extends _$AxpertDatabase {
         await migrator.createTable(saleLineEntries);
         await migrator.createTable(paymentEntries);
         await migrator.createIndex(salesPosition);
+      });
+    }
+    if (from < 8 && to >= 8) {
+      await transaction(() async {
+        await migrator.createTable(currentCartEntries);
       });
     }
   }

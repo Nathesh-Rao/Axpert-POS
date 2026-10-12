@@ -9,8 +9,8 @@ abstract final class AppEntryMotion {
 
   /// Logo scale and fade in on the splash.
   static const int splashLogoInMs = 700;
-  static const Curve splashLogoInCurve = Curves.easeOutBack;
-  static const double splashLogoStartScale = 0.7;
+  static const Curve splashLogoInCurve = Curves.easeOutCubic;
+  static const double splashLogoStartScale = 0.9;
 
   /// Splash to login: route cross-fade, the logo flies into place (Hero).
   static const int splashToLoginMs = 700;
@@ -43,9 +43,9 @@ abstract final class AppEntrySizes {
 
   // Splash
   static const double splashLogo = 224;
-  static const double splashBarWidth = 198;
-  static const double splashBarHeight = 14;
-  static const double splashGap = 40;
+  static const double splashBarWidth = 176;
+  static const double splashBarHeight = 3;
+  static const double splashGap = 36;
 
   // Login layout
   static const double loginLogo = 64;

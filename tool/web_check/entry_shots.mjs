@@ -34,13 +34,17 @@ const shot = async (name) => { const r = await send('Page.captureScreenshot', { 
 const click = async (x, y) => { await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y }); await send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: 1 }); await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', clickCount: 1 }); };
 const key = async (k, vk) => { await send('Input.dispatchKeyEvent', { type: 'keyDown', key: k, code: k, windowsVirtualKeyCode: vk }); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: k, code: k, windowsVirtualKeyCode: vk }); };
 
+const win = await send('Browser.getWindowForTarget');
+if (win?.windowId) await send('Browser.setWindowBounds', { windowId: win.windowId, bounds: { width, height: height + 120 } });
 await send('Page.navigate', { url });
 await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
 const t0 = Date.now();
 let size = 0;
-while (Date.now() - t0 < 60000) { size = await shot('0_poll'); if (size > 20000) break; await sleep(150); }
+while (Date.now() - t0 < 60000) { await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false }); size = await shot('0_poll'); if (size > 20000) break; await sleep(150); }
 const painted = Date.now();
-console.log(`first painted frame after ${painted - t0} ms`);
+console.log(`first painted frame after ${painted - t0} ms; viewport`, (await send('Runtime.evaluate', { expression: 'innerWidth+"x"+innerHeight+"@"+devicePixelRatio', returnByValue: true })).result?.value);
+const vp = (await send('Runtime.evaluate', { expression: 'innerWidth+"x"+innerHeight', returnByValue: true })).result?.value;
+if (vp !== `${width}x${height}`) { console.log(`viewport ${vp}, not ${width}x${height}: run again`); proc.kill(); process.exit(2); }
 await sleep(300); await shot('1_splash_mid');
 await sleep(2900); await shot('2_login');
 await send('Input.insertText', { text: 'cashier' }); await key('Tab', 9); await send('Input.insertText', { text: 'demo-password' });

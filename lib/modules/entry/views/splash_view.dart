@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/app_strings_x.dart';
+import '../../../core/responsive/entry_metrics.dart';
 import '../../../core/theme/theme_x.dart';
 import '../../../core/theme/tokens/app_entry_tokens.dart';
 import '../../../core/theme/tokens/app_radii.dart';
@@ -47,6 +48,7 @@ class _SplashViewState extends State<SplashView>
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
+    final k = EntryMetrics.of(MediaQuery.sizeOf(context)).scale;
     final logoIn = CurvedAnimation(
       parent: _anim,
       curve: const Interval(
@@ -86,15 +88,16 @@ class _SplashViewState extends State<SplashView>
                         child: child,
                       ),
                     ),
-                    child: const EntryLogo(size: AppEntrySizes.splashLogo),
+                    child: EntryLogo(size: AppEntrySizes.splashLogo * k),
                   ),
-                  const SizedBox(height: AppEntrySizes.splashGap),
+                  SizedBox(height: AppEntrySizes.splashGap * k),
                   ExcludeSemantics(
                     child: AnimatedBuilder(
                       animation: _anim,
                       builder: (context, _) => _ProgressBar(
                         value: _anim.value,
-                        track: c.spinnerTrack,
+                        track: context.entryColors.splashTrack,
+                        scale: k,
                         fill: c.blue,
                       ),
                     ),
@@ -114,17 +117,19 @@ class _ProgressBar extends StatelessWidget {
     required this.value,
     required this.track,
     required this.fill,
+    required this.scale,
   });
 
   final double value;
   final Color track;
   final Color fill;
+  final double scale;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: AppEntrySizes.splashBarWidth,
-      height: AppEntrySizes.splashBarHeight,
+      width: AppEntrySizes.splashBarWidth * scale,
+      height: AppEntrySizes.splashBarHeight * scale,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: track,

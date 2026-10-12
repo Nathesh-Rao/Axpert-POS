@@ -12,6 +12,7 @@ class AppEntryColors extends ThemeExtension<AppEntryColors> {
     required this.fieldFill,
     required this.fieldHoverBorder,
     required this.splashBackground,
+    required this.splashTrack,
   });
 
   /// Opaque panel behind the form (drawn only where the form overlaps the
@@ -21,11 +22,15 @@ class AppEntryColors extends ThemeExtension<AppEntryColors> {
   final Color fieldHoverBorder;
   final Color splashBackground;
 
+  /// Quiet track of the splash loading bar.
+  final Color splashTrack;
+
   static final AppEntryColors light = AppEntryColors(
     panel: AppColors.light.card,
     fieldFill: AppColors.light.card,
     fieldHoverBorder: AppColors.light.placeholder,
     splashBackground: AppColors.light.card,
+    splashTrack: AppColors.light.spinnerTrack,
   );
 
   static final AppEntryColors dark = AppEntryColors(
@@ -33,6 +38,7 @@ class AppEntryColors extends ThemeExtension<AppEntryColors> {
     fieldFill: AppColors.dark.secondary,
     fieldHoverBorder: AppColors.dark.placeholder,
     splashBackground: AppColors.dark.background,
+    splashTrack: AppColors.dark.border,
   );
 
   @override
@@ -41,11 +47,13 @@ class AppEntryColors extends ThemeExtension<AppEntryColors> {
     Color? fieldFill,
     Color? fieldHoverBorder,
     Color? splashBackground,
+    Color? splashTrack,
   }) => AppEntryColors(
     panel: panel ?? this.panel,
     fieldFill: fieldFill ?? this.fieldFill,
     fieldHoverBorder: fieldHoverBorder ?? this.fieldHoverBorder,
     splashBackground: splashBackground ?? this.splashBackground,
+    splashTrack: splashTrack ?? this.splashTrack,
   );
 
   @override
@@ -64,6 +72,7 @@ class AppEntryColors extends ThemeExtension<AppEntryColors> {
         other.splashBackground,
         t,
       )!,
+      splashTrack: Color.lerp(splashTrack, other.splashTrack, t)!,
     );
   }
 }

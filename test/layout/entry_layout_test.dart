@@ -51,6 +51,22 @@ void main() {
           await tester.pump(const Duration(milliseconds: 1000));
           expect(tester.takeException(), isNull);
           expect(find.byType(SplashView), findsOneWidget);
+          // The loading bar is narrow and thin, and scales with the window.
+          final bar = tester.getSize(
+            find.byWidgetPredicate(
+              (w) =>
+                  w is SizedBox &&
+                  w.height != null &&
+                  w.height! < 5 &&
+                  w.width != null &&
+                  w.width! > 50,
+            ),
+          );
+          expect(bar.width, inInclusiveRange(120, 200), reason: 'bar width');
+          expect(bar.height, inInclusiveRange(2, 4), reason: 'bar height');
+          if (size == const Size(1280, 720)) {
+            expect(bar.width, inInclusiveRange(120, 160));
+          }
 
           await tester.tap(find.byType(SplashView));
           await tester.pump(

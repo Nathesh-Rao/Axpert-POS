@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import 'tables/customer_entries.dart';
 import 'tables/device_context_entries.dart';
 import 'tables/migration_state_entries.dart';
 import 'tables/settings_entries.dart';
@@ -8,16 +9,21 @@ part 'axpert_database.g.dart';
 
 /// Drift database: device context metadata and device-local settings.
 ///
-/// Schema v3 (settings, migration_state) is provisional and local-only
-/// (DEC-124); it no longer matches axpert's schema.
+/// Schema v3 (settings, migration_state) and v4 (customers) are provisional
+/// and local-only (DEC-124); they no longer match axpert's schema.
 @DriftDatabase(
-  tables: [DeviceContextEntries, SettingsEntries, MigrationStateEntries],
+  tables: [
+    DeviceContextEntries,
+    SettingsEntries,
+    MigrationStateEntries,
+    CustomerEntries,
+  ],
 )
 class AxpertDatabase extends _$AxpertDatabase {
   AxpertDatabase(super.executor);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -34,6 +40,11 @@ class AxpertDatabase extends _$AxpertDatabase {
         await transaction(() async {
           await migrator.createTable(settingsEntries);
           await migrator.createTable(migrationStateEntries);
+        });
+      }
+      if (from < 4 && to >= 4) {
+        await transaction(() async {
+          await migrator.createTable(customerEntries);
         });
       }
     },

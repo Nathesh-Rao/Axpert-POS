@@ -30,11 +30,12 @@ void main() {
       final second = await provider.open();
 
       expect(first, same(second));
-      expect(first.schemaVersion, 3);
+      expect(first.schemaVersion, 4);
       expect(first.allTables.map((table) => table.actualTableName).toSet(), {
         'device_context_entries',
         'settings',
         'migration_state',
+        'customers',
       });
       expect(await first.customSelect('SELECT 1').getSingle(), isNotNull);
       final foreignKeys = await first
@@ -56,7 +57,7 @@ void main() {
 
     await store.write(context);
 
-    expect(database.schemaVersion, 3);
+    expect(database.schemaVersion, 4);
     expect(await store.read(), context);
   });
 
@@ -127,9 +128,9 @@ void main() {
           .customSelect('PRAGMA user_version')
           .getSingle();
 
-      expect(names, containsAll(['settings', 'migration_state']));
+      expect(names, containsAll(['settings', 'migration_state', 'customers']));
       expect(device.read<String>('device_id'), 'dev-1');
-      expect(version.read<int>('user_version'), 3);
+      expect(version.read<int>('user_version'), 4);
     });
 
     test('failed upgrade rolls back and leaves data intact', () async {
@@ -166,6 +167,79 @@ void main() {
       expect(names, isNot(contains('settings')));
       expect(device.single['device_id'], 'dev-1');
       expect(version.single['user_version'], 2);
+    });
+  });
+
+  group('schema v3 to v4 upgrade', () {
+    const v3Ddl = [
+      'CREATE TABLE device_context_entries ('
+          'singleton_id INTEGER NOT NULL DEFAULT 1, '
+          'device_id TEXT NOT NULL, outlet_id TEXT NULL, register_id TEXT NULL, '
+          'PRIMARY KEY (singleton_id))',
+      'CREATE TABLE settings (key TEXT NOT NULL, value_json TEXT NOT NULL, '
+          'updated_at TEXT NOT NULL, PRIMARY KEY (key))',
+      'CREATE TABLE migration_state (key TEXT NOT NULL, value TEXT NOT NULL, '
+          'PRIMARY KEY (key))',
+      "INSERT INTO device_context_entries (device_id) VALUES ('dev-1')",
+      "INSERT INTO settings VALUES ('axpert-dark', 'true', 'x')",
+    ];
+
+    void seedV3(dynamic database, {String extra = ''}) {
+      for (final sql in v3Ddl) {
+        database.execute(sql);
+      }
+      if (extra.isNotEmpty) database.execute(extra);
+      database.execute('PRAGMA user_version = 3');
+    }
+
+    test('adds customers and preserves existing data', () async {
+      final database = AxpertDatabase(
+        NativeDatabase.memory(setup: (db) => seedV3(db)),
+      );
+      addTearDown(database.close);
+
+      final tables = await database
+          .customSelect("SELECT name FROM sqlite_master WHERE type = 'table'")
+          .get();
+      final names = tables.map((row) => row.read<String>('name')).toSet();
+      final setting = await database
+          .customSelect('SELECT value_json FROM settings')
+          .getSingle();
+      final version = await database
+          .customSelect('PRAGMA user_version')
+          .getSingle();
+
+      expect(names, contains('customers'));
+      expect(setting.read<String>('value_json'), 'true');
+      expect(version.read<int>('user_version'), 4);
+    });
+
+    test('failed upgrade leaves v3 data and user_version intact', () async {
+      dynamic raw;
+      final database = AxpertDatabase(
+        NativeDatabase.memory(
+          setup: (db) {
+            raw = db;
+            seedV3(db, extra: 'CREATE INDEX customers ON settings (key)');
+          },
+        ),
+      );
+
+      await expectLater(
+        database.customSelect('SELECT 1').getSingle(),
+        throwsA(anything),
+      );
+
+      final tables = raw.select(
+        "SELECT name FROM sqlite_master WHERE type = 'table'",
+      );
+      final names = {for (final row in tables) row['name'] as String};
+      expect(names, isNot(contains('customers')));
+      expect(
+        raw.select('SELECT value_json FROM settings').single['value_json'],
+        'true',
+      );
+      expect(raw.select('PRAGMA user_version').single['user_version'], 3);
     });
   });
 }

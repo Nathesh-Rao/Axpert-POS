@@ -584,6 +584,7 @@ void main() {
 
       expect(await columns('sales'), [
         'id',
+        'has_sale_id',
         'number',
         'position',
         'occurred_at',
@@ -676,13 +677,13 @@ void main() {
       );
       addTearDown(database.close);
       String insert(String id, {String customer = 'NULL'}) =>
-          'INSERT INTO sales (id, number, position, occurred_at, store_name, '
+          'INSERT INTO sales (id, has_sale_id, number, position, occurred_at, store_name, '
           'customer_name, customer_legacy_id, customer_id, mode, sale_type, '
           'bill_discount_type, bill_discount_bp, bill_discount_minor, '
           'discount_reason, points_redeemed, note, items, qty_milli, '
           'value_minor, subtotal_minor, discount_minor, tax_minor, '
           'points_minor, total_minor, tendered_minor, change_minor, '
-          "created_at, updated_at) VALUES ('$id', 'AX000001', 0, 't', 's', "
+          "created_at, updated_at) VALUES ('$id', 0, 'AX000001', 0, 't', 's', "
           "'n', 'walk', $customer, 'Cash', 'Cash', 'flat', 0, 0, '', 0, '', "
           "1, 1000, 1, 1, 0, 0, 0, 1, 1, 0, 'x', 'x')";
 

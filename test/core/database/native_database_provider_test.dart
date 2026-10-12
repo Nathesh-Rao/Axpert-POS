@@ -150,6 +150,14 @@ void main() {
         ),
       );
 
+      addTearDown(() async {
+        try {
+          await database.close();
+        } on Object {
+          // The migration failed on purpose; closing may fail too.
+        }
+      });
+
       await expectLater(
         database.customSelect('SELECT 1').getSingle(),
         throwsA(anything),
@@ -224,6 +232,14 @@ void main() {
           },
         ),
       );
+
+      addTearDown(() async {
+        try {
+          await database.close();
+        } on Object {
+          // The migration failed on purpose; closing may fail too.
+        }
+      });
 
       await expectLater(
         database.customSelect('SELECT 1').getSingle(),

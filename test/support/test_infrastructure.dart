@@ -49,7 +49,7 @@ AppInfrastructure testInfrastructure({
   FakeDatabaseProvider? databaseProvider,
   MemoryDeviceContextStore? deviceContextStore,
 }) {
-  const config = DevelopmentAppConfig();
+  const config = DevelopmentAppConfig(settingsBackend: SettingsBackend.mock);
   return AppInfrastructure(
     config: config,
     apiClient: DioApiClient(config: config),

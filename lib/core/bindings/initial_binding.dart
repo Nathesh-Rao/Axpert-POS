@@ -56,6 +56,7 @@ import '../services/audio/audio_service_platform.dart';
 import '../services/beep_service.dart';
 
 import '../../modules/shell/controllers/settings_controller.dart';
+import '../../modules/shell/repository/drift_settings_repository.dart';
 import '../../modules/shell/repository/mock_settings_repository.dart';
 import '../../modules/shell/repository/settings_repository.dart';
 import '../../shared/controllers/overlay_controller.dart';
@@ -84,11 +85,22 @@ class InitialBinding extends Bindings {
   /// The payment boundary; a mock until a provider exists (DEC-123).
   final PaymentService payments;
 
+  SettingsRepository _settingsRepository() =>
+      switch (infrastructure.config.settingsBackend) {
+        SettingsBackend.drift => DriftSettingsRepository(
+          provider: infrastructure.databaseProvider,
+          store: store,
+          diagnostics: infrastructure.diagnostics,
+        ),
+        SettingsBackend.localStore => LocalStoreSettingsRepository(store),
+        SettingsBackend.mock => MockSettingsRepository(store),
+      };
+
   @override
   void dependencies() {
     _put<LocalStore>(store);
     _putInfrastructure();
-    _put<SettingsRepository>(MockSettingsRepository(store));
+    _put<SettingsRepository>(_settingsRepository());
     _put<SettingsController>(SettingsController(Get.find()));
     _put<ToastController>(ToastController());
     _put<SearchFieldController>(SearchFieldController());

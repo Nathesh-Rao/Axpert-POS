@@ -60,4 +60,4 @@ Windows/macOS/web (pub.dev page fetches on 2026-10-12, via agent): dio yes/yes/y
 **AGENTS.md vs our CLAUDE.md conflicts.** None blocking. Differences to record: AGENTS uses `dart format --output=none --set-exit-if-changed`, we use `dart format .`; AGENTS has no Chrome-test ban, no debug click-through, no layout rules, no commit trailers; AGENTS "add a package only if the task needs it" vs ours "ask first, one at a time" (ours stricter, wins); phase-level human-review commit vs our per-checkpoint commit after OK (ours wins). CLAUDE.md governs.
 
 ## Stage 3 cross-check result (added during implementation)
-See `progress.md` and `test/core/services/pricing/axpert_crosscheck_test.dart`: the two rule sets are not identical (per-line vs cart-level rounding; inclusive-mode `subtotal` meaning). Waiting for the owner's decision.
+See `progress.md` and `test/core/services/pricing/axpert_crosscheck_test.dart`: the two rule sets are not identical (per-line vs cart-level rounding; inclusive-mode `subtotal` meaning). Owner decision: keep our money core, no adapter (DEC-116, `money_core_differences.md`).

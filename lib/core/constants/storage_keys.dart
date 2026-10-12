@@ -19,4 +19,7 @@ abstract final class StorageKeys {
   /// Set while Drift may be behind LocalStore for customers (DEC-126).
   static const String customersDriftStale = '${_prefix}customers-drift-stale';
   static const String heldDriftStale = '${_prefix}held-drift-stale';
+
+  /// Set while Drift may be behind LocalStore for products (DEC-128).
+  static const String productsDriftStale = '${_prefix}products-drift-stale';
 }

@@ -30,6 +30,7 @@ import '../../modules/pos/models/payment_state.dart';
 import '../../modules/sales/controllers/sales_controller.dart';
 import '../../modules/shift/controllers/shift_controller.dart';
 import '../../modules/pos/repository/cart_repository.dart';
+import '../../modules/pos/repository/drift_held_bill_repository.dart';
 import '../../modules/pos/repository/held_bill_repository.dart';
 import '../../modules/pos/repository/mock_cart_repository.dart';
 import '../../modules/pos/repository/mock_held_bill_repository.dart';
@@ -109,6 +110,18 @@ class InitialBinding extends Bindings {
         CustomersBackend.mock => MockCustomerRepository(store),
       };
 
+  HeldBillRepository _heldBillRepository() =>
+      switch (infrastructure.config.heldBackend) {
+        HeldBackend.drift => DriftHeldBillRepository(
+          provider: infrastructure.databaseProvider,
+          store: store,
+          diagnostics: infrastructure.diagnostics,
+          uuid: infrastructure.uuid,
+        ),
+        HeldBackend.localStore => LocalStoreHeldBillRepository(store),
+        HeldBackend.mock => MockHeldBillRepository(store),
+      };
+
   @override
   void dependencies() {
     _put<LocalStore>(store);
@@ -134,7 +147,7 @@ class InitialBinding extends Bindings {
     );
     _put<CustomerRepository>(_customerRepository());
     _put<CartRepository>(MockCartRepository(store));
-    _put<HeldBillRepository>(MockHeldBillRepository(store));
+    _put<HeldBillRepository>(_heldBillRepository());
     _put<SaleRepository>(MockSaleRepository(store));
     _put<AudioService>(audio);
     _put<BeepService>(

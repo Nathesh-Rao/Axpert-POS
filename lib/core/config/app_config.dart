@@ -34,6 +34,22 @@ enum CustomersBackend {
       _fromEnvironment == 'localStore' ? localStore : drift;
 }
 
+/// Where the held bills live (DEC-127); same meaning as [SettingsBackend]
+/// (`--dart-define=HELD_BACKEND=localStore` rolls back).
+enum HeldBackend {
+  drift,
+  localStore,
+  mock;
+
+  static const String _fromEnvironment = String.fromEnvironment(
+    'HELD_BACKEND',
+    defaultValue: 'drift',
+  );
+
+  static HeldBackend get configured =>
+      _fromEnvironment == 'localStore' ? localStore : drift;
+}
+
 abstract interface class AppConfig {
   AppEnvironment get environment;
 
@@ -44,6 +60,8 @@ abstract interface class AppConfig {
   SettingsBackend get settingsBackend;
 
   CustomersBackend get customersBackend;
+
+  HeldBackend get heldBackend;
 }
 
 final class DevelopmentAppConfig implements AppConfig {
@@ -51,11 +69,14 @@ final class DevelopmentAppConfig implements AppConfig {
     this.apiBaseUrl,
     SettingsBackend? settingsBackend,
     CustomersBackend? customersBackend,
+    HeldBackend? heldBackend,
   }) : _settingsBackend = settingsBackend,
-       _customersBackend = customersBackend;
+       _customersBackend = customersBackend,
+       _heldBackend = heldBackend;
 
   final SettingsBackend? _settingsBackend;
   final CustomersBackend? _customersBackend;
+  final HeldBackend? _heldBackend;
 
   @override
   AppEnvironment get environment => AppEnvironment.development;
@@ -73,4 +94,7 @@ final class DevelopmentAppConfig implements AppConfig {
   @override
   CustomersBackend get customersBackend =>
       _customersBackend ?? CustomersBackend.configured;
+
+  @override
+  HeldBackend get heldBackend => _heldBackend ?? HeldBackend.configured;
 }

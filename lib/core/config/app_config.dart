@@ -83,6 +83,22 @@ enum SalesBackend {
       _fromEnvironment == 'localStore' ? localStore : drift;
 }
 
+/// Where the cart draft lives (DEC-130); same meaning as [SettingsBackend]
+/// (`--dart-define=CART_BACKEND=localStore` rolls back).
+enum CartBackend {
+  drift,
+  localStore,
+  mock;
+
+  static const String _fromEnvironment = String.fromEnvironment(
+    'CART_BACKEND',
+    defaultValue: 'drift',
+  );
+
+  static CartBackend get configured =>
+      _fromEnvironment == 'localStore' ? localStore : drift;
+}
+
 abstract interface class AppConfig {
   AppEnvironment get environment;
 
@@ -99,6 +115,8 @@ abstract interface class AppConfig {
   ProductsBackend get productsBackend;
 
   SalesBackend get salesBackend;
+
+  CartBackend get cartBackend;
 }
 
 final class DevelopmentAppConfig implements AppConfig {
@@ -109,17 +127,20 @@ final class DevelopmentAppConfig implements AppConfig {
     HeldBackend? heldBackend,
     ProductsBackend? productsBackend,
     SalesBackend? salesBackend,
+    CartBackend? cartBackend,
   }) : _settingsBackend = settingsBackend,
        _customersBackend = customersBackend,
        _heldBackend = heldBackend,
        _productsBackend = productsBackend,
-       _salesBackend = salesBackend;
+       _salesBackend = salesBackend,
+       _cartBackend = cartBackend;
 
   final SettingsBackend? _settingsBackend;
   final CustomersBackend? _customersBackend;
   final HeldBackend? _heldBackend;
   final ProductsBackend? _productsBackend;
   final SalesBackend? _salesBackend;
+  final CartBackend? _cartBackend;
 
   @override
   AppEnvironment get environment => AppEnvironment.development;
@@ -147,4 +168,7 @@ final class DevelopmentAppConfig implements AppConfig {
 
   @override
   SalesBackend get salesBackend => _salesBackend ?? SalesBackend.configured;
+
+  @override
+  CartBackend get cartBackend => _cartBackend ?? CartBackend.configured;
 }

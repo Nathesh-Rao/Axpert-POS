@@ -31,6 +31,7 @@ import '../../modules/pos/models/payment_state.dart';
 import '../../modules/sales/controllers/sales_controller.dart';
 import '../../modules/shift/controllers/shift_controller.dart';
 import '../../modules/pos/repository/cart_repository.dart';
+import '../../modules/pos/repository/drift_cart_repository.dart';
 import '../../modules/pos/repository/drift_held_bill_repository.dart';
 import '../../modules/pos/repository/held_bill_repository.dart';
 import '../../modules/pos/repository/mock_cart_repository.dart';
@@ -207,6 +208,17 @@ class InitialBinding extends Bindings {
     );
   }
 
+  CartRepository _cartRepository() =>
+      switch (infrastructure.config.cartBackend) {
+        CartBackend.drift => DriftCartRepository(
+          provider: infrastructure.databaseProvider,
+          store: store,
+          diagnostics: infrastructure.diagnostics,
+        ),
+        CartBackend.localStore => LocalStoreCartRepository(store),
+        CartBackend.mock => MockCartRepository(store),
+      };
+
   HeldBillRepository _heldBillRepository() =>
       switch (infrastructure.config.heldBackend) {
         HeldBackend.drift => DriftHeldBillRepository(
@@ -235,7 +247,7 @@ class InitialBinding extends Bindings {
 
     _put<ProductRepository>(productRepository());
     _put<CustomerRepository>(_customerRepository());
-    _put<CartRepository>(MockCartRepository(store));
+    _put<CartRepository>(_cartRepository());
     _put<HeldBillRepository>(_heldBillRepository());
     _put<SaleRepository>(_saleRepository());
     _putCheckoutRepositories();

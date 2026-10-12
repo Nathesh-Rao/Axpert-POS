@@ -49,7 +49,7 @@ const mirrorSales = await lsRead(b.ev, 'axpert-sales');
 const mirrorProducts = await lsRead(b.ev, 'axpert-products');
 const mirrorCustomers = await lsRead(b.ev, 'axpert-customers');
 const sale = d.sales[0];
-check('A: user_version 7, marker sales_copy_v1, exactly one sale (position 0)', d.version === 7 && d.marker.length === 1 && d.sales.length === 1 && sale.position === 0 && !sale.deleted_at);
+check('A: user_version 8, marker sales_copy_v1, exactly one sale (position 0)', d.version === 8 && d.marker.length === 1 && d.sales.length === 1 && sale.position === 0 && !sale.deleted_at);
 check('A: sale id is a UUID v4 equal to the saleId in the LocalStore JSON, has_sale_id 1', !!sale && uuidRe.test(sale.id) && sale.has_sale_id === 1 && mirrorSales?.[0]?.saleId === sale.id && mirrorSales[0].number === sale.number, JSON.stringify(sale));
 check('A: customer is Priya (legacy id 3), link to the customer row set, mode Cash', sale?.customer_name === 'Priya Nair' && sale.customer_legacy_id === '3' && !!sale.customer_id && sale.mode === 'Cash', JSON.stringify(sale));
 check('A: two lines (Lays id 5, Coca Cola id 0) with product links and nothing returned', d.lines.length === 2 && d.lines.map((l) => l.product_legacy_id).sort().join() === '0,5' && d.lines.every((l) => !!l.product_id && l.returned_qty_milli === 0 && l.sale_id === sale.id), JSON.stringify(d.lines));

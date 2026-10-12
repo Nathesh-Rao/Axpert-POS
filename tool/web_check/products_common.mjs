@@ -8,10 +8,10 @@ import fs from 'node:fs';
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 export const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
-export async function launch({ width = 1280, height = 720, tag = 'prod' } = {}) {
+export async function launch({ width = 1280, height = 720, tag = 'prod', userDataDir = null } = {}) {
   const CH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
   const port = 9300 + Math.floor(Math.random() * 500);
-  const proc = spawn(CH, ['--headless=new', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', `--remote-debugging-port=${port}`, `--window-size=${width},${height}`, `--user-data-dir=/tmp/${tag}-${port}`, 'about:blank'], { stdio: 'ignore' });
+  const proc = spawn(CH, ['--headless=new', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', `--remote-debugging-port=${port}`, `--window-size=${width},${height}`, `--user-data-dir=${userDataDir ?? `/tmp/${tag}-${port}`}`, 'about:blank'], { stdio: 'ignore' });
   let targets;
   for (let i = 0; i < 50; i++) { try { targets = await (await fetch(`http://127.0.0.1:${port}/json`)).json(); if (targets.length) break; } catch {} await sleep(200); }
   const ws = new WebSocket(targets.find((t) => t.type === 'page').webSocketDebuggerUrl);
@@ -38,7 +38,8 @@ export async function launch({ width = 1280, height = 720, tag = 'prod' } = {}) 
   const shot = async (dir, name) => { const r = await send('Page.captureScreenshot', { format: 'png' }); fs.writeFileSync(`${dir}/${name}.png`, Buffer.from(r.data, 'base64')); };
   const waitView = async (settleMs = 9000) => { for (let i = 0; i < 1200; i++) { if (await ev("!!document.querySelector('flutter-view, flt-glass-pane')")) break; await sleep(100); } await sleep(settleMs); };
   const close = () => { try { ws.close(); } catch {} proc.kill(); };
-  return { port, send, ev, click, insert, key, shot, waitView, errors, lines, close };
+  const kill = () => { try { proc.kill('SIGKILL'); } catch {} };
+  return { port, send, ev, click, insert, key, shot, waitView, errors, lines, close, kill };
 }
 
 /** localStorage value written by shared_preferences web (JSON of a JSON string). */

@@ -187,6 +187,7 @@ abstract class AppStrings {
   String toastCreditNeedsCustomer();
   String toastStockChanged();
   String toastPaymentCompleted();
+  String toastPaymentFailed();
   String toastSavedOnCredit();
   String confirmSaveCredit({required String total, required String customer});
   String confirmDeleteHeld({required int count});

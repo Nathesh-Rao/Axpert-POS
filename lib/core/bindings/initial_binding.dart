@@ -49,6 +49,8 @@ import '../security/authentication_service.dart';
 import '../session/session_controller.dart';
 import 'app_infrastructure.dart';
 import 'startup_diagnostics.dart';
+import '../../features/payment/data/services/mock_payment_service.dart';
+import '../../features/payment/domain/services/payment_service.dart';
 import '../services/audio/audio_service.dart';
 import '../services/audio/audio_service_platform.dart';
 import '../services/beep_service.dart';
@@ -71,11 +73,16 @@ class InitialBinding extends Bindings {
     this.store, {
     required this.infrastructure,
     AudioService? audio,
-  }) : audio = audio ?? createPlatformAudioService();
+    PaymentService? payments,
+  }) : audio = audio ?? createPlatformAudioService(),
+       payments = payments ?? const MockPaymentService();
 
   final LocalStore store;
   final AppInfrastructure infrastructure;
   final AudioService audio;
+
+  /// The payment boundary; a mock until a provider exists (DEC-123).
+  final PaymentService payments;
 
   @override
   void dependencies() {
@@ -151,8 +158,11 @@ class InitialBinding extends Bindings {
         toasts: Get.find(),
       ),
     );
+    _put<PaymentService>(payments);
     _put<PaymentController>(
       PaymentController(
+        payments: Get.find(),
+        uuid: Get.find<UuidGenerator>(),
         cart: Get.find(),
         meta: Get.find(),
         products: Get.find(),

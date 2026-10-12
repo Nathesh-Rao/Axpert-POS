@@ -1,0 +1,25 @@
+{
+  "_note": "Example: the Products move of 2026-10-12 (commit fc77244). Already applied; kept as a template.",
+  "moves": {
+    "lib/modules/products/models/product.dart": "lib/features/products/domain/entities/product.dart",
+    "lib/modules/products/repository/product_repository.dart": "lib/features/products/domain/repositories/product_repository.dart",
+    "lib/modules/products/repository/mock_product_repository.dart": "lib/features/products/data/repositories/mock_product_repository.dart",
+    "lib/core/mock/seed_products.dart": "lib/features/products/data/datasources/seed_products.dart",
+    "lib/core/mock/large_dataset.dart": "lib/features/products/data/datasources/large_dataset.dart",
+    "lib/modules/products/controllers/products_controller.dart": "lib/features/products/presentation/controllers/products_controller.dart",
+    "lib/modules/products/controllers/products_page_controller.dart": "lib/features/products/presentation/controllers/products_page_controller.dart",
+    "lib/modules/products/bindings/products_binding.dart": "lib/features/products/presentation/bindings/products_binding.dart",
+    "lib/modules/products/views/products_view.dart": "lib/features/products/presentation/pages/products_view.dart",
+    "test/modules/products/management_layout_test.dart": "test/features/products/management_layout_test.dart",
+    "test/modules/products/management_performance_test.dart": "test/features/products/management_performance_test.dart",
+    "test/modules/products/products_page_test.dart": "test/features/products/products_page_test.dart"
+  },
+  "remove": [
+    "lib/modules/products/bindings/.gitkeep",
+    "lib/modules/products/controllers/.gitkeep",
+    "lib/modules/products/models/.gitkeep",
+    "lib/modules/products/repository/.gitkeep",
+    "lib/modules/products/views/.gitkeep",
+    "lib/modules/products/widgets/.gitkeep"
+  ]
+}

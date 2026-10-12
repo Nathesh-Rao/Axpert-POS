@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:pos_application/core/bindings/app_infrastructure.dart';
 import 'package:pos_application/core/bindings/initial_binding.dart';
 import 'package:pos_application/core/mock/mock_delay.dart';
 import 'package:pos_application/core/services/audio/audio_service.dart';
@@ -15,13 +16,14 @@ import 'test_infrastructure.dart';
 Future<InitialBinding> bootTestApp({
   LocalStore? store,
   PaymentService? payments,
+  AppInfrastructure? infrastructure,
 }) async {
   AppTypography.useBundledFonts = true;
   MockDelay.provider = () => Duration.zero;
   Get.reset();
   final binding = InitialBinding(
     store ?? InMemoryLocalStore(),
-    infrastructure: testInfrastructure(),
+    infrastructure: infrastructure ?? testInfrastructure(),
     audio: RecordingAudioService(),
     payments: payments,
   );

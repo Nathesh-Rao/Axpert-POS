@@ -46,10 +46,14 @@ class FixedDeviceIdGenerator implements DeviceIdGenerator {
 /// Infrastructure for tests: fakes and in-memory stores, no real database, no
 /// platform lifecycle observer.
 AppInfrastructure testInfrastructure({
-  FakeDatabaseProvider? databaseProvider,
+  DatabaseProvider? databaseProvider,
   MemoryDeviceContextStore? deviceContextStore,
+  CustomersBackend customersBackend = CustomersBackend.mock,
 }) {
-  const config = DevelopmentAppConfig(settingsBackend: SettingsBackend.mock);
+  final config = DevelopmentAppConfig(
+    settingsBackend: SettingsBackend.mock,
+    customersBackend: customersBackend,
+  );
   return AppInfrastructure(
     config: config,
     apiClient: DioApiClient(config: config),

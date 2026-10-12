@@ -15,6 +15,7 @@ import '../../modules/pos/controllers/hold_recall_controller.dart';
 
 import '../../modules/customers/controllers/customers_controller.dart';
 import '../../modules/customers/repository/customer_repository.dart';
+import '../../modules/customers/repository/drift_customer_repository.dart';
 import '../../modules/customers/repository/mock_customer_repository.dart';
 import '../../modules/pos/controllers/cart_actions_controller.dart';
 import '../../modules/pos/controllers/cart_controller.dart';
@@ -96,6 +97,18 @@ class InitialBinding extends Bindings {
         SettingsBackend.mock => MockSettingsRepository(store),
       };
 
+  CustomerRepository _customerRepository() =>
+      switch (infrastructure.config.customersBackend) {
+        CustomersBackend.drift => DriftCustomerRepository(
+          provider: infrastructure.databaseProvider,
+          store: store,
+          diagnostics: infrastructure.diagnostics,
+          uuid: infrastructure.uuid,
+        ),
+        CustomersBackend.localStore => LocalStoreCustomerRepository(store),
+        CustomersBackend.mock => MockCustomerRepository(store),
+      };
+
   @override
   void dependencies() {
     _put<LocalStore>(store);
@@ -119,7 +132,7 @@ class InitialBinding extends Bindings {
             )
           : MockProductRepository(store),
     );
-    _put<CustomerRepository>(MockCustomerRepository(store));
+    _put<CustomerRepository>(_customerRepository());
     _put<CartRepository>(MockCartRepository(store));
     _put<HeldBillRepository>(MockHeldBillRepository(store));
     _put<SaleRepository>(MockSaleRepository(store));

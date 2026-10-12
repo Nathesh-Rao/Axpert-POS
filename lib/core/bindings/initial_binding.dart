@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:get/get.dart';
 
 import '../../modules/customers/controllers/add_customer_controller.dart';
@@ -35,6 +36,7 @@ import '../../modules/pos/repository/held_bill_repository.dart';
 import '../../modules/pos/repository/mock_cart_repository.dart';
 import '../../modules/pos/repository/mock_held_bill_repository.dart';
 import '../../features/products/presentation/controllers/products_controller.dart';
+import '../../features/products/data/repositories/drift_product_repository.dart';
 import '../../features/products/data/repositories/mock_product_repository.dart';
 import '../../features/products/domain/repositories/product_repository.dart';
 import '../../modules/sales/repository/mock_sale_repository.dart';
@@ -67,6 +69,7 @@ import '../../shared/controllers/page_filter_controller.dart';
 import '../../shared/controllers/search_field_controller.dart';
 import '../../shared/controllers/shell_chrome_controller.dart';
 import '../../shared/controllers/toast_controller.dart';
+import '../services/storage/in_memory_local_store.dart';
 import '../services/storage/local_store.dart';
 import '../shortcuts/shortcut_controller.dart';
 
@@ -111,6 +114,30 @@ class InitialBinding extends Bindings {
         CustomersBackend.mock => MockCustomerRepository(store),
       };
 
+  /// The debug large dataset (10k products, debug builds only) lives on a
+  /// private in-memory store: it never touches the Drift table or the real
+  /// LocalStore key (DEC-128). [largeDataset] is a seam for tests.
+  @visibleForTesting
+  ProductRepository productRepository({bool? largeDataset}) {
+    if (largeDataset ?? LargeDataset.enabled) {
+      return MockProductRepository(
+        InMemoryLocalStore(),
+        seed: LargeDataset.products(),
+        forceSeed: true,
+      );
+    }
+    return switch (infrastructure.config.productsBackend) {
+      ProductsBackend.drift => DriftProductRepository(
+        provider: infrastructure.databaseProvider,
+        store: store,
+        diagnostics: infrastructure.diagnostics,
+        uuid: infrastructure.uuid,
+      ),
+      ProductsBackend.localStore => LocalStoreProductRepository(store),
+      ProductsBackend.mock => MockProductRepository(store),
+    };
+  }
+
   HeldBillRepository _heldBillRepository() =>
       switch (infrastructure.config.heldBackend) {
         HeldBackend.drift => DriftHeldBillRepository(
@@ -137,15 +164,7 @@ class InitialBinding extends Bindings {
     _put<ShortcutController>(ShortcutController());
     _put<ClockController>(ClockController());
 
-    _put<ProductRepository>(
-      LargeDataset.enabled
-          ? MockProductRepository(
-              store,
-              seed: LargeDataset.products(),
-              forceSeed: true,
-            )
-          : MockProductRepository(store),
-    );
+    _put<ProductRepository>(productRepository());
     _put<CustomerRepository>(_customerRepository());
     _put<CartRepository>(MockCartRepository(store));
     _put<HeldBillRepository>(_heldBillRepository());

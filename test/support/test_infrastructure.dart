@@ -50,11 +50,13 @@ AppInfrastructure testInfrastructure({
   MemoryDeviceContextStore? deviceContextStore,
   CustomersBackend customersBackend = CustomersBackend.mock,
   HeldBackend heldBackend = HeldBackend.mock,
+  ProductsBackend productsBackend = ProductsBackend.mock,
 }) {
   final config = DevelopmentAppConfig(
     settingsBackend: SettingsBackend.mock,
     customersBackend: customersBackend,
     heldBackend: heldBackend,
+    productsBackend: productsBackend,
   );
   return AppInfrastructure(
     config: config,

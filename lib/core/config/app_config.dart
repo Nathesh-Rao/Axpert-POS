@@ -50,6 +50,22 @@ enum HeldBackend {
       _fromEnvironment == 'localStore' ? localStore : drift;
 }
 
+/// Where the products live (DEC-128); same meaning as [SettingsBackend]
+/// (`--dart-define=PRODUCTS_BACKEND=localStore` rolls back).
+enum ProductsBackend {
+  drift,
+  localStore,
+  mock;
+
+  static const String _fromEnvironment = String.fromEnvironment(
+    'PRODUCTS_BACKEND',
+    defaultValue: 'drift',
+  );
+
+  static ProductsBackend get configured =>
+      _fromEnvironment == 'localStore' ? localStore : drift;
+}
+
 abstract interface class AppConfig {
   AppEnvironment get environment;
 
@@ -62,6 +78,8 @@ abstract interface class AppConfig {
   CustomersBackend get customersBackend;
 
   HeldBackend get heldBackend;
+
+  ProductsBackend get productsBackend;
 }
 
 final class DevelopmentAppConfig implements AppConfig {
@@ -70,13 +88,16 @@ final class DevelopmentAppConfig implements AppConfig {
     SettingsBackend? settingsBackend,
     CustomersBackend? customersBackend,
     HeldBackend? heldBackend,
+    ProductsBackend? productsBackend,
   }) : _settingsBackend = settingsBackend,
        _customersBackend = customersBackend,
-       _heldBackend = heldBackend;
+       _heldBackend = heldBackend,
+       _productsBackend = productsBackend;
 
   final SettingsBackend? _settingsBackend;
   final CustomersBackend? _customersBackend;
   final HeldBackend? _heldBackend;
+  final ProductsBackend? _productsBackend;
 
   @override
   AppEnvironment get environment => AppEnvironment.development;
@@ -97,4 +118,8 @@ final class DevelopmentAppConfig implements AppConfig {
 
   @override
   HeldBackend get heldBackend => _heldBackend ?? HeldBackend.configured;
+
+  @override
+  ProductsBackend get productsBackend =>
+      _productsBackend ?? ProductsBackend.configured;
 }

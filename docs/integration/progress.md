@@ -41,3 +41,9 @@ Decision (owner): keep our money core exactly as is, no adapter now (DEC-116, KG
 
 ## Batch 3 decisions (owner, 2026-10-12)
 - Batch 3 accepted. DEC-121: no further module migration until Phase B work changes a module. DEC-122: `AppShell` stays in `modules/shell` as app chrome any page may import; `shell/widgets/search_results.dart` depends on the products feature (`Product`). The import-rewrite script is saved under `tool/integration/` for future moves.
+
+## Stage 7 (PaymentService and saleId, 2026-10-12)
+- Commits: `c50e551` 7a (feature `features/payment`: interface, entities, `MockPaymentService`, 2 tests), `9fb2476` 7b (additive `Sale.saleId`, `CheckoutService` carries it, 4 + 1 tests), `326280f` 7c (`PaymentController` async via `PaymentService`, UUID ids, guard in `finally`, 'Payment failed' string, `InitialBinding(payments:)`, 9 tests), `e8f1d26` tool step in `debug_check.mjs`; docs commit follows. DEC-123, KG-185 to KG-188.
+- Checks: format/analyze clean at every step; `payment_flow_test`, `receipt_flow_test`, `summary_layout_test` and `cart_actions_test` (119 tests with summary layout) passed UNCHANGED; touched folders 7b: 717 tests, 7c: 520 tests; full VM suite 994/994 (978 before + 16 new); no PNG changed, no new failure image (goldens byte-identical, not regenerated).
+- Debug click-through with the new checkout step, 66/66 steps in normal and in `--semantics` mode: F2 + Enter completes a cash sale (bill AX000004, total 83.80, cart cleared), the receipt opens (looked at the screenshot; read from the semantics DOM, switched on only after the sale in normal mode), and the stored `axpert-sales` has 4 sales: the new one with a UUID v4 `saleId`, the 3 seeded ones untouched (no `saleId` key).
+- Not verified: a real asynchronous provider (only the mock exists), a failed payment in the browser (unit-tested only), card flow in the browser, Windows/tablet, behavior with a persistence failure (KG-187).

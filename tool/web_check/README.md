@@ -29,3 +29,7 @@ flutter run -d web-server --web-port=8170 --web-hostname=127.0.0.1    # wait for
 node --experimental-websocket tool/web_check/debug_check.mjs http://127.0.0.1:8170/ /tmp/dbg_out
 ```
 The debug dev server serves ONE page load per `flutter run`: start a fresh server for every run and stop it afterwards. Exit code 1 on any failure; `FAIL_*.log` and a screenshot per step are written to the output folder.
+
+## Drift flow checks (D1 to D5)
+`drift_check.mjs` (worker, wasm, schema version and every table's marker; `--seed-duplicates`), `customers_flow_check.mjs`, `held_flow_check.mjs`, `products_flow_check.mjs`, `sales_flow_check.mjs` (a member's cash sale and two refunds through the UI, then the rebuilt SQLite file and the LocalStore mirrors) and the timeline checks `products_10k_check.mjs` (10,000 products, checkout receipt, transaction and mirror timings) and `startup_check.mjs` need `flutter build web` (timeline checks: `--dart-define=STARTUP_TIMELINE=true -o build/web_timeline`) served with `serve.py`; each starts a fresh Chrome profile and exits 1 on a mismatch.
+

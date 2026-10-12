@@ -42,7 +42,7 @@ const sameAsStore = (rows, store) => rows.length === store.length && rows.every(
   const store = await lsRead(b.ev, 'axpert-products');
   const stale = await lsRaw(b.ev, 'axpert-products-drift-stale');
   const changed = rows.rows.filter((r) => r.updated_at > r.created_at).map((r) => r.legacy_id);
-  check('A: 20 active rows, user_version 6, marker present', rows.rows.length === 20 && rows.rows.every((r, i) => r.position === i && !r.deleted_at && uuidRe.test(r.id)) && rows.version === 6 && rows.marker.length === 1);
+  check('A: 20 active rows, user_version 7, marker present', rows.rows.length === 20 && rows.rows.every((r, i) => r.position === i && !r.deleted_at && uuidRe.test(r.id)) && rows.version === 7 && rows.marker.length === 1);
   check('A: stock id0=44 and id2=49 in Drift', rows.rows[0].stock === 44 && rows.rows[2].stock === 49, JSON.stringify(rows.rows.slice(0, 3)));
   check('A: Pepsi (id1) favourite in Drift', rows.rows[1].favourite === 1);
   check('A: only the 3 changed rows have updated_at after created_at', changed.join() === '0,1,2', changed.join());

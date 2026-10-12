@@ -6,8 +6,9 @@
 // formula, because LargeDataset is compiled out of release builds) is written to localStorage
 // BEFORE the first load, so the first start does the copy. Reports, from the `[startup]` and
 // `[perf]` console lines: copy time, read time, `load products`, the first run's loadData and
-// first frame, then a RELOAD (marker present: no copy), then one checkout of two products
-// (Drift write and whole-list mirror write). Checks the Drift rows against the injected list and
+// first frame, then a RELOAD (marker present: no copy), then two checkouts of two products
+// each (D5: receipt time, one Drift transaction, whole-list mirrors; the first write after the
+// reload and the steady state). Checks the Drift rows against the injected list and
 // against LocalStore. Exit 1 on a mismatch or a console error.
 import fs from 'node:fs';
 import { launch, withDb, lsRead, sleep, uuidRe } from './products_common.mjs';
@@ -73,7 +74,10 @@ const checkout = async (n, a, c) => {
   await b.shot(outDir, `${n}_after_checkout`);
   const perf = b.lines.slice(mark).filter((x) => x.startsWith('[perf]')).map((x) => JSON.parse(x.slice(7)));
   console.log(`CHECKOUT ${n} (2 products, 10,000-product list):`, perf.map((p) => `${p.name}: ${p.ms.toFixed(1)} ms`).join(' | ') || 'NO [perf] LINES');
-  check(`checkout ${n} wrote 2 Drift rows and one whole-list mirror`, perf.some((p) => p.name.startsWith('products save drift (2 rows)')) && perf.some((p) => p.name === 'products save mirror'), JSON.stringify(perf));
+  const commit = perf.find((p) => p.name.startsWith('checkout commit ('));
+  const receipt = perf.find((p) => p.name === 'checkout receipt');
+  console.log(`  -> receipt (memory update to receipt open) ${receipt?.ms.toFixed(1) ?? 'n/a'} ms | transaction ${commit?.ms.toFixed(1) ?? 'n/a'} ms (${commit?.name}) | three mirrors ${perf.find((p) => p.name === 'checkout mirror')?.ms.toFixed(1) ?? 'n/a'} ms`);
+  check(`checkout ${n}: one transaction: 1 sale + 2 lines + 2 stock rows (5 planned rows, the payment row is extra), mirrors written, receipt timed`, !!commit && /checkout commit \(5 rows\)/.test(commit.name) && perf.some((p) => p.name === 'checkout mirror') && !!receipt, JSON.stringify(perf));
 };
 await checkout(1, 10, 11);
 await checkout(2, 12, 13);

@@ -22,7 +22,9 @@ final class DeviceContextService extends GetxService {
   @override
   void onInit() {
     super.onInit();
-    unawaited(initialize());
+    // A failure is observed by whoever awaits `initialize()` (the bootstrap
+    // records it, DEC-119); here it must not become an unhandled async error.
+    unawaited(initialize().then<void>((_) {}, onError: (Object _) {}));
   }
 
   Future<DeviceContext> initialize() {

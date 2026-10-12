@@ -39,6 +39,16 @@ import '../../modules/sales/repository/mock_sale_repository.dart';
 import '../../modules/sales/repository/sale_repository.dart';
 import '../../shared/controllers/clock_controller.dart';
 import '../mock/large_dataset.dart';
+import '../config/app_config.dart';
+import '../database/database_provider.dart';
+import '../device/device_context_service.dart';
+import '../identifiers/uuid_generator.dart';
+import '../lifecycle/app_lifecycle_service.dart';
+import '../network/api_client.dart';
+import '../security/authentication_service.dart';
+import '../session/session_controller.dart';
+import 'app_infrastructure.dart';
+import 'startup_diagnostics.dart';
 import '../services/audio/audio_service.dart';
 import '../services/audio/audio_service_platform.dart';
 import '../services/beep_service.dart';
@@ -57,15 +67,20 @@ import '../shortcuts/shortcut_controller.dart';
 /// Permanent, cross-module controllers. Idempotent: calling it twice (from
 /// `main` and from `GetMaterialApp.initialBinding`) registers once.
 class InitialBinding extends Bindings {
-  InitialBinding(this.store, {AudioService? audio})
-    : audio = audio ?? createPlatformAudioService();
+  InitialBinding(
+    this.store, {
+    required this.infrastructure,
+    AudioService? audio,
+  }) : audio = audio ?? createPlatformAudioService();
 
   final LocalStore store;
+  final AppInfrastructure infrastructure;
   final AudioService audio;
 
   @override
   void dependencies() {
     _put<LocalStore>(store);
+    _putInfrastructure();
     _put<SettingsRepository>(MockSettingsRepository(store));
     _put<SettingsController>(SettingsController(Get.find()));
     _put<ToastController>(ToastController());
@@ -261,6 +276,24 @@ class InitialBinding extends Bindings {
       Get.find<HeldBillsController>().load(),
     ]);
     await Get.find<CartController>().load();
+  }
+
+  /// axpert_pos-style infrastructure (DEC-118/119): config, API client, local
+  /// database, device context, ids, authentication (unconfigured), session and
+  /// lifecycle. Idempotent like every registration here.
+  void _putInfrastructure() {
+    final i = infrastructure;
+    _put<StartupDiagnostics>(i.diagnostics);
+    _put<AppConfig>(i.config);
+    _put<ApiClient>(i.apiClient);
+    _put<DatabaseProvider>(i.databaseProvider);
+    _put<DeviceContextService>(i.deviceContextService);
+    _put<UuidGenerator>(i.uuid);
+    _put<AuthenticationService>(i.authentication);
+    _put<SessionController>(
+      SessionController(authenticationService: i.authentication),
+    );
+    _put<AppLifecycleService>(i.lifecycle);
   }
 
   void _put<T extends Object>(T instance) {

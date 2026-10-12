@@ -8,6 +8,8 @@ import 'package:pos_application/core/services/storage/local_store.dart';
 import 'package:pos_application/core/theme/tokens/app_typography.dart';
 import 'package:pos_application/main.dart';
 
+import 'test_infrastructure.dart';
+
 /// Fresh Get registry, in-memory store, zero mock delay, bundled test fonts.
 Future<InitialBinding> bootTestApp({LocalStore? store}) async {
   AppTypography.useBundledFonts = true;
@@ -15,6 +17,7 @@ Future<InitialBinding> bootTestApp({LocalStore? store}) async {
   Get.reset();
   final binding = InitialBinding(
     store ?? InMemoryLocalStore(),
+    infrastructure: testInfrastructure(),
     audio: RecordingAudioService(),
   );
   binding.dependencies();

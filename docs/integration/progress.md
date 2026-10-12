@@ -38,3 +38,6 @@ Decision (owner): keep our money core exactly as is, no adapter now (DEC-116, KG
   - Permanent controllers registered in `InitialBinding` (`ProductsController`) and shared entities (`Product`, used by cart, returns, search) create cross-feature imports of `domain/entities`; this matches axpert's cart using the catalog entity.
   - The scripted rewrite (resolve every import against the file's old location, map through the move table, rewrite relative to the new location) handled 113 lines in 67 files with no manual edits; it is reusable with a different move table (kept in the session scratchpad, not in the repo).
   - Moves of files with persisted JSON or seeds (Stage 6b, D4) must keep `axpert-products` JSON identical.
+
+## Batch 3 decisions (owner, 2026-10-12)
+- Batch 3 accepted. DEC-121: no further module migration until Phase B work changes a module. DEC-122: `AppShell` stays in `modules/shell` as app chrome any page may import; `shell/widgets/search_results.dart` depends on the products feature (`Product`). The import-rewrite script is saved under `tool/integration/` for future moves.

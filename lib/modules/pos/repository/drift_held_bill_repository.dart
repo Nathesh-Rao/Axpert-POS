@@ -6,6 +6,7 @@ import '../../../core/database/migration/held_bill_rows.dart';
 import '../../../core/database/migration/held_bills_migrator.dart';
 import '../../../core/identifiers/uuid_generator.dart';
 import '../../../core/services/storage/local_store.dart';
+import '../../../core/utils/serial_queue.dart';
 import '../models/held_bill.dart';
 import 'held_bill_repository.dart';
 import 'mock_held_bill_repository.dart';
@@ -66,18 +67,11 @@ class DriftHeldBillRepository implements HeldBillRepository {
     }
   }
 
-  /// Saves run one after another (Drift transaction, then the LocalStore
-  /// copy). Without the queue, overlapping unawaited saves can finish out of
-  /// order and leave the LocalStore copy on an older list than Drift (the
-  /// trailing pragma of `durableTransaction` runs outside the transaction).
-  Future<void> _tail = Future<void>.value();
+  /// Saves run one after another (see [SerialQueue], KG-190).
+  final SerialQueue _saves = SerialQueue();
 
   @override
-  Future<void> save(List<HeldBill> bills) {
-    final run = _tail.then((_) => _save(bills));
-    _tail = run.then<void>((_) {}, onError: (Object _) {});
-    return run;
-  }
+  Future<void> save(List<HeldBill> bills) => _saves.run(() => _save(bills));
 
   Future<void> _save(List<HeldBill> bills) async {
     final db = _db;

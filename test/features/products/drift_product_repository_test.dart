@@ -25,6 +25,7 @@ import 'package:pos_application/modules/sales/models/sale.dart';
 
 import '../../support/product_fixtures.dart';
 import '../../support/sale_fixtures.dart';
+import '../../support/test_session.dart';
 
 class _Provider implements DatabaseProvider {
   _Provider(this.db);
@@ -85,7 +86,7 @@ void main() {
     MockDelay.provider = () => Duration.zero;
     counter = _WriteCounter();
     db = AxpertDatabase(NativeDatabase.memory().interceptWith(counter));
-    store = InMemoryLocalStore();
+    store = legacySeededStore();
     diagnostics = StartupDiagnostics();
   });
   tearDown(() => db.close());

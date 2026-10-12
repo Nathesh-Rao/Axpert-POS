@@ -27,6 +27,11 @@ abstract final class AppIcons {
     fontFamily: _family,
     fontPackage: _package,
   );
+  static const IconData gift = IconData(
+    57569,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
   static const IconData eye = IconData(
     57530,
     fontFamily: _family,
@@ -303,6 +308,7 @@ abstract final class AppIcons {
     'smartphone': smartphone,
     'user': user,
     'lock': lock,
+    'gift': gift,
     'eye': eye,
     'eyeOff': eyeOff,
     'arrowRight': arrowRight,

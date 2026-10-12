@@ -31,6 +31,7 @@ class Cart {
     this.reason = '',
     this.points = 0,
     this.note = '',
+    this.storeId,
   });
 
   factory Cart.fromJson(
@@ -51,6 +52,7 @@ class Cart {
       reason: json['reason'] as String,
       points: json['points'] as int,
       note: json['note'] as String,
+      storeId: json['storeId'] as String?,
     );
   }
 
@@ -65,6 +67,10 @@ class Cart {
   /// Whole points to redeem.
   final int points;
   final String note;
+
+  /// Store the cart was filled in (scoped mode only); null otherwise. A saved
+  /// cart of another store is dropped at sign-in.
+  final String? storeId;
 
   bool get isActive => lines.isNotEmpty;
 
@@ -83,6 +89,7 @@ class Cart {
     String? reason,
     int? points,
     String? note,
+    String? storeId,
   }) => Cart(
     lines: lines ?? this.lines,
     customer: customer ?? this.customer,
@@ -91,6 +98,21 @@ class Cart {
     reason: reason ?? this.reason,
     points: points ?? this.points,
     note: note ?? this.note,
+    storeId: storeId ?? this.storeId,
+  );
+
+  /// The same cart priced in [currency] (same minor units).
+  Cart inCurrency(Currency currency) => Cart(
+    lines: <CartLine>[for (final l in lines) l.inCurrency(currency)],
+    customer: customer,
+    saleType: saleType,
+    billDiscount: billDiscount.flat == null
+        ? billDiscount
+        : BillDiscount.flat(Money(billDiscount.flat!.minor, currency)),
+    reason: reason,
+    points: points,
+    note: note,
+    storeId: storeId,
   );
 
   // ---- cartReducer rules ----
@@ -167,5 +189,6 @@ class Cart {
     'reason': reason,
     'points': points,
     'note': note,
+    if (storeId != null) 'storeId': storeId,
   };
 }

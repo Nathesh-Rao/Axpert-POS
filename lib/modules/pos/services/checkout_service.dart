@@ -52,6 +52,7 @@ class CheckoutService {
     required Qty Function(int productId) stockOf,
     required int salesCount,
     required String store,
+    String? cashier,
     required DateTime now,
     required String mode,
     required Money tendered,
@@ -68,6 +69,7 @@ class CheckoutService {
         : zero;
     final sale = Sale(
       saleId: saleId,
+      cashier: cashier == null || cashier.isEmpty ? null : cashier,
       number: 'AX${(salesCount + 1).toString().padLeft(6, '0')}',
       date: now.toUtc().toIso8601String(),
       store: store,

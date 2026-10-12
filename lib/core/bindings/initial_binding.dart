@@ -47,7 +47,18 @@ import '../../modules/sales/repository/drift_sale_repository.dart';
 import '../../modules/sales/repository/mock_sale_repository.dart';
 import '../../modules/sales/repository/sale_repository.dart';
 import '../../shared/controllers/clock_controller.dart';
-import '../../features/products/data/datasources/large_dataset.dart';
+import '../seed/demo_seed_assets.dart';
+import '../seed/demo_seeder.dart';
+import '../seed/large_dataset.dart';
+import '../../features/offers/data/drift_offer_repository.dart';
+import '../../features/offers/domain/repositories/offer_repository.dart';
+import '../../features/offers/presentation/controllers/offers_controller.dart';
+import '../../features/session/data/drift_session_repositories.dart';
+import '../../features/session/domain/entities/session_entities.dart';
+import '../../features/session/data/in_memory_session_repositories.dart';
+import '../../features/session/domain/repositories/session_repositories.dart';
+import '../../features/session/presentation/controllers/active_session.dart';
+import '../session/store_scope.dart';
 import '../config/app_config.dart';
 import '../database/database_provider.dart';
 import '../device/device_context_service.dart';
@@ -89,6 +100,10 @@ class InitialBinding extends Bindings {
     PaymentService? payments,
     this.checkoutOverride,
     this.commitBeforeReceipt,
+    this.sessionOverride,
+    this.offerRepositoryOverride,
+    this.seedDemo,
+    this.reseedDemo,
   }) : audio = audio ?? createPlatformAudioService(),
        payments = payments ?? const MockPaymentService();
 
@@ -105,6 +120,25 @@ class InitialBinding extends Bindings {
   final CheckoutRepository? checkoutOverride;
   @visibleForTesting
   final bool? commitBeforeReceipt;
+
+  /// Test seams (DEC-132): a session that is already open (the legacy store,
+  /// counter and cashier of the prototype fixtures) and fixed offers.
+  @visibleForTesting
+  final ActiveSession? sessionOverride;
+  @visibleForTesting
+  final OfferRepository? offerRepositoryOverride;
+
+  /// `DEMO_SEED` / `RESEED_DEMO` (the dart-defines by default).
+  @visibleForTesting
+  final bool? seedDemo;
+  @visibleForTesting
+  final bool? reseedDemo;
+
+  /// The store, counter and user rows are stamped with (empty = legacy mode).
+  final StoreScope _scope = StoreScope();
+
+  bool get _databaseSession =>
+      infrastructure.config.settingsBackend == SettingsBackend.drift;
 
   /// One queue for every write of products, customers, sales, checkout and
   /// refund, so their LocalStore mirrors cannot finish out of order (DEC-129).
@@ -153,11 +187,20 @@ class InitialBinding extends Bindings {
         diagnostics: infrastructure.diagnostics,
         uuid: infrastructure.uuid,
         queue: _ledgerQueue,
+        scope: _scope,
       ),
       ProductsBackend.localStore => LocalStoreProductRepository(store),
       ProductsBackend.mock => MockProductRepository(store),
     };
   }
+
+  UserRepository _userRepository() => _databaseSession
+      ? DriftUserRepository(infrastructure.databaseProvider)
+      : InMemoryUserRepository();
+
+  StoreRepository _storeRepository() => _databaseSession
+      ? DriftStoreRepository(infrastructure.databaseProvider)
+      : InMemoryStoreRepository();
 
   SaleRepository _saleRepository() =>
       switch (infrastructure.config.salesBackend) {
@@ -167,6 +210,7 @@ class InitialBinding extends Bindings {
           diagnostics: infrastructure.diagnostics,
           uuid: infrastructure.uuid,
           queue: _ledgerQueue,
+          scope: _scope,
         ),
         SalesBackend.localStore => LocalStoreSaleRepository(store),
         SalesBackend.mock => MockSaleRepository(store),
@@ -226,6 +270,7 @@ class InitialBinding extends Bindings {
           store: store,
           diagnostics: infrastructure.diagnostics,
           uuid: infrastructure.uuid,
+          scope: _scope,
         ),
         HeldBackend.localStore => LocalStoreHeldBillRepository(store),
         HeldBackend.mock => MockHeldBillRepository(store),
@@ -245,6 +290,20 @@ class InitialBinding extends Bindings {
     _put<ShortcutController>(ShortcutController());
     _put<ClockController>(ClockController());
 
+    _put<StoreScope>(_scope);
+    _put<UserRepository>(_userRepository());
+    _put<StoreRepository>(_storeRepository());
+    _put<ActiveSession>(
+      sessionOverride ??
+          ActiveSession(users: Get.find(), stores: Get.find(), scope: _scope),
+    );
+    _put<OfferRepository>(
+      offerRepositoryOverride ??
+          (_databaseSession
+              ? DriftOfferRepository(infrastructure.databaseProvider)
+              : InMemoryOfferRepository()),
+    );
+    _put<OffersController>(OffersController(Get.find()));
     _put<ProductRepository>(productRepository());
     _put<CustomerRepository>(_customerRepository());
     _put<CartRepository>(_cartRepository());
@@ -260,7 +319,14 @@ class InitialBinding extends Bindings {
     );
     _put<ProductsController>(ProductsController(Get.find()));
     _put<CustomersController>(CustomersController(Get.find()));
-    _put<CartController>(CartController(Get.find(), Get.find()));
+    _put<CartController>(
+      CartController(
+        Get.find(),
+        Get.find(),
+        session: Get.find<ActiveSession>(),
+        offers: Get.find<OffersController>(),
+      ),
+    );
     _put<CartSelectionController>(CartSelectionController());
     _put<CartActionsController>(
       CartActionsController(
@@ -279,6 +345,7 @@ class InitialBinding extends Bindings {
         clock: Get.find(),
         overlay: Get.find(),
         search: Get.find(),
+        session: Get.find<ActiveSession>(),
       ),
     );
     _put<HeldBillsController>(HeldBillsController(Get.find()));
@@ -308,7 +375,7 @@ class InitialBinding extends Bindings {
         products: Get.find(),
         customers: Get.find(),
         sales: Get.find(),
-        settings: Get.find(),
+        session: Get.find(),
         toasts: Get.find(),
         overlay: Get.find(),
         search: Get.find(),
@@ -320,7 +387,7 @@ class InitialBinding extends Bindings {
       OrderMenuController(
         cart: Get.find(),
         meta: Get.find(),
-        settings: Get.find(),
+        session: Get.find(),
         clock: Get.find(),
         overlay: Get.find(),
       ),
@@ -388,6 +455,7 @@ class InitialBinding extends Bindings {
         toasts: Get.find(),
         printer: Get.find(),
         sharing: Get.find(),
+        session: Get.find<ActiveSession>(),
       ),
     );
     _put<ReprintController>(
@@ -396,7 +464,7 @@ class InitialBinding extends Bindings {
     _put<TextDialogController>(
       TextDialogController(
         overlay: Get.find(),
-        settings: Get.find(),
+        session: Get.find(),
         cart: Get.find(),
         meta: Get.find(),
       ),
@@ -424,6 +492,26 @@ class InitialBinding extends Bindings {
       'load settings',
       Get.find<SettingsController>().load,
     );
+    if (seedDemo ?? DemoSeedConfig.enabled) await _seedDemo();
+    final session = Get.find<ActiveSession>();
+    session.onActivate = _activate;
+    var scoped = false;
+    try {
+      await StartupTimeline.measure('load currencies', session.loadCurrencies);
+      scoped = await session.hasStores();
+    } on Object catch (error, stackTrace) {
+      infrastructure.diagnostics.record('session start', error, stackTrace);
+    }
+    if (scoped) {
+      // Stores exist: products, sales, held bills, offers and the cart belong
+      // to a store and load when a store is opened (DEC-132). Customers are
+      // shared.
+      await StartupTimeline.measure(
+        'load customers',
+        Get.find<CustomersController>().load,
+      );
+      return;
+    }
     await Future.wait(<Future<void>>[
       StartupTimeline.measure(
         'load products',
@@ -440,6 +528,38 @@ class InitialBinding extends Bindings {
       ),
     ]);
     await StartupTimeline.measure('load cart', Get.find<CartController>().load);
+    try {
+      await Get.find<OffersController>().load(null);
+    } on Object catch (error, stackTrace) {
+      infrastructure.diagnostics.record('load offers', error, stackTrace);
+    }
+  }
+
+  Future<void> _seedDemo() async {
+    try {
+      final db = await infrastructure.databaseProvider.open();
+      await StartupTimeline.measure(
+        'demo seed',
+        () => DemoSeeder(
+          db: db,
+          loadAsset: loadSeedAsset,
+          uuid: infrastructure.uuid,
+        ).run(reseed: reseedDemo ?? DemoSeedConfig.reseed),
+      );
+    } on Object catch (error, stackTrace) {
+      infrastructure.diagnostics.record('demo seed', error, stackTrace);
+    }
+  }
+
+  /// Opens a store: loads everything that belongs to it.
+  Future<void> _activate(StoreInfo store) async {
+    await Future.wait(<Future<void>>[
+      Get.find<ProductsController>().load(),
+      Get.find<SalesController>().load(),
+      Get.find<HeldBillsController>().load(),
+      Get.find<OffersController>().load(store.id),
+    ]);
+    await Get.find<CartController>().loadForSession();
   }
 
   /// axpert_pos-style infrastructure (DEC-118/119): config, API client, local

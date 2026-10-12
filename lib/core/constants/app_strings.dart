@@ -48,9 +48,6 @@ abstract class AppStrings {
   // Top bar
   String brandMark();
   String brandName();
-  String storeNameOzone();
-  String storeNameCentral();
-  String storeNameMarina();
   String storeSelectLabel();
   String searchHint();
   String searchShortcutMac();
@@ -64,9 +61,6 @@ abstract class AppStrings {
   String notificationSynced();
   String notificationHeld({required int count});
   String moreOptionsTooltip();
-  String userInitial();
-  String userName();
-  String userRole();
   String menuProfile();
   String menuSettings();
   String menuShortcuts();
@@ -230,7 +224,34 @@ abstract class AppStrings {
   String discountDrawerTitle();
   String discountDrawerSubtitle();
   String discountTabPercent();
-  String discountTabFlat();
+  String discountTabFlat(String symbol);
+
+  // Offers (automatic discounts, Buy 1 Get 1, free items)
+  String offerBadgePercent(String percent);
+  String offerBadgeAmount(String amount);
+  String offerBadgeBogo();
+  String offerBadgeGift();
+  String offerSaved(String name, String amount);
+  String giftLockedHint(String amount);
+  String giftFreeLabel(String name);
+  String giftFreePrice();
+  String giftLockedSemantics(String product);
+  String giftUnlockedSemantics(String product);
+
+  // Sign-in against the database, store and counter pickers
+  String loginInvalid();
+  String loginNoAccess();
+  String loginNoUsers();
+  String loginNoUsersHint();
+  String pickerTitle();
+  String pickerSubtitle();
+  String pickerStoreLabel();
+  String pickerCounterLabel();
+  String pickerContinue();
+  String pickerSignedInAs(String name, String role);
+  String storeNone();
+  String counterNone();
+  String toastSwitchStoreCartNotEmpty();
   String discountValueLabel();
   String discountReasonLabel();
   String discountReasonHint();
@@ -339,6 +360,7 @@ abstract class AppStrings {
   String signedOutStart();
   String profileRole(String store);
   String profileCounter();
+  String roleLabel(String role);
   String profileShiftSales();
   String profileStatus();
   String returnsFindTitle();

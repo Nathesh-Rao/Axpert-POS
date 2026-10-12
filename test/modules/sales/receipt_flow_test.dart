@@ -16,7 +16,7 @@ import 'package:pos_application/modules/pos/models/payment_state.dart';
 import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
 import 'package:pos_application/modules/sales/controllers/receipt_controller.dart';
 import 'package:pos_application/modules/sales/widgets/receipt_dialog.dart';
-import 'package:pos_application/modules/shell/controllers/settings_controller.dart';
+import 'package:pos_application/features/session/presentation/controllers/active_session.dart';
 import 'package:pos_application/shared/controllers/overlay_controller.dart';
 import 'package:pos_application/shared/controllers/search_field_controller.dart';
 import 'package:pos_application/shared/controllers/toast_controller.dart';
@@ -199,7 +199,7 @@ void main() {
     await tester.pump();
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
-    expect(Get.find<SettingsController>().settings.value.counter, 'Till 7');
+    expect(Get.find<ActiveSession>().counter.value!.name, 'Till 7');
     expect(Get.find<OverlayController>().isOpen, isFalse);
     await _drain(tester);
   });

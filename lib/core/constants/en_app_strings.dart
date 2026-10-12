@@ -103,15 +103,6 @@ class EnAppStrings extends AppStrings {
   String brandName() => 'Axpert POS';
 
   @override
-  String storeNameOzone() => 'MAISON GALAXY - OZONE';
-
-  @override
-  String storeNameCentral() => 'MAISON GALAXY - CENTRAL';
-
-  @override
-  String storeNameMarina() => 'MAISON GALAXY - MARINA';
-
-  @override
   String storeSelectLabel() => 'Store';
 
   @override
@@ -150,15 +141,6 @@ class EnAppStrings extends AppStrings {
 
   @override
   String moreOptionsTooltip() => 'More options';
-
-  @override
-  String userInitial() => 'M';
-
-  @override
-  String userName() => 'MGTCASH3';
-
-  @override
-  String userRole() => 'Cashier';
 
   @override
   String menuProfile() => 'Profile';
@@ -614,7 +596,79 @@ class EnAppStrings extends AppStrings {
   String discountTabPercent() => 'Percentage %';
 
   @override
-  String discountTabFlat() => 'Flat amount ₹';
+  String discountTabFlat(String symbol) => 'Flat amount ${symbol.trim()}';
+
+  @override
+  String offerBadgePercent(String percent) => '-$percent%';
+
+  @override
+  String offerBadgeAmount(String amount) => '-$amount';
+
+  @override
+  String offerBadgeBogo() => 'Buy 1 Get 1';
+
+  @override
+  String offerBadgeGift() => 'Free gift';
+
+  @override
+  String offerSaved(String name, String amount) => '$name · saved $amount';
+
+  @override
+  String giftLockedHint(String amount) => 'Add $amount more to unlock';
+
+  @override
+  String giftFreeLabel(String name) => 'Free gift · $name';
+
+  @override
+  String giftFreePrice() => 'FREE';
+
+  @override
+  String giftLockedSemantics(String product) => 'Locked free item $product';
+
+  @override
+  String giftUnlockedSemantics(String product) => 'Free item $product unlocked';
+
+  @override
+  String loginInvalid() => 'Wrong username or password.';
+
+  @override
+  String loginNoAccess() => 'This user has no store assigned.';
+
+  @override
+  String loginNoUsers() => 'No users are set up on this device.';
+
+  @override
+  String loginNoUsersHint() =>
+      'Ask an administrator to provision the database, then reload.';
+
+  @override
+  String pickerTitle() => 'Choose store and counter';
+
+  @override
+  String pickerSubtitle() => 'Pick where you are working today.';
+
+  @override
+  String pickerStoreLabel() => 'Store';
+
+  @override
+  String pickerCounterLabel() => 'Counter';
+
+  @override
+  String pickerContinue() => 'Continue';
+
+  @override
+  String pickerSignedInAs(String name, String role) =>
+      'Signed in as $name ($role)';
+
+  @override
+  String storeNone() => 'No store';
+
+  @override
+  String counterNone() => '—';
+
+  @override
+  String toastSwitchStoreCartNotEmpty() =>
+      'Finish or hold the current bill before switching store.';
 
   @override
   String discountValueLabel() => 'Discount';
@@ -946,6 +1000,14 @@ class EnAppStrings extends AppStrings {
 
   @override
   String profileCounter() => 'Counter';
+
+  @override
+  String roleLabel(String role) => switch (role) {
+    'admin' => 'Administrator',
+    'manager' => 'Manager',
+    'cashier' => 'Cashier',
+    _ => role,
+  };
 
   @override
   String profileShiftSales() => 'Shift sales';

@@ -1,9 +1,9 @@
-import '../../domain/entities/product.dart';
-import '../../../../core/services/pricing/basis_points.dart';
-import '../../../../core/services/pricing/currency_registry.dart';
-import '../../../../core/services/pricing/money.dart';
+import 'package:pos_application/core/services/pricing/basis_points.dart';
+import 'package:pos_application/core/services/pricing/currency_registry.dart';
+import 'package:pos_application/core/services/pricing/money.dart';
+import 'package:pos_application/features/products/domain/entities/product.dart';
 
-/// The prototype's 20 products (`data.ts` `sampleProducts`), prices in rupees
+/// Test fixture (DEC-135): the prototype's 20 products (`data.ts` `sampleProducts`), prices in rupees
 /// converted to minor units.
 abstract final class SeedProducts {
   // name, code, price (rupees), category, sub, image

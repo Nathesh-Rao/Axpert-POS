@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 import '../../../shared/controllers/overlay_controller.dart';
-import '../../shell/controllers/settings_controller.dart';
+import '../../../features/session/presentation/controllers/active_session.dart';
 import 'cart_controller.dart';
 import 'cart_meta_controller.dart';
 
@@ -12,7 +12,7 @@ import 'cart_meta_controller.dart';
 class TextDialogController extends GetxController {
   TextDialogController({
     required this.overlay,
-    required this.settings,
+    required this.session,
     required this.cart,
     required this.meta,
   });
@@ -21,7 +21,7 @@ class TextDialogController extends GetxController {
   static const String noteId = 'note';
 
   final OverlayController overlay;
-  final SettingsController settings;
+  final ActiveSession session;
   final CartController cart;
   final CartMetaController meta;
 
@@ -41,7 +41,7 @@ class TextDialogController extends GetxController {
     text.addListener(_refresh);
     _openWatcher = ever<String?>(overlay.modal, (id) {
       if (id == counterId) {
-        text.text = settings.settings.value.counter;
+        text.text = session.counter.value?.name ?? '';
       } else if (id == noteId) {
         text.text = cart.cart.value.note;
       }
@@ -63,7 +63,7 @@ class TextDialogController extends GetxController {
   void save() {
     if (!canSave.value) return;
     if (isCounter) {
-      settings.setCounter(text.text.trim());
+      session.renameCounter(text.text.trim());
     } else {
       meta.setNote(text.text);
     }

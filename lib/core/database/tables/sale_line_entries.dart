@@ -52,6 +52,19 @@ class SaleLineEntries extends Table {
 
   IntColumn get discountBp => integer()();
 
+  /// Offer applied to the line (v9, DEC-134); null when none.
+  TextColumn get offerKind => text().nullable()();
+
+  TextColumn get offerName => text().nullable()();
+
+  IntColumn get offerSavingMinor => integer().nullable()();
+
+  /// Fixed per-unit reduction of a fixed-amount discount.
+  IntColumn get offerUnitOffMinor => integer().nullable()();
+
+  /// A free-item row (price 0).
+  BoolColumn get isGift => boolean().withDefault(const Constant(false))();
+
   IntColumn get returnedQtyMilli => integer().withDefault(const Constant(0))();
 
   TextColumn get createdAt => text()();

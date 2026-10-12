@@ -36,6 +36,7 @@ Product _product(int id, String name) => Product(
 
 Sale _sale({String mode = 'Cash'}) => Sale(
   number: 'AX000007',
+  cashier: 'MGTCASH3',
   date: '2026-10-08T11:16:04.000Z',
   store: 'Maison Galaxy',
   customer: 'Ananya Sharma',

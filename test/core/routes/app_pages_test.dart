@@ -15,22 +15,26 @@ import '../../support/test_app.dart';
 void main() {
   useTestApp();
 
-  test('seven named routes plus splash and login, without transition', () {
-    expect(AppPages.pages.map((p) => p.name), <String>[
-      '/',
-      '/products',
-      '/customers',
-      '/sales',
-      '/returns',
-      '/reports',
-      '/more',
-      '/splash',
-      '/login',
-    ]);
-    for (final page in AppPages.pages) {
-      expect(page.transition, Transition.noTransition);
-    }
-  });
+  test(
+    'seven named routes plus splash, login and the store picker, without transition',
+    () {
+      expect(AppPages.pages.map((p) => p.name), <String>[
+        '/',
+        '/products',
+        '/customers',
+        '/sales',
+        '/returns',
+        '/reports',
+        '/more',
+        '/splash',
+        '/login',
+        '/select-session',
+      ]);
+      for (final page in AppPages.pages) {
+        expect(page.transition, Transition.noTransition);
+      }
+    },
+  );
 
   test('unknown paths fall through to POS', () {
     expect(AppPage.fromPath('/nope'), AppPage.pos);

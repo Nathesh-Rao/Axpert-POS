@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import '../../../features/products/data/datasources/seed_products.dart';
 import '../../../features/products/domain/entities/product.dart';
 import '../../constants/storage_keys.dart';
 import '../../identifiers/uuid_generator.dart';
@@ -120,12 +119,12 @@ class ProductsMigrator {
     );
   }
 
-  /// A missing key is the seed list (what `MockProductRepository` would seed;
-  /// LocalStore is not written). Every item goes through the existing
+  /// A missing key is an empty list (no demo data in the app, DEC-135). Every
+  /// item goes through the existing
   /// `Product.fromJson`, so a bad record throws a `TypeError` and nothing is
   /// written, as `load()` does today.
   Future<List<Product>> _readParsed(LocalStore store) async {
-    if (!await store.has(StorageKeys.products)) return SeedProducts.products();
+    if (!await store.has(StorageKeys.products)) return const <Product>[];
     final json = await store.read(StorageKeys.products);
     return <Product>[
       for (final item in json as List<dynamic>)

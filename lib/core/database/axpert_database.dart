@@ -1,23 +1,31 @@
 import 'package:drift/drift.dart';
 
 import '../bindings/startup_timeline.dart';
+import 'tables/category_entries.dart';
+import 'tables/counter_entries.dart';
+import 'tables/currency_entries.dart';
 import 'tables/current_cart_entries.dart';
 import 'tables/customer_entries.dart';
 import 'tables/device_context_entries.dart';
 import 'tables/held_bill_entries.dart';
 import 'tables/migration_state_entries.dart';
+import 'tables/offer_entries.dart';
 import 'tables/payment_entries.dart';
 import 'tables/product_entries.dart';
 import 'tables/sale_entries.dart';
 import 'tables/sale_line_entries.dart';
+import 'tables/seed_manifest_entries.dart';
 import 'tables/settings_entries.dart';
+import 'tables/store_entries.dart';
+import 'tables/user_entries.dart';
 
 part 'axpert_database.g.dart';
 
 /// Drift database: device context metadata and device-local settings.
 ///
 /// Schema v3 (settings, migration_state), v4 (customers), v5 (held_bills), v6 (products), v7 (sales, sale_lines, payments)
-/// and v8 (current_cart) are provisional
+/// v8 (current_cart) and v9 (currencies, stores, counters, users,
+/// user_access, categories, offers, seed_manifest, scope columns) are provisional
 /// and local-only (DEC-124); they no longer match axpert's schema.
 @DriftDatabase(
   tables: [
@@ -31,13 +39,21 @@ part 'axpert_database.g.dart';
     SaleLineEntries,
     PaymentEntries,
     CurrentCartEntries,
+    CurrencyEntries,
+    StoreEntries,
+    CounterEntries,
+    UserEntries,
+    UserAccessEntries,
+    CategoryEntries,
+    OfferEntries,
+    SeedManifestEntries,
   ],
 )
 class AxpertDatabase extends _$AxpertDatabase {
   AxpertDatabase(super.executor);
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -94,6 +110,87 @@ class AxpertDatabase extends _$AxpertDatabase {
         await migrator.createTable(currentCartEntries);
       });
     }
+    if (from < 9 && to >= 9) {
+      // One transaction: v9 is all-or-nothing (DEC-132).
+      await transaction(() async {
+        await migrator.createTable(currencyEntries);
+        await migrator.createTable(storeEntries);
+        await migrator.createTable(counterEntries);
+        await migrator.createTable(userEntries);
+        await migrator.createTable(userAccessEntries);
+        await migrator.createTable(categoryEntries);
+        await migrator.createTable(offerEntries);
+        await migrator.createTable(seedManifestEntries);
+        // Older steps create their tables from the current definitions, so a
+        // column may already exist when the chain runs from before v6.
+        await _addColumnIfMissing(
+          migrator,
+          productEntries,
+          productEntries.storeId,
+        );
+        await _addColumnIfMissing(
+          migrator,
+          productEntries,
+          productEntries.categoryId,
+        );
+        await _addColumnIfMissing(
+          migrator,
+          productEntries,
+          productEntries.variantGroup,
+        );
+        await _addColumnIfMissing(
+          migrator,
+          productEntries,
+          productEntries.variantLabel,
+        );
+        await _addColumnIfMissing(
+          migrator,
+          heldBillEntries,
+          heldBillEntries.storeId,
+        );
+        await _addColumnIfMissing(migrator, saleEntries, saleEntries.storeId);
+        await _addColumnIfMissing(migrator, saleEntries, saleEntries.counterId);
+        await _addColumnIfMissing(migrator, saleEntries, saleEntries.userId);
+        await _addColumnIfMissing(migrator, saleEntries, saleEntries.userName);
+        await _addColumnIfMissing(
+          migrator,
+          saleLineEntries,
+          saleLineEntries.offerKind,
+        );
+        await _addColumnIfMissing(
+          migrator,
+          saleLineEntries,
+          saleLineEntries.offerName,
+        );
+        await _addColumnIfMissing(
+          migrator,
+          saleLineEntries,
+          saleLineEntries.offerSavingMinor,
+        );
+        await _addColumnIfMissing(
+          migrator,
+          saleLineEntries,
+          saleLineEntries.offerUnitOffMinor,
+        );
+        await _addColumnIfMissing(
+          migrator,
+          saleLineEntries,
+          saleLineEntries.isGift,
+        );
+      });
+    }
+  }
+
+  Future<void> _addColumnIfMissing(
+    Migrator migrator,
+    TableInfo<Table, dynamic> table,
+    GeneratedColumn<Object> column,
+  ) async {
+    final info = await customSelect(
+      'PRAGMA table_info(${table.actualTableName})',
+    ).get();
+    if (info.any((row) => row.read<String>('name') == column.name)) return;
+    await migrator.addColumn(table, column);
   }
 
   /// Runs `<body>` in a transaction and makes the commit durable on web.

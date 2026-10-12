@@ -23,6 +23,7 @@ import 'package:pos_application/modules/sales/controllers/sales_controller.dart'
 
 import '../../support/test_app.dart';
 import '../../support/test_infrastructure.dart';
+import '../../support/test_session.dart';
 
 class _Provider implements DatabaseProvider {
   _Provider(this.db);
@@ -55,7 +56,7 @@ void main() {
   setUp(() {
     MockDelay.provider = () => Duration.zero;
     db = AxpertDatabase(NativeDatabase.memory());
-    store = InMemoryLocalStore();
+    store = legacySeededStore();
     diagnostics = StartupDiagnostics();
   });
   tearDown(() => db.close());
@@ -86,7 +87,7 @@ void main() {
 
     expect(loaded.map((c) => c.id), ['walk', '1', '2', '3']);
     expect(await db.select(db.customerEntries).get(), hasLength(4));
-    expect(await store.has(StorageKeys.customers), isFalse);
+    expect(await store.has(StorageKeys.customers), isTrue);
   });
 
   test('save writes Drift and dual-writes LocalStore', () async {

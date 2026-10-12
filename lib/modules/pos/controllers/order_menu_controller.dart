@@ -5,7 +5,7 @@ import '../../../core/services/pricing/qty.dart';
 import '../../../shared/controllers/clock_controller.dart';
 import '../../../shared/controllers/overlay_controller.dart';
 import '../../sales/models/sale.dart';
-import '../../shell/controllers/settings_controller.dart';
+import '../../../features/session/presentation/controllers/active_session.dart';
 import '../services/checkout_service.dart';
 import 'cart_controller.dart';
 import 'cart_meta_controller.dart';
@@ -16,14 +16,14 @@ class OrderMenuController extends GetxController {
   OrderMenuController({
     required this.cart,
     required this.meta,
-    required this.settings,
+    required this.session,
     required this.clock,
     required this.overlay,
   });
 
   final CartController cart;
   final CartMetaController meta;
-  final SettingsController settings;
+  final ActiveSession session;
   final ClockController clock;
   final OverlayController overlay;
 
@@ -41,9 +41,10 @@ class OrderMenuController extends GetxController {
     return Sale(
       number: 'DRAFT',
       date: clock.current.toUtc().toIso8601String(),
-      store: settings.settings.value.store,
+      store: session.store.value?.name ?? '',
+      cashier: session.displayName.isEmpty ? null : session.displayName,
       customer: meta.customer.name,
-      cart: cart.cart.value,
+      cart: cart.cartAsSold,
       totals: SaleTotals(
         items: totals.items,
         qty: totals.qty,

@@ -9,9 +9,9 @@ import 'package:pos_application/core/database/migration/product_rows.dart';
 import 'package:pos_application/core/database/migration/products_migrator.dart';
 import 'package:pos_application/core/identifiers/uuid_v4_generator.dart';
 import 'package:pos_application/core/services/storage/in_memory_local_store.dart';
-import 'package:pos_application/features/products/data/datasources/seed_products.dart';
 
 import '../../../support/product_fixtures.dart';
+import '../../../support/test_session.dart';
 
 final RegExp _uuidV4 = RegExp(
   r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$',
@@ -27,7 +27,7 @@ void main() {
 
   setUp(() {
     db = AxpertDatabase(NativeDatabase.memory());
-    store = InMemoryLocalStore();
+    store = legacySeededStore();
   });
   tearDown(() => db.close());
 
@@ -43,15 +43,16 @@ void main() {
   }
 
   test(
-    'missing key copies the 20 seed products, LocalStore untouched',
+    'missing key copies an empty catalog (no demo data), LocalStore untouched',
     () async {
-      final outcome = await migrator.ensureCopied(db, store);
+      final empty = InMemoryLocalStore();
+      final outcome = await migrator.ensureCopied(db, empty);
 
       expect(outcome.result, ProductsCopyResult.copied);
       final list = (await ProductRows.read(db)).list;
-      expect(list, SeedProducts.products());
-      expect(await store.has(StorageKeys.products), isFalse);
-      expect((await markerJson())['count'], 20);
+      expect(list, isEmpty);
+      expect(await empty.has(StorageKeys.products), isFalse);
+      expect((await markerJson())['count'], 0);
     },
   );
 

@@ -1,6 +1,9 @@
 import 'package:drift/drift.dart';
 
+import 'counter_entries.dart';
 import 'customer_entries.dart';
+import 'store_entries.dart';
+import 'user_entries.dart';
 
 /// Completed sales (provisional, local-only, DEC-124/129). `id` is the UUID v4
 /// (the `saleId` of new sales, generated for legacy sales); `number` is the
@@ -32,6 +35,17 @@ class SaleEntries extends Table {
   TextColumn get occurredAt => text()();
 
   TextColumn get storeName => text()();
+
+  /// Session context of the sale (v9); null on legacy rows.
+  TextColumn get storeId => text().nullable().references(StoreEntries, #id)();
+
+  TextColumn get counterId =>
+      text().nullable().references(CounterEntries, #id)();
+
+  TextColumn get userId => text().nullable().references(UserEntries, #id)();
+
+  /// Cashier display name at the time of the sale.
+  TextColumn get userName => text().nullable()();
 
   TextColumn get customerName => text()();
 

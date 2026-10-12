@@ -1,0 +1,48 @@
+[
+  {
+    "id": "demo-store-ozone",
+    "name": "Axpert Mart - Ozone",
+    "address": "12 MG Road, Bengaluru 560001",
+    "phone": "+91 80 5550 0101",
+    "taxId": "GSTIN 29DEMO1234F1Z5",
+    "receiptHeader": "Demo store - not a real invoice",
+    "receiptFooter": "Thank you for shopping at Axpert Mart!",
+    "currencyCode": "INR",
+    "region": "IN",
+    "counters": [
+      {
+        "id": "demo-ctr-ozone-1",
+        "name": "C1"
+      },
+      {
+        "id": "demo-ctr-ozone-2",
+        "name": "C2"
+      },
+      {
+        "id": "demo-ctr-ozone-3",
+        "name": "C3"
+      }
+    ]
+  },
+  {
+    "id": "demo-store-kampala",
+    "name": "Axpert Mart - Kampala",
+    "address": "Plot 4 Acacia Avenue, Kampala",
+    "phone": "+256 414 555 020",
+    "taxId": "TIN 1000-DEMO-77",
+    "receiptHeader": "Demo store - not a real invoice",
+    "receiptFooter": "Webale nnyo! Thank you for shopping with us.",
+    "currencyCode": "UGX",
+    "region": "UG",
+    "counters": [
+      {
+        "id": "demo-ctr-kampala-1",
+        "name": "K1"
+      },
+      {
+        "id": "demo-ctr-kampala-2",
+        "name": "K2"
+      }
+    ]
+  }
+]

@@ -71,6 +71,24 @@ class Product {
     favourite: favourite ?? this.favourite,
   );
 
+  /// The same product priced in [currency] (same minor units): carts and
+  /// sales are stored without a currency and take the store's on load.
+  Product inCurrency(Currency currency) => price.currency == currency
+      ? this
+      : Product(
+          id: id,
+          name: name,
+          code: code,
+          barcode: barcode,
+          price: Money(price.minor, currency),
+          category: category,
+          sub: sub,
+          stock: stock,
+          gst: gst,
+          image: image,
+          favourite: favourite,
+        );
+
   Map<String, dynamic> toJson() => <String, dynamic>{
     'id': id,
     'name': name,

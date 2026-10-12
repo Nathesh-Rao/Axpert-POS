@@ -13,6 +13,9 @@ import '../../core/theme/tokens/app_typography.dart';
 import 'app_pressable.dart';
 import 'star_icon.dart';
 
+/// Look of the one offer badge of a card.
+enum ProductOfferStyle { discount, promotion, gift }
+
 /// Catalog product card (`.product-card`), grid or list layout. Pure
 /// presentation: the caller supplies texts, the picture and the callbacks.
 class ProductCard extends StatelessWidget {
@@ -27,6 +30,9 @@ class ProductCard extends StatelessWidget {
     required this.onToggleFavourite,
     this.qtyBadge,
     this.onRemoveOne,
+    this.offerLabel,
+    this.offerStyle,
+    this.strikePrice,
     super.key,
   });
 
@@ -44,6 +50,13 @@ class ProductCard extends StatelessWidget {
 
   /// Shown only when the product is in the cart.
   final VoidCallback? onRemoveOne;
+
+  /// The one offer badge (`-20%`, `Buy 1 Get 1`, `Free gift`); null = none.
+  final String? offerLabel;
+  final ProductOfferStyle? offerStyle;
+
+  /// The original price, struck through beside [price] (discounts only).
+  final String? strikePrice;
 
   bool get inCart => qtyBadge != null;
 
@@ -88,6 +101,16 @@ class ProductCard extends StatelessWidget {
                     onTap: onToggleFavourite,
                   ),
                 ),
+                if (offerLabel != null && offerStyle != null)
+                  Positioned(
+                    right:
+                        (list ? AppSpacing.s4 : AppSpacing.s9) +
+                        AppSizes.favouriteIcon +
+                        AppSpacing.s3 * 2 +
+                        AppSpacing.s4,
+                    top: list ? AppSpacing.s8 : AppSpacing.s10,
+                    child: _OfferBadge(label: offerLabel!, style: offerStyle!),
+                  ),
                 if (qtyBadge != null)
                   Positioned(
                     left: list ? 60 : AppSpacing.s8,
@@ -208,7 +231,7 @@ class ProductCard extends StatelessWidget {
     final m = context.metrics;
     final c = context.colors;
     final s = context.strings;
-    final priceText = Text(
+    final priceOnly = Text(
       price,
       maxLines: 1,
       style: context.text
@@ -219,6 +242,29 @@ class ProductCard extends StatelessWidget {
           )
           .copyWith(color: c.text),
     );
+    final priceText = strikePrice == null
+        ? priceOnly
+        : FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  strikePrice!,
+                  maxLines: 1,
+                  style: context.text
+                      .of(AppFontSize.s11, height: AppLineHeight.base)
+                      .copyWith(
+                        color: c.muted,
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                ),
+                const SizedBox(width: AppSpacing.s4),
+                priceOnly,
+              ],
+            ),
+          );
     final stepper = Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -349,6 +395,46 @@ class _QtyBadge extends StatelessWidget {
                 height: AppLineHeight.base,
               )
               .copyWith(color: c.qtyBadgeFg),
+        ),
+      ),
+    );
+  }
+}
+
+class _OfferBadge extends StatelessWidget {
+  const _OfferBadge({required this.label, required this.style});
+
+  final String label;
+  final ProductOfferStyle style;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    final (bg, fg) = switch (style) {
+      ProductOfferStyle.discount => (c.actionRedBg, c.actionRedFg),
+      ProductOfferStyle.promotion => (c.actionPurpleBg, c.actionPurpleFg),
+      ProductOfferStyle.gift => (c.modalSymbolGreenBg, c.modalSymbolGreenFg),
+    };
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(AppRadii.r5),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s6,
+          vertical: AppSpacing.s3,
+        ),
+        child: Text(
+          label,
+          maxLines: 1,
+          style: context.text
+              .of(
+                AppFontSize.s11,
+                weight: AppFontWeight.bold,
+                height: AppLineHeight.base,
+              )
+              .copyWith(color: fg),
         ),
       ),
     );

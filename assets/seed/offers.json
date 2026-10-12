@@ -1,0 +1,125 @@
+[
+  {
+    "id": "demo-offer-d1",
+    "kind": "discount",
+    "name": "Cola 20% off",
+    "store": "demo-store-ozone",
+    "product": "demo-prod-oz-1",
+    "percentBp": 2000,
+    "priority": 1,
+    "startsDaysAgo": 10,
+    "endsInDays": 3650
+  },
+  {
+    "id": "demo-offer-d2",
+    "kind": "discount",
+    "name": "Lays Rs 5 off",
+    "store": "demo-store-ozone",
+    "product": "demo-prod-oz-13",
+    "fixedMinor": 500,
+    "currency": "INR",
+    "priority": 1
+  },
+  {
+    "id": "demo-offer-d3",
+    "kind": "discount",
+    "name": "Dove 15% off",
+    "store": "demo-store-ozone",
+    "product": "demo-prod-oz-25",
+    "percentBp": 1500,
+    "priority": 1,
+    "endsInDays": 3650
+  },
+  {
+    "id": "demo-offer-d4",
+    "kind": "discount",
+    "name": "Juice 10% off",
+    "store": "demo-store-kampala",
+    "product": "demo-prod-ka-9",
+    "percentBp": 1000,
+    "priority": 1
+  },
+  {
+    "id": "demo-offer-d5",
+    "kind": "discount",
+    "name": "Closeup 25% off",
+    "store": "demo-store-kampala",
+    "product": "demo-prod-ka-22",
+    "percentBp": 2500,
+    "priority": 2,
+    "startsDaysAgo": 5
+  },
+  {
+    "id": "demo-offer-d6",
+    "kind": "discount",
+    "name": "Cookies 500 off",
+    "store": "demo-store-kampala",
+    "product": "demo-prod-ka-18",
+    "fixedMinor": 500,
+    "currency": "UGX",
+    "priority": 1
+  },
+  {
+    "id": "demo-offer-p1",
+    "kind": "promotion",
+    "name": "Oreo Buy 1 Get 1",
+    "store": "demo-store-ozone",
+    "product": "demo-prod-oz-16",
+    "percentBp": 5000,
+    "priority": 5
+  },
+  {
+    "id": "demo-offer-p2",
+    "kind": "promotion",
+    "name": "Maggi Buy 1 Get 1",
+    "store": "demo-store-ozone",
+    "product": "demo-prod-oz-21",
+    "percentBp": 5000,
+    "priority": 5
+  },
+  {
+    "id": "demo-offer-p3",
+    "kind": "promotion",
+    "name": "KitKat Buy 1 Get 1",
+    "store": "demo-store-kampala",
+    "product": "demo-prod-ka-20",
+    "percentBp": 5000,
+    "priority": 5
+  },
+  {
+    "id": "demo-offer-p4",
+    "kind": "promotion",
+    "name": "Sprite Buy 1 Get 1",
+    "store": "demo-store-kampala",
+    "product": "demo-prod-ka-5",
+    "percentBp": 5000,
+    "priority": 5
+  },
+  {
+    "id": "demo-offer-g1",
+    "kind": "gift_tier",
+    "name": "Spend 500 get Dairy Milk free",
+    "store": "demo-store-ozone",
+    "gift": "demo-prod-oz-19",
+    "minCartMinor": 50000,
+    "currency": "INR"
+  },
+  {
+    "id": "demo-offer-g2",
+    "kind": "gift_tier",
+    "name": "Spend 1500 get Dove Soap free",
+    "store": "demo-store-ozone",
+    "gift": "demo-prod-oz-25",
+    "minCartMinor": 150000,
+    "currency": "INR"
+  },
+  {
+    "id": "demo-offer-g3",
+    "kind": "gift_tier",
+    "name": "Spend 15000 get water free",
+    "store": "demo-store-kampala",
+    "gift": "demo-prod-ka-8",
+    "minCartMinor": 15000,
+    "currency": "UGX"
+  }
+]

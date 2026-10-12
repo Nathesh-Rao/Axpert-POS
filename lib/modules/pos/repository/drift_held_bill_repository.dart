@@ -6,6 +6,8 @@ import '../../../core/database/migration/held_bill_rows.dart';
 import '../../../core/database/migration/held_bills_migrator.dart';
 import '../../../core/identifiers/uuid_generator.dart';
 import '../../../core/services/storage/local_store.dart';
+import '../../../core/services/pricing/currency_registry.dart';
+import '../../../core/session/store_scope.dart';
 import '../../../core/utils/serial_queue.dart';
 import '../models/held_bill.dart';
 import 'held_bill_repository.dart';
@@ -24,12 +26,14 @@ class DriftHeldBillRepository implements HeldBillRepository {
     required LocalStore store,
     required StartupDiagnostics diagnostics,
     required UuidGenerator uuid,
+    StoreScope? scope,
     HeldBillsMigrator? migrator,
     DateTime Function()? now,
   }) : _provider = provider,
        _store = store,
        _diagnostics = diagnostics,
        _uuid = uuid,
+       _scope = scope ?? StoreScope(),
        _migrator = migrator ?? HeldBillsMigrator(uuid: uuid, now: now),
        _now = now ?? DateTime.now,
        _fallback = MockHeldBillRepository(store);
@@ -42,6 +46,10 @@ class DriftHeldBillRepository implements HeldBillRepository {
   final DateTime Function() _now;
   final MockHeldBillRepository _fallback;
 
+  /// See DriftProductRepository: scoped mode filters by store, has no
+  /// LocalStore mirror and no fallback.
+  final StoreScope _scope;
+
   /// Null until Drift loaded successfully, and again after a failure.
   AxpertDatabase? _db;
 
@@ -49,19 +57,26 @@ class DriftHeldBillRepository implements HeldBillRepository {
   Future<List<HeldBill>> load() async {
     try {
       final db = await _provider.open();
-      final outcome = await _migrator.ensureCopied(db, _store);
-      final report = outcome.report;
-      if (report != null && report.hasFindings) {
-        _diagnostics.record(
-          'held copy report',
-          report.toJson(),
-          StackTrace.empty,
-        );
+      if (!_scope.scoped) {
+        final outcome = await _migrator.ensureCopied(db, _store);
+        final report = outcome.report;
+        if (report != null && report.hasFindings) {
+          _diagnostics.record(
+            'held copy report',
+            report.toJson(),
+            StackTrace.empty,
+          );
+        }
       }
-      final list = await HeldBillRows.readList(db);
+      final list = await HeldBillRows.readList(
+        db,
+        storeId: _scope.storeId,
+        currency: _scope.currency ?? CurrencyRegistry.inr,
+      );
       _db = db;
       return list;
     } on Object catch (error, stackTrace) {
+      if (_scope.scoped) rethrow;
       await _degrade('held load', error, stackTrace);
       return _fallback.load();
     }
@@ -76,18 +91,27 @@ class DriftHeldBillRepository implements HeldBillRepository {
   Future<void> _save(List<HeldBill> bills) async {
     final db = _db;
     if (db == null) {
+      if (_scope.scoped) throw StateError('Held bills are not loaded');
       await _markStale();
       return _fallback.save(bills);
     }
     try {
       final now = _now().toUtc().toIso8601String();
       await db.durableTransaction(
-        () => HeldBillRows.apply(db, bills, now: now, uuid: _uuid),
+        () => HeldBillRows.apply(
+          db,
+          bills,
+          now: now,
+          uuid: _uuid,
+          storeId: _scope.storeId,
+        ),
       );
     } on Object catch (error, stackTrace) {
+      if (_scope.scoped) rethrow;
       await _degrade('held save', error, stackTrace);
       return _fallback.save(bills);
     }
+    if (_scope.scoped) return;
     try {
       await _store.write(StorageKeys.held, <Map<String, dynamic>>[
         for (final b in bills) b.toJson(),

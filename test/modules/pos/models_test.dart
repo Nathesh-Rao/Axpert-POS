@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pos_application/core/mock/seed_customers.dart';
-import 'package:pos_application/features/products/data/datasources/seed_products.dart';
+import '../../support/seed/seed_customers.dart';
+import '../../support/seed/seed_products.dart';
 import 'package:pos_application/core/services/pricing/basis_points.dart';
 import 'package:pos_application/core/services/pricing/currency_registry.dart';
 import 'package:pos_application/core/services/pricing/money.dart';

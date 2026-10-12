@@ -5,6 +5,8 @@ import '../../../core/theme/tokens/app_entry_tokens.dart';
 import '../../pos/bindings/pos_binding.dart';
 import '../../pos/views/pos_view.dart';
 import '../views/login_view.dart';
+import '../views/store_picker_view.dart';
+import 'picker_binding.dart';
 import 'login_binding.dart';
 
 /// The two animated hops of the entry flow. Named routes exist for both
@@ -20,6 +22,18 @@ abstract final class EntryNavigation {
       () => const LoginView(),
       binding: LoginBinding(),
       routeName: AppRoutes.login,
+      transition: Transition.fadeIn,
+      duration: _duration(AppEntryMotion.splashToLoginMs, reducedMotion),
+      curve: AppEntryMotion.splashToLoginCurve,
+    );
+  }
+
+  /// Login to the store and counter picker (more than one choice).
+  static void toPicker(bool reducedMotion) {
+    Get.off<void>(
+      () => const StorePickerView(),
+      binding: PickerBinding(),
+      routeName: AppRoutes.selectSession,
       transition: Transition.fadeIn,
       duration: _duration(AppEntryMotion.splashToLoginMs, reducedMotion),
       curve: AppEntryMotion.splashToLoginCurve,

@@ -89,7 +89,26 @@ class ReceiptTable extends StatelessWidget {
             for (final line in doc.lines)
               TableRow(
                 children: <Widget>[
-                  cell(line.name, padY: AppCheckoutSizes.receiptTdPadY),
+                  line.note == null
+                      ? cell(line.name, padY: AppCheckoutSizes.receiptTdPadY)
+                      : Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: AppCheckoutSizes.receiptTdPadY,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                line.name,
+                                style: base.copyWith(color: c.text),
+                              ),
+                              Text(
+                                line.note!,
+                                style: base.copyWith(color: c.muted),
+                              ),
+                            ],
+                          ),
+                        ),
                   cell(
                     QtyFormatter.fixed3(line.qty),
                     padY: AppCheckoutSizes.receiptTdPadY,

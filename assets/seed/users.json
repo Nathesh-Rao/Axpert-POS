@@ -1,0 +1,54 @@
+[
+  {
+    "id": "demo-user-admin",
+    "username": "admin",
+    "displayName": "Asha Admin",
+    "role": "admin",
+    "demoPassword": "Demo#Admin1",
+    "access": [
+      {
+        "store": "demo-store-ozone"
+      },
+      {
+        "store": "demo-store-kampala"
+      }
+    ]
+  },
+  {
+    "id": "demo-user-manager",
+    "username": "manager",
+    "displayName": "Manoj Manager",
+    "role": "manager",
+    "demoPassword": "Demo#Manager1",
+    "access": [
+      {
+        "store": "demo-store-ozone"
+      }
+    ]
+  },
+  {
+    "id": "demo-user-cashier1",
+    "username": "cashier1",
+    "displayName": "Chitra Cashier",
+    "role": "cashier",
+    "demoPassword": "Demo#Cashier1",
+    "access": [
+      {
+        "store": "demo-store-ozone",
+        "counter": "demo-ctr-ozone-1"
+      }
+    ]
+  },
+  {
+    "id": "demo-user-cashier2",
+    "username": "cashier2",
+    "displayName": "Kato Cashier",
+    "role": "cashier",
+    "demoPassword": "Demo#Cashier2",
+    "access": [
+      {
+        "store": "demo-store-kampala"
+      }
+    ]
+  }
+]

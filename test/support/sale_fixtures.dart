@@ -15,12 +15,14 @@ Sale testSale({
   int? valueMinor,
   Map<int, Qty> returned = const <int, Qty>{},
   String? saleId,
+  String? cashier = 'MGTCASH3',
 }) {
   final total = Money(totalMinor, CurrencyRegistry.inr);
   const zero = Money.zero(CurrencyRegistry.inr);
   return Sale(
     number: number,
     saleId: saleId,
+    cashier: cashier,
     date: at.toUtc().toIso8601String(),
     store: 'Maison Galaxy',
     customer: customer,

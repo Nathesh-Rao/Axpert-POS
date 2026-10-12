@@ -31,7 +31,7 @@ void main() {
       final second = await provider.open();
 
       expect(first, same(second));
-      expect(first.schemaVersion, 8);
+      expect(first.schemaVersion, 9);
       expect(first.allTables.map((table) => table.actualTableName).toSet(), {
         'device_context_entries',
         'settings',
@@ -43,6 +43,14 @@ void main() {
         'sale_lines',
         'payments',
         'current_cart',
+        'currencies',
+        'stores',
+        'counters',
+        'users',
+        'user_access',
+        'categories',
+        'offers',
+        'seed_manifest',
       });
       expect(await first.customSelect('SELECT 1').getSingle(), isNotNull);
       final foreignKeys = await first
@@ -64,7 +72,7 @@ void main() {
 
     await store.write(context);
 
-    expect(database.schemaVersion, 8);
+    expect(database.schemaVersion, 9);
     expect(await store.read(), context);
   });
 
@@ -137,7 +145,7 @@ void main() {
 
       expect(names, containsAll(['settings', 'migration_state', 'customers']));
       expect(device.read<String>('device_id'), 'dev-1');
-      expect(version.read<int>('user_version'), 8);
+      expect(version.read<int>('user_version'), 9);
     });
 
     test('failed upgrade rolls back and leaves data intact', () async {
@@ -226,7 +234,7 @@ void main() {
 
       expect(names, contains('customers'));
       expect(setting.read<String>('value_json'), 'true');
-      expect(version.read<int>('user_version'), 8);
+      expect(version.read<int>('user_version'), 9);
     });
 
     test('failed upgrade leaves v3 data and user_version intact', () async {
@@ -323,7 +331,7 @@ void main() {
       expect(names, contains('held_bills'));
       expect(setting.read<String>('value_json'), 'true');
       expect(customer.read<String>('name'), 'Walk-in');
-      expect(version.read<int>('user_version'), 8);
+      expect(version.read<int>('user_version'), 9);
       expect(columns.map((c) => c.read<String>('name')).toList(), [
         'id',
         'ref',
@@ -333,6 +341,7 @@ void main() {
         'created_at',
         'updated_at',
         'deleted_at',
+        'store_id',
       ]);
     });
 
@@ -343,7 +352,7 @@ void main() {
       addTearDown(database.close);
       await database.customSelect('SELECT 1').getSingle();
       await database.customStatement(
-        "INSERT INTO held_bills VALUES ('u', 'H1', 0, 't', '{}', 'x', 'x', NULL)",
+        "INSERT INTO held_bills (id, ref, position, held_at, cart_json, created_at, updated_at, deleted_at) VALUES ('u', 'H1', 0, 't', '{}', 'x', 'x', NULL)",
       );
       expect(
         (await database.customSelect('SELECT ref FROM held_bills').getSingle())
@@ -408,7 +417,7 @@ void main() {
           'cart_json TEXT NOT NULL, created_at TEXT NOT NULL, '
           'updated_at TEXT NOT NULL, deleted_at TEXT NULL, PRIMARY KEY (id))',
       "INSERT INTO settings VALUES ('axpert-dark', 'true', 'x')",
-      "INSERT INTO held_bills VALUES ('u', 'H1', 0, 't', '{}', 'x', 'x', NULL)",
+      "INSERT INTO held_bills (id, ref, position, held_at, cart_json, created_at, updated_at, deleted_at) VALUES ('u', 'H1', 0, 't', '{}', 'x', 'x', NULL)",
     ];
 
     void seedV5(dynamic database, {String extra = ''}) {
@@ -456,6 +465,10 @@ void main() {
         'gst_bp',
         'image',
         'favourite',
+        'store_id',
+        'category_id',
+        'variant_group',
+        'variant_label',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -468,7 +481,7 @@ void main() {
         contains('products_position'),
       );
       expect(held.read<String>('ref'), 'H1');
-      expect(version.read<int>('user_version'), 8);
+      expect(version.read<int>('user_version'), 9);
     });
 
     test('legacy_id is unique, code and barcode are not', () async {
@@ -539,6 +552,8 @@ void main() {
 
   group('schema v6 to v7 upgrade', () {
     const v6Ddl = [
+      // Stand-in so the v9 column addition finds the table.
+      'CREATE TABLE held_bills (id TEXT PRIMARY KEY)',
       'CREATE TABLE settings (key TEXT NOT NULL, value_json TEXT NOT NULL, '
           'updated_at TEXT NOT NULL, PRIMARY KEY (key))',
       'CREATE TABLE migration_state (key TEXT NOT NULL, value TEXT NOT NULL, '
@@ -590,6 +605,10 @@ void main() {
         'position',
         'occurred_at',
         'store_name',
+        'store_id',
+        'counter_id',
+        'user_id',
+        'user_name',
         'customer_name',
         'customer_legacy_id',
         'customer_id',
@@ -639,6 +658,11 @@ void main() {
         'price_minor',
         'qty_milli',
         'discount_bp',
+        'offer_kind',
+        'offer_name',
+        'offer_saving_minor',
+        'offer_unit_off_minor',
+        'is_gift',
         'returned_qty_milli',
         'created_at',
       ]);
@@ -669,7 +693,7 @@ void main() {
           .customSelect('PRAGMA user_version')
           .getSingle();
       expect(customer.read<String>('legacy_id'), 'walk');
-      expect(version.read<int>('user_version'), 8);
+      expect(version.read<int>('user_version'), 9);
     });
 
     test('number is not unique and a link must point at a real row', () async {
@@ -741,6 +765,11 @@ void main() {
       'CREATE TABLE migration_state (key TEXT NOT NULL, value TEXT NOT NULL, '
           'PRIMARY KEY (key))',
       "INSERT INTO settings VALUES ('axpert-dark', 'true', 'x')",
+      // Stand-ins so the v9 column additions find their tables.
+      'CREATE TABLE products (id TEXT PRIMARY KEY)',
+      'CREATE TABLE held_bills (id TEXT PRIMARY KEY)',
+      'CREATE TABLE sales (id TEXT PRIMARY KEY)',
+      'CREATE TABLE sale_lines (id TEXT PRIMARY KEY)',
     ];
 
     void seedV7(dynamic database, {String extra = ''}) {
@@ -773,7 +802,7 @@ void main() {
         'updated_at',
       ]);
       expect(settings.read<String>('key'), 'axpert-dark');
-      expect(version.read<int>('user_version'), 8);
+      expect(version.read<int>('user_version'), 9);
     });
 
     test('only one row (id 1) is allowed', () async {

@@ -10,6 +10,7 @@ import 'package:pos_application/core/database/migration/customers_migrator.dart'
 import 'package:pos_application/core/identifiers/uuid_v4_generator.dart';
 import 'package:pos_application/core/services/storage/in_memory_local_store.dart';
 import 'package:pos_application/modules/customers/models/customer.dart';
+import '../../../support/test_session.dart';
 
 Customer _c(String id, String name, {String member = '', int points = 0}) =>
     Customer(
@@ -37,7 +38,7 @@ void main() {
 
   setUp(() {
     db = AxpertDatabase(NativeDatabase.memory());
-    store = InMemoryLocalStore();
+    store = legacySeededStore();
   });
   tearDown(() => db.close());
 
@@ -53,7 +54,7 @@ void main() {
   }
 
   test(
-    'missing key copies the 4 seed customers, LocalStore untouched',
+    'a stored legacy list of 4 customers is copied, LocalStore untouched',
     () async {
       final outcome = await migrator.ensureCopied(db, store);
 
@@ -64,7 +65,7 @@ void main() {
       expect(r.every((e) => _uuidV4.hasMatch(e.id)), isTrue);
       expect(r.first.createdAt, '2026-10-12T00:00:00.000Z');
       expect(r.first.deletedAt, isNull);
-      expect(await store.has(StorageKeys.customers), isFalse);
+      expect(await store.has(StorageKeys.customers), isTrue);
       final marker = await markerJson();
       expect(marker['count'], 4);
       expect(marker['checksum'], hasLength(8));

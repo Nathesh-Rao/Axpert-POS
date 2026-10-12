@@ -5,6 +5,8 @@ import 'package:drift/drift.dart';
 import '../../../modules/pos/models/cart.dart';
 import '../../../modules/pos/models/held_bill.dart';
 import '../../identifiers/uuid_generator.dart';
+import '../../services/pricing/currency.dart';
+import '../../services/pricing/currency_registry.dart';
 import '../axpert_database.dart';
 import 'fnv1a.dart';
 
@@ -33,10 +35,15 @@ abstract final class HeldBillRows {
     List<HeldBill> list, {
     required String now,
     required UuidGenerator uuid,
+    String? storeId,
   }) async {
     final active =
         await (db.select(db.heldBillEntries)
-              ..where((t) => t.deletedAt.isNull())
+              ..where(
+                (t) => storeId == null
+                    ? t.deletedAt.isNull()
+                    : t.deletedAt.isNull() & t.storeId.equals(storeId),
+              )
               ..orderBy([(t) => OrderingTerm.asc(t.position)]))
             .get();
     final pool = <String, List<HeldBillEntry>>{};
@@ -65,6 +72,7 @@ abstract final class HeldBillRows {
                 cartJson: json,
                 createdAt: now,
                 updatedAt: now,
+                storeId: Value(storeId),
               ),
             );
         continue;
@@ -97,10 +105,18 @@ abstract final class HeldBillRows {
   }
 
   /// Active rows in list order.
-  static Future<List<HeldBill>> readList(AxpertDatabase db) async {
+  static Future<List<HeldBill>> readList(
+    AxpertDatabase db, {
+    String? storeId,
+    Currency currency = CurrencyRegistry.inr,
+  }) async {
     final rows =
         await (db.select(db.heldBillEntries)
-              ..where((t) => t.deletedAt.isNull())
+              ..where(
+                (t) => storeId == null
+                    ? t.deletedAt.isNull()
+                    : t.deletedAt.isNull() & t.storeId.equals(storeId),
+              )
               ..orderBy([(t) => OrderingTerm.asc(t.position)]))
             .get();
     return [
@@ -108,7 +124,10 @@ abstract final class HeldBillRows {
         HeldBill(
           ref: r.ref,
           time: r.heldAt,
-          cart: Cart.fromJson(jsonDecode(r.cartJson) as Map<String, dynamic>),
+          cart: Cart.fromJson(
+            jsonDecode(r.cartJson) as Map<String, dynamic>,
+            currency: currency,
+          ),
         ),
     ];
   }

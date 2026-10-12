@@ -11,7 +11,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/constants/storage_keys.dart';
-import 'package:pos_application/core/mock/seed_customers.dart';
+import 'package:pos_application/features/session/data/in_memory_session_repositories.dart';
+import 'package:pos_application/features/session/domain/entities/session_entities.dart';
+import 'package:pos_application/features/session/presentation/controllers/active_session.dart';
+import '../support/test_session.dart';
+import '../support/seed/seed_customers.dart';
 import 'package:pos_application/core/services/pricing/basis_points.dart';
 import 'package:pos_application/core/services/pricing/currency_registry.dart';
 import 'package:pos_application/core/services/pricing/money.dart';
@@ -220,6 +224,62 @@ void main() {
     }
   });
 
+  testWidgets('store and counter picker raises no error', (tester) async {
+    useLogicalViewport(tester, const Size(1280, 720));
+    final session = ActiveSession.fixed(
+      user: testUser,
+      store: testAccess.first.store,
+      counter: testAccess.first.counters.first,
+      access: const <StoreAccess>[],
+      quickCash: const <String, List<int>>{},
+      users: InMemoryUserRepository(
+        users: <UserCredential>[testCredential],
+        access: <String, List<StoreAccess>>{testUser.id: testAccess},
+      ),
+    );
+    final binding = await bootInWidgetTest(
+      tester,
+      store: _seededStore(),
+      session: session,
+    );
+    final errors = <String>[];
+    final previous = FlutterError.onError;
+    FlutterError.onError = (details) => errors.add(details.exceptionAsString());
+    try {
+      void check(String step) {
+        expect(errors, isEmpty, reason: 'errors after "$step": $errors');
+        expect(find.byType(ErrorWidget), findsNothing, reason: step);
+        expect(RxInterface.proxy, isNull, reason: step);
+      }
+
+      await tester.pumpWidget(testApp(binding, initialRoute: '/splash'));
+      await tester.pump(const Duration(milliseconds: 1000));
+      await tester.pump(const Duration(milliseconds: 1000));
+      await tester.pump(const Duration(seconds: 2));
+      await tester.enterText(find.byType(TextField).first, 'cashier');
+      await tester.enterText(find.byType(TextField).last, 'secret');
+      await tester.tap(find.text('Sign In'));
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 50)),
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pumpAndSettle();
+      check('login to picker');
+      expect(find.text('Choose store and counter'), findsOneWidget);
+      await tester.tap(find.text('Continue'));
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 50)),
+      );
+      await tester.pumpAndSettle();
+      check('picker to landing');
+      Get.find<ToastController>().toasts.clear();
+      await tester.pump(const Duration(milliseconds: 100));
+    } finally {
+      FlutterError.onError = previous;
+    }
+  });
+
   testWidgets('entry flow (splash, login, landing) raises no error', (
     tester,
   ) async {
@@ -246,7 +306,7 @@ void main() {
       await tester.pump();
       check('empty submit');
       await tester.enterText(find.byType(TextField).first, 'cashier');
-      await tester.enterText(find.byType(TextField).last, 'demo');
+      await tester.enterText(find.byType(TextField).last, 'secret');
       await tester.tap(find.text('Sign In'));
       await tester.pump(const Duration(milliseconds: 300));
       check('loading');

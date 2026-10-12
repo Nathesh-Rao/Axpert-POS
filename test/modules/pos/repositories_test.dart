@@ -1,9 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pos_application/core/constants/storage_keys.dart';
-import 'package:pos_application/features/products/data/datasources/large_dataset.dart';
+import 'package:pos_application/core/seed/large_dataset.dart';
 import 'package:pos_application/core/mock/mock_delay.dart';
-import 'package:pos_application/features/products/data/datasources/seed_products.dart';
-import 'package:pos_application/core/services/storage/in_memory_local_store.dart';
+import '../../support/seed/seed_products.dart';
 import 'package:pos_application/modules/customers/repository/mock_customer_repository.dart';
 import 'package:pos_application/modules/pos/models/cart.dart';
 import 'package:pos_application/modules/pos/models/held_bill.dart';
@@ -11,12 +10,13 @@ import 'package:pos_application/modules/pos/repository/mock_cart_repository.dart
 import 'package:pos_application/modules/pos/repository/mock_held_bill_repository.dart';
 import 'package:pos_application/features/products/data/repositories/mock_product_repository.dart';
 import 'package:pos_application/modules/sales/repository/mock_sale_repository.dart';
+import '../../support/test_session.dart';
 
 void main() {
   setUp(() => MockDelay.provider = () => Duration.zero);
 
   test('products seed on first run and persist changes', () async {
-    final store = InMemoryLocalStore();
+    final store = legacySeededStore();
     final repo = MockProductRepository(store);
     final first = await repo.load();
     expect(first.length, 20);
@@ -31,7 +31,7 @@ void main() {
   });
 
   test('forceSeed replaces stored data (debug large dataset)', () async {
-    final store = InMemoryLocalStore();
+    final store = legacySeededStore();
     await MockProductRepository(store).load();
     final big = LargeDataset.products(500);
     final loaded = await MockProductRepository(
@@ -50,14 +50,14 @@ void main() {
   });
 
   test('customers seed and reload', () async {
-    final store = InMemoryLocalStore();
+    final store = legacySeededStore();
     final list = await MockCustomerRepository(store).load();
     expect(list.length, 4);
     expect((await MockCustomerRepository(store).load()).length, 4);
   });
 
   test('cart draft, held bills and sales round trip', () async {
-    final store = InMemoryLocalStore();
+    final store = legacySeededStore();
     final carts = MockCartRepository(store);
     expect((await carts.load()).lines, isEmpty);
     final cart = Cart.empty.addItem(SeedProducts.products()[0]);
@@ -73,7 +73,7 @@ void main() {
   });
 
   test('corrupt cart json falls back to the empty cart', () async {
-    final store = InMemoryLocalStore();
+    final store = legacySeededStore();
     await store.write(StorageKeys.cart, <String, dynamic>{'lines': 5});
     expect((await MockCartRepository(store).load()).lines, isEmpty);
   });

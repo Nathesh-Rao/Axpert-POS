@@ -1,5 +1,8 @@
 import 'package:drift/drift.dart';
 
+import 'category_entries.dart';
+import 'store_entries.dart';
+
 /// Products (provisional, local-only, DEC-124/128). `legacy_id` is the app's
 /// integer `Product.id` (a list index, referenced by sale snapshots and the
 /// `returned` map); `id` is the UUID v4 key. `code` and `barcode` are NOT
@@ -42,6 +45,18 @@ class ProductEntries extends Table {
   IntColumn get image => integer()();
 
   BoolColumn get favourite => boolean()();
+
+  /// Owning store (v9). Null on legacy rows; while the `stores` table is
+  /// empty every row is visible (DEC-132).
+  TextColumn get storeId => text().nullable().references(StoreEntries, #id)();
+
+  TextColumn get categoryId =>
+      text().nullable().references(CategoryEntries, #id)();
+
+  /// Sibling SKUs of one product share a group; the label tells them apart.
+  TextColumn get variantGroup => text().nullable()();
+
+  TextColumn get variantLabel => text().nullable()();
 
   /// UTC ISO 8601 text.
   TextColumn get createdAt => text()();

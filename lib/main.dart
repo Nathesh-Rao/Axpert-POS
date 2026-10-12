@@ -15,6 +15,7 @@ import 'core/shortcuts/app_shortcuts.dart';
 import 'core/routes/url_strategy.dart';
 import 'core/services/storage/shared_prefs_local_store.dart';
 import 'core/theme/app_theme.dart';
+import 'features/session/presentation/controllers/active_session.dart';
 import 'modules/shell/controllers/settings_controller.dart';
 import 'modules/shell/widgets/dialog_layer.dart';
 import 'modules/shift/controllers/shift_controller.dart';
@@ -39,6 +40,14 @@ Future<void> main() async {
   );
   StartupTimeline.measureSync('dependencies()', binding.dependencies);
   await StartupTimeline.measure('loadData (all)', binding.loadData);
+  if (EntryConfig.skip) {
+    await StartupTimeline.measure(
+      'sign in (SKIP_ENTRY)',
+      () => Get.find<ActiveSession>().autoSignIn(
+        username: EntryConfig.skipUser.isEmpty ? null : EntryConfig.skipUser,
+      ),
+    );
+  }
   StartupTimeline.mark('runApp called');
   runApp(PosApp(binding: binding));
   WidgetsBinding.instance.addPostFrameCallback(

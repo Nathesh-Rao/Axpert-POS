@@ -118,6 +118,7 @@ abstract final class ProductRows {
     Map<int, KnownProduct> known, {
     required String now,
     required UuidGenerator uuid,
+    String? storeId,
   }) {
     final dups = duplicateIds(list);
     if (dups.isNotEmpty) throw DuplicateProductIdsException(dups);
@@ -134,7 +135,7 @@ abstract final class ProductRows {
       final row = known[p.id];
       if (row == null) {
         final id = uuid.generate();
-        inserts.add(_insert(id, p, i, now));
+        inserts.add(_insert(id, p, i, now, storeId));
         next[p.id] = KnownProduct(
           uuid: id,
           createdAt: now,
@@ -212,11 +213,13 @@ abstract final class ProductRows {
   /// Every row (tombstones too) by legacy id, for the diff snapshot, plus the
   /// active products in list order.
   static Future<({Map<int, KnownProduct> known, List<Product> list})> read(
-    AxpertDatabase db,
-  ) async {
-    final rows = await (db.select(
-      db.productEntries,
-    )..orderBy([(t) => OrderingTerm.asc(t.position)])).get();
+    AxpertDatabase db, {
+    String? storeId,
+  }) async {
+    final query = db.select(db.productEntries);
+    if (storeId != null) query.where((t) => t.storeId.equals(storeId));
+    final rows = await (query..orderBy([(t) => OrderingTerm.asc(t.position)]))
+        .get();
     final known = <int, KnownProduct>{};
     final list = <Product>[];
     for (final r in rows) {
@@ -238,6 +241,10 @@ abstract final class ProductRows {
   static String checksum(List<Product> list) =>
       fnv1a32Hex(list.map((p) => jsonEncode(p.toJson())).join('\n'));
 
+  /// A product row as the app's [Product] (also used to build the gift of an
+  /// offer).
+  static Product toProduct(ProductEntry r) => _product(r);
+
   static Product _product(ProductEntry r) => Product(
     id: r.legacyId,
     name: r.name,
@@ -257,6 +264,7 @@ abstract final class ProductRows {
     Product p,
     int position,
     String now,
+    String? storeId,
   ) => ProductEntriesCompanion.insert(
     id: id,
     legacyId: p.id,
@@ -272,6 +280,7 @@ abstract final class ProductRows {
     gstBp: p.gst.value,
     image: p.image,
     favourite: p.favourite,
+    storeId: Value(storeId),
     createdAt: now,
     updatedAt: now,
   );

@@ -6,5 +6,9 @@ import '../routes/app_routes.dart';
 abstract final class EntryConfig {
   static const bool skip = bool.fromEnvironment('SKIP_ENTRY');
 
+  /// `--dart-define=SKIP_ENTRY_USER=cashier2`: which user `SKIP_ENTRY` signs in
+  /// (default: the first active user).
+  static const String skipUser = String.fromEnvironment('SKIP_ENTRY_USER');
+
   static String get initialRoute => skip ? AppRoutes.pos : AppRoutes.splash;
 }

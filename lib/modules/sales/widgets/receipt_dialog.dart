@@ -43,7 +43,7 @@ class ReceiptDialog extends StatelessWidget {
             vertical: AppCheckoutSizes.receiptThanksMarginY,
           ),
           child: Text(
-            s.receiptThanks(),
+            doc.footer.isEmpty ? s.receiptThanks() : doc.footer,
             textAlign: TextAlign.center,
             style: context.text
                 .of(AppFontSize.s14, height: AppLineHeight.base)
@@ -132,6 +132,22 @@ class _Header extends StatelessWidget {
                 .copyWith(color: c.text),
           ),
         ),
+        for (final line in <String>[
+          if (doc.address.isNotEmpty) doc.address,
+          if (doc.phone.isNotEmpty) doc.phone,
+          if (doc.taxId.isNotEmpty) doc.taxId,
+          if (doc.header.isNotEmpty) doc.header,
+        ])
+          Text(
+            line,
+            textAlign: TextAlign.center,
+            style: context.text
+                .fluid(
+                  AppCheckoutSizes.receiptTaglineFont,
+                  height: AppLineHeight.base,
+                )
+                .copyWith(color: c.muted),
+          ),
         Text(
           s.receiptTagline(),
           textAlign: TextAlign.center,

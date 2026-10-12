@@ -12,7 +12,7 @@ import 'package:pos_application/core/database/migration/product_rows.dart';
 import 'package:pos_application/core/identifiers/uuid_v4_generator.dart';
 import 'package:pos_application/core/mock/mock_delay.dart';
 import 'package:pos_application/core/services/storage/in_memory_local_store.dart';
-import 'package:pos_application/features/products/data/datasources/large_dataset.dart';
+import 'package:pos_application/core/seed/large_dataset.dart';
 import 'package:pos_application/features/products/data/repositories/drift_product_repository.dart';
 
 class _Provider implements DatabaseProvider {

@@ -1,5 +1,8 @@
 import 'package:get/get.dart';
 
+import '../../../core/services/pricing/currency_registry.dart';
+import '../../../features/session/presentation/controllers/active_session.dart';
+
 import '../../../shared/controllers/clock_controller.dart';
 import '../../../shared/controllers/overlay_controller.dart';
 import '../../../shared/controllers/search_field_controller.dart';
@@ -17,17 +20,23 @@ class ShiftController extends GetxController {
     required this.clock,
     required this.overlay,
     required this.search,
+    this.session,
   });
 
   final SalesController sales;
   final ClockController clock;
   final OverlayController overlay;
   final SearchFieldController search;
+  final ActiveSession? session;
 
   final RxBool signedOut = false.obs;
 
   /// The summary for the current local day, computed on demand.
-  ShiftSummary get today => ShiftSummary.of(sales.sales, clock.current);
+  ShiftSummary get today => ShiftSummary.of(
+    sales.sales,
+    clock.current,
+    currency: session?.currency ?? CurrencyRegistry.inr,
+  );
 
   /// "Confirm & close counter": `setSignedOut(true); setModal("")`.
   void closeCounter() {

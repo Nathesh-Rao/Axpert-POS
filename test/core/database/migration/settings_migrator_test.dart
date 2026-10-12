@@ -55,7 +55,7 @@ void main() {
       StorageKeys.store: 'SHOP',
       StorageKeys.dark: true,
       StorageKeys.beep: true,
-      StorageKeys.counter: 'C3',
+      StorageKeys.counter: '',
       StorageKeys.rate: 9000,
     });
     final marker = await db.select(db.migrationStateEntries).getSingle();

@@ -114,6 +114,19 @@ class LoginForm extends StatelessWidget {
                 )
               : const SizedBox.shrink(),
         ),
+        Obx(() {
+          final message =
+              ctl.error.value ??
+              (ctl.hasUsers.value == false
+                  ? '${s.loginNoUsers()} ${s.loginNoUsersHint()}'
+                  : null);
+          return message == null
+              ? const SizedBox.shrink()
+              : Padding(
+                  padding: EdgeInsets.only(top: AppEntrySizes.labelGap * k),
+                  child: LoginError(text: message, scale: k),
+                );
+        }),
         SizedBox(height: AppEntrySizes.rowGap * k),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,

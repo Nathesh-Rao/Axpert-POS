@@ -17,6 +17,8 @@ class AppSelect extends StatefulWidget {
     required this.onChanged,
     required this.fontSize,
     this.semanticLabel,
+    this.triggerBuilder,
+    this.triggerRadius = AppRadii.r6,
     super.key,
   });
 
@@ -25,6 +27,12 @@ class AppSelect extends StatefulWidget {
   final ValueChanged<String> onChanged;
   final double fontSize;
   final String? semanticLabel;
+
+  /// Replaces the default trigger (the left-edged text and chevron) with a
+  /// boxed one, e.g. the login field box; the list is the same.
+  final Widget Function(BuildContext context, bool hovered, bool open)?
+  triggerBuilder;
+  final double triggerRadius;
 
   @override
   State<AppSelect> createState() => _AppSelectState();
@@ -125,34 +133,40 @@ class _AppSelectState extends State<AppSelect> {
           ),
           child: AppPressable(
             semanticLabel: widget.semanticLabel,
-            borderRadius: AppRadii.r6,
+            borderRadius: widget.triggerRadius,
             onTap: _toggle,
-            builder: (context, hovered) => Container(
-              decoration: BoxDecoration(
-                border: Border(left: BorderSide(color: c.border)),
-              ),
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.s8,
-                vertical: AppSpacing.s4,
-              ),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      widget.value,
-                      style: style,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+            builder: (context, hovered) =>
+                widget.triggerBuilder?.call(
+                  context,
+                  hovered,
+                  _portal.isShowing,
+                ) ??
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border(left: BorderSide(color: c.border)),
                   ),
-                  Icon(
-                    AppIcons.chevronDown,
-                    size: widget.fontSize + AppSpacing.s6,
-                    color: c.text,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.s8,
+                    vertical: AppSpacing.s4,
                   ),
-                ],
-              ),
-            ),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          widget.value,
+                          style: style,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Icon(
+                        AppIcons.chevronDown,
+                        size: widget.fontSize + AppSpacing.s6,
+                        color: c.text,
+                      ),
+                    ],
+                  ),
+                ),
           ),
         ),
       ),

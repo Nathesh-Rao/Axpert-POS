@@ -10,13 +10,14 @@ import 'package:pos_application/core/identifiers/uuid_v4_generator.dart';
 import 'package:pos_application/core/mock/mock_delay.dart';
 import 'package:pos_application/core/services/storage/in_memory_local_store.dart';
 import 'package:pos_application/core/services/storage/local_store.dart';
-import 'package:pos_application/features/products/data/datasources/seed_products.dart';
+import '../../support/seed/seed_products.dart';
 import 'package:pos_application/features/products/data/repositories/drift_product_repository.dart';
 import 'package:pos_application/features/products/data/repositories/mock_product_repository.dart';
 import 'package:pos_application/features/products/domain/entities/product.dart';
 import 'package:pos_application/features/products/domain/repositories/product_repository.dart';
 
 import '../../support/product_fixtures.dart';
+import '../../support/test_session.dart';
 
 class _Provider implements DatabaseProvider {
   _Provider(this.db);
@@ -76,7 +77,7 @@ void main() {
 
       setUp(() {
         backend = make();
-        store = InMemoryLocalStore();
+        store = legacySeededStore();
       });
       tearDown(() async => backend.dispose?.call());
 

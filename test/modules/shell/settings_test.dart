@@ -36,7 +36,7 @@ void main() {
     expect(again.beep, isFalse);
     expect(again.store, 'MAISON GALAXY - MARINA');
     expect(again.rateMilli, 9000);
-    expect(again.counter, 'C3');
+    expect(again.counter, '');
   });
 
   test('toggleDark flips the flag', () async {

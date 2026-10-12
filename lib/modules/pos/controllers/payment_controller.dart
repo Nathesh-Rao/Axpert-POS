@@ -25,7 +25,7 @@ import '../../../features/payment/domain/entities/payment_result.dart';
 import '../../../features/payment/domain/services/payment_service.dart';
 import '../../../features/products/presentation/controllers/products_controller.dart';
 import '../../sales/controllers/sales_controller.dart';
-import '../../shell/controllers/settings_controller.dart';
+import '../../../features/session/presentation/controllers/active_session.dart';
 import '../models/cart.dart';
 import '../models/payment_state.dart';
 import '../repository/checkout_repository.dart';
@@ -42,7 +42,7 @@ class PaymentController extends GetxController {
     required this.products,
     required this.customers,
     required this.sales,
-    required this.settings,
+    required this.session,
     required this.toasts,
     required this.overlay,
     required this.search,
@@ -65,7 +65,7 @@ class PaymentController extends GetxController {
   final ProductsController products;
   final CustomersController customers;
   final SalesController sales;
-  final SettingsController settings;
+  final ActiveSession session;
   final ToastController toasts;
   final OverlayController overlay;
   final SearchFieldController search;
@@ -262,12 +262,13 @@ class PaymentController extends GetxController {
     _processing = true;
     try {
       final result = service.complete(
-        cart: _cart,
+        cart: cart.cartAsSold,
         totals: cart.totals.value,
         customer: meta.customer,
         stockOf: (id) => products.byId(id)?.stockQty ?? Qty.zero,
         salesCount: sales.sales.length,
-        store: settings.settings.value.store,
+        store: session.store.value?.name ?? '',
+        cashier: session.displayName,
         now: _now(),
         mode: saleMode,
         tendered: amount,

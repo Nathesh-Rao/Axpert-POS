@@ -6,7 +6,8 @@
 // Release builds cannot show these (they are debug-only asserts).
 //
 // usage:
-//   flutter run -d web-server --web-port=8170 --web-hostname=127.0.0.1 --dart-define=SKIP_ENTRY=true   (wait: "is being served")
+//   flutter run -d web-server --web-port=8170 --web-hostname=127.0.0.1 --dart-define=SKIP_ENTRY=true --dart-define=DEMO_SEED=true   (wait: "is being served")
+//   The app has no built-in data: DEMO_SEED=true fills the database once (assets/seed). SKIP_ENTRY signs in the first user (admin) in Ozone.
 //   node --experimental-websocket tool/web_check/debug_check.mjs http://127.0.0.1:8170/ [outDir] [width height] [--semantics] [--entry]
 // Default: the app is run WITH SKIP_ENTRY (starts on POS). --entry: run it
 // WITHOUT the define; the script walks the real splash and login first
@@ -130,14 +131,14 @@ const esc = async () => { await key('Escape', 27); await sleep(500); };
 
 if (entryOn) await signInThroughEntry({ step, insert, key, click, sleep, width, height });
 await step(semanticsOn ? 'start on POS (semantics on)' : 'start on POS', async () => {});
-await step('add 3 items', async () => { await click(width / 2, 28); for (const code of ['8901234567895', '8901234567896', '8901234567897']) { await insert(code); await key('Enter', 13); await sleep(900); } });
+await step('add 3 items', async () => { await click(width / 2, 28); for (const code of ['8901234560015', '8901234560020', '8901234560000']) { await insert(code); await key('Enter', 13); await sleep(900); } });
 await step('beep on add (Web Audio: sine 1100 Hz, gain 0.04, 80 ms)', async () => {
   const beeps = (await send('Runtime.evaluate', { expression: 'JSON.stringify(window.__beeps)', returnByValue: true })).result?.value;
   const list = JSON.parse(beeps ?? '[]');
   console.log('beeps after 3 adds:', beeps);
   if (list.length !== 3 || list.some((b) => b.type !== 'sine' || b.freq !== 1100 || Math.abs(b.gain - 0.04) > 1e-6 || Math.abs(b.secs - 0.08) > 0.005)) throw new Error('beep mismatch: ' + beeps);
 });
-await step('select member MG1003', async () => { await click(1020, 375); await insert('MG1003'); await sleep(800); });
+await step('select member MG2001', async () => { await click(1020, 375); await insert('MG2001'); await sleep(800); });
 
 // every page from POS and back, then the order that showed the red screen
 for (const n of ['Products', 'Customers', 'Sales', 'Returns', 'Reports', 'More']) { await page(n); await page('POS'); }
@@ -193,13 +194,11 @@ await step('checkout: cash sale, receipt opens, saleId stored', async () => {
   if (!semanticsOn) { await evalPage("(()=>{const p=document.querySelector('flt-semantics-placeholder'); if(p) p.click()})()"); await sleep(2500); }
   const receipt = await evalPage("document.body.innerHTML.includes('Retail tax invoice')");
   if (!receipt) throw new Error('receipt dialog not found after the sale');
-  const stored = await evalPage("localStorage.getItem('flutter.axpert-sales')");
-  const sales = JSON.parse(JSON.parse(stored));
-  const last = sales[sales.length - 1];
-  const uuidV4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
-  console.log(`checkout: ${sales.length} stored sales (3 seeded), last ${last.number} saleId ${last.saleId}, seeded sales without saleId: ${sales.slice(0, 3).filter((x) => !('saleId' in x)).length}`);
-  if (sales.length !== 4 || !uuidV4.test(last.saleId ?? '')) throw new Error('stored sale or saleId wrong');
-  if (sales.slice(0, 3).some((x) => 'saleId' in x)) throw new Error('old sales were rewritten with a saleId');
+  // The sale lives in Drift only (no LocalStore mirror in scoped mode): the
+  // receipt text proves the sale and its cashier; drift_check.mjs reads the rows.
+  const cashier = await evalPage("/Cashier: [A-Z][a-z]+ (Admin|Manager|Cashier)/.test(document.body.innerHTML)");
+  if (!cashier) throw new Error('receipt does not name the signed-in cashier');
+  console.log('checkout: receipt opened and names the cashier');
 });
 
 console.log('\nstep | ok | red screen share | console errors | first error');

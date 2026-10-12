@@ -94,7 +94,13 @@ class DriftLedgerRepository implements CheckoutRepository, ReturnRepository {
       await StartupTimeline.logged(
         '$label commit ($rows rows)',
         () => db.durableTransaction(() async {
-          await SaleRows.write(db, salePlan, now: now, uuid: _uuid);
+          await SaleRows.write(
+            db,
+            salePlan,
+            now: now,
+            uuid: _uuid,
+            scope: sales.scope,
+          );
           if (payment != null) {
             await SaleRows.insertPayment(
               db,
@@ -113,6 +119,11 @@ class DriftLedgerRepository implements CheckoutRepository, ReturnRepository {
       sales.adopt(salePlan);
       products.adopt(productPlan);
     } on Object catch (error, stackTrace) {
+      if (sales.scope.scoped) {
+        // Scoped mode has no LocalStore fallback: the sale is not saved.
+        _diagnostics.record('$label commit', error, stackTrace);
+        return PersistOutcome.failed;
+      }
       return _failover(
         '$label commit',
         error,

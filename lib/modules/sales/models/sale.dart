@@ -70,6 +70,7 @@ class Sale {
     required this.change,
     required this.returned,
     this.saleId,
+    this.cashier,
   });
 
   factory Sale.fromJson(
@@ -78,10 +79,14 @@ class Sale {
   }) => Sale(
     number: json['number'] as String,
     saleId: json['saleId'] as String?,
+    cashier: json['cashier'] as String?,
     date: json['date'] as String,
     store: json['store'] as String,
     customer: json['customer'] as String,
-    cart: Cart.fromJson(json['cart'] as Map<String, dynamic>),
+    cart: Cart.fromJson(
+      json['cart'] as Map<String, dynamic>,
+      currency: currency,
+    ),
     totals: SaleTotals.fromJson(
       json['totals'] as Map<String, dynamic>,
       currency: currency,
@@ -102,6 +107,10 @@ class Sale {
   final String? saleId;
   final String date;
   final String store;
+
+  /// Display name of the cashier at the time of the sale; null on sales stored
+  /// before sessions existed.
+  final String? cashier;
   final String customer;
   final Cart cart;
   final SaleTotals totals;
@@ -113,6 +122,7 @@ class Sale {
   Sale copyWith({Map<int, Qty>? returned}) => Sale(
     number: number,
     saleId: saleId,
+    cashier: cashier,
     date: date,
     store: store,
     customer: customer,
@@ -127,6 +137,7 @@ class Sale {
   Map<String, dynamic> toJson() => <String, dynamic>{
     'number': number,
     if (saleId != null) 'saleId': saleId,
+    if (cashier != null) 'cashier': cashier,
     'date': date,
     'store': store,
     'customer': customer,

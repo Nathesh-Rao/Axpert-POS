@@ -85,7 +85,7 @@ void main() {
     expect(loaded, AppSettings.defaults);
     expect(diagnostics.hasFailures, isTrue);
     expect(await store.read(StorageKeys.settingsDriftStale), true);
-    expect(await driftValue(StorageKeys.counter), 'C3');
+    expect(await driftValue(StorageKeys.counter), '');
 
     final restarted = await repo(db).load();
 
@@ -102,7 +102,7 @@ void main() {
     await rollback.save(loaded.copyWith(store: 'OTHER', beep: false));
 
     expect(await store.read(StorageKeys.settingsDriftStale), true);
-    expect(await driftValue(StorageKeys.store), 'MAISON GALAXY - OZONE');
+    expect(await driftValue(StorageKeys.store), '');
 
     final back = await repo(db).load();
 
@@ -121,7 +121,7 @@ void main() {
 
     expect(await store.has(StorageKeys.settingsDriftStale), isTrue);
     expect(await store.read(StorageKeys.counter), 42);
-    expect(await driftValue(StorageKeys.counter), 'C3');
+    expect(await driftValue(StorageKeys.counter), '');
   });
 
   test('Drift save failure falls back to LocalStore and marks stale', () async {

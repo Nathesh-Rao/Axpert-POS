@@ -54,6 +54,7 @@ void main() {
     'smartphone': LucideIcons.smartphone,
     'user': LucideIcons.user,
     'lock': LucideIcons.lock,
+    'gift': LucideIcons.gift,
     'eye': LucideIcons.eye,
     'eyeOff': LucideIcons.eyeOff,
     'arrowRight': LucideIcons.arrowRight,

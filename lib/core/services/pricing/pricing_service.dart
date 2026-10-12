@@ -47,6 +47,7 @@ class PricingService {
   ExactTotals calculateExact(CartInput cart) {
     for (final line in cart.lines) {
       _checkCurrency(line.price.currency);
+      if (line.unitOff != null) _checkCurrency(line.unitOff!.currency);
     }
     final flat = cart.billDiscount.flat;
     if (flat != null) _checkCurrency(flat.currency);
@@ -77,7 +78,15 @@ class PricingService {
     var subtotal = Rational.zero;
     for (final line in cart.lines) {
       final g = _qty(line.qty) * Rational.fromInt(line.price.minor);
-      final n = g * (Rational.one - _bp(line.discount));
+      final off = line.unitOff;
+      final base = off == null
+          ? g
+          : _qty(line.qty) *
+                Rational.max(
+                  Rational.zero,
+                  Rational.fromInt(line.price.minor - off.minor),
+                );
+      final n = base * (Rational.one - _bp(line.discount));
       gross.add(g);
       net.add(n);
       value += g;

@@ -25,7 +25,7 @@ void main() {
   test(
     'without a saleId the key is absent: JSON identical to the old shape',
     () {
-      final sale = testSale(number: 'AX000001', at: at);
+      final sale = testSale(number: 'AX000001', at: at, cashier: null);
       final json = _roundTrip(sale.toJson());
       expect(json.containsKey('saleId'), isFalse);
       expect(json.keys, <String>[

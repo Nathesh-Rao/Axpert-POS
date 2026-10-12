@@ -78,6 +78,7 @@ Sale _sale({
   Money m(int v) => Money(v, currency);
   return Sale(
     number: number,
+    cashier: 'MGTCASH3',
     date: '2026-10-08T11:16:04.000Z',
     store: 'Maison Galaxy - Ozone',
     customer: customer,

@@ -13,6 +13,9 @@ class DiscountFormController extends GetxController {
   DiscountFormController({required this.cart, required this.overlay});
 
   final CartController cart;
+
+  /// Symbol of the cart's currency (the flat amount tab).
+  String get currencySymbol => cart.totals.value.total.currency.symbol;
   final OverlayController overlay;
 
   final Rx<BillDiscountType> type = BillDiscountType.percent.obs;

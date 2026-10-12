@@ -9,7 +9,7 @@ import '../../../core/utils/money_formatter.dart';
 import '../../../shared/controllers/shell_chrome_controller.dart';
 import '../../../shared/widgets/app_modal.dart';
 import '../../../shared/widgets/modal_info_row.dart';
-import '../../shell/controllers/settings_controller.dart';
+import '../../../features/session/presentation/controllers/active_session.dart';
 import '../../shift/controllers/shift_controller.dart';
 
 /// `modal === "profile"`: the large avatar, the cashier id and role, and the
@@ -21,11 +21,11 @@ class ProfileDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = context.strings;
     final c = context.colors;
-    final settings = Get.find<SettingsController>().settings.value;
+    final session = Get.find<ActiveSession>();
     final online = Get.find<ShellChromeController>().online;
     final shiftTotal = Get.find<ShiftController>().today.total;
     return AppModal(
-      title: s.userName(),
+      title: session.displayName,
       leading: Align(
         alignment: Alignment.centerLeft,
         child: Container(
@@ -44,7 +44,7 @@ class ProfileDialog extends StatelessWidget {
             ),
           ),
           child: Text(
-            s.userInitial(),
+            session.initial,
             style: AppTypography.arial(
               AppManagementSizes.avatarLargeFont,
             ).copyWith(color: c.white),
@@ -53,8 +53,15 @@ class ProfileDialog extends StatelessWidget {
       ),
       scrollable: true,
       children: <Widget>[
-        ModalParagraph(s.profileRole(settings.store)),
-        ModalInfoRow(label: s.profileCounter(), value: settings.counter),
+        ModalParagraph(
+          s.profileRole(session.store.value?.name ?? s.storeNone()),
+        ),
+        Obx(
+          () => ModalInfoRow(
+            label: s.profileCounter(),
+            value: session.counter.value?.name ?? s.counterNone(),
+          ),
+        ),
         ModalInfoRow(
           label: s.profileShiftSales(),
           value: MoneyFormatter.format(shiftTotal),

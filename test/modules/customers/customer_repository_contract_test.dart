@@ -12,6 +12,7 @@ import 'package:pos_application/modules/customers/models/customer.dart';
 import 'package:pos_application/modules/customers/repository/customer_repository.dart';
 import 'package:pos_application/modules/customers/repository/drift_customer_repository.dart';
 import 'package:pos_application/modules/customers/repository/mock_customer_repository.dart';
+import '../../support/test_session.dart';
 
 class _Provider implements DatabaseProvider {
   _Provider(this.db);
@@ -75,7 +76,7 @@ void main() {
 
       setUp(() {
         backend = make();
-        store = InMemoryLocalStore();
+        store = legacySeededStore();
       });
       tearDown(() async => backend.dispose?.call());
 
@@ -233,7 +234,7 @@ void main() {
         (_drift, ['5', '5~dup2']),
       ]) {
         final backend = make();
-        final store = InMemoryLocalStore();
+        final store = legacySeededStore();
         await store.write(StorageKeys.customers, [
           for (final c in list) c.toJson(),
         ]);

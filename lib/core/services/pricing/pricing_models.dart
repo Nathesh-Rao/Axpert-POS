@@ -9,6 +9,7 @@ class LineInput {
     required this.price,
     required this.taxRate,
     this.discount = Bp.zero,
+    this.unitOff,
   });
 
   final Qty qty;
@@ -17,6 +18,10 @@ class LineInput {
   final Money price;
   final Bp discount;
   final Bp taxRate;
+
+  /// Fixed per-unit reduction from an automatic offer. Gross stays at the
+  /// full price; the net uses `max(0, price - unitOff)`. Null means none.
+  final Money? unitOff;
 }
 
 enum BillDiscountType { percent, flat }

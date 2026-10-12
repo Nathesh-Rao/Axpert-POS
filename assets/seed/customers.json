@@ -1,0 +1,42 @@
+[
+  {
+    "legacyId": "walk",
+    "name": "Walk-in Customer",
+    "phone": "",
+    "email": "",
+    "member": "",
+    "points": 0
+  },
+  {
+    "legacyId": "11",
+    "name": "Priya Raman",
+    "phone": "9845012345",
+    "email": "priya.raman@example.com",
+    "member": "MG2001",
+    "points": 320
+  },
+  {
+    "legacyId": "12",
+    "name": "Rahul Menon",
+    "phone": "9845067890",
+    "email": "rahul.menon@example.com",
+    "member": "MG2002",
+    "points": 150
+  },
+  {
+    "legacyId": "13",
+    "name": "Sarah Nakato",
+    "phone": "+256 700 555 013",
+    "email": "sarah.nakato@example.com",
+    "member": "MG3001",
+    "points": 80
+  },
+  {
+    "legacyId": "14",
+    "name": "John Okello",
+    "phone": "+256 700 555 014",
+    "email": "john.okello@example.com",
+    "member": "MG3002",
+    "points": 0
+  }
+]

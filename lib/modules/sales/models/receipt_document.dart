@@ -7,11 +7,15 @@ class ReceiptLine {
     required this.name,
     required this.qty,
     required this.total,
+    this.note,
   });
 
   final String name;
   final Qty qty;
   final Money total;
+
+  /// Offer text printed under the item (name and saving, or the free item).
+  final String? note;
 }
 
 /// A receipt as data (what the prototype's receipt shows): values only, no
@@ -31,6 +35,11 @@ class ReceiptDocument {
     required this.total,
     required this.mode,
     required this.change,
+    this.address = '',
+    this.phone = '',
+    this.taxId = '',
+    this.header = '',
+    this.footer = '',
   });
 
   final String number;
@@ -48,4 +57,11 @@ class ReceiptDocument {
   /// "Cash", "Card", "Credit" or "Unpaid" (a draft).
   final String mode;
   final Money change;
+
+  /// Store details from the store row; empty when not set.
+  final String address;
+  final String phone;
+  final String taxId;
+  final String header;
+  final String footer;
 }

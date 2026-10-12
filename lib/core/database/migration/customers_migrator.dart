@@ -3,7 +3,6 @@ import 'dart:convert';
 import '../../../modules/customers/models/customer.dart';
 import '../../constants/storage_keys.dart';
 import '../../identifiers/uuid_generator.dart';
-import '../../mock/seed_customers.dart';
 import '../../services/storage/local_store.dart';
 import '../axpert_database.dart';
 import 'customer_rows.dart';
@@ -127,13 +126,12 @@ class CustomersMigrator {
     );
   }
 
-  /// A missing key is the seed list (what `MockCustomerRepository` would
-  /// seed; LocalStore is not written). Every item goes through the existing
+  /// A missing key is an empty list (no demo data in the app, DEC-135). Every item goes through the existing
   /// `Customer.fromJson`, so a bad record throws a `TypeError` and nothing is
   /// written, as `load()` does today.
   Future<List<Customer>> _readParsed(LocalStore store) async {
     if (!await store.has(StorageKeys.customers)) {
-      return List<Customer>.of(SeedCustomers.customers);
+      return const <Customer>[];
     }
     final json = await store.read(StorageKeys.customers);
     return <Customer>[

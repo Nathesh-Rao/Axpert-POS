@@ -1,6 +1,6 @@
-import '../../modules/customers/models/customer.dart';
+import 'package:pos_application/modules/customers/models/customer.dart';
 
-/// The prototype's 4 customers (`data.ts` `sampleCustomers`).
+/// Test fixture (DEC-135): the prototype's 4 customers (`data.ts` `sampleCustomers`).
 abstract final class SeedCustomers {
   static const List<Customer> customers = <Customer>[
     Customer(

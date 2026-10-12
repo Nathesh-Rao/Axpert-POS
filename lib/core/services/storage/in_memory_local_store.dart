@@ -10,6 +10,9 @@ class InMemoryLocalStore implements LocalStore {
 
   final Map<String, String> _data;
 
+  /// The stored JSON texts, to copy a store (tests).
+  Map<String, String> snapshot() => Map<String, String>.of(_data);
+
   @override
   Future<Object?> read(String key) async {
     final text = _data[key];

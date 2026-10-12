@@ -8,6 +8,8 @@ import '../../../core/utils/qty_formatter.dart';
 import '../../../shared/controllers/search_field_controller.dart';
 import '../../../shared/widgets/product_card.dart';
 import '../../../shared/widgets/product_image.dart';
+import '../../../features/offers/domain/entities/offer.dart';
+import '../../../features/offers/presentation/controllers/offers_controller.dart';
 import '../../../features/products/presentation/controllers/products_controller.dart';
 import '../../../features/products/domain/entities/product.dart';
 import '../controllers/cart_actions_controller.dart';
@@ -34,33 +36,58 @@ class CatalogProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final cart = Get.find<CartController>();
     final actions = Get.find<CartActionsController>();
+    final offers = Get.find<OffersController>();
     return ValueListenableBuilder<CartLine?>(
       valueListenable: cart.lineListenable(product.id),
       builder: (context, line, _) {
         builds++;
-        return ProductCard(
-          name: product.name,
-          code: product.code,
-          price: MoneyFormatter.format(product.price),
-          image: ProductImage(
-            image: product.image,
-            name: product.name,
-            beverage: product.category == 'Beverages',
-          ),
-          favourite: product.favourite,
-          list: list,
-          qtyBadge: line == null
-              ? null
-              : context.strings.qtyBadge(QtyFormatter.compact(line.qty)),
-          onAdd: () => actions.add(product),
-          onRemoveOne: line == null
-              ? null
-              : () => actions.changeQty(line, line.qty - Qty.units(1)),
-          onToggleFavourite: () {
-            Get.find<ProductsController>().toggleFavourite(product.id);
-            Get.find<SearchFieldController>().refocus();
-          },
-        );
+        // Reads `revision` so the badge follows a reload of the offers.
+        return Obx(() {
+          offers.revision.value;
+          final tile = offers.tileOffer(product);
+          return _card(context, line, actions, tile);
+        });
+      },
+    );
+  }
+
+  Widget _card(
+    BuildContext context,
+    CartLine? line,
+    CartActionsController actions,
+    TileOffer? tile,
+  ) {
+    return ProductCard(
+      name: product.name,
+      code: product.code,
+      price: MoneyFormatter.format(tile?.salePrice ?? product.price),
+      strikePrice: tile?.salePrice == null
+          ? null
+          : MoneyFormatter.format(product.price),
+      offerLabel: tile?.label,
+      offerStyle: switch (tile?.kind) {
+        OfferKind.discount => ProductOfferStyle.discount,
+        OfferKind.promotion => ProductOfferStyle.promotion,
+        OfferKind.giftTier => ProductOfferStyle.gift,
+        null => null,
+      },
+      image: ProductImage(
+        image: product.image,
+        name: product.name,
+        beverage: product.category == 'Beverages',
+      ),
+      favourite: product.favourite,
+      list: list,
+      qtyBadge: line == null
+          ? null
+          : context.strings.qtyBadge(QtyFormatter.compact(line.qty)),
+      onAdd: () => actions.add(product),
+      onRemoveOne: line == null
+          ? null
+          : () => actions.changeQty(line, line.qty - Qty.units(1)),
+      onToggleFavourite: () {
+        Get.find<ProductsController>().toggleFavourite(product.id);
+        Get.find<SearchFieldController>().refocus();
       },
     );
   }

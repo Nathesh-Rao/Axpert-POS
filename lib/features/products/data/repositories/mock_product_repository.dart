@@ -1,13 +1,12 @@
 import '../../../../core/constants/storage_keys.dart';
 import '../../../../core/mock/mock_delay.dart';
-import '../datasources/seed_products.dart';
 import '../../../../core/services/storage/local_store.dart';
 import '../../../../core/services/storage/local_store_seeder.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/repositories/product_repository.dart';
 
-/// Persists the product list through [LocalStore]; seeds the prototype data
-/// (or [seed], e.g. the debug large dataset) on first run. With [forceSeed]
+/// Persists the product list through [LocalStore]; seeds [seed] (empty by
+/// default, e.g. the debug large dataset) on first run. With [forceSeed]
 /// the seed always replaces what is stored (debug large dataset only).
 class MockProductRepository implements ProductRepository {
   MockProductRepository(
@@ -23,7 +22,7 @@ class MockProductRepository implements ProductRepository {
   @override
   Future<List<Product>> load() async {
     await MockDelay.wait();
-    final seed = _seed ?? SeedProducts.products();
+    final seed = _seed ?? const <Product>[];
     if (forceSeed) {
       await _store.write(StorageKeys.products, _encode(seed));
       return seed;

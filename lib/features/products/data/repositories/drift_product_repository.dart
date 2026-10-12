@@ -7,6 +7,7 @@ import '../../../../core/database/migration/product_rows.dart';
 import '../../../../core/database/migration/products_migrator.dart';
 import '../../../../core/identifiers/uuid_generator.dart';
 import '../../../../core/services/storage/local_store.dart';
+import '../../../../core/session/store_scope.dart';
 import '../../../../core/utils/serial_queue.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/repositories/product_repository.dart';
@@ -29,6 +30,7 @@ class DriftProductRepository implements ProductRepository {
     required StartupDiagnostics diagnostics,
     required UuidGenerator uuid,
     SerialQueue? queue,
+    StoreScope? scope,
     ProductsMigrator? migrator,
     DateTime Function()? now,
   }) : _provider = provider,
@@ -36,6 +38,7 @@ class DriftProductRepository implements ProductRepository {
        _diagnostics = diagnostics,
        _uuid = uuid,
        _saves = queue ?? SerialQueue(),
+       _scope = scope ?? StoreScope(),
        _migrator = migrator ?? ProductsMigrator(uuid: uuid, now: now),
        _now = now ?? DateTime.now,
        _fallback = MockProductRepository(store);
@@ -47,6 +50,11 @@ class DriftProductRepository implements ProductRepository {
   final ProductsMigrator _migrator;
   final DateTime Function() _now;
   final MockProductRepository _fallback;
+
+  /// Store scope of the session (DEC-132): when set, only that store's rows
+  /// are read and written, the LocalStore mirror is off and a failure is not
+  /// absorbed by the LocalStore fallback.
+  final StoreScope _scope;
 
   /// Null until Drift loaded successfully, and again after a failure.
   AxpertDatabase? _db;
@@ -62,30 +70,34 @@ class DriftProductRepository implements ProductRepository {
   Future<List<Product>> load() async {
     try {
       final db = await _provider.open();
-      final outcome = await StartupTimeline.measure(
-        'products drift copy',
-        () => _migrator.ensureCopied(db, _store),
-      );
-      final report = outcome.report;
-      if (report != null && report.hasFindings) {
-        _diagnostics.record(
-          'products copy report',
-          report.toJson(),
-          StackTrace.empty,
+      if (!_scope.scoped) {
+        final outcome = await StartupTimeline.measure(
+          'products drift copy',
+          () => _migrator.ensureCopied(db, _store),
         );
+        final report = outcome.report;
+        if (report != null && report.hasFindings) {
+          _diagnostics.record(
+            'products copy report',
+            report.toJson(),
+            StackTrace.empty,
+          );
+        }
       }
       final read = await StartupTimeline.measure(
         'products drift read',
-        () => ProductRows.read(db),
+        () => ProductRows.read(db, storeId: _scope.storeId),
       );
       _known = read.known;
       _db = db;
       return read.list;
     } on DuplicateProductIdsException catch (error, stackTrace) {
+      if (_scope.scoped) rethrow;
       // Loud, and nothing was written: LocalStore stays authoritative.
       await _degrade('products duplicate ids', error, stackTrace);
       return _fallback.load();
     } on Object catch (error, stackTrace) {
+      if (_scope.scoped) rethrow;
       await _degrade('products load', error, stackTrace);
       return _fallback.load();
     }
@@ -102,12 +114,19 @@ class DriftProductRepository implements ProductRepository {
   Future<void> _save(List<Product> products) async {
     final db = _db;
     if (db == null) {
+      if (_scope.scoped) throw StateError('Products are not loaded');
       await _markStale();
       return _fallback.save(products);
     }
     try {
       final now = _now().toUtc().toIso8601String();
-      final plan = ProductRows.plan(products, _known, now: now, uuid: _uuid);
+      final plan = ProductRows.plan(
+        products,
+        _known,
+        now: now,
+        uuid: _uuid,
+        storeId: _scope.storeId,
+      );
       if (!plan.isEmpty) {
         await StartupTimeline.logged(
           'products save drift (${plan.rowCount} rows)',
@@ -119,6 +138,7 @@ class DriftProductRepository implements ProductRepository {
       // Only after the commit: a failed write leaves the snapshot unchanged.
       _known = plan.next;
     } on Object catch (error, stackTrace) {
+      if (_scope.scoped) rethrow;
       await _degrade('products save', error, stackTrace);
       return _fallback.save(products);
     }
@@ -134,7 +154,13 @@ class DriftProductRepository implements ProductRepository {
   /// access); the caller writes it inside its own transaction and calls
   /// [adopt] after the commit.
   ProductWrite stage(List<Product> products, {required String now}) =>
-      ProductRows.plan(products, _known, now: now, uuid: _uuid);
+      ProductRows.plan(
+        products,
+        _known,
+        now: now,
+        uuid: _uuid,
+        storeId: _scope.storeId,
+      );
 
   /// Replaces the snapshot after the caller's transaction committed.
   void adopt(ProductWrite plan) => _known = plan.next;
@@ -144,6 +170,7 @@ class DriftProductRepository implements ProductRepository {
 
   /// Writes the LocalStore copy (the rollback mirror).
   Future<void> mirror(List<Product> products) async {
+    if (_scope.scoped) return;
     try {
       await StartupTimeline.logged(
         'products save mirror',

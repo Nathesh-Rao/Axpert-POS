@@ -11,12 +11,14 @@ class AppSettings {
     required this.rateMilli,
   });
 
-  /// Prototype defaults (`stores[0]`, light, beep on, counter "C3", 8.561).
+  /// Defaults: light, beep on, forex rate 8.561. `store` and `counter` are
+  /// legacy keys: the store and counter come from the database session now
+  /// (DEC-132) and nothing reads these two values.
   static const AppSettings defaults = AppSettings(
-    store: 'MAISON GALAXY - OZONE',
+    store: '',
     dark: false,
     beep: true,
-    counter: 'C3',
+    counter: '',
     rateMilli: 8561,
   );
 

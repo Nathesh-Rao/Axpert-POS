@@ -4,7 +4,9 @@ import '../../modules/customers/bindings/customers_binding.dart';
 import '../../modules/entry/bindings/login_binding.dart';
 import '../../modules/entry/bindings/splash_binding.dart';
 import '../../modules/entry/views/login_view.dart';
+import '../../modules/entry/bindings/picker_binding.dart';
 import '../../modules/entry/views/splash_view.dart';
+import '../../modules/entry/views/store_picker_view.dart';
 import '../../modules/customers/views/customers_view.dart';
 import '../../modules/pos/bindings/pos_binding.dart';
 import '../../modules/pos/views/pos_view.dart';
@@ -38,6 +40,12 @@ abstract final class AppPages {
       name: AppRoutes.login,
       page: LoginView.new,
       binding: LoginBinding(),
+      transition: Transition.noTransition,
+    ),
+    GetPage<dynamic>(
+      name: AppRoutes.selectSession,
+      page: StorePickerView.new,
+      binding: PickerBinding(),
       transition: Transition.noTransition,
     ),
   ];

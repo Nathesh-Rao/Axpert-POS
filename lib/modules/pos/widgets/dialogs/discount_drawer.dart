@@ -33,7 +33,7 @@ class DiscountDrawer extends StatelessWidget {
                 onTap: () => form.setType(BillDiscountType.percent),
               ),
               TextSegment(
-                label: s.discountTabFlat(),
+                label: s.discountTabFlat(form.currencySymbol),
                 selected: form.type.value == BillDiscountType.flat,
                 onTap: () => form.setType(BillDiscountType.flat),
               ),

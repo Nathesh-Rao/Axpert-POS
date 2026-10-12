@@ -7,6 +7,7 @@ import '../../../core/database/migration/sale_rows.dart';
 import '../../../core/database/migration/sales_migrator.dart';
 import '../../../core/identifiers/uuid_generator.dart';
 import '../../../core/services/storage/local_store.dart';
+import '../../../core/session/store_scope.dart';
 import '../../../core/utils/serial_queue.dart';
 import '../models/sale.dart';
 import 'mock_sale_repository.dart';
@@ -33,6 +34,7 @@ class DriftSaleRepository implements SaleRepository {
     required StartupDiagnostics diagnostics,
     required UuidGenerator uuid,
     SerialQueue? queue,
+    StoreScope? scope,
     SalesMigrator? migrator,
     DateTime Function()? now,
   }) : _provider = provider,
@@ -40,6 +42,7 @@ class DriftSaleRepository implements SaleRepository {
        _diagnostics = diagnostics,
        _uuid = uuid,
        _saves = queue ?? SerialQueue(),
+       _scope = scope ?? StoreScope(),
        _migrator = migrator ?? SalesMigrator(uuid: uuid, now: now),
        _now = now ?? DateTime.now,
        _fallback = MockSaleRepository(store);
@@ -52,6 +55,13 @@ class DriftSaleRepository implements SaleRepository {
   final SalesMigrator _migrator;
   final DateTime Function() _now;
   final MockSaleRepository _fallback;
+
+  /// See DriftProductRepository: scoped mode filters by store and stamps the
+  /// session on new rows, has no LocalStore mirror and no fallback.
+  final StoreScope _scope;
+
+  /// The scope the rows are stamped with (the ledger writes through it).
+  StoreScope get scope => _scope;
 
   /// Null until Drift loaded successfully, and again after a failure.
   AxpertDatabase? _db;
@@ -70,17 +80,19 @@ class DriftSaleRepository implements SaleRepository {
   Future<List<Sale>> load() async {
     try {
       final db = await _provider.open();
-      final outcome = await StartupTimeline.measure(
-        'sales drift copy',
-        () => _migrator.ensureCopied(db, _store),
-      );
-      final report = outcome.report;
-      if (report != null && report.hasFindings) {
-        _diagnostics.record(
-          'sales copy report',
-          report.toJson(),
-          StackTrace.empty,
+      if (!_scope.scoped) {
+        final outcome = await StartupTimeline.measure(
+          'sales drift copy',
+          () => _migrator.ensureCopied(db, _store),
         );
+        final report = outcome.report;
+        if (report != null && report.hasFindings) {
+          _diagnostics.record(
+            'sales copy report',
+            report.toJson(),
+            StackTrace.empty,
+          );
+        }
       }
       try {
         await SaleRows.resolveLinks(db);
@@ -90,18 +102,21 @@ class DriftSaleRepository implements SaleRepository {
       }
       final read = await StartupTimeline.measure(
         'sales drift read',
-        () => SaleRows.read(db),
+        () => SaleRows.read(db, storeId: _scope.storeId),
       );
       _known = read.known;
       _db = db;
       return read.list;
     } on DuplicateSaleIdsException catch (error, stackTrace) {
+      if (_scope.scoped) rethrow;
       await degrade('sales duplicate sale ids', error, stackTrace);
       return _fallback.load();
     } on OrphanReturnedException catch (error, stackTrace) {
+      if (_scope.scoped) rethrow;
       await degrade('sales orphan returned', error, stackTrace);
       return _fallback.load();
     } on Object catch (error, stackTrace) {
+      if (_scope.scoped) rethrow;
       await degrade('sales load', error, stackTrace);
       return _fallback.load();
     }
@@ -113,6 +128,7 @@ class DriftSaleRepository implements SaleRepository {
   Future<void> _save(List<Sale> sales) async {
     final db = _db;
     if (db == null) {
+      if (_scope.scoped) throw StateError('Sales are not loaded');
       await markStale();
       return _fallback.save(sales);
     }
@@ -123,13 +139,15 @@ class DriftSaleRepository implements SaleRepository {
         await StartupTimeline.logged(
           'sales save drift (${plan.rowCount} rows)',
           () => db.durableTransaction(
-            () => SaleRows.write(db, plan, now: now, uuid: _uuid),
+            () =>
+                SaleRows.write(db, plan, now: now, uuid: _uuid, scope: _scope),
           ),
         );
       }
       // Only after the commit: a failed write leaves the snapshot unchanged.
       _known = plan.next;
     } on Object catch (error, stackTrace) {
+      if (_scope.scoped) rethrow;
       await degrade('sales save', error, stackTrace);
       return _fallback.save(sales);
     }
@@ -152,6 +170,7 @@ class DriftSaleRepository implements SaleRepository {
 
   /// Writes the LocalStore copy (the rollback mirror).
   Future<void> mirror(List<Sale> sales) async {
+    if (_scope.scoped) return;
     try {
       await StartupTimeline.logged(
         'sales save mirror',

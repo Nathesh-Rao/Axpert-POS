@@ -25,7 +25,10 @@ import '../../../shared/widgets/quantity_field.dart';
 import '../controllers/cart_actions_controller.dart';
 import '../controllers/cart_controller.dart';
 import '../controllers/cart_selection_controller.dart';
+import '../../../features/offers/domain/entities/offer.dart';
+import '../../../features/offers/domain/services/offer_engine.dart';
 import '../models/cart_line.dart';
+import '../services/offer_cart_builder.dart';
 import '../models/line_math.dart';
 
 final Qty _one = Qty.units(1);
@@ -261,17 +264,29 @@ mixin _LineParts {
   }
 
   Widget totalText(BuildContext context, CartLine line) {
-    return Text(
-      MoneyFormatter.format(LineMath.lineTotal(line)),
-      maxLines: 1,
-      softWrap: false,
-      style: context.text
-          .of(
-            AppFontSize.s16,
-            weight: AppFontWeight.bold,
-            height: AppLineHeight.base,
-          )
-          .copyWith(color: context.colors.text),
+    final style = context.text
+        .of(
+          AppFontSize.s16,
+          weight: AppFontWeight.bold,
+          height: AppLineHeight.base,
+        )
+        .copyWith(color: context.colors.text);
+    return ValueListenableBuilder<AppliedOffer?>(
+      valueListenable: Get.find<CartController>().offerListenable(
+        line.product.id,
+      ),
+      builder: (context, applied, _) => Text(
+        MoneyFormatter.format(
+          LineMath.lineTotal(
+            applied == null
+                ? line
+                : line.withOffer(OfferCartBuilder.lineOffer(applied)),
+          ),
+        ),
+        maxLines: 1,
+        softWrap: false,
+        style: style,
+      ),
     );
   }
 
@@ -498,6 +513,26 @@ class _Names extends StatelessWidget {
         Text(
           s.gstLabel(DecimalText.scaled(product.gst.value, 2)),
           style: small,
+        ),
+        ValueListenableBuilder<AppliedOffer?>(
+          valueListenable: Get.find<CartController>().offerListenable(
+            product.id,
+          ),
+          builder: (context, applied, _) => applied == null
+              ? const SizedBox.shrink()
+              : Text(
+                  s.offerSaved(
+                    applied.name,
+                    MoneyFormatter.format(applied.saving),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: small.copyWith(
+                    color: applied.kind == OfferKind.promotion
+                        ? c.actionPurpleFg
+                        : c.actionRedFg,
+                  ),
+                ),
         ),
       ],
     );

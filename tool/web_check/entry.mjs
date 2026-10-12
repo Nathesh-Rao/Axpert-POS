@@ -19,10 +19,13 @@ export async function signInThroughEntry({ step, insert, key, click, sleep, widt
   await step('entry: splash (real, not skipped)', async () => { await sleep(1000); });
   await step("entry: login", async () => { await sleep(3200); });
   await step('entry: empty submit shows errors', async () => { await key('Enter', 13); await sleep(400); });
-  await step('entry: sign in (fake 600 ms, then fade to POS)', async () => {
-    await insert('cashier');
+  await step('entry: sign in (database users, then fade to POS)', async () => {
+    // cashier1 has one store and one counter: the picker is skipped. The demo
+    // password is listed in assets/seed/users.json (DEMO_SEED build only).
+    await sleep(1200); // the debug build needs a moment before the field takes text
+    await insert(process.env.ENTRY_USER ?? 'cashier1');
     await key('Tab', 9);
-    await insert('demo-password');
+    await insert(process.env.ENTRY_PASS ?? 'Demo#Cashier1');
     await key('Enter', 13);
     await sleep(2200);
   });

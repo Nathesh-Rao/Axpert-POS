@@ -1,0 +1,38 @@
+[
+  {
+    "code": "INR",
+    "name": "Indian Rupee",
+    "symbol": "₹",
+    "exponent": 2,
+    "grouping": "lakh",
+    "quickCash": [
+      100,
+      500,
+      2000
+    ]
+  },
+  {
+    "code": "UGX",
+    "name": "Ugandan Shilling",
+    "symbol": "USh ",
+    "exponent": 0,
+    "grouping": "thousands",
+    "quickCash": [
+      5000,
+      20000,
+      100000
+    ]
+  },
+  {
+    "code": "AED",
+    "name": "UAE Dirham",
+    "symbol": "AED ",
+    "exponent": 2,
+    "grouping": "thousands",
+    "quickCash": [
+      10,
+      50,
+      200
+    ]
+  }
+]

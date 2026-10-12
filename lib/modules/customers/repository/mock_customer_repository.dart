@@ -1,6 +1,5 @@
 import '../../../core/constants/storage_keys.dart';
 import '../../../core/mock/mock_delay.dart';
-import '../../../core/mock/seed_customers.dart';
 import '../../../core/services/storage/local_store.dart';
 import '../../../core/services/storage/local_store_seeder.dart';
 import '../models/customer.dart';
@@ -17,7 +16,7 @@ class MockCustomerRepository implements CustomerRepository {
     final json = await LocalStoreSeeder.seedIfMissing(
       _store,
       StorageKeys.customers,
-      _encode(SeedCustomers.customers),
+      _encode(const <Customer>[]),
     );
     return <Customer>[
       for (final item in json as List<dynamic>)

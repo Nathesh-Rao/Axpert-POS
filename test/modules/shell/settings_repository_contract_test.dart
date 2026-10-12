@@ -111,7 +111,7 @@ void main() {
       test('a stored null falls back to the default', () async {
         await store.write(StorageKeys.counter, null);
 
-        expect((await backend.create(store).load()).counter, 'C3');
+        expect((await backend.create(store).load()).counter, '');
       });
 
       // Current behavior (kept, not fixed): AppSettings.fromJson casts each

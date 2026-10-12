@@ -13,6 +13,7 @@ import '../../services/pricing/currency_registry.dart';
 import '../../services/pricing/money.dart';
 import '../../services/pricing/pricing_models.dart';
 import '../../services/pricing/qty.dart';
+import '../../session/store_scope.dart';
 import '../axpert_database.dart';
 import 'fnv1a.dart';
 
@@ -275,6 +276,7 @@ abstract final class SaleRows {
     SaleWrite plan, {
     required String now,
     required UuidGenerator uuid,
+    StoreScope? scope,
   }) async {
     if (plan.inserts.isNotEmpty) {
       final links = await _links(db, [for (final i in plan.inserts) i.sale]);
@@ -282,7 +284,7 @@ abstract final class SaleRows {
         final part = plan.inserts.skip(i).take(_chunk).toList();
         await db.batch((b) {
           b.insertAll(db.saleEntries, [
-            for (final p in part) _saleRow(p, now, links),
+            for (final p in part) _saleRow(p, now, links, scope),
           ]);
         });
         await db.batch((b) {
@@ -363,17 +365,28 @@ abstract final class SaleRows {
   /// Every row (tombstones too) by identity key, plus the active sales in
   /// list order.
   static Future<({Map<String, KnownSale> known, List<Sale> list})> read(
-    AxpertDatabase db,
-  ) async {
-    final rows = await (db.select(
-      db.saleEntries,
-    )..orderBy([(t) => OrderingTerm.asc(t.position)])).get();
+    AxpertDatabase db, {
+    String? storeId,
+  }) async {
+    final query = db.select(db.saleEntries);
+    if (storeId != null) query.where((t) => t.storeId.equals(storeId));
+    final rows = await (query..orderBy([(t) => OrderingTerm.asc(t.position)]))
+        .get();
+    final ids = {for (final r in rows) r.id};
     final lineRows =
         await (db.select(db.saleLineEntries)..orderBy([
               (t) => OrderingTerm.asc(t.saleId),
               (t) => OrderingTerm.asc(t.lineNo),
             ]))
-            .get();
+            .get()
+            .then(
+              (all) => storeId == null
+                  ? all
+                  : [
+                      for (final l in all)
+                        if (ids.contains(l.saleId)) l,
+                    ],
+            );
     final bySale = <String, List<SaleLineEntry>>{};
     for (final l in lineRows) {
       bySale.putIfAbsent(l.saleId, () => <SaleLineEntry>[]).add(l);
@@ -513,6 +526,7 @@ abstract final class SaleRows {
     PlannedSaleInsert p,
     String now,
     ({Map<String, String> customers, Map<int, String> products}) links,
+    StoreScope? scope,
   ) {
     final s = p.sale;
     final c = s.cart;
@@ -524,6 +538,10 @@ abstract final class SaleRows {
       position: p.position,
       occurredAt: s.date,
       storeName: s.store,
+      storeId: Value(scope?.storeId),
+      counterId: Value(scope?.counterId),
+      userId: Value(scope?.userId),
+      userName: Value(s.cashier ?? scope?.userName),
       customerName: s.customer,
       customerLegacyId: c.customer,
       customerId: Value(links.customers[c.customer]),
@@ -584,13 +602,18 @@ abstract final class SaleRows {
       priceMinor: line.price.minor,
       qtyMilli: line.qty.milli,
       discountBp: line.discount.value,
+      offerKind: Value(line.offer?.kind),
+      offerName: Value(line.offer?.name),
+      offerSavingMinor: Value(line.offer?.savingMinor),
+      offerUnitOffMinor: Value(line.offer?.unitOffMinor),
+      isGift: Value(line.offer?.isGift ?? false),
       returnedQtyMilli: Value(returned),
       createdAt: now,
     );
   }
 
   static Sale _sale(SaleEntry r, List<SaleLineEntry> lines) {
-    final currency = CurrencyRegistry.inr;
+    final currency = CurrencyRegistry.byCode(r.currencyCode);
     Money m(int minor) => Money(minor, currency);
     final cartLines = <CartLine>[
       for (final l in lines)
@@ -611,6 +634,18 @@ abstract final class SaleRows {
           qty: Qty(l.qtyMilli),
           price: m(l.priceMinor),
           discount: Bp(l.discountBp),
+          offer: l.offerKind == null
+              ? null
+              : LineOffer(
+                  kind: l.offerKind!,
+                  name: l.offerName ?? '',
+                  savingMinor: l.offerSavingMinor ?? 0,
+                  discountBp: !l.isGift && l.offerUnitOffMinor == null
+                      ? l.discountBp
+                      : 0,
+                  unitOffMinor: l.offerUnitOffMinor,
+                  isGift: l.isGift,
+                ),
         ),
     ];
     final firstQty = <int, Qty>{};
@@ -621,6 +656,7 @@ abstract final class SaleRows {
     return Sale(
       number: r.number,
       saleId: r.hasSaleId ? r.id : null,
+      cashier: r.userName,
       date: r.occurredAt,
       store: r.storeName,
       customer: r.customerName,

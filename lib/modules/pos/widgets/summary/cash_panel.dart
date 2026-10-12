@@ -13,6 +13,7 @@ import '../../../../core/theme/tokens/app_typography.dart';
 import '../../../../core/utils/money_formatter.dart';
 import '../../../../shared/widgets/app_input_box.dart';
 import '../../../../shared/widgets/app_pressable.dart';
+import '../../../../features/session/presentation/controllers/active_session.dart';
 import '../../controllers/cart_controller.dart';
 import '../../controllers/payment_controller.dart';
 import 'complete_button.dart';
@@ -22,8 +23,6 @@ import 'complete_button.dart';
 class CashPanel extends StatelessWidget {
   const CashPanel({super.key});
 
-  static const List<int> quickWholeAmounts = <int>[100, 500, 2000];
-
   @override
   Widget build(BuildContext context) {
     final sm = context.metrics.summary;
@@ -31,6 +30,8 @@ class CashPanel extends StatelessWidget {
     final c = context.colors;
     final pay = Get.find<PaymentController>();
     final cart = Get.find<CartController>();
+    // The quick amounts belong to the active currency (the `currencies` row).
+    final quick = Get.find<ActiveSession>().quickCash;
     final label = context.text
         .fluid(AppCheckoutSizes.inlineLabelFont)
         .copyWith(color: c.text);
@@ -120,20 +121,18 @@ class CashPanel extends StatelessWidget {
           SizedBox(height: sm.inlineGap),
           Row(
             children: <Widget>[
-              for (var i = 0; i < 4; i++) ...<Widget>[
+              for (var i = 0; i <= quick.length; i++) ...<Widget>[
                 if (i > 0)
                   const SizedBox(width: AppCheckoutSizes.quickAmountGap),
                 Expanded(
                   child: _QuickAmount(
                     label: i == 0
                         ? s.quickAmountExact()
-                        : _whole(CashPanel.quickWholeAmounts[i - 1], total),
+                        : _whole(quick[i - 1], total),
                     height: sm.quickAmountHeight,
                     fontSize: sm.quickAmountFont,
                     onTap: inputsOn
-                        ? () => pay.setQuickAmount(
-                            i == 0 ? null : CashPanel.quickWholeAmounts[i - 1],
-                          )
+                        ? () => pay.setQuickAmount(i == 0 ? null : quick[i - 1])
                         : null,
                   ),
                 ),

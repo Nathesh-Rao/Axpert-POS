@@ -11,6 +11,7 @@ import '../../../core/theme/tokens/app_spacing.dart';
 import '../../../core/theme/tokens/app_typography.dart';
 import '../controllers/cart_controller.dart';
 import '../controllers/cart_selection_controller.dart';
+import 'cart_gift_row.dart';
 import 'cart_line_row.dart';
 
 /// Table head plus the scrolling list of lines. The list listens to the line
@@ -67,16 +68,25 @@ class _CartTableState extends State<CartTable> {
             radius: const Radius.circular(AppRadii.full),
             child: Obx(() {
               final ids = cart.lineIds.toList();
+              final gifts = cart.gifts.toList();
               return ListView.builder(
                 controller: _scroll,
-                itemCount: ids.length,
-                itemBuilder: (context, index) => CartLineRow(
-                  key: ValueKey<int>(ids[index]),
-                  productId: ids[index],
-                  index: index,
-                ),
+                itemCount: ids.length + gifts.length,
+                itemBuilder: (context, index) => index < ids.length
+                    ? CartLineRow(
+                        key: ValueKey<int>(ids[index]),
+                        productId: ids[index],
+                        index: index,
+                      )
+                    : CartGiftRow(
+                        key: ValueKey<String>(
+                          'gift-${gifts[index - ids.length].offer.id}',
+                        ),
+                        gift: gifts[index - ids.length],
+                      ),
                 findChildIndexCallback: (key) {
-                  final i = ids.indexOf((key as ValueKey<int>).value);
+                  if (key is! ValueKey<int>) return null;
+                  final i = ids.indexOf(key.value);
                   return i < 0 ? null : i;
                 },
               );

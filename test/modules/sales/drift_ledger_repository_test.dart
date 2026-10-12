@@ -31,6 +31,7 @@ import 'package:pos_application/modules/sales/repository/drift_ledger_repository
 import 'package:pos_application/modules/sales/repository/drift_sale_repository.dart';
 
 import '../../support/ledger_fixtures.dart';
+import '../../support/test_session.dart';
 
 class _Provider implements DatabaseProvider {
   _Provider(this.db);
@@ -46,6 +47,8 @@ class _Provider implements DatabaseProvider {
 
 /// A store whose writes can be made to fail.
 class _FlakyStore extends InMemoryLocalStore {
+  _FlakyStore() : super(legacySeededStore().snapshot());
+
   bool failWrites = false;
 
   @override

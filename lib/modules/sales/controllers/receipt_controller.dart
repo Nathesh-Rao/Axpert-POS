@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/services/print_service.dart';
 import '../../../core/services/receipt_share_service.dart';
+import '../../../features/session/presentation/controllers/active_session.dart';
 import '../../../shared/controllers/overlay_controller.dart';
 import '../../../shared/controllers/toast_controller.dart';
 import '../models/receipt_document.dart';
@@ -19,19 +20,23 @@ class ReceiptController extends GetxController {
     required this.toasts,
     required this.printer,
     required this.sharing,
+    this.session,
   });
 
   final OverlayController overlay;
   final ToastController toasts;
   final PrintService printer;
   final ReceiptShareService sharing;
+  final ActiveSession? session;
 
   AppStrings get _s => AppStrings.current;
 
   /// The receipt of the open dialog; null when none was handed over.
   ReceiptDocument? get receipt {
     final payload = overlay.payload;
-    return payload is Sale ? ReceiptBuilder.fromSale(payload) : null;
+    return payload is Sale
+        ? ReceiptBuilder.fromSale(payload, store: session?.store.value)
+        : null;
   }
 
   void print() {

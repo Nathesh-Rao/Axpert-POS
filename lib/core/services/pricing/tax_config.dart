@@ -29,9 +29,9 @@ class TaxConfig {
   final TaxMode mode;
   final List<Bp> slabsBp;
 
-  TaxConfig copyWith({TaxMode? mode}) => TaxConfig(
+  TaxConfig copyWith({TaxMode? mode, Currency? currency}) => TaxConfig(
     country: country,
-    currency: currency,
+    currency: currency ?? this.currency,
     label: label,
     mode: mode ?? this.mode,
     slabsBp: slabsBp,

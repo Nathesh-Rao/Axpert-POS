@@ -8,7 +8,7 @@ import '../../../core/theme/tokens/app_spacing.dart';
 import '../../../core/theme/tokens/app_typography.dart';
 import '../../../core/utils/date_format.dart';
 import '../../../shared/controllers/clock_controller.dart';
-import '../../shell/controllers/settings_controller.dart';
+import '../../../features/session/presentation/controllers/active_session.dart';
 import 'order_menu.dart';
 import 'sale_toggle.dart';
 
@@ -41,7 +41,7 @@ class _CartHeadingState extends State<CartHeading> {
   Widget build(BuildContext context) {
     final c = context.colors;
     final m = context.metrics;
-    final settings = Get.find<SettingsController>();
+    final session = Get.find<ActiveSession>();
     final timeText = Obx(() {
       // `now` only signals the tick; the text shows the real time, so it is
       // right even on the first build after the clock was idle.
@@ -67,7 +67,7 @@ class _CartHeadingState extends State<CartHeading> {
         SizedBox(width: m.cartHeadingGap),
         Obx(
           () => Text(
-            settings.settings.value.counter,
+            session.counter.value?.name ?? '',
             style: context.text
                 .fluid(
                   m.cartHeadingFont,

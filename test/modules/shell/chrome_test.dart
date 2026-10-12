@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/constants/app_strings.dart';
+import 'package:pos_application/features/session/presentation/controllers/active_session.dart';
 import 'package:pos_application/core/routes/app_routes.dart';
-import 'package:pos_application/modules/shell/controllers/settings_controller.dart';
 import 'package:pos_application/modules/shell/widgets/sidebar.dart';
 import 'package:pos_application/modules/shell/widgets/top_bar.dart';
 import 'package:pos_application/shared/controllers/overlay_controller.dart';
@@ -104,14 +104,16 @@ void main() {
     expect(chrome.menu.value, ShellMenu.none);
   });
 
-  testWidgets('store select persists, toasts and refocuses', (tester) async {
+  testWidgets('store select switches the session, toasts and refocuses', (
+    tester,
+  ) async {
     await _boot(tester);
     await tester.tap(find.text('MAISON GALAXY - OZONE'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('MAISON GALAXY - MARINA'));
     await tester.pumpAndSettle();
     expect(
-      Get.find<SettingsController>().settings.value.store,
+      Get.find<ActiveSession>().store.value!.name,
       'MAISON GALAXY - MARINA',
     );
     expect(Get.find<ToastController>().toasts.single.text, 'Store switched');

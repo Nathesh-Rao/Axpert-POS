@@ -25,7 +25,8 @@ import '../../../shared/widgets/badge_dot.dart';
 import '../../../shared/widgets/css_gradient.dart';
 import '../../../shared/widgets/focus_outline.dart';
 import '../../../shared/widgets/kbd_chip.dart';
-import '../controllers/settings_controller.dart';
+import '../../../features/session/presentation/controllers/active_session.dart';
+import '../../pos/controllers/cart_controller.dart';
 import '../../../core/theme/tokens/app_icons.dart';
 
 /// Brand, store select, global search, online chip, notifications, profile
@@ -105,27 +106,40 @@ class _StoreSelect extends StatelessWidget {
   Widget build(BuildContext context) {
     final m = context.metrics;
     final s = context.strings;
-    final settings = Get.find<SettingsController>();
-    final stores = <String>[
-      s.storeNameOzone(),
-      s.storeNameCentral(),
-      s.storeNameMarina(),
-    ];
+    final session = Get.find<ActiveSession>();
     return SizedBox(
       width: m.storeWidth,
-      child: Obx(
-        () => AppSelect(
-          value: settings.settings.value.store,
-          items: stores,
+      child: Obx(() {
+        final current = session.store.value?.name ?? s.storeNone();
+        final names = <String>[
+          for (final a in session.access) a.store.name,
+          if (session.access.isEmpty) current,
+        ];
+        return AppSelect(
+          value: current,
+          items: names,
           fontSize: m.storeFont,
           semanticLabel: s.storeSelectLabel(),
-          onChanged: (value) {
-            settings.setStore(value);
+          onChanged: (value) async {
+            final entry = session.access.firstWhereOrNull(
+              (a) => a.store.name == value,
+            );
+            if (entry == null || entry.store.id == session.store.value?.id) {
+              return;
+            }
+            if (Get.find<CartController>().isActive) {
+              Get.find<ToastController>().show(
+                s.toastSwitchStoreCartNotEmpty(),
+                kind: ToastKind.error,
+              );
+              return;
+            }
+            await session.switchStore(entry.store);
             Get.find<ToastController>().show(s.storeSwitched());
             Get.find<SearchFieldController>().refocus();
           },
-        ),
-      ),
+        );
+      }),
     );
   }
 }
@@ -363,7 +377,7 @@ class _ProfileButton extends StatelessWidget {
                   border: Border.all(color: c.avatarBorder, width: 2),
                 ),
                 child: Text(
-                  s.userInitial(),
+                  Get.find<ActiveSession>().initial,
                   style: AppTypography.arial(23).copyWith(color: c.white),
                 ),
               ),
@@ -373,14 +387,16 @@ class _ProfileButton extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      s.userName(),
+                      Get.find<ActiveSession>().displayName,
                       style: context.text
                           .fluid(m.searchFont, weight: AppFontWeight.semiBold)
                           .copyWith(color: c.text),
                     ),
                     const SizedBox(height: AppSpacing.s3),
                     Text(
-                      s.userRole(),
+                      s.roleLabel(
+                        Get.find<ActiveSession>().user.value?.role ?? '',
+                      ),
                       style: context.text
                           .of(AppFontSize.s12)
                           .copyWith(color: c.muted),

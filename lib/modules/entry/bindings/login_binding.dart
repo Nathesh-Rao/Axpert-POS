@@ -7,7 +7,11 @@ class LoginBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<LoginController>(
-      () => LoginController(onSignedIn: EntryNavigation.toLanding),
+      () => LoginController(
+        session: Get.find(),
+        onSignedIn: EntryNavigation.toLanding,
+        onPick: EntryNavigation.toPicker,
+      ),
     );
   }
 }

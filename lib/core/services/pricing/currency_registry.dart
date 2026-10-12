@@ -91,8 +91,24 @@ class CurrencyRegistry {
     tnd,
   ];
 
-  static Currency byCode(String code) => all.firstWhere(
-    (c) => c.code == code,
-    orElse: () => throw ArgumentError('Unknown currency $code'),
-  );
+  static final Map<String, Currency> _loaded = <String, Currency>{};
+
+  /// Currencies read from the `currencies` table at start-up (DEC-132). They
+  /// take precedence over the built-in list, which stays as the fallback for
+  /// legacy rows and tests. Equality is by code, so replacing is safe.
+  static void register(Iterable<Currency> currencies) {
+    for (final c in currencies) {
+      _loaded[c.code] = c;
+    }
+  }
+
+  /// Forgets the loaded currencies (tests).
+  static void resetLoaded() => _loaded.clear();
+
+  static Currency byCode(String code) =>
+      _loaded[code] ??
+      all.firstWhere(
+        (c) => c.code == code,
+        orElse: () => throw ArgumentError('Unknown currency $code'),
+      );
 }

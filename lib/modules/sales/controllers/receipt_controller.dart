@@ -35,7 +35,11 @@ class ReceiptController extends GetxController {
   ReceiptDocument? get receipt {
     final payload = overlay.payload;
     return payload is Sale
-        ? ReceiptBuilder.fromSale(payload, store: session?.store.value)
+        ? ReceiptBuilder.fromSale(
+            payload,
+            store: session?.store.value,
+            regime: session?.regime.value,
+          )
         : null;
   }
 

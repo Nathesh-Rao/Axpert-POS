@@ -8,6 +8,7 @@ import 'package:pos_application/features/session/presentation/controllers/active
 
 import 'seed/seed_customers.dart';
 import 'seed/seed_products.dart';
+import 'test_tax.dart';
 
 /// The prototype's store, counter and cashier as a session that is already
 /// open (DEC-132): the widget tests and goldens keep their text and pixels.
@@ -42,6 +43,7 @@ List<StoreAccess> get testAccess => const <StoreAccess>[
       id: 'test-ozone',
       name: testStoreName,
       currencyCode: 'INR',
+      region: 'IN',
     ),
     counters: <CounterInfo>[
       CounterInfo(id: 'test-c3', storeId: 'test-ozone', name: testCounter),
@@ -52,6 +54,7 @@ List<StoreAccess> get testAccess => const <StoreAccess>[
       id: 'test-central',
       name: 'MAISON GALAXY - CENTRAL',
       currencyCode: 'INR',
+      region: 'IN',
     ),
     counters: <CounterInfo>[
       CounterInfo(id: 'test-cc3', storeId: 'test-central', name: testCounter),
@@ -62,6 +65,7 @@ List<StoreAccess> get testAccess => const <StoreAccess>[
       id: 'test-marina',
       name: 'MAISON GALAXY - MARINA',
       currencyCode: 'INR',
+      region: 'IN',
     ),
     counters: <CounterInfo>[
       CounterInfo(id: 'test-mc3', storeId: 'test-marina', name: testCounter),
@@ -77,6 +81,14 @@ ActiveSession testSession() => ActiveSession.fixed(
   quickCash: const <String, List<int>>{
     'INR': <int>[100, 500, 2000],
   },
+  regime: testIndiaRegime,
+  forex: testForex,
+  stores: InMemoryStoreRepository(
+    regimes: const <String, TaxRegimeInfo>{'IN': testIndiaRegime},
+    forex: <String, List<ForexRate>>{
+      for (final a in testAccess) a.store.id: testForex,
+    },
+  ),
   users: InMemoryUserRepository(
     users: <UserCredential>[testCredential],
     access: <String, List<StoreAccess>>{
@@ -100,3 +112,26 @@ Map<String, Object> legacyStoreData() => <String, Object>{
 InMemoryLocalStore legacySeededStore() => InMemoryLocalStore(<String, String>{
   for (final e in legacyStoreData().entries) e.key: jsonEncode(e.value),
 });
+
+/// A session whose store follows the given tax regime and forex rows (the
+/// store keeps the prototype's name, INR and the legacy catalog).
+ActiveSession storeSession({
+  TaxRegimeInfo? regime,
+  List<ForexRate> forex = const <ForexRate>[],
+}) => ActiveSession.fixed(
+  user: testUser,
+  store: testAccess.first.store,
+  counter: testAccess.first.counters.first,
+  access: testAccess,
+  quickCash: const <String, List<int>>{
+    'INR': <int>[100, 500, 2000],
+  },
+  regime: regime,
+  forex: forex,
+  users: InMemoryUserRepository(
+    users: <UserCredential>[testCredential],
+    access: <String, List<StoreAccess>>{
+      testUser.id: <StoreAccess>[testAccess.first],
+    },
+  ),
+);

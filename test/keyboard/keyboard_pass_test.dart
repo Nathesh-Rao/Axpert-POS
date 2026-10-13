@@ -106,7 +106,8 @@ void main() {
   ) async {
     await _boot(tester, AppRoutes.more);
     final stops = await walkTab(tester, 18);
-    final firstSummary = stops.indexOf('rate');
+    // The forex selector is the first Bill Summary stop (the rate is text).
+    final firstSummary = stops.indexOf('USD');
     final afterSidebar = stops.indexOf('More') + 1;
     // Two settings rows, two stops, then the Bill Summary.
     expect(

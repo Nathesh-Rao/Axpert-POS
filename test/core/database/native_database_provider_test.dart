@@ -31,7 +31,7 @@ void main() {
       final second = await provider.open();
 
       expect(first, same(second));
-      expect(first.schemaVersion, 9);
+      expect(first.schemaVersion, 10);
       expect(first.allTables.map((table) => table.actualTableName).toSet(), {
         'device_context_entries',
         'settings',
@@ -51,6 +51,9 @@ void main() {
         'categories',
         'offers',
         'seed_manifest',
+        'store_forex',
+        'tax_regimes',
+        'tax_slabs',
       });
       expect(await first.customSelect('SELECT 1').getSingle(), isNotNull);
       final foreignKeys = await first
@@ -72,7 +75,7 @@ void main() {
 
     await store.write(context);
 
-    expect(database.schemaVersion, 9);
+    expect(database.schemaVersion, 10);
     expect(await store.read(), context);
   });
 
@@ -145,7 +148,7 @@ void main() {
 
       expect(names, containsAll(['settings', 'migration_state', 'customers']));
       expect(device.read<String>('device_id'), 'dev-1');
-      expect(version.read<int>('user_version'), 9);
+      expect(version.read<int>('user_version'), 10);
     });
 
     test('failed upgrade rolls back and leaves data intact', () async {
@@ -234,7 +237,7 @@ void main() {
 
       expect(names, contains('customers'));
       expect(setting.read<String>('value_json'), 'true');
-      expect(version.read<int>('user_version'), 9);
+      expect(version.read<int>('user_version'), 10);
     });
 
     test('failed upgrade leaves v3 data and user_version intact', () async {
@@ -331,7 +334,7 @@ void main() {
       expect(names, contains('held_bills'));
       expect(setting.read<String>('value_json'), 'true');
       expect(customer.read<String>('name'), 'Walk-in');
-      expect(version.read<int>('user_version'), 9);
+      expect(version.read<int>('user_version'), 10);
       expect(columns.map((c) => c.read<String>('name')).toList(), [
         'id',
         'ref',
@@ -481,7 +484,7 @@ void main() {
         contains('products_position'),
       );
       expect(held.read<String>('ref'), 'H1');
-      expect(version.read<int>('user_version'), 9);
+      expect(version.read<int>('user_version'), 10);
     });
 
     test('legacy_id is unique, code and barcode are not', () async {
@@ -693,7 +696,7 @@ void main() {
           .customSelect('PRAGMA user_version')
           .getSingle();
       expect(customer.read<String>('legacy_id'), 'walk');
-      expect(version.read<int>('user_version'), 9);
+      expect(version.read<int>('user_version'), 10);
     });
 
     test('number is not unique and a link must point at a real row', () async {
@@ -802,7 +805,7 @@ void main() {
         'updated_at',
       ]);
       expect(settings.read<String>('key'), 'axpert-dark');
-      expect(version.read<int>('user_version'), 9);
+      expect(version.read<int>('user_version'), 10);
     });
 
     test('only one row (id 1) is allowed', () async {

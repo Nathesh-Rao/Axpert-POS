@@ -1,5 +1,6 @@
 import '../../../core/services/pricing/money.dart';
 import '../../../core/services/pricing/qty.dart';
+import '../../../core/services/pricing/tax_split.dart';
 
 /// One item row of a receipt: name, quantity and the line total.
 class ReceiptLine {
@@ -35,6 +36,8 @@ class ReceiptDocument {
     required this.total,
     required this.mode,
     required this.change,
+    this.taxLabel = '',
+    this.taxParts = const <TaxPart>[],
     this.address = '',
     this.phone = '',
     this.taxId = '',
@@ -53,6 +56,12 @@ class ReceiptDocument {
   final Money points;
   final Money tax;
   final Money total;
+
+  /// Tax name of the store's regime (`GST`, `VAT`); empty = no tax row.
+  final String taxLabel;
+
+  /// Split of [tax] (`CGST`, `SGST`); empty = one line.
+  final List<TaxPart> taxParts;
 
   /// "Cash", "Card", "Credit" or "Unpaid" (a draft).
   final String mode;

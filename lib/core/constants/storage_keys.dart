@@ -11,7 +11,6 @@ abstract final class StorageKeys {
   static const String dark = '${_prefix}dark';
   static const String beep = '${_prefix}beep';
   static const String counter = '${_prefix}counter';
-  static const String rate = '${_prefix}rate';
 
   /// Set while Drift may be behind LocalStore for settings (DEC-125).
   static const String settingsDriftStale = '${_prefix}settings-drift-stale';

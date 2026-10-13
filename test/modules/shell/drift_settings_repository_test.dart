@@ -64,14 +64,14 @@ void main() {
   test('save writes Drift and dual-writes LocalStore', () async {
     final repository = repo(db);
     await repository.load();
-    final next = AppSettings.defaults.copyWith(dark: true, rateMilli: 9100);
+    final next = AppSettings.defaults.copyWith(dark: true, counter: 'C9');
 
     await repository.save(next);
 
     expect(await driftValue(StorageKeys.dark), true);
-    expect(await driftValue(StorageKeys.rate), 9100);
+    expect(await driftValue(StorageKeys.counter), 'C9');
     expect(await store.read(StorageKeys.dark), true);
-    expect(await store.read(StorageKeys.rate), 9100);
+    expect(await store.read(StorageKeys.counter), 'C9');
     expect(await repo(db).load(), next);
   });
 
@@ -142,15 +142,13 @@ void main() {
       final repository = repo(db);
       final loaded = await repository.load();
 
-      final a = repository.save(loaded.copyWith(counter: 'C1', rateMilli: 1));
-      final b = repository.save(loaded.copyWith(counter: 'C2', rateMilli: 2));
-      final c = repository.save(loaded.copyWith(counter: 'C3', rateMilli: 3));
+      final a = repository.save(loaded.copyWith(counter: 'C1'));
+      final b = repository.save(loaded.copyWith(counter: 'C2'));
+      final c = repository.save(loaded.copyWith(counter: 'C3'));
       await Future.wait([a, b, c]);
 
       expect(await driftValue(StorageKeys.counter), 'C3');
-      expect(await driftValue(StorageKeys.rate), 3);
       expect(await store.read(StorageKeys.counter), 'C3');
-      expect(await store.read(StorageKeys.rate), 3);
     },
   );
 

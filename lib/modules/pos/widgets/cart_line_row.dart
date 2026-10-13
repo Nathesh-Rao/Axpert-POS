@@ -8,6 +8,7 @@ import '../../../core/services/pricing/basis_points.dart';
 import '../../../core/services/pricing/money.dart';
 import '../../../core/services/pricing/qty.dart';
 import '../../../core/theme/theme_x.dart';
+import '../../../features/session/presentation/controllers/active_session.dart';
 import '../../../core/theme/tokens/app_icons.dart';
 import '../../../core/theme/tokens/app_motion.dart';
 import '../../../core/theme/tokens/app_radii.dart';
@@ -510,10 +511,14 @@ class _Names extends StatelessWidget {
         const SizedBox(height: AppSpacing.s4),
         if (context.metrics.showLineBarcode)
           Text(product.barcode, style: small),
-        Text(
-          s.gstLabel(DecimalText.scaled(product.gst.value, 2)),
-          style: small,
-        ),
+        if (Get.find<ActiveSession>().taxLabel.isNotEmpty)
+          Text(
+            s.taxRateLabel(
+              Get.find<ActiveSession>().taxLabel,
+              DecimalText.scaled(product.gst.value, 2),
+            ),
+            style: small,
+          ),
         ValueListenableBuilder<AppliedOffer?>(
           valueListenable: Get.find<CartController>().offerListenable(
             product.id,

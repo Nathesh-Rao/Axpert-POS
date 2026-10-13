@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../../core/constants/app_strings_x.dart';
 import '../../../../core/theme/theme_x.dart';
+import '../../../../features/session/presentation/controllers/active_session.dart';
 import '../../../../core/theme/tokens/app_checkout_sizes.dart';
 import '../../../../core/theme/tokens/app_radii.dart';
 import '../../../../core/theme/tokens/app_typography.dart';
@@ -76,7 +77,10 @@ class PriceCheckDialog extends StatelessWidget {
                     s.priceCheckDetails(
                       product.code,
                       product.stock,
-                      DecimalText.scaled(product.gst.value, 2),
+                      s.taxRateLabel(
+                        Get.find<ActiveSession>().taxLabel,
+                        DecimalText.scaled(product.gst.value, 2),
+                      ),
                     ),
                     style: context.text
                         .of(AppFontSize.s14, height: AppLineHeight.base)

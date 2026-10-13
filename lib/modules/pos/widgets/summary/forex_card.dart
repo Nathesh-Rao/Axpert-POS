@@ -8,15 +8,14 @@ import '../../../../core/theme/theme_x.dart';
 import '../../../../core/theme/tokens/app_checkout_sizes.dart';
 import '../../../../core/theme/tokens/app_radii.dart';
 import '../../../../core/theme/tokens/app_typography.dart';
-import '../../../../core/utils/decimal_text.dart';
 import '../../../../shared/widgets/app_dropdown.dart';
 import '../../controllers/cart_controller.dart';
 import '../../controllers/forex_controller.dart';
 import 'summary_card.dart';
 
-/// The conversion card: FC and selected-currency amounts plus the exchange
-/// rate. Ported as-is: both boxes show the same converted amount and the
-/// selector only changes its label (KG-107).
+/// The conversion card: the selected foreign currency and its amount plus the
+/// exchange rate, all from the store's forex rows. Both boxes show the same
+/// converted amount (KG-107).
 class ForexCard extends StatelessWidget {
   const ForexCard({super.key});
 
@@ -72,7 +71,7 @@ class ForexCard extends StatelessWidget {
               children: <Widget>[
                 box(
                   Text(
-                    s.forexFc(),
+                    forex.currency.value,
                     style: style
                         .copyWith(fontWeight: AppFontWeight.bold.value)
                         .copyWith(color: c.text),
@@ -90,8 +89,8 @@ class ForexCard extends StatelessWidget {
                       child: IntrinsicWidth(
                         child: AppDropdown<String>(
                           value: forex.currency.value,
-                          items: ForexController.currencies,
-                          labelOf: s.forexCurrencyLabel,
+                          items: forex.codes,
+                          labelOf: (code) => code,
                           onChanged: forex.setCurrency,
                           style: style,
                           semanticLabel: s.forexCurrencySemantic(),
@@ -117,43 +116,15 @@ class ForexCard extends StatelessWidget {
   }
 }
 
-class _RateRow extends StatefulWidget {
+/// The exchange rate of the selected row (read only: the rate is store data).
+class _RateRow extends StatelessWidget {
   const _RateRow();
-
-  @override
-  State<_RateRow> createState() => _RateRowState();
-}
-
-class _RateRowState extends State<_RateRow> {
-  final ForexController _forex = Get.find<ForexController>();
-  final TextEditingController _text = TextEditingController();
-  final FocusNode _focus = FocusNode(debugLabel: 'rate');
-  Worker? _worker;
-
-  @override
-  void initState() {
-    super.initState();
-    _text.text = DecimalText.scaled(_forex.rateMilli, 3);
-    // Follow the stored rate unless the user is typing in the field.
-    _worker = ever<int>(Get.find<ForexController>().settingsRate, (_) {
-      if (!_focus.hasFocus) {
-        _text.text = DecimalText.scaled(_forex.rateMilli, 3);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _worker?.dispose();
-    _text.dispose();
-    _focus.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
     final s = context.strings;
+    final forex = Get.find<ForexController>();
     final style = context.text
         .fluid(
           context.metrics.summary.rateFont,
@@ -171,23 +142,19 @@ class _RateRowState extends State<_RateRow> {
             decoration: BoxDecoration(
               border: Border(bottom: BorderSide(color: c.border)),
             ),
-            child: TextField(
-              controller: _text,
-              focusNode: _focus,
-              textAlign: TextAlign.right,
-              textAlignVertical: TextAlignVertical.center,
-              expands: true,
-              maxLines: null,
-              minLines: null,
-              style: style.copyWith(color: c.text),
-              cursorColor: c.blue,
-              decoration: InputDecoration(
-                isCollapsed: true,
-                border: InputBorder.none,
-                semanticCounterText: s.forexRateSemantic(),
+            child: Semantics(
+              label: s.forexRateSemantic(),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Obx(
+                  () => Text(
+                    forex.rateText,
+                    maxLines: 1,
+                    softWrap: false,
+                    style: style.copyWith(color: c.text),
+                  ),
+                ),
               ),
-              onChanged: _forex.commitRate,
-              onTapOutside: (_) => _focus.unfocus(),
             ),
           ),
         ),

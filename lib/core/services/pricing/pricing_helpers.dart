@@ -1,4 +1,5 @@
 import 'basis_points.dart';
+import 'currency.dart';
 import 'money.dart';
 import 'pricing_models.dart';
 import 'qty.dart';
@@ -86,6 +87,24 @@ class PricingHelpers {
     total: total,
     rateMilli: rateMilli,
   ).roundHalfUp().toInt();
+
+  /// Store forex row: [total] in the store currency converted into [foreign]
+  /// minor units. `rateMicro` is the rate scaled by 1,000,000 (1 foreign unit
+  /// = `rateMicro / 1e6` store units). Exact, rounded half up once; zero when
+  /// the rate is not positive.
+  static int forexConvert({
+    required Money total,
+    required Currency foreign,
+    required int rateMicro,
+  }) {
+    if (rateMicro <= 0) return 0;
+    final scale = BigInt.from(10).pow(foreign.exponent);
+    final storeUnits = BigInt.from(10).pow(total.currency.exponent);
+    return (Rational(
+      BigInt.from(total.minor) * BigInt.from(1000000) * scale,
+      storeUnits * BigInt.from(rateMicro),
+    )).roundHalfUp().toInt();
+  }
 
   /// Percent discount clamped to 0..100 %.
   static BillDiscount clampPercent(Bp percent) =>

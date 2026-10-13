@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
-import 'package:pos_application/core/constants/storage_keys.dart';
 import 'package:pos_application/core/services/storage/in_memory_local_store.dart';
 import 'package:pos_application/modules/shell/controllers/settings_controller.dart';
 import 'package:pos_application/modules/shell/models/app_settings.dart';
@@ -18,7 +17,6 @@ void main() {
     for (final key in settingsStorageKeys) {
       expect(await store.has(key), isTrue, reason: key);
     }
-    expect(await store.read(StorageKeys.rate), 8561);
   });
 
   test('changes persist and survive a new controller (restart)', () async {
@@ -28,14 +26,12 @@ void main() {
     await c.setDark(true);
     await c.setStore('MAISON GALAXY - MARINA');
     await c.setBeep(false);
-    await c.setRateMilli(9000);
 
     await bootTestApp(store: store); // Get.reset + new instances
     final again = Get.find<SettingsController>().settings.value;
     expect(again.dark, isTrue);
     expect(again.beep, isFalse);
     expect(again.store, 'MAISON GALAXY - MARINA');
-    expect(again.rateMilli, 9000);
     expect(again.counter, '');
   });
 
@@ -48,13 +44,7 @@ void main() {
   });
 
   test('model JSON round trip', () {
-    const s = AppSettings(
-      store: 'x',
-      dark: true,
-      beep: false,
-      counter: 'C9',
-      rateMilli: 1,
-    );
+    const s = AppSettings(store: 'x', dark: true, beep: false, counter: 'C9');
     expect(AppSettings.fromJson(s.toJson()), s);
     expect(AppSettings.fromJson(<String, dynamic>{}), AppSettings.defaults);
   });

@@ -326,7 +326,8 @@ class EnAppStrings extends AppStrings {
   String removeItemTooltip() => 'Remove item';
 
   @override
-  String gstLabel(String percent) => 'GST $percent%';
+  String taxRateLabel(String label, String percent) =>
+      label.isEmpty ? '' : '$label $percent%';
 
   @override
   String actionClearCart() => 'Clear Cart';
@@ -362,13 +363,11 @@ class EnAppStrings extends AppStrings {
   String summaryRewardPoints() => 'Reward Points';
 
   @override
-  String summaryTaxAmount() => 'Tax Amount';
+  String summaryTaxAmount(String label) =>
+      label.isEmpty ? 'Tax Amount' : '$label Amount';
 
   @override
   String summaryInvoiceTotal() => 'Invoice Total';
-
-  @override
-  String forexFc() => 'FC';
 
   @override
   String forexRateLabel() => 'Exchange rate';
@@ -378,9 +377,6 @@ class EnAppStrings extends AppStrings {
 
   @override
   String forexRateSemantic() => 'Exchange rate';
-
-  @override
-  String forexCurrencyLabel(String code) => code == 'USD' ? r'$' : code;
 
   @override
   String memberNumberLabel() => 'Member Ship No.';
@@ -729,8 +725,10 @@ class EnAppStrings extends AppStrings {
   String priceCheckNoMatch() => 'No matching product. Try BDV001.';
 
   @override
-  String priceCheckDetails(String code, int stock, String gst) =>
-      '$code · $stock in stock · GST $gst%';
+  String priceCheckDetails(String code, int stock, String taxRate) =>
+      taxRate.isEmpty
+      ? '$code · $stock in stock'
+      : '$code · $stock in stock · $taxRate';
 
   @override
   String customerPickerTitle() => 'Find a customer';
@@ -798,9 +796,6 @@ class EnAppStrings extends AppStrings {
 
   @override
   String receiptPoints() => 'Reward Points';
-
-  @override
-  String receiptTax() => 'GST';
 
   @override
   String receiptTotal() => 'Total';
@@ -900,7 +895,7 @@ class EnAppStrings extends AppStrings {
   String colCategory() => 'Category';
 
   @override
-  String colGst() => 'GST';
+  String colTax(String label) => label.isEmpty ? 'Tax' : label;
 
   @override
   String colPrice() => 'Price';

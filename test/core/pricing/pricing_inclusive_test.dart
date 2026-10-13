@@ -11,9 +11,10 @@ import 'package:pos_application/core/services/pricing/qty.dart';
 import 'package:pos_application/core/services/pricing/rational.dart';
 import 'package:pos_application/core/services/pricing/rounding_strategy.dart';
 import 'package:pos_application/core/services/pricing/tax_config.dart';
+import '../../support/test_tax.dart';
 
 const _inr = CurrencyRegistry.inr;
-final _incl = TaxConfig.india.copyWith(mode: TaxMode.inclusive);
+final _incl = testIndiaTax.copyWith(mode: TaxMode.inclusive);
 
 Money _m(String s) => Money.parse(s, _inr);
 
@@ -36,7 +37,7 @@ class _FloorRounding extends RoundingStrategy {
 
 void main() {
   final inclusive = PricingService(config: _incl);
-  const exclusive = PricingService();
+  const exclusive = testIndiaPricing;
 
   group('inclusive mode', () {
     test('price 118 at 18% contains 18 of tax and totals 118', () {
@@ -151,6 +152,7 @@ void main() {
     final cart = CartInput(lines: [_line('1', '0.33', 18)]);
     final proto = exclusive.calculate(cart);
     final stub = const PricingService(
+      config: testIndiaTax,
       rounding: _FloorRounding(),
     ).calculate(cart);
     expect(proto.tax.minor, 6); // 5.94 -> 6

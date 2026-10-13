@@ -5,11 +5,11 @@ import 'package:pos_application/core/services/pricing/basis_points.dart';
 import 'package:pos_application/core/services/pricing/currency_registry.dart';
 import 'package:pos_application/core/services/pricing/money.dart';
 import 'package:pos_application/core/services/pricing/pricing_models.dart';
-import 'package:pos_application/core/services/pricing/pricing_service.dart';
 import 'package:pos_application/core/services/pricing/qty.dart';
 import 'package:pos_application/core/services/pricing/rational.dart';
 
 import '../../fixtures/pricing_golden_data.g.dart';
+import '../../support/test_tax.dart';
 
 const _inr = CurrencyRegistry.inr;
 
@@ -37,7 +37,7 @@ CartInput _cart(Map<String, dynamic> v) {
 void main() {
   final doc = jsonDecode(pricingGoldenJson) as Map<String, dynamic>;
   final vectors = (doc['vectors'] as List).cast<Map<String, dynamic>>();
-  const service = PricingService();
+  const service = testIndiaPricing;
 
   test('fixture holds about 300 vectors', () {
     expect(vectors.length, greaterThanOrEqualTo(290));

@@ -4,12 +4,12 @@ import 'package:pos_application/core/services/pricing/basis_points.dart';
 import 'package:pos_application/core/services/pricing/currency_registry.dart';
 import 'package:pos_application/core/services/pricing/money.dart';
 import 'package:pos_application/core/services/pricing/pricing_models.dart';
-import 'package:pos_application/core/services/pricing/pricing_service.dart';
 import 'package:pos_application/core/services/pricing/qty.dart';
 import 'package:pos_application/modules/customers/models/customer.dart';
 import 'package:pos_application/modules/pos/models/cart.dart';
 import 'package:pos_application/modules/pos/services/checkout_service.dart';
 import 'package:pos_application/features/products/domain/entities/product.dart';
+import '../../support/test_tax.dart';
 
 Money inr(int minor) => Money(minor, CurrencyRegistry.inr);
 
@@ -27,23 +27,22 @@ Product product(int id, {int stock = 10, int priceMinor = 2000}) => Product(
   favourite: false,
 );
 
-CartTotals totalsOf(Cart cart, {int points = 0}) =>
-    const PricingService().calculate(
-      CartInput(
-        lines: <LineInput>[
-          for (final l in cart.lines)
-            LineInput(
-              qty: l.qty,
-              price: l.price,
-              taxRate: l.product.gst,
-              discount: l.discount,
-            ),
-        ],
-        billDiscount: cart.billDiscount,
-        pointsToRedeem: cart.points,
-        availablePoints: points,
-      ),
-    );
+CartTotals totalsOf(Cart cart, {int points = 0}) => testIndiaPricing.calculate(
+  CartInput(
+    lines: <LineInput>[
+      for (final l in cart.lines)
+        LineInput(
+          qty: l.qty,
+          price: l.price,
+          taxRate: l.product.gst,
+          discount: l.discount,
+        ),
+    ],
+    billDiscount: cart.billDiscount,
+    pointsToRedeem: cart.points,
+    availablePoints: points,
+  ),
+);
 
 const walk = Customer(
   id: Customer.walkInId,

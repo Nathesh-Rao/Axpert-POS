@@ -10,11 +10,11 @@ import 'package:pos_application/core/services/pricing/currency_registry.dart';
 import 'package:pos_application/core/services/pricing/money.dart';
 import 'package:pos_application/core/services/pricing/pricing_helpers.dart';
 import 'package:pos_application/core/services/pricing/pricing_models.dart';
-import 'package:pos_application/core/services/pricing/pricing_service.dart';
 import 'package:pos_application/core/services/pricing/qty.dart';
 import 'package:pos_application/core/services/pricing/rational.dart';
 
 import '../../fixtures/s6_golden_data.g.dart';
+import '../../support/test_tax.dart';
 
 const _inr = CurrencyRegistry.inr;
 
@@ -109,7 +109,7 @@ void main() {
   });
 
   test('points clamp equals the real React calculate()', () {
-    const service = PricingService();
+    const service = testIndiaPricing;
     final ties = <String>[];
     final failures = <String>[];
     for (final v in list('points')) {

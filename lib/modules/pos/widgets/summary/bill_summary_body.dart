@@ -1,8 +1,10 @@
 import 'package:flutter/gestures.dart' show PointerDeviceKind;
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../../core/responsive/app_metrics_scope.dart';
 import '../../../../core/responsive/summary_metrics.dart';
+import '../../controllers/forex_controller.dart';
 import 'forex_card.dart';
 import 'member_card.dart';
 import 'payment_section.dart';
@@ -19,41 +21,46 @@ import 'totals_card.dart';
 class BillSummaryBody extends StatelessWidget {
   const BillSummaryBody({required this.title, super.key});
 
-  /// Index of the member card: the gap after it is the `margin-top:auto` one.
-  static const int memberIndex = 3;
+  /// Index of the member card: the gap after it is the `margin-top:auto` one
+  /// (one less when the store has no forex card).
+  static int memberIndexFor({required bool forex}) => forex ? 3 : 2;
 
   final Widget title;
 
   @override
   Widget build(BuildContext context) {
     final sm = context.metrics.summary;
-    return LayoutBuilder(
-      builder: (context, constraints) => ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(
-          scrollbars: false,
-          dragDevices: <PointerDeviceKind>{
-            PointerDeviceKind.touch,
-            PointerDeviceKind.mouse,
-            PointerDeviceKind.trackpad,
-          },
-        ),
-        child: SingleChildScrollView(
-          child: SummaryColumn(
-            availableHeight: constraints.maxHeight,
-            minGap: sm.baseGap,
-            maxGap: SummaryMetrics.maxCardGap,
-            autoGapIndex: memberIndex,
-            children: <Widget>[
-              title,
-              const TotalsCard(),
-              const ForexCard(),
-              const MemberCard(),
-              const PaymentSection(),
-              const QuickActionsGrid(),
-            ],
+    final controller = Get.find<ForexController>();
+    return Obx(() {
+      final forex = controller.available;
+      return LayoutBuilder(
+        builder: (context, constraints) => ScrollConfiguration(
+          behavior: ScrollConfiguration.of(context).copyWith(
+            scrollbars: false,
+            dragDevices: <PointerDeviceKind>{
+              PointerDeviceKind.touch,
+              PointerDeviceKind.mouse,
+              PointerDeviceKind.trackpad,
+            },
+          ),
+          child: SingleChildScrollView(
+            child: SummaryColumn(
+              availableHeight: constraints.maxHeight,
+              minGap: sm.baseGap,
+              maxGap: SummaryMetrics.maxCardGap,
+              autoGapIndex: memberIndexFor(forex: forex),
+              children: <Widget>[
+                title,
+                const TotalsCard(),
+                if (forex) const ForexCard(),
+                const MemberCard(),
+                const PaymentSection(),
+                const QuickActionsGrid(),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

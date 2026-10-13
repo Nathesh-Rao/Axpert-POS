@@ -16,6 +16,7 @@ import 'package:pos_application/modules/pos/models/cart.dart';
 import 'package:pos_application/modules/pos/repository/cart_repository.dart';
 
 import '../../support/product_fixtures.dart';
+import '../../support/test_tax.dart';
 
 class _NoCustomers implements CustomerRepository {
   @override
@@ -69,7 +70,11 @@ void main() {
 
   setUp(() {
     repo = _RecordingCarts();
-    cart = CartController(repo, CustomersController(_NoCustomers()));
+    cart = CartController(
+      repo,
+      CustomersController(_NoCustomers()),
+      pricing: testIndiaPricing,
+    );
   });
 
   test('one change is one save, carrying that state', () async {

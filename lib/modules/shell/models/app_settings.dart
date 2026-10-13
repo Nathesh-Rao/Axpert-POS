@@ -1,17 +1,16 @@
 import '../../../core/constants/storage_keys.dart';
 
-/// Persistent shell settings (the prototype's store, dark, beep, counter and
-/// rate keys). The forex rate is integer milli-units: 8.561 is 8561.
+/// Persistent shell settings (the prototype's store, dark, beep and counter
+/// keys). The forex rate is store data now (`store_forex`).
 class AppSettings {
   const AppSettings({
     required this.store,
     required this.dark,
     required this.beep,
     required this.counter,
-    required this.rateMilli,
   });
 
-  /// Defaults: light, beep on, forex rate 8.561. `store` and `counter` are
+  /// Defaults: light, beep on. `store` and `counter` are
   /// legacy keys: the store and counter come from the database session now
   /// (DEC-132) and nothing reads these two values.
   static const AppSettings defaults = AppSettings(
@@ -19,7 +18,6 @@ class AppSettings {
     dark: false,
     beep: true,
     counter: '',
-    rateMilli: 8561,
   );
 
   /// Reads the per-key JSON map written by the repository.
@@ -28,21 +26,18 @@ class AppSettings {
     dark: json[StorageKeys.dark] as bool? ?? defaults.dark,
     beep: json[StorageKeys.beep] as bool? ?? defaults.beep,
     counter: json[StorageKeys.counter] as String? ?? defaults.counter,
-    rateMilli: json[StorageKeys.rate] as int? ?? defaults.rateMilli,
   );
 
   final String store;
   final bool dark;
   final bool beep;
   final String counter;
-  final int rateMilli;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
     StorageKeys.store: store,
     StorageKeys.dark: dark,
     StorageKeys.beep: beep,
     StorageKeys.counter: counter,
-    StorageKeys.rate: rateMilli,
   };
 
   AppSettings copyWith({
@@ -50,13 +45,11 @@ class AppSettings {
     bool? dark,
     bool? beep,
     String? counter,
-    int? rateMilli,
   }) => AppSettings(
     store: store ?? this.store,
     dark: dark ?? this.dark,
     beep: beep ?? this.beep,
     counter: counter ?? this.counter,
-    rateMilli: rateMilli ?? this.rateMilli,
   );
 
   @override
@@ -65,9 +58,8 @@ class AppSettings {
       other.store == store &&
       other.dark == dark &&
       other.beep == beep &&
-      other.counter == counter &&
-      other.rateMilli == rateMilli;
+      other.counter == counter;
 
   @override
-  int get hashCode => Object.hash(store, dark, beep, counter, rateMilli);
+  int get hashCode => Object.hash(store, dark, beep, counter);
 }

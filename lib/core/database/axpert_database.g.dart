@@ -12306,6 +12306,1357 @@ class SeedManifestEntriesCompanion extends UpdateCompanion<SeedManifestEntry> {
   }
 }
 
+class $StoreForexEntriesTable extends StoreForexEntries
+    with TableInfo<$StoreForexEntriesTable, StoreForexEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StoreForexEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _storeIdMeta = const VerificationMeta(
+    'storeId',
+  );
+  @override
+  late final GeneratedColumn<String> storeId = GeneratedColumn<String>(
+    'store_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES stores (id)',
+    ),
+  );
+  static const VerificationMeta _foreignCurrencyCodeMeta =
+      const VerificationMeta('foreignCurrencyCode');
+  @override
+  late final GeneratedColumn<String> foreignCurrencyCode =
+      GeneratedColumn<String>(
+        'foreign_currency_code',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+        defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES currencies (code)',
+        ),
+      );
+  static const VerificationMeta _rateMicroMeta = const VerificationMeta(
+    'rateMicro',
+  );
+  @override
+  late final GeneratedColumn<int> rateMicro = GeneratedColumn<int>(
+    'rate_micro',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _activeMeta = const VerificationMeta('active');
+  @override
+  late final GeneratedColumn<bool> active = GeneratedColumn<bool>(
+    'active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    storeId,
+    foreignCurrencyCode,
+    rateMicro,
+    active,
+    position,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'store_forex';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<StoreForexEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('store_id')) {
+      context.handle(
+        _storeIdMeta,
+        storeId.isAcceptableOrUnknown(data['store_id']!, _storeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_storeIdMeta);
+    }
+    if (data.containsKey('foreign_currency_code')) {
+      context.handle(
+        _foreignCurrencyCodeMeta,
+        foreignCurrencyCode.isAcceptableOrUnknown(
+          data['foreign_currency_code']!,
+          _foreignCurrencyCodeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_foreignCurrencyCodeMeta);
+    }
+    if (data.containsKey('rate_micro')) {
+      context.handle(
+        _rateMicroMeta,
+        rateMicro.isAcceptableOrUnknown(data['rate_micro']!, _rateMicroMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_rateMicroMeta);
+    }
+    if (data.containsKey('active')) {
+      context.handle(
+        _activeMeta,
+        active.isAcceptableOrUnknown(data['active']!, _activeMeta),
+      );
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {storeId, foreignCurrencyCode},
+  ];
+  @override
+  StoreForexEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return StoreForexEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      storeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}store_id'],
+      )!,
+      foreignCurrencyCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}foreign_currency_code'],
+      )!,
+      rateMicro: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rate_micro'],
+      )!,
+      active: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}active'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $StoreForexEntriesTable createAlias(String alias) {
+    return $StoreForexEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class StoreForexEntry extends DataClass implements Insertable<StoreForexEntry> {
+  final String id;
+  final String storeId;
+  final String foreignCurrencyCode;
+  final int rateMicro;
+  final bool active;
+  final int position;
+  final String createdAt;
+  final String updatedAt;
+  const StoreForexEntry({
+    required this.id,
+    required this.storeId,
+    required this.foreignCurrencyCode,
+    required this.rateMicro,
+    required this.active,
+    required this.position,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['store_id'] = Variable<String>(storeId);
+    map['foreign_currency_code'] = Variable<String>(foreignCurrencyCode);
+    map['rate_micro'] = Variable<int>(rateMicro);
+    map['active'] = Variable<bool>(active);
+    map['position'] = Variable<int>(position);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    return map;
+  }
+
+  StoreForexEntriesCompanion toCompanion(bool nullToAbsent) {
+    return StoreForexEntriesCompanion(
+      id: Value(id),
+      storeId: Value(storeId),
+      foreignCurrencyCode: Value(foreignCurrencyCode),
+      rateMicro: Value(rateMicro),
+      active: Value(active),
+      position: Value(position),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory StoreForexEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return StoreForexEntry(
+      id: serializer.fromJson<String>(json['id']),
+      storeId: serializer.fromJson<String>(json['storeId']),
+      foreignCurrencyCode: serializer.fromJson<String>(
+        json['foreignCurrencyCode'],
+      ),
+      rateMicro: serializer.fromJson<int>(json['rateMicro']),
+      active: serializer.fromJson<bool>(json['active']),
+      position: serializer.fromJson<int>(json['position']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'storeId': serializer.toJson<String>(storeId),
+      'foreignCurrencyCode': serializer.toJson<String>(foreignCurrencyCode),
+      'rateMicro': serializer.toJson<int>(rateMicro),
+      'active': serializer.toJson<bool>(active),
+      'position': serializer.toJson<int>(position),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+    };
+  }
+
+  StoreForexEntry copyWith({
+    String? id,
+    String? storeId,
+    String? foreignCurrencyCode,
+    int? rateMicro,
+    bool? active,
+    int? position,
+    String? createdAt,
+    String? updatedAt,
+  }) => StoreForexEntry(
+    id: id ?? this.id,
+    storeId: storeId ?? this.storeId,
+    foreignCurrencyCode: foreignCurrencyCode ?? this.foreignCurrencyCode,
+    rateMicro: rateMicro ?? this.rateMicro,
+    active: active ?? this.active,
+    position: position ?? this.position,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  StoreForexEntry copyWithCompanion(StoreForexEntriesCompanion data) {
+    return StoreForexEntry(
+      id: data.id.present ? data.id.value : this.id,
+      storeId: data.storeId.present ? data.storeId.value : this.storeId,
+      foreignCurrencyCode: data.foreignCurrencyCode.present
+          ? data.foreignCurrencyCode.value
+          : this.foreignCurrencyCode,
+      rateMicro: data.rateMicro.present ? data.rateMicro.value : this.rateMicro,
+      active: data.active.present ? data.active.value : this.active,
+      position: data.position.present ? data.position.value : this.position,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StoreForexEntry(')
+          ..write('id: $id, ')
+          ..write('storeId: $storeId, ')
+          ..write('foreignCurrencyCode: $foreignCurrencyCode, ')
+          ..write('rateMicro: $rateMicro, ')
+          ..write('active: $active, ')
+          ..write('position: $position, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    storeId,
+    foreignCurrencyCode,
+    rateMicro,
+    active,
+    position,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is StoreForexEntry &&
+          other.id == this.id &&
+          other.storeId == this.storeId &&
+          other.foreignCurrencyCode == this.foreignCurrencyCode &&
+          other.rateMicro == this.rateMicro &&
+          other.active == this.active &&
+          other.position == this.position &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class StoreForexEntriesCompanion extends UpdateCompanion<StoreForexEntry> {
+  final Value<String> id;
+  final Value<String> storeId;
+  final Value<String> foreignCurrencyCode;
+  final Value<int> rateMicro;
+  final Value<bool> active;
+  final Value<int> position;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<int> rowid;
+  const StoreForexEntriesCompanion({
+    this.id = const Value.absent(),
+    this.storeId = const Value.absent(),
+    this.foreignCurrencyCode = const Value.absent(),
+    this.rateMicro = const Value.absent(),
+    this.active = const Value.absent(),
+    this.position = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  StoreForexEntriesCompanion.insert({
+    required String id,
+    required String storeId,
+    required String foreignCurrencyCode,
+    required int rateMicro,
+    this.active = const Value.absent(),
+    this.position = const Value.absent(),
+    required String createdAt,
+    required String updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       storeId = Value(storeId),
+       foreignCurrencyCode = Value(foreignCurrencyCode),
+       rateMicro = Value(rateMicro),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<StoreForexEntry> custom({
+    Expression<String>? id,
+    Expression<String>? storeId,
+    Expression<String>? foreignCurrencyCode,
+    Expression<int>? rateMicro,
+    Expression<bool>? active,
+    Expression<int>? position,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (storeId != null) 'store_id': storeId,
+      if (foreignCurrencyCode != null)
+        'foreign_currency_code': foreignCurrencyCode,
+      if (rateMicro != null) 'rate_micro': rateMicro,
+      if (active != null) 'active': active,
+      if (position != null) 'position': position,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  StoreForexEntriesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? storeId,
+    Value<String>? foreignCurrencyCode,
+    Value<int>? rateMicro,
+    Value<bool>? active,
+    Value<int>? position,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return StoreForexEntriesCompanion(
+      id: id ?? this.id,
+      storeId: storeId ?? this.storeId,
+      foreignCurrencyCode: foreignCurrencyCode ?? this.foreignCurrencyCode,
+      rateMicro: rateMicro ?? this.rateMicro,
+      active: active ?? this.active,
+      position: position ?? this.position,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (storeId.present) {
+      map['store_id'] = Variable<String>(storeId.value);
+    }
+    if (foreignCurrencyCode.present) {
+      map['foreign_currency_code'] = Variable<String>(
+        foreignCurrencyCode.value,
+      );
+    }
+    if (rateMicro.present) {
+      map['rate_micro'] = Variable<int>(rateMicro.value);
+    }
+    if (active.present) {
+      map['active'] = Variable<bool>(active.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StoreForexEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('storeId: $storeId, ')
+          ..write('foreignCurrencyCode: $foreignCurrencyCode, ')
+          ..write('rateMicro: $rateMicro, ')
+          ..write('active: $active, ')
+          ..write('position: $position, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TaxRegimeEntriesTable extends TaxRegimeEntries
+    with TableInfo<$TaxRegimeEntriesTable, TaxRegimeEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaxRegimeEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _regionMeta = const VerificationMeta('region');
+  @override
+  late final GeneratedColumn<String> region = GeneratedColumn<String>(
+    'region',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _priceModeMeta = const VerificationMeta(
+    'priceMode',
+  );
+  @override
+  late final GeneratedColumn<String> priceMode = GeneratedColumn<String>(
+    'price_mode',
+    aliasedName,
+    false,
+    check: () => priceMode.isIn(const ['exclusive', 'inclusive']),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _splitPartsMeta = const VerificationMeta(
+    'splitParts',
+  );
+  @override
+  late final GeneratedColumn<String> splitParts = GeneratedColumn<String>(
+    'split_parts',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    region,
+    label,
+    priceMode,
+    splitParts,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tax_regimes';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TaxRegimeEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('region')) {
+      context.handle(
+        _regionMeta,
+        region.isAcceptableOrUnknown(data['region']!, _regionMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_regionMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('price_mode')) {
+      context.handle(
+        _priceModeMeta,
+        priceMode.isAcceptableOrUnknown(data['price_mode']!, _priceModeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_priceModeMeta);
+    }
+    if (data.containsKey('split_parts')) {
+      context.handle(
+        _splitPartsMeta,
+        splitParts.isAcceptableOrUnknown(data['split_parts']!, _splitPartsMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TaxRegimeEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaxRegimeEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      region: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}region'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      priceMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}price_mode'],
+      )!,
+      splitParts: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}split_parts'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $TaxRegimeEntriesTable createAlias(String alias) {
+    return $TaxRegimeEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class TaxRegimeEntry extends DataClass implements Insertable<TaxRegimeEntry> {
+  final String id;
+
+  /// Region key matched against `stores.region` (`IN`, `UG`, ...).
+  final String region;
+
+  /// Tax name shown to the user (`GST`, `VAT`).
+  final String label;
+
+  /// `exclusive` or `inclusive`.
+  final String priceMode;
+
+  /// Comma separated split components of the total tax (`CGST,SGST`); empty
+  /// means a single line.
+  final String splitParts;
+  final String createdAt;
+  final String updatedAt;
+  const TaxRegimeEntry({
+    required this.id,
+    required this.region,
+    required this.label,
+    required this.priceMode,
+    required this.splitParts,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['region'] = Variable<String>(region);
+    map['label'] = Variable<String>(label);
+    map['price_mode'] = Variable<String>(priceMode);
+    map['split_parts'] = Variable<String>(splitParts);
+    map['created_at'] = Variable<String>(createdAt);
+    map['updated_at'] = Variable<String>(updatedAt);
+    return map;
+  }
+
+  TaxRegimeEntriesCompanion toCompanion(bool nullToAbsent) {
+    return TaxRegimeEntriesCompanion(
+      id: Value(id),
+      region: Value(region),
+      label: Value(label),
+      priceMode: Value(priceMode),
+      splitParts: Value(splitParts),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory TaxRegimeEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaxRegimeEntry(
+      id: serializer.fromJson<String>(json['id']),
+      region: serializer.fromJson<String>(json['region']),
+      label: serializer.fromJson<String>(json['label']),
+      priceMode: serializer.fromJson<String>(json['priceMode']),
+      splitParts: serializer.fromJson<String>(json['splitParts']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'region': serializer.toJson<String>(region),
+      'label': serializer.toJson<String>(label),
+      'priceMode': serializer.toJson<String>(priceMode),
+      'splitParts': serializer.toJson<String>(splitParts),
+      'createdAt': serializer.toJson<String>(createdAt),
+      'updatedAt': serializer.toJson<String>(updatedAt),
+    };
+  }
+
+  TaxRegimeEntry copyWith({
+    String? id,
+    String? region,
+    String? label,
+    String? priceMode,
+    String? splitParts,
+    String? createdAt,
+    String? updatedAt,
+  }) => TaxRegimeEntry(
+    id: id ?? this.id,
+    region: region ?? this.region,
+    label: label ?? this.label,
+    priceMode: priceMode ?? this.priceMode,
+    splitParts: splitParts ?? this.splitParts,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  TaxRegimeEntry copyWithCompanion(TaxRegimeEntriesCompanion data) {
+    return TaxRegimeEntry(
+      id: data.id.present ? data.id.value : this.id,
+      region: data.region.present ? data.region.value : this.region,
+      label: data.label.present ? data.label.value : this.label,
+      priceMode: data.priceMode.present ? data.priceMode.value : this.priceMode,
+      splitParts: data.splitParts.present
+          ? data.splitParts.value
+          : this.splitParts,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxRegimeEntry(')
+          ..write('id: $id, ')
+          ..write('region: $region, ')
+          ..write('label: $label, ')
+          ..write('priceMode: $priceMode, ')
+          ..write('splitParts: $splitParts, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    region,
+    label,
+    priceMode,
+    splitParts,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaxRegimeEntry &&
+          other.id == this.id &&
+          other.region == this.region &&
+          other.label == this.label &&
+          other.priceMode == this.priceMode &&
+          other.splitParts == this.splitParts &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class TaxRegimeEntriesCompanion extends UpdateCompanion<TaxRegimeEntry> {
+  final Value<String> id;
+  final Value<String> region;
+  final Value<String> label;
+  final Value<String> priceMode;
+  final Value<String> splitParts;
+  final Value<String> createdAt;
+  final Value<String> updatedAt;
+  final Value<int> rowid;
+  const TaxRegimeEntriesCompanion({
+    this.id = const Value.absent(),
+    this.region = const Value.absent(),
+    this.label = const Value.absent(),
+    this.priceMode = const Value.absent(),
+    this.splitParts = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TaxRegimeEntriesCompanion.insert({
+    required String id,
+    required String region,
+    required String label,
+    required String priceMode,
+    this.splitParts = const Value.absent(),
+    required String createdAt,
+    required String updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       region = Value(region),
+       label = Value(label),
+       priceMode = Value(priceMode),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<TaxRegimeEntry> custom({
+    Expression<String>? id,
+    Expression<String>? region,
+    Expression<String>? label,
+    Expression<String>? priceMode,
+    Expression<String>? splitParts,
+    Expression<String>? createdAt,
+    Expression<String>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (region != null) 'region': region,
+      if (label != null) 'label': label,
+      if (priceMode != null) 'price_mode': priceMode,
+      if (splitParts != null) 'split_parts': splitParts,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TaxRegimeEntriesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? region,
+    Value<String>? label,
+    Value<String>? priceMode,
+    Value<String>? splitParts,
+    Value<String>? createdAt,
+    Value<String>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return TaxRegimeEntriesCompanion(
+      id: id ?? this.id,
+      region: region ?? this.region,
+      label: label ?? this.label,
+      priceMode: priceMode ?? this.priceMode,
+      splitParts: splitParts ?? this.splitParts,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (region.present) {
+      map['region'] = Variable<String>(region.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (priceMode.present) {
+      map['price_mode'] = Variable<String>(priceMode.value);
+    }
+    if (splitParts.present) {
+      map['split_parts'] = Variable<String>(splitParts.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<String>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxRegimeEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('region: $region, ')
+          ..write('label: $label, ')
+          ..write('priceMode: $priceMode, ')
+          ..write('splitParts: $splitParts, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TaxSlabEntriesTable extends TaxSlabEntries
+    with TableInfo<$TaxSlabEntriesTable, TaxSlabEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaxSlabEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _regimeIdMeta = const VerificationMeta(
+    'regimeId',
+  );
+  @override
+  late final GeneratedColumn<String> regimeId = GeneratedColumn<String>(
+    'regime_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tax_regimes (id)',
+    ),
+  );
+  static const VerificationMeta _rateBpMeta = const VerificationMeta('rateBp');
+  @override
+  late final GeneratedColumn<int> rateBp = GeneratedColumn<int>(
+    'rate_bp',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, regimeId, rateBp, label, position];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tax_slabs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TaxSlabEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('regime_id')) {
+      context.handle(
+        _regimeIdMeta,
+        regimeId.isAcceptableOrUnknown(data['regime_id']!, _regimeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_regimeIdMeta);
+    }
+    if (data.containsKey('rate_bp')) {
+      context.handle(
+        _rateBpMeta,
+        rateBp.isAcceptableOrUnknown(data['rate_bp']!, _rateBpMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_rateBpMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TaxSlabEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaxSlabEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      regimeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}regime_id'],
+      )!,
+      rateBp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rate_bp'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+    );
+  }
+
+  @override
+  $TaxSlabEntriesTable createAlias(String alias) {
+    return $TaxSlabEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class TaxSlabEntry extends DataClass implements Insertable<TaxSlabEntry> {
+  final String id;
+  final String regimeId;
+  final int rateBp;
+  final String label;
+  final int position;
+  const TaxSlabEntry({
+    required this.id,
+    required this.regimeId,
+    required this.rateBp,
+    required this.label,
+    required this.position,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['regime_id'] = Variable<String>(regimeId);
+    map['rate_bp'] = Variable<int>(rateBp);
+    map['label'] = Variable<String>(label);
+    map['position'] = Variable<int>(position);
+    return map;
+  }
+
+  TaxSlabEntriesCompanion toCompanion(bool nullToAbsent) {
+    return TaxSlabEntriesCompanion(
+      id: Value(id),
+      regimeId: Value(regimeId),
+      rateBp: Value(rateBp),
+      label: Value(label),
+      position: Value(position),
+    );
+  }
+
+  factory TaxSlabEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaxSlabEntry(
+      id: serializer.fromJson<String>(json['id']),
+      regimeId: serializer.fromJson<String>(json['regimeId']),
+      rateBp: serializer.fromJson<int>(json['rateBp']),
+      label: serializer.fromJson<String>(json['label']),
+      position: serializer.fromJson<int>(json['position']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'regimeId': serializer.toJson<String>(regimeId),
+      'rateBp': serializer.toJson<int>(rateBp),
+      'label': serializer.toJson<String>(label),
+      'position': serializer.toJson<int>(position),
+    };
+  }
+
+  TaxSlabEntry copyWith({
+    String? id,
+    String? regimeId,
+    int? rateBp,
+    String? label,
+    int? position,
+  }) => TaxSlabEntry(
+    id: id ?? this.id,
+    regimeId: regimeId ?? this.regimeId,
+    rateBp: rateBp ?? this.rateBp,
+    label: label ?? this.label,
+    position: position ?? this.position,
+  );
+  TaxSlabEntry copyWithCompanion(TaxSlabEntriesCompanion data) {
+    return TaxSlabEntry(
+      id: data.id.present ? data.id.value : this.id,
+      regimeId: data.regimeId.present ? data.regimeId.value : this.regimeId,
+      rateBp: data.rateBp.present ? data.rateBp.value : this.rateBp,
+      label: data.label.present ? data.label.value : this.label,
+      position: data.position.present ? data.position.value : this.position,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxSlabEntry(')
+          ..write('id: $id, ')
+          ..write('regimeId: $regimeId, ')
+          ..write('rateBp: $rateBp, ')
+          ..write('label: $label, ')
+          ..write('position: $position')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, regimeId, rateBp, label, position);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaxSlabEntry &&
+          other.id == this.id &&
+          other.regimeId == this.regimeId &&
+          other.rateBp == this.rateBp &&
+          other.label == this.label &&
+          other.position == this.position);
+}
+
+class TaxSlabEntriesCompanion extends UpdateCompanion<TaxSlabEntry> {
+  final Value<String> id;
+  final Value<String> regimeId;
+  final Value<int> rateBp;
+  final Value<String> label;
+  final Value<int> position;
+  final Value<int> rowid;
+  const TaxSlabEntriesCompanion({
+    this.id = const Value.absent(),
+    this.regimeId = const Value.absent(),
+    this.rateBp = const Value.absent(),
+    this.label = const Value.absent(),
+    this.position = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TaxSlabEntriesCompanion.insert({
+    required String id,
+    required String regimeId,
+    required int rateBp,
+    this.label = const Value.absent(),
+    this.position = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       regimeId = Value(regimeId),
+       rateBp = Value(rateBp);
+  static Insertable<TaxSlabEntry> custom({
+    Expression<String>? id,
+    Expression<String>? regimeId,
+    Expression<int>? rateBp,
+    Expression<String>? label,
+    Expression<int>? position,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (regimeId != null) 'regime_id': regimeId,
+      if (rateBp != null) 'rate_bp': rateBp,
+      if (label != null) 'label': label,
+      if (position != null) 'position': position,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TaxSlabEntriesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? regimeId,
+    Value<int>? rateBp,
+    Value<String>? label,
+    Value<int>? position,
+    Value<int>? rowid,
+  }) {
+    return TaxSlabEntriesCompanion(
+      id: id ?? this.id,
+      regimeId: regimeId ?? this.regimeId,
+      rateBp: rateBp ?? this.rateBp,
+      label: label ?? this.label,
+      position: position ?? this.position,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (regimeId.present) {
+      map['regime_id'] = Variable<String>(regimeId.value);
+    }
+    if (rateBp.present) {
+      map['rate_bp'] = Variable<int>(rateBp.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaxSlabEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('regimeId: $regimeId, ')
+          ..write('rateBp: $rateBp, ')
+          ..write('label: $label, ')
+          ..write('position: $position, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AxpertDatabase extends GeneratedDatabase {
   _$AxpertDatabase(QueryExecutor e) : super(e);
   late final $DeviceContextEntriesTable deviceContextEntries =
@@ -12343,6 +13694,12 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
   late final $OfferEntriesTable offerEntries = $OfferEntriesTable(this);
   late final $SeedManifestEntriesTable seedManifestEntries =
       $SeedManifestEntriesTable(this);
+  late final $StoreForexEntriesTable storeForexEntries =
+      $StoreForexEntriesTable(this);
+  late final $TaxRegimeEntriesTable taxRegimeEntries = $TaxRegimeEntriesTable(
+    this,
+  );
+  late final $TaxSlabEntriesTable taxSlabEntries = $TaxSlabEntriesTable(this);
   late final Index productsPosition = Index(
     'products_position',
     'CREATE INDEX products_position ON products (position)',
@@ -12374,6 +13731,9 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
     userAccessEntries,
     offerEntries,
     seedManifestEntries,
+    storeForexEntries,
+    taxRegimeEntries,
+    taxSlabEntries,
     productsPosition,
     salesPosition,
   ];

@@ -23,6 +23,7 @@ import 'package:pos_application/features/products/domain/entities/product.dart';
 import '../../fixtures/pricing_golden_data.g.dart';
 import '../../support/pos_support.dart';
 import '../../support/test_app.dart';
+import '../../support/test_tax.dart';
 
 class _FixedCustomers implements CustomerRepository {
   _FixedCustomers(this._list);
@@ -64,6 +65,7 @@ void main() {
         final controller = CartController(
           MockCartRepository(await _store()),
           customers,
+          pricing: testIndiaPricing,
         );
         final flat = v['discountType'] == 'flat';
         final bd = v['billDiscount'] as String;

@@ -1,52 +1,62 @@
 import 'package:get/get.dart';
 
-import '../../../core/services/pricing/pricing_helpers.dart';
-
-import '../../../core/utils/decimal_input.dart';
+import '../../../core/services/pricing/currency_registry.dart';
 import '../../../core/services/pricing/money.dart';
-import '../../shell/controllers/settings_controller.dart';
+import '../../../core/services/pricing/pricing_helpers.dart';
+import '../../../core/utils/decimal_text.dart';
+import '../../../features/session/domain/entities/session_entities.dart';
+import '../../../features/session/presentation/controllers/active_session.dart';
 
-/// The forex card (prototype `converted`, `currency`, `rate`). The selector
-/// only changes the label (KG-107); the rate is milli-units, persisted
-/// through the settings.
+/// The forex card: the active store's foreign currencies and their rates come
+/// from the database (`store_forex`, via [ActiveSession.forex]); the selector
+/// only picks which row converts the total.
 class ForexController extends GetxController {
-  ForexController(this._settings);
+  ForexController(this._session);
 
-  /// Selector values in prototype order.
-  static const List<String> currencies = <String>['USD', 'EUR', 'AED', 'FC'];
+  final ActiveSession _session;
 
-  final SettingsController _settings;
+  /// Selected foreign currency code (empty when the store has none).
+  final RxString currency = ''.obs;
 
-  final RxString currency = 'USD'.obs;
+  /// Foreign currency codes of the store, in row order.
+  List<String> get codes => <String>[for (final r in _session.forex) r.code];
 
-  /// Observable stored rate (the rate field follows it).
-  RxInt get settingsRate => _rateRx;
-  late final RxInt _rateRx = _settings.settings.value.rateMilli.obs;
+  /// False hides the whole forex panel.
+  bool get available => _session.forex.isNotEmpty;
 
-  int get rateMilli => _settings.settings.value.rateMilli;
+  ForexRate? get selected =>
+      _session.forex.firstWhereOrNull((r) => r.code == currency.value);
 
-  /// `total / rate` shown with 2 decimals (`toFixed(2)`): the plain-Dart
-  /// [PricingHelpers.forexConvertHundredths] formatted here. Zero when the rate
-  /// is not positive.
+  /// Rate of the selected row, scaled by 1,000,000 (0 without one).
+  int get rateMicro => selected?.rateMicro ?? 0;
+
+  /// The rate as text (`83.2`), no floating point.
+  String get rateText => DecimalText.scaled(rateMicro, 6);
+
+  /// [total] in the selected foreign currency (its own decimals), converted
+  /// once with exact integer maths; `0` without a selected row.
   String converted(Money total) {
-    final cents = PricingHelpers.forexConvertHundredths(
+    final row = selected;
+    if (row == null) return '0';
+    final foreign = CurrencyRegistry.byCode(row.code);
+    final minor = PricingHelpers.forexConvert(
       total: total,
-      rateMilli: rateMilli,
+      foreign: foreign,
+      rateMicro: row.rateMicro,
     );
-    final frac = (cents % 100).toString().padLeft(2, '0');
-    return '${cents ~/ 100}.$frac';
-  }
-
-  /// Rate field commit (`next > 0` only, 3 decimals, KG-003).
-  void commitRate(String text) {
-    final next = DecimalInput.tryScaled(text, 3);
-    if (next != null && next > 0) _settings.setRateMilli(next);
+    return DecimalText.fixed(minor, foreign.exponent);
   }
 
   @override
   void onInit() {
     super.onInit();
-    ever(_settings.settings, (s) => _rateRx.value = s.rateMilli);
+    _follow();
+    ever(_session.forex, (_) => _follow());
+  }
+
+  void _follow() {
+    if (_session.forex.any((r) => r.code == currency.value)) return;
+    currency.value = _session.forex.isEmpty ? '' : _session.forex.first.code;
   }
 
   void setCurrency(String value) => currency.value = value;

@@ -33,9 +33,19 @@ class InMemoryUserRepository implements UserRepository {
 }
 
 class InMemoryStoreRepository implements StoreRepository {
-  InMemoryStoreRepository({this.currencies = const <CurrencyRow>[]});
+  InMemoryStoreRepository({
+    this.currencies = const <CurrencyRow>[],
+    this.forex = const <String, List<ForexRate>>{},
+    this.regimes = const <String, TaxRegimeInfo>{},
+  });
 
   final List<CurrencyRow> currencies;
+
+  /// Forex rows by store id.
+  final Map<String, List<ForexRate>> forex;
+
+  /// Tax regimes by region.
+  final Map<String, TaxRegimeInfo> regimes;
 
   @override
   Future<bool> hasStores() async => false;
@@ -44,6 +54,13 @@ class InMemoryStoreRepository implements StoreRepository {
 
   @override
   Future<List<CurrencyRow>> loadCurrencies() async => currencies;
+
+  @override
+  Future<List<ForexRate>> loadForex(String storeId) async =>
+      forex[storeId] ?? const <ForexRate>[];
+
+  @override
+  Future<TaxRegimeInfo?> loadTaxRegime(String region) async => regimes[region];
 
   @override
   Future<void> renameCounter(String counterId, String name) async {

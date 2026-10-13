@@ -13,6 +13,7 @@ import 'package:pos_application/core/services/pricing/tax_config.dart';
 import 'package:pos_application/features/offers/domain/entities/offer.dart';
 import 'package:pos_application/features/offers/domain/services/offer_engine.dart';
 import 'package:pos_application/features/products/domain/entities/product.dart';
+import '../../support/test_tax.dart';
 
 const _inr = CurrencyRegistry.inr;
 final _now = DateTime(2026, 10, 12, 12);
@@ -63,7 +64,7 @@ Offer _offer(Map<String, dynamic> o, int index) {
     now: now ?? _now,
     currency: _inr,
   );
-  final totals = PricingService(config: TaxConfig.india.copyWith(mode: mode))
+  final totals = PricingService(config: testIndiaTax.copyWith(mode: mode))
       .calculate(
         CartInput(
           lines: [
@@ -170,7 +171,7 @@ void main() {
         ),
       ];
       final (withEngine, res) = _run(lines, const [], [1200]);
-      final plain = const PricingService().calculate(
+      final plain = testIndiaPricing.calculate(
         CartInput(
           lines: [
             LineInput(

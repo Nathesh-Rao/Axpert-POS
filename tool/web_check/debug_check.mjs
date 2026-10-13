@@ -174,6 +174,9 @@ for (const home of ['POS', 'Reports']) {
   if (home !== 'POS') await page(home);
   for (const [name, fn] of dialogs) {
     if (home === 'Reports' && POS_ONLY.has(name)) continue; // controls that exist only on the POS page
+    // The Bill Summary now has the tax split rows (CGST/SGST): scroll it to its end so the
+    // quick actions sit where the coordinates above expect them.
+    if (home === 'POS') await send('Input.dispatchMouseEvent', { type: 'mouseWheel', x: 1110, y: 500, deltaX: 0, deltaY: 600 });
     await step(`dialog ${name} on ${home}`, fn);
     await esc();
   }

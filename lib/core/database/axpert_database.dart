@@ -17,12 +17,15 @@ import 'tables/sale_line_entries.dart';
 import 'tables/seed_manifest_entries.dart';
 import 'tables/settings_entries.dart';
 import 'tables/store_entries.dart';
+import 'tables/store_forex_entries.dart';
+import 'tables/tax_regime_entries.dart';
 import 'tables/user_entries.dart';
 
 part 'axpert_database.g.dart';
 
 /// Drift database: device context metadata and device-local settings.
 ///
+/// Schema v10 adds store_forex, tax_regimes and tax_slabs.
 /// Schema v3 (settings, migration_state), v4 (customers), v5 (held_bills), v6 (products), v7 (sales, sale_lines, payments)
 /// v8 (current_cart) and v9 (currencies, stores, counters, users,
 /// user_access, categories, offers, seed_manifest, scope columns) are provisional
@@ -47,13 +50,16 @@ part 'axpert_database.g.dart';
     CategoryEntries,
     OfferEntries,
     SeedManifestEntries,
+    StoreForexEntries,
+    TaxRegimeEntries,
+    TaxSlabEntries,
   ],
 )
 class AxpertDatabase extends _$AxpertDatabase {
   AxpertDatabase(super.executor);
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -177,6 +183,14 @@ class AxpertDatabase extends _$AxpertDatabase {
           saleLineEntries,
           saleLineEntries.isGift,
         );
+      });
+    }
+    if (from < 10 && to >= 10) {
+      // One transaction: v10 is all-or-nothing.
+      await transaction(() async {
+        await migrator.createTable(storeForexEntries);
+        await migrator.createTable(taxRegimeEntries);
+        await migrator.createTable(taxSlabEntries);
       });
     }
   }

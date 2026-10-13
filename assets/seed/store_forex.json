@@ -1,0 +1,44 @@
+[
+  {
+    "id": "demo-fx-ozone-usd",
+    "store": "demo-store-ozone",
+    "code": "USD",
+    "rateMicro": 83200000,
+    "position": 0
+  },
+  {
+    "id": "demo-fx-ozone-eur",
+    "store": "demo-store-ozone",
+    "code": "EUR",
+    "rateMicro": 90500000,
+    "position": 1
+  },
+  {
+    "id": "demo-fx-ozone-aed",
+    "store": "demo-store-ozone",
+    "code": "AED",
+    "rateMicro": 22650000,
+    "position": 2
+  },
+  {
+    "id": "demo-fx-kampala-usd",
+    "store": "demo-store-kampala",
+    "code": "USD",
+    "rateMicro": 3700000000,
+    "position": 0
+  },
+  {
+    "id": "demo-fx-kampala-eur",
+    "store": "demo-store-kampala",
+    "code": "EUR",
+    "rateMicro": 4000000000,
+    "position": 1
+  },
+  {
+    "id": "demo-fx-kampala-kes",
+    "store": "demo-store-kampala",
+    "code": "KES",
+    "rateMicro": 28500000,
+    "position": 2
+  }
+]

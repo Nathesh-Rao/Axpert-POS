@@ -98,3 +98,10 @@ Run and read: format and analyze clean; full VM suite 994/994; no PNG changed ve
 - Debug click-through (`debug_check.mjs`): SKIP_ENTRY normal 66/66, SKIP_ENTRY `--semantics` 66/66 (one earlier run failed only the beep-duration assertion, 0.074 s against 0.08 s, timing jitter), real login (`--entry`, user cashier1) 70/70 after the checkout assertion was made generic; `--entry --semantics` does not log in (typing into the semantics text field does not land: script limitation, no console error). Console clean in all runs.
 - Not verified: Windows, tablet, macOS launch, other window sizes for the offer UI, dark mode in the browser, the picker page visually (VM test only).
 - Pre-commit re-run: full VM suite 1528 of 1528 passed; the earlier single failure is KG-210 (timing threshold, same on origin/integration). Picker screenshots (light and dark, release, 1280x720) taken and viewed (KG-211).
+
+## Forex and tax from the database (2026-10-13, on top of 9c7eab0)
+- Plan `docs/plan_store_forex_tax.md`, DEC-136, KG-213 to KG-219. Schema v10 (store_forex, tax_regimes, tax_slabs), seed `demo_seed_v2`.
+- Checks: `dart format` clean, `flutter analyze` no issues, full VM suite 1554 passed. New tests: `schema_v10_test` (upgrade keeps v9 rows, forced failure rolls back), seeder v1->v2 upgrade and reseed, `vat_forex_test` (VAT exclusive/inclusive, forex vectors, tax split). 300 vectors, s6 fixtures and offers fixtures untouched.
+- Goldens: 37 existing goldens regenerated (every one that shows the Bill Summary or a receipt/reprint: the new CGST/SGST rows and the forex label), 4 new (`summary_vat_forex_*`, `summary_no_forex_*`, light and dark).
+- Release web (`demo_check.mjs`, 1280x720): cashier1 (India) 12/12 (GST Amount, CGST, SGST, forex USD/EUR/AED, rate 83.2, receipt with CGST/SGST); cashier2 (Kampala) 8/8 (VAT Amount, no GST/CGST/SGST anywhere including the receipt, forex USD/EUR/KES, rate 3700). Debug click-through normal 66/66 and `--semantics` 66/66 (`debug_check.mjs` scrolls the summary before the quick-action clicks, see KG-218).
+

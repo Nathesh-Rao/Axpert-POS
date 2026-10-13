@@ -19,5 +19,11 @@ abstract interface class StoreRepository {
 
   Future<List<CurrencyRow>> loadCurrencies();
 
+  /// Active foreign currencies of [storeId], in position order.
+  Future<List<ForexRate>> loadForex(String storeId);
+
+  /// The tax regime of [region], or null when none is configured.
+  Future<TaxRegimeInfo?> loadTaxRegime(String region);
+
   Future<void> renameCounter(String counterId, String name);
 }

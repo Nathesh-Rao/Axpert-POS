@@ -83,3 +83,37 @@ class CurrencyRow {
   final Currency currency;
   final List<int> quickCash;
 }
+
+/// One foreign currency of a store: 1 [code] unit = `rateMicro / 1e6` units of
+/// the store's currency.
+class ForexRate {
+  const ForexRate({required this.code, required this.rateMicro});
+
+  final String code;
+  final int rateMicro;
+}
+
+/// A slab of a tax regime.
+class TaxSlabInfo {
+  const TaxSlabInfo({required this.rateBp, this.label = ''});
+
+  final int rateBp;
+  final String label;
+}
+
+/// The tax regime of a store's region (`tax_regimes` and its `tax_slabs`).
+class TaxRegimeInfo {
+  const TaxRegimeInfo({
+    required this.region,
+    required this.label,
+    required this.inclusive,
+    this.splitParts = const <String>[],
+    this.slabs = const <TaxSlabInfo>[],
+  });
+
+  final String region;
+  final String label;
+  final bool inclusive;
+  final List<String> splitParts;
+  final List<TaxSlabInfo> slabs;
+}

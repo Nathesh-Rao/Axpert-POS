@@ -3,12 +3,14 @@ import 'package:get/get.dart';
 
 import '../../../../core/constants/app_strings_x.dart';
 import '../../../../core/responsive/app_metrics_scope.dart';
+import '../../../../core/services/pricing/tax_split.dart';
 import '../../../../core/theme/theme_x.dart';
 import '../../../../core/theme/tokens/app_checkout_sizes.dart';
 import '../../../../core/theme/tokens/app_radii.dart';
 import '../../../../core/theme/tokens/app_spacing.dart';
 import '../../../../core/theme/tokens/app_typography.dart';
 import '../../../../core/utils/money_formatter.dart';
+import '../../../../features/session/presentation/controllers/active_session.dart';
 import '../../controllers/cart_controller.dart';
 import 'summary_card.dart';
 
@@ -23,10 +25,13 @@ class TotalsCard extends StatelessWidget {
     final s = context.strings;
     final c = context.colors;
     final cart = Get.find<CartController>();
+    final session = Get.find<ActiveSession>();
     return SummaryCard(
       padding: sm.cardPad,
       child: Obx(() {
         final t = cart.totals.value;
+        final regime = session.regime.value;
+        final taxLabel = regime?.label ?? '';
         Widget row(String label, String value) => SizedBox(
           height: sm.rowHeight,
           child: Padding(
@@ -62,7 +67,11 @@ class TotalsCard extends StatelessWidget {
             row(s.summarySubtotal(), MoneyFormatter.format(t.subtotal)),
             row(s.summaryDiscount(), MoneyFormatter.format(t.discount)),
             row(s.summaryRewardPoints(), MoneyFormatter.format(t.points)),
-            row(s.summaryTaxAmount(), MoneyFormatter.format(t.tax)),
+            if (regime != null) ...<Widget>[
+              row(s.summaryTaxAmount(taxLabel), MoneyFormatter.format(t.tax)),
+              for (final part in TaxSplit.parts(t.tax, regime.splitParts))
+                row(part.label, MoneyFormatter.format(part.amount)),
+            ],
             const SizedBox(height: AppCheckoutSizes.invoiceMarginTop),
             Container(
               height: sm.invoiceHeight,

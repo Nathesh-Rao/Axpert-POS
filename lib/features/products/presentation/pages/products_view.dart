@@ -5,6 +5,7 @@ import '../../../../core/constants/app_strings_x.dart';
 import '../../../../core/responsive/app_metrics_scope.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../../core/theme/theme_x.dart';
+import '../../../session/presentation/controllers/active_session.dart';
 import '../../../../core/theme/tokens/app_typography.dart';
 import '../../../../core/utils/decimal_text.dart';
 import '../../../../core/utils/money_formatter.dart';
@@ -41,7 +42,10 @@ class ProductsView extends GetView<ProductsPageController> {
                 TableColumnSpec(label: s.colProduct(), flex: 442),
                 TableColumnSpec(label: s.colCodeBarcode(), flex: 262),
                 TableColumnSpec(label: s.colCategory(), flex: 263),
-                TableColumnSpec(label: s.colGst(), flex: 119),
+                TableColumnSpec(
+                  label: s.colTax(Get.find<ActiveSession>().taxLabel),
+                  flex: 119,
+                ),
                 TableColumnSpec(label: s.colPrice(), flex: 177),
                 TableColumnSpec(label: s.colStock(), flex: 167),
               ],

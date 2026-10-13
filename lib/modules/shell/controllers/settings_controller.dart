@@ -4,7 +4,7 @@ import '../models/app_settings.dart';
 import '../repository/settings_repository.dart';
 
 /// Permanent controller for the persisted shell settings (store, dark, beep,
-/// counter, forex rate). State changes first, persistence follows.
+/// counter). State changes first, persistence follows.
 class SettingsController extends GetxController {
   SettingsController(this._repository);
 
@@ -36,7 +36,4 @@ class SettingsController extends GetxController {
 
   Future<void> setCounter(String value) =>
       _update(settings.value.copyWith(counter: value));
-
-  Future<void> setRateMilli(int value) =>
-      _update(settings.value.copyWith(rateMilli: value));
 }

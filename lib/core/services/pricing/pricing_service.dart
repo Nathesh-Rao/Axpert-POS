@@ -12,7 +12,7 @@ import 'tax_config.dart';
 /// rounding only through the [RoundingStrategy].
 class PricingService {
   const PricingService({
-    this.config = TaxConfig.india,
+    required this.config,
     this.rounding = const PrototypeRounding(),
   });
 

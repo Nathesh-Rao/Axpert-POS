@@ -130,7 +130,7 @@ void _expectSpacing(WidgetTester tester, Size size) {
     expect(gap, greaterThanOrEqualTo(sm.baseGap - 0.5), reason: 'min: $why');
     if (scrolls) {
       expect(gap, closeTo(sm.baseGap, 0.5), reason: 'scrolling: $why');
-    } else if (i != BillSummaryBody.memberIndex) {
+    } else if (i != BillSummaryBody.memberIndexFor(forex: true)) {
       expect(
         gap,
         lessThanOrEqualTo(SummaryMetrics.maxCardGap + 0.5),
@@ -143,7 +143,7 @@ void _expectSpacing(WidgetTester tester, Size size) {
         blocks['checkout']!.top - blocks['member']!.bottom; // may be larger
     if (auto > SummaryMetrics.maxCardGap + 0.5) {
       for (var i = 0; i < names.length - 1; i++) {
-        if (i == BillSummaryBody.memberIndex) continue;
+        if (i == BillSummaryBody.memberIndexFor(forex: true)) continue;
         final gap = blocks[names[i + 1]]!.top - blocks[names[i]]!.bottom;
         expect(
           gap,
@@ -159,10 +159,7 @@ void _expectSpacing(WidgetTester tester, Size size) {
 void _expectNoClippedInputs(WidgetTester tester, Size size) {
   final sm = AppMetrics(size).summary;
   final rate = tester.getSize(
-    find.descendant(
-      of: find.byType(ForexCard),
-      matching: find.byType(TextField),
-    ),
+    find.descendant(of: find.byType(ForexCard), matching: find.text('8.561')),
   );
   expect(
     rate.height,

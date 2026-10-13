@@ -29,7 +29,7 @@ abstract final class DemoSeedConfig {
   static const bool reseed = bool.fromEnvironment('RESEED_DEMO');
 }
 
-enum SeedOutcome { seeded, reseeded, alreadySeeded }
+enum SeedOutcome { seeded, reseeded, upgraded, alreadySeeded }
 
 /// Reads one seed asset (JSON text) by file name, e.g. `products.json`.
 typedef SeedAssetLoader = Future<String> Function(String name);
@@ -47,7 +47,11 @@ class DemoSeeder {
   }) : _hasher = hasher,
        _now = now ?? DateTime.now;
 
-  static const String marker = 'demo_seed_v1';
+  static const String marker = 'demo_seed_v2';
+
+  /// Marker of the first seed (no forex, regimes or slabs yet): a database
+  /// that has it is upgraded additively to v2.
+  static const String legacyMarker = 'demo_seed_v1';
 
   /// The copy markers the legacy LocalStore migrators check: set by the seeder
   /// so they never copy an (empty) LocalStore over the seeded rows.
@@ -66,17 +70,77 @@ class DemoSeeder {
   final DateTime Function() _now;
 
   Future<SeedOutcome> run({bool reseed = false}) async {
-    final existing = await (db.select(
-      db.migrationStateEntries,
-    )..where((t) => t.key.equals(marker))).getSingleOrNull();
-    if (existing != null && !reseed) return SeedOutcome.alreadySeeded;
+    final current = await _marker(marker);
+    final legacy = await _marker(legacyMarker);
+    if (current != null && !reseed) return SeedOutcome.alreadySeeded;
     final data = await _SeedData.load(loadAsset);
+    final seededBefore = current != null || legacy != null;
     await db.durableTransaction(() async {
-      if (existing != null) await _wipe();
-      await _insert(data);
+      if (seededBefore && (reseed || current != null)) {
+        await _wipe();
+        await _insert(data);
+      } else if (legacy != null) {
+        await _upgradeV1(data);
+      } else {
+        await _insert(data);
+      }
     });
-    return existing == null ? SeedOutcome.seeded : SeedOutcome.reseeded;
+    if (!seededBefore) return SeedOutcome.seeded;
+    return reseed ? SeedOutcome.reseeded : SeedOutcome.upgraded;
   }
+
+  Future<MigrationStateEntry?> _marker(String key) => (db.select(
+    db.migrationStateEntries,
+  )..where((t) => t.key.equals(key))).getSingleOrNull();
+
+  /// v1 to v2 without a wipe: adds the rows v2 introduced (currencies, tax
+  /// regimes, slabs, forex), moves seeded product rates that are no slab of
+  /// their store's regime onto the seed value, and sets the new marker. Rows
+  /// the user made are never touched.
+  Future<void> _upgradeV1(_SeedData d) async {
+    final now = _stamp;
+    await _insertCurrencies(d, now);
+    await _insertRegimes(d, now);
+    await _insertForex(d, now);
+    final storeRegion = {
+      for (final st in d.stores) st['id'] as String: st['region'] as String,
+    };
+    final slabsByRegion = {
+      for (final r in d.regimes)
+        r['region'] as String: {
+          for (final sl in (r['slabs'] as List).cast<Map<String, dynamic>>())
+            sl['rateBp'] as int,
+        },
+    };
+    final seeded = await _ids('products');
+    for (final p in d.products) {
+      final id = p['id'] as String;
+      if (!seeded.contains(id)) continue;
+      final slabs = slabsByRegion[storeRegion[p['store']]];
+      if (slabs == null) continue;
+      final row = await (db.select(
+        db.productEntries,
+      )..where((t) => t.id.equals(id))).getSingleOrNull();
+      if (row == null || slabs.contains(row.gstBp)) continue;
+      await (db.update(db.productEntries)..where((t) => t.id.equals(id))).write(
+        ProductEntriesCompanion(
+          gstBp: Value(p['gstBp'] as int),
+          updatedAt: Value(now),
+        ),
+      );
+    }
+    await _writeMarker(now);
+  }
+
+  Future<void> _writeMarker(String now) => db
+      .into(db.migrationStateEntries)
+      .insert(
+        MigrationStateEntriesCompanion.insert(
+          key: marker,
+          value: jsonEncode(<String, Object>{'seeded_at': now}),
+        ),
+        mode: InsertMode.insertOrReplace,
+      );
 
   // ---------------------------------------------------------------- insert
 
@@ -91,24 +155,8 @@ class DemoSeeder {
 
   Future<void> _insert(_SeedData d) async {
     final now = _stamp;
-    for (final c in d.currencies) {
-      await db
-          .into(db.currencyEntries)
-          .insert(
-            CurrencyEntriesCompanion.insert(
-              code: c['code'] as String,
-              name: c['name'] as String,
-              symbol: c['symbol'] as String,
-              exponent: c['exponent'] as int,
-              grouping: c['grouping'] as String,
-              quickCash: Value((c['quickCash'] as List).join(',')),
-              createdAt: now,
-              updatedAt: now,
-            ),
-            mode: InsertMode.insertOrIgnore,
-          );
-      await _track('currencies', c['code'] as String);
-    }
+    await _insertCurrencies(d, now);
+    await _insertRegimes(d, now);
     var storeIndex = 0;
     for (final s in d.stores) {
       // Stores sort by creation time: keep the file order.
@@ -149,6 +197,7 @@ class DemoSeeder {
         await _track('counters', c['id'] as String);
       }
     }
+    await _insertForex(d, now);
     for (final u in d.users) {
       final salt = _hasher.newSalt();
       await db
@@ -297,14 +346,88 @@ class DemoSeeder {
           );
       await _track('migration_state', key);
     }
-    await db
-        .into(db.migrationStateEntries)
-        .insert(
-          MigrationStateEntriesCompanion.insert(
-            key: marker,
-            value: jsonEncode(<String, Object>{'seeded_at': now}),
-          ),
-        );
+    await _writeMarker(now);
+  }
+
+  Future<void> _insertCurrencies(_SeedData d, String now) async {
+    for (final c in d.currencies) {
+      final inserted = await db
+          .into(db.currencyEntries)
+          .insert(
+            CurrencyEntriesCompanion.insert(
+              code: c['code'] as String,
+              name: c['name'] as String,
+              symbol: c['symbol'] as String,
+              exponent: c['exponent'] as int,
+              grouping: c['grouping'] as String,
+              quickCash: Value((c['quickCash'] as List).join(',')),
+              createdAt: now,
+              updatedAt: now,
+            ),
+            mode: InsertMode.insertOrIgnore,
+          );
+      if (inserted != 0) await _track('currencies', c['code'] as String);
+    }
+  }
+
+  Future<void> _insertRegimes(_SeedData d, String now) async {
+    for (final r in d.regimes) {
+      final id = r['id'] as String;
+      final inserted = await db
+          .into(db.taxRegimeEntries)
+          .insert(
+            TaxRegimeEntriesCompanion.insert(
+              id: id,
+              region: r['region'] as String,
+              label: r['label'] as String,
+              priceMode: r['priceMode'] as String,
+              splitParts: Value((r['splitParts'] as List).join(',')),
+              createdAt: now,
+              updatedAt: now,
+            ),
+            mode: InsertMode.insertOrIgnore,
+          );
+      // 0 = a regime of that region exists already (the user's): not ours.
+      if (inserted == 0) continue;
+      await _track('tax_regimes', id);
+      var n = 0;
+      for (final sl in (r['slabs'] as List).cast<Map<String, dynamic>>()) {
+        final slabId = '$id-slab-$n';
+        await db
+            .into(db.taxSlabEntries)
+            .insert(
+              TaxSlabEntriesCompanion.insert(
+                id: slabId,
+                regimeId: id,
+                rateBp: sl['rateBp'] as int,
+                label: Value(sl['label'] as String? ?? ''),
+                position: Value(n++),
+              ),
+            );
+        await _track('tax_slabs', slabId);
+      }
+    }
+  }
+
+  Future<void> _insertForex(_SeedData d, String now) async {
+    for (final f in d.forex) {
+      final id = f['id'] as String;
+      final inserted = await db
+          .into(db.storeForexEntries)
+          .insert(
+            StoreForexEntriesCompanion.insert(
+              id: id,
+              storeId: f['store'] as String,
+              foreignCurrencyCode: f['code'] as String,
+              rateMicro: f['rateMicro'] as int,
+              position: Value(f['position'] as int? ?? 0),
+              createdAt: now,
+              updatedAt: now,
+            ),
+            mode: InsertMode.insertOrIgnore,
+          );
+      if (inserted != 0) await _track('store_forex', id);
+    }
   }
 
   String? _relative(Object? days, int direction) => days == null
@@ -340,7 +463,9 @@ class DemoSeeder {
       if (list.isEmpty) continue;
       final currency = CurrencyRegistry.byCode(store['currencyCode'] as String);
       final pricing = PricingService(
-        config: TaxConfig.india.copyWith(currency: currency),
+        config: d
+            .taxConfig(store['region'] as String)
+            .copyWith(currency: currency),
       );
       final built = <Sale>[];
       for (final spec in list) {
@@ -391,7 +516,7 @@ class DemoSeeder {
                 LineInput(
                   qty: cart.lines[i].qty,
                   price: cart.lines[i].price,
-                  taxRate: cart.lines[i].product.gst,
+                  taxRate: pricing.config.rateFor(cart.lines[i].product.gst),
                   discount: res.lines[i]?.discount ?? cart.lines[i].discount,
                   unitOff: res.lines[i]?.unitOff,
                 ),
@@ -487,6 +612,7 @@ class DemoSeeder {
     final currencies = await _ids('currencies');
     final customers = await _ids('customers');
     final markers = await _ids('migration_state');
+    final regimes = await _ids('tax_regimes');
 
     // Seeded sales and their lines and payments.
     await (db.delete(
@@ -533,22 +659,40 @@ class DemoSeeder {
     await (db.delete(
       db.counterEntries,
     )..where((t) => t.id.isIn(counters))).go();
+    // Forex rows belong to their store; the regime rows and slabs are ours.
+    await (db.delete(
+      db.storeForexEntries,
+    )..where((t) => t.storeId.isIn(stores))).go();
     await (db.delete(db.storeEntries)..where((t) => t.id.isIn(stores))).go();
+    await (db.delete(
+      db.taxSlabEntries,
+    )..where((t) => t.regimeId.isIn(regimes))).go();
+    await (db.delete(
+      db.taxRegimeEntries,
+    )..where((t) => t.id.isIn(regimes))).go();
     await (db.delete(db.currencyEntries)..where(
           (t) =>
               t.code.isIn(currencies) &
               t.code.isNotInQuery(
                 db.selectOnly(db.storeEntries)
                   ..addColumns([db.storeEntries.currencyCode]),
+              ) &
+              t.code.isNotInQuery(
+                db.selectOnly(db.storeForexEntries)
+                  ..addColumns([db.storeForexEntries.foreignCurrencyCode]),
               ),
         ))
         .go();
     await (db.delete(
       db.customerEntries,
     )..where((t) => t.id.isIn(customers))).go();
-    await (db.delete(
-      db.migrationStateEntries,
-    )..where((t) => t.key.isIn(markers) | t.key.equals(marker))).go();
+    await (db.delete(db.migrationStateEntries)..where(
+          (t) =>
+              t.key.isIn(markers) |
+              t.key.equals(marker) |
+              t.key.equals(legacyMarker),
+        ))
+        .go();
     await db.delete(db.seedManifestEntries).go();
   }
 }
@@ -557,6 +701,8 @@ class DemoSeeder {
 class _SeedData {
   _SeedData({
     required this.currencies,
+    required this.regimes,
+    required this.forex,
     required this.stores,
     required this.users,
     required this.categories,
@@ -572,6 +718,8 @@ class _SeedData {
             .cast<Map<String, dynamic>>();
     return _SeedData(
       currencies: await list('currencies'),
+      regimes: await list('tax_regimes'),
+      forex: await list('store_forex'),
       stores: await list('stores'),
       users: await list('users'),
       categories: await list('categories'),
@@ -583,6 +731,8 @@ class _SeedData {
   }
 
   final List<Map<String, dynamic>> currencies;
+  final List<Map<String, dynamic>> regimes;
+  final List<Map<String, dynamic>> forex;
   final List<Map<String, dynamic>> stores;
   final List<Map<String, dynamic>> users;
   final List<Map<String, dynamic>> categories;
@@ -590,6 +740,26 @@ class _SeedData {
   final List<Map<String, dynamic>> customers;
   final List<Map<String, dynamic>> offerRows;
   final List<Map<String, dynamic>> sales;
+
+  /// Currency-less tax setup of the seed regime of [region] (zero tax when
+  /// the seed has none).
+  TaxConfig taxConfig(String region) {
+    final r = regimes.where((r) => r['region'] == region).firstOrNull;
+    if (r == null) return TaxConfig.none;
+    return TaxConfig(
+      country: region,
+      currency: TaxConfig.none.currency,
+      label: r['label'] as String,
+      mode: r['priceMode'] == 'inclusive'
+          ? TaxMode.inclusive
+          : TaxMode.exclusive,
+      slabsBp: <Bp>[
+        for (final sl in (r['slabs'] as List).cast<Map<String, dynamic>>())
+          Bp(sl['rateBp'] as int),
+      ],
+      splitParts: (r['splitParts'] as List).cast<String>(),
+    );
+  }
 
   /// Product entities by seed id (price in the product's currency).
   Map<String, Product> productEntities() => <String, Product>{

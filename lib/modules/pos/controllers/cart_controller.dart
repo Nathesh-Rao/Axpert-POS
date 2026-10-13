@@ -7,6 +7,7 @@ import '../../../core/services/pricing/basis_points.dart';
 import '../../../core/services/pricing/money.dart';
 import '../../../core/services/pricing/pricing_models.dart';
 import '../../../core/services/pricing/pricing_service.dart';
+import '../../../core/services/pricing/tax_config.dart';
 import '../../../core/services/pricing/qty.dart';
 import '../../customers/controllers/customers_controller.dart';
 import '../../../features/offers/domain/services/offer_engine.dart';
@@ -25,7 +26,7 @@ class CartController extends GetxController {
   CartController(
     this._repository,
     this._customers, {
-    PricingService pricing = const PricingService(),
+    PricingService pricing = const PricingService(config: TaxConfig.none),
     ActiveSession? session,
     OffersController? offers,
     OfferEngine engine = const OfferEngine(),
@@ -255,7 +256,7 @@ class CartController extends GetxController {
             LineInput(
               qty: value.lines[i].qty,
               price: value.lines[i].price,
-              taxRate: value.lines[i].product.gst,
+              taxRate: _service.config.rateFor(value.lines[i].product.gst),
               discount:
                   resolution.lines[i]?.discount ?? value.lines[i].discount,
               unitOff: resolution.lines[i]?.unitOff,

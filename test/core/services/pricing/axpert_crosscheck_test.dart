@@ -13,6 +13,7 @@ import 'package:pos_application/core/services/pricing/pricing_models.dart';
 import 'package:pos_application/core/services/pricing/pricing_service.dart';
 import 'package:pos_application/core/services/pricing/qty.dart';
 import 'package:pos_application/core/services/pricing/tax_config.dart';
+import '../../../support/test_tax.dart';
 
 /// axpert `Money.multiplyRatio(.., halfUp)` for non-negative values.
 int _ratio(int minor, int numerator, int denominator) {
@@ -59,8 +60,8 @@ _Ref _axpert(List<_Line> lines, {required bool inclusive}) {
 
 CartTotals _ours(List<_Line> lines, {required bool inclusive}) {
   final config = inclusive
-      ? TaxConfig.india.copyWith(mode: TaxMode.inclusive)
-      : TaxConfig.india;
+      ? testIndiaTax.copyWith(mode: TaxMode.inclusive)
+      : testIndiaTax;
   return PricingService(config: config).calculate(
     CartInput(
       lines: <LineInput>[

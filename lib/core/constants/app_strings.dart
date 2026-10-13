@@ -117,7 +117,9 @@ abstract class AppStrings {
   String priceInputLabel(String name);
   String discountInputLabel(String name);
   String removeItemTooltip();
-  String gstLabel(String percent);
+
+  /// `GST 18%` / `VAT 18%`; empty when the store has no tax regime.
+  String taxRateLabel(String label, String percent);
   String actionClearCart();
   String actionHold();
   String actionRecall();
@@ -148,13 +150,13 @@ abstract class AppStrings {
   String summarySubtotal();
   String summaryDiscount();
   String summaryRewardPoints();
-  String summaryTaxAmount();
+
+  /// Tax row of the Bill Summary: `GST Amount`, `VAT Amount`.
+  String summaryTaxAmount(String label);
   String summaryInvoiceTotal();
-  String forexFc();
   String forexRateLabel();
   String forexCurrencySemantic();
   String forexRateSemantic();
-  String forexCurrencyLabel(String code);
   String memberNumberLabel();
   String memberNumberHint();
   String memberFindTooltip();
@@ -270,7 +272,7 @@ abstract class AppStrings {
   String priceCheckBody();
   String priceCheckHint();
   String priceCheckNoMatch();
-  String priceCheckDetails(String code, int stock, String gst);
+  String priceCheckDetails(String code, int stock, String taxRate);
   String customerPickerTitle();
   String customerPickerHint();
   String customerRowDetail(String phone, String member, int points);
@@ -293,7 +295,6 @@ abstract class AppStrings {
   String receiptSubtotal();
   String receiptDiscount();
   String receiptPoints();
-  String receiptTax();
   String receiptTotal();
   String receiptPayment();
   String receiptChange();
@@ -326,7 +327,9 @@ abstract class AppStrings {
   String colProduct();
   String colCodeBarcode();
   String colCategory();
-  String colGst();
+
+  /// Tax column heading of the products table (`GST`, `VAT`).
+  String colTax(String label);
   String colPrice();
   String colStock();
   String colName();

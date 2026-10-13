@@ -161,6 +161,47 @@ class DriftStoreRepository implements StoreRepository {
   }
 
   @override
+  Future<List<ForexRate>> loadForex(String storeId) async {
+    final db = await _provider.open();
+    final rows =
+        await (db.select(db.storeForexEntries)
+              ..where((t) => t.storeId.equals(storeId) & t.active.equals(true))
+              ..orderBy([(t) => OrderingTerm.asc(t.position)]))
+            .get();
+    return [
+      for (final r in rows)
+        ForexRate(code: r.foreignCurrencyCode, rateMicro: r.rateMicro),
+    ];
+  }
+
+  @override
+  Future<TaxRegimeInfo?> loadTaxRegime(String region) async {
+    if (region.isEmpty) return null;
+    final db = await _provider.open();
+    final regime = await (db.select(
+      db.taxRegimeEntries,
+    )..where((t) => t.region.equals(region))).getSingleOrNull();
+    if (regime == null) return null;
+    final slabs =
+        await (db.select(db.taxSlabEntries)
+              ..where((t) => t.regimeId.equals(regime.id))
+              ..orderBy([(t) => OrderingTerm.asc(t.position)]))
+            .get();
+    return TaxRegimeInfo(
+      region: regime.region,
+      label: regime.label,
+      inclusive: regime.priceMode == 'inclusive',
+      splitParts: [
+        for (final p in regime.splitParts.split(','))
+          if (p.trim().isNotEmpty) p.trim(),
+      ],
+      slabs: [
+        for (final s in slabs) TaxSlabInfo(rateBp: s.rateBp, label: s.label),
+      ],
+    );
+  }
+
+  @override
   Future<void> renameCounter(String counterId, String name) async {
     final db = await _provider.open();
     await (db.update(

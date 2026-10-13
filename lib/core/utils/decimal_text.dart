@@ -13,4 +13,17 @@ abstract final class DecimalText {
     final text = frac.isEmpty ? whole : '$whole.$frac';
     return negative ? '-$text' : text;
   }
+
+  /// [value] scaled by `10^scale` with exactly [scale] decimals (`2050, 2` ->
+  /// `20.50`, `7, 0` -> `7`).
+  static String fixed(int value, int scale) {
+    if (scale == 0) return value.toString();
+    final negative = value < 0;
+    final digits = (negative ? -value : value).toString().padLeft(
+      scale + 1,
+      '0',
+    );
+    final cut = digits.length - scale;
+    return '${negative ? '-' : ''}${digits.substring(0, cut)}.${digits.substring(cut)}';
+  }
 }

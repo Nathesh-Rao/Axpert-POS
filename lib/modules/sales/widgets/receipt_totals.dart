@@ -8,7 +8,7 @@ import '../../../core/utils/money_formatter.dart';
 import '../../../shared/widgets/dashed_divider.dart';
 import '../models/receipt_document.dart';
 
-/// `.receipt-totals`: Subtotal, Discount, Reward Points, GST, the large Total,
+/// `.receipt-totals`: Subtotal, Discount, Reward Points, the tax and its split, the large Total,
 /// Payment and Change.
 class ReceiptTotals extends StatelessWidget {
   const ReceiptTotals({required this.doc, super.key});
@@ -63,7 +63,11 @@ class ReceiptTotals extends StatelessWidget {
           row(s.receiptSubtotal(), MoneyFormatter.format(doc.subtotal)),
           row(s.receiptDiscount(), MoneyFormatter.format(doc.discount)),
           row(s.receiptPoints(), MoneyFormatter.format(doc.points)),
-          row(s.receiptTax(), MoneyFormatter.format(doc.tax)),
+          if (doc.taxLabel.isNotEmpty) ...<Widget>[
+            row(doc.taxLabel, MoneyFormatter.format(doc.tax)),
+            for (final part in doc.taxParts)
+              row(part.label, MoneyFormatter.format(part.amount)),
+          ],
           Container(
             margin: const EdgeInsets.only(
               top: AppCheckoutSizes.receiptGrandMarginTop,

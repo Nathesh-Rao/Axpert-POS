@@ -29,6 +29,7 @@ import 'package:pos_application/modules/sales/controllers/sales_controller.dart'
 import '../../support/product_fixtures.dart';
 import '../../support/test_app.dart';
 import '../../support/test_infrastructure.dart';
+import '../../support/test_tax.dart';
 
 class _Provider implements DatabaseProvider {
   _Provider(this.db);
@@ -143,6 +144,7 @@ void main() {
     final cart = CartController(
       repository,
       CustomersController(_NoCustomers()),
+      pricing: testIndiaPricing,
     );
     await cart.load();
     final before = clock;

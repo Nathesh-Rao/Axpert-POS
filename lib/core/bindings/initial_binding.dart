@@ -349,7 +349,7 @@ class InitialBinding extends Bindings {
       ),
     );
     _put<HeldBillsController>(HeldBillsController(Get.find()));
-    _put<ForexController>(ForexController(Get.find()));
+    _put<ForexController>(ForexController(Get.find<ActiveSession>()));
     _put<CartMetaController>(
       CartMetaController(
         cart: Get.find(),

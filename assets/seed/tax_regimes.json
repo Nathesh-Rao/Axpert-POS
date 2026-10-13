@@ -1,0 +1,47 @@
+[
+  {
+    "id": "demo-regime-in",
+    "region": "IN",
+    "label": "GST",
+    "priceMode": "exclusive",
+    "splitParts": [
+      "CGST",
+      "SGST"
+    ],
+    "slabs": [
+      {
+        "rateBp": 0,
+        "label": "0%"
+      },
+      {
+        "rateBp": 500,
+        "label": "5%"
+      },
+      {
+        "rateBp": 1200,
+        "label": "12%"
+      },
+      {
+        "rateBp": 1800,
+        "label": "18%"
+      }
+    ]
+  },
+  {
+    "id": "demo-regime-ug",
+    "region": "UG",
+    "label": "VAT",
+    "priceMode": "exclusive",
+    "splitParts": [],
+    "slabs": [
+      {
+        "rateBp": 0,
+        "label": "Zero rated"
+      },
+      {
+        "rateBp": 1800,
+        "label": "Standard 18%"
+      }
+    ]
+  }
+]

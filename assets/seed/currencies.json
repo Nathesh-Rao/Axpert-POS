@@ -34,5 +34,41 @@
       50,
       200
     ]
+  },
+  {
+    "code": "USD",
+    "name": "US Dollar",
+    "symbol": "$",
+    "exponent": 2,
+    "grouping": "thousands",
+    "quickCash": [
+      1,
+      5,
+      20
+    ]
+  },
+  {
+    "code": "EUR",
+    "name": "Euro",
+    "symbol": "€",
+    "exponent": 2,
+    "grouping": "thousands",
+    "quickCash": [
+      1,
+      5,
+      20
+    ]
+  },
+  {
+    "code": "KES",
+    "name": "Kenyan Shilling",
+    "symbol": "KSh ",
+    "exponent": 2,
+    "grouping": "thousands",
+    "quickCash": [
+      100,
+      500,
+      1000
+    ]
   }
 ]

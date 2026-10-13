@@ -76,7 +76,6 @@ void main() {
           dark: true,
           beep: false,
           counter: 'C9',
-          rateMilli: 9000,
         );
         final first = backend.create(store);
         await first.load();
@@ -98,13 +97,13 @@ void main() {
 
       test('existing stored values win, missing keys use defaults', () async {
         await store.write(StorageKeys.store, 'SHOP');
-        await store.write(StorageKeys.rate, 7000);
+        await store.write(StorageKeys.beep, false);
 
         final loaded = await backend.create(store).load();
 
         expect(
           loaded,
-          AppSettings.defaults.copyWith(store: 'SHOP', rateMilli: 7000),
+          AppSettings.defaults.copyWith(store: 'SHOP', beep: false),
         );
       });
 
@@ -125,11 +124,10 @@ void main() {
         );
       });
 
-      test('a stored value out of range is accepted unchanged', () async {
-        // No range validation today (the rate may be 0 or negative).
-        await store.write(StorageKeys.rate, -5);
+      test('a leftover rate key of an older version is ignored', () async {
+        await store.write('axpert-rate', 7000);
 
-        expect((await backend.create(store).load()).rateMilli, -5);
+        expect(await backend.create(store).load(), AppSettings.defaults);
       });
     });
   }

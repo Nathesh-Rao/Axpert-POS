@@ -38,6 +38,52 @@ void main() {
     expect(currencies.map((r) => r.read<String>('c')), ['INR', 'UGX']);
   });
 
+  test('loads the tax regimes, slabs and forex of each store', () async {
+    expect(await count('tax_regimes'), 2);
+    expect(await count('tax_slabs'), 6);
+    expect(await count('store_forex'), 6);
+    final regimes = await db
+        .customSelect(
+          'SELECT region, label, split_parts FROM tax_regimes ORDER BY region',
+        )
+        .get();
+    expect(
+      [
+        for (final r in regimes)
+          '${r.read<String>('region')}|${r.read<String>('label')}|'
+              '${r.read<String>('split_parts')}',
+      ],
+      ['IN|GST|CGST,SGST', 'UG|VAT|'],
+    );
+    final forex = await db
+        .customSelect(
+          'SELECT s.region AS region, f.foreign_currency_code AS code '
+          'FROM store_forex f JOIN stores s ON s.id = f.store_id '
+          'ORDER BY s.region, f.position',
+        )
+        .get();
+    expect(
+      [
+        for (final r in forex)
+          '${r.read<String>('region')}|${r.read<String>('code')}',
+      ],
+      ['IN|USD', 'IN|EUR', 'IN|AED', 'UG|USD', 'UG|EUR', 'UG|KES'],
+    );
+  });
+
+  test('every product rate is a slab of its store regime', () async {
+    final bad = await db
+        .customSelect(
+          'SELECT p.code AS code FROM products p '
+          'JOIN stores s ON s.id = p.store_id '
+          'JOIN tax_regimes r ON r.region = s.region '
+          'WHERE p.gst_bp NOT IN '
+          '(SELECT rate_bp FROM tax_slabs WHERE regime_id = r.id)',
+        )
+        .get();
+    expect(bad, isEmpty);
+  });
+
   test('the foreign keys of the seeded data are consistent', () async {
     final problems = await db.customSelect('PRAGMA foreign_key_check').get();
     expect(problems, isEmpty);
@@ -49,7 +95,7 @@ void main() {
     expect(await count('products'), 60);
     final marker = await db
         .customSelect(
-          "SELECT key FROM migration_state WHERE key = 'demo_seed_v1'",
+          "SELECT key FROM migration_state WHERE key = 'demo_seed_v2'",
         )
         .get();
     expect(marker, hasLength(1));
@@ -206,5 +252,84 @@ void main() {
       60,
       reason: 'legacy ids are unique across stores',
     );
+  });
+
+  group('upgrade from a v1 seed', () {
+    /// Turns the seeded database into what the v1 seed left: no v2 rows, the
+    /// old Kampala rates, the v1 marker.
+    Future<void> makeV1() async {
+      for (final t in ['store_forex', 'tax_slabs', 'tax_regimes']) {
+        await db.customStatement('DELETE FROM $t');
+        await db.customStatement(
+          "DELETE FROM seed_manifest WHERE table_name = '$t'",
+        );
+      }
+      for (final code in ['USD', 'EUR', 'KES']) {
+        await db.customStatement('DELETE FROM currencies WHERE code = ?', [
+          code,
+        ]);
+        await db.customStatement(
+          "DELETE FROM seed_manifest WHERE table_name = 'currencies' AND row_id = ?",
+          [code],
+        );
+      }
+      await db.customStatement(
+        "UPDATE products SET gst_bp = 1200 WHERE store_id = 'demo-store-kampala' AND gst_bp = 1800",
+      );
+      await db.customStatement(
+        "DELETE FROM migration_state WHERE key = 'demo_seed_v2'",
+      );
+      await db.customStatement(
+        "INSERT INTO migration_state (key, value) VALUES ('demo_seed_v1', '{}')",
+      );
+    }
+
+    Future<void> userRows() async {
+      await db.customStatement(
+        "INSERT INTO stores (id, name, currency_code, created_at, updated_at) "
+        "VALUES ('mine', 'My shop', 'INR', 'x', 'x')",
+      );
+      await db.customStatement(
+        "INSERT INTO store_forex (id, store_id, foreign_currency_code, rate_micro, "
+        "created_at, updated_at) VALUES ('mine-fx', 'mine', 'AED', 22000000, 'x', 'x')",
+      );
+    }
+
+    test('adds the v2 rows without a wipe and keeps the user rows', () async {
+      await makeV1();
+      await userRows();
+      final sales = await count('sales');
+      expect(await seederFor(db).run(), SeedOutcome.upgraded);
+      expect(await count('tax_regimes'), 2);
+      expect(await count('tax_slabs'), 6);
+      expect(await count('store_forex'), 7);
+      expect(await count('sales'), sales);
+      expect(await count('stores'), 3);
+      expect(await db.customSelect('PRAGMA foreign_key_check').get(), isEmpty);
+      final rates = await db
+          .customSelect(
+            "SELECT DISTINCT gst_bp FROM products WHERE store_id = 'demo-store-kampala'",
+          )
+          .get();
+      expect(rates.map((r) => r.read<int>('gst_bp')).toSet(), {0, 1800});
+      expect(await seederFor(db).run(), SeedOutcome.alreadySeeded);
+    });
+
+    test('RESEED_DEMO from a v1 seed keeps the user rows', () async {
+      await makeV1();
+      await userRows();
+      expect(await seederFor(db).run(reseed: true), SeedOutcome.reseeded);
+      expect(await count('stores'), 3);
+      expect(await count('store_forex'), 7);
+      expect(await count('tax_regimes'), 2);
+      expect(await count('products'), 60);
+      final markers = await db
+          .customSelect(
+            "SELECT key FROM migration_state WHERE key LIKE 'demo_seed_%'",
+          )
+          .get();
+      expect(markers.map((r) => r.read<String>('key')), ['demo_seed_v2']);
+      expect(await db.customSelect('PRAGMA foreign_key_check').get(), isEmpty);
+    });
   });
 }

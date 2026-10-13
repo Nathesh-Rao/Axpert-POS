@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 import '../../../../core/security/password_hasher.dart';
+import '../../../../core/services/pricing/basis_points.dart';
 import '../../../../core/services/pricing/currency.dart';
 import '../../../../core/services/pricing/currency_registry.dart';
 import '../../../../core/services/pricing/pricing_service.dart';
@@ -42,6 +43,8 @@ class ActiveSession extends GetxController {
     required CounterInfo counter,
     required List<StoreAccess> access,
     required Map<String, List<int>> quickCash,
+    TaxRegimeInfo? regime,
+    List<ForexRate> forex = const <ForexRate>[],
     UserRepository? users,
     StoreRepository? stores,
   }) : _users = users ?? _noUsers,
@@ -53,6 +56,8 @@ class ActiveSession extends GetxController {
     this.counter.value = counter;
     this.access.assignAll(access);
     _quickCash.addAll(quickCash);
+    this.regime.value = regime;
+    this.forex.assignAll(forex);
   }
 
   static final UserRepository _noUsers = _EmptyUsers();
@@ -66,6 +71,14 @@ class ActiveSession extends GetxController {
   final Rxn<AppUser> user = Rxn<AppUser>();
   final Rxn<StoreInfo> store = Rxn<StoreInfo>();
   final Rxn<CounterInfo> counter = Rxn<CounterInfo>();
+
+  /// The tax regime of the active store's region; null = no regime (zero
+  /// tax, no label).
+  final Rxn<TaxRegimeInfo> regime = Rxn<TaxRegimeInfo>();
+
+  /// Active foreign currencies of the active store (empty hides the forex
+  /// panel).
+  final RxList<ForexRate> forex = <ForexRate>[].obs;
 
   /// Stores (with counters) the signed-in user may open.
   final RxList<StoreAccess> access = <StoreAccess>[].obs;
@@ -108,14 +121,31 @@ class ActiveSession extends GetxController {
     return s == null ? null : CurrencyRegistry.byCode(s.currencyCode);
   }
 
-  /// Pricing with the active store's currency (tax rules are the default until
-  /// the regional tax work, Batch 2b).
-  PricingService get pricing {
+  /// Tax name of the active store's regime (`GST`, `VAT`); empty without one.
+  String get taxLabel => regime.value?.label ?? '';
+
+  /// Components the total tax is split into (`CGST`, `SGST`); empty = one line.
+  List<String> get taxSplitParts =>
+      regime.value?.splitParts ?? const <String>[];
+
+  /// Currency and tax of the active store, from its currency and regime rows.
+  TaxConfig get taxConfig {
+    final r = regime.value;
+    final base = r == null
+        ? TaxConfig.none
+        : TaxConfig(
+            country: r.region,
+            currency: TaxConfig.none.currency,
+            label: r.label,
+            mode: r.inclusive ? TaxMode.inclusive : TaxMode.exclusive,
+            slabsBp: <Bp>[for (final s in r.slabs) Bp(s.rateBp)],
+            splitParts: r.splitParts,
+          );
     final c = currency;
-    return c == null
-        ? const PricingService()
-        : PricingService(config: TaxConfig.india.copyWith(currency: c));
+    return c == null ? base : base.copyWith(currency: c);
   }
+
+  PricingService get pricing => PricingService(config: taxConfig);
 
   /// Quick cash buttons of the active currency, whole units.
   List<int> get quickCash {
@@ -182,6 +212,9 @@ class ActiveSession extends GetxController {
     );
     this.store.value = store;
     this.counter.value = counter;
+    // Tax regime and forex rows follow the store before its data loads.
+    regime.value = await _stores.loadTaxRegime(store.region);
+    forex.assignAll(await _stores.loadForex(store.id));
     await onActivate?.call(store);
   }
 
@@ -206,6 +239,8 @@ class ActiveSession extends GetxController {
     user.value = null;
     store.value = null;
     counter.value = null;
+    regime.value = null;
+    forex.clear();
     access.clear();
   }
 }
@@ -227,6 +262,11 @@ class _EmptyStores implements StoreRepository {
   Future<bool> hasStores() async => false;
   @override
   Future<List<CurrencyRow>> loadCurrencies() async => const <CurrencyRow>[];
+  @override
+  Future<List<ForexRate>> loadForex(String storeId) async =>
+      const <ForexRate>[];
+  @override
+  Future<TaxRegimeInfo?> loadTaxRegime(String region) async => null;
   @override
   Future<void> renameCounter(String counterId, String name) async {}
 }

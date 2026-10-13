@@ -31,7 +31,6 @@ void main() {
       StorageKeys.dark,
       StorageKeys.beep,
       StorageKeys.counter,
-      StorageKeys.rate,
       StorageKeys.settingsDriftStale,
     ])
       if (await store.has(k)) k: await store.read(k),
@@ -43,10 +42,10 @@ void main() {
     expect(fnv1a32Hex('foobar'), 'bf9cf968');
   });
 
-  test('copies the 5 keys with a marker, LocalStore untouched', () async {
+  test('copies the 4 keys with a marker, LocalStore untouched', () async {
     await store.write(StorageKeys.store, 'SHOP');
     await store.write(StorageKeys.dark, true);
-    await store.write(StorageKeys.rate, 9000);
+    await store.write(StorageKeys.counter, 'C9');
     final before = await storeSnapshot();
 
     expect(await migrator.ensureCopied(db, store), SettingsCopyResult.copied);
@@ -55,13 +54,12 @@ void main() {
       StorageKeys.store: 'SHOP',
       StorageKeys.dark: true,
       StorageKeys.beep: true,
-      StorageKeys.counter: '',
-      StorageKeys.rate: 9000,
+      StorageKeys.counter: 'C9',
     });
     final marker = await db.select(db.migrationStateEntries).getSingle();
     expect(marker.key, settingsCopyMarkerKey);
     final json = jsonDecode(marker.value) as Map<String, dynamic>;
-    expect(json['count'], 5);
+    expect(json['count'], 4);
     expect(json['checksum'], hasLength(8));
     expect(json['copied_at'], '2026-10-12T00:00:00.000Z');
     expect(await storeSnapshot(), before);

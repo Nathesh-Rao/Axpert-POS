@@ -17,7 +17,7 @@ import 'package:pos_application/modules/pos/controllers/cart_controller.dart';
 import 'package:pos_application/modules/pos/widgets/cart_compact_gift_row.dart';
 import 'package:pos_application/modules/pos/widgets/cart_compact_head.dart';
 import 'package:pos_application/modules/pos/widgets/cart_compact_row.dart';
-import 'package:pos_application/modules/pos/widgets/products_tab.dart';
+import 'package:pos_application/modules/pos/widgets/desktop_cart_column.dart';
 import 'package:pos_application/shared/controllers/toast_controller.dart';
 
 import '../../support/test_app.dart';
@@ -95,15 +95,23 @@ void main() {
         (p) => p.price.minor >= 10000 && p.id != 8 && p.id != 5,
       );
       await _add(tester, tata.id);
-      expect(find.textContaining('Oreo Buy 1 Get 1 · saved'), findsOneWidget);
-      expect(find.textContaining('Cola 20% off · saved'), findsOneWidget);
+      final cart = find.byType(DesktopCartColumn);
+      Finder inCart(Finder f) => find.descendant(of: cart, matching: f);
+      expect(
+        inCart(find.textContaining('Oreo Buy 1 Get 1 · saved')),
+        findsOneWidget,
+      );
+      expect(
+        inCart(find.textContaining('Cola 20% off · saved')),
+        findsOneWidget,
+      );
       // Lays is the free item of the 100 tier (unlocked), Dairy Milk of the
       // 500 tier (locked).
       final gifts = find.byType(CartCompactGiftRow);
       expect(gifts, findsNWidgets(2));
-      expect(find.textContaining('Free gift'), findsOneWidget);
-      expect(find.textContaining('more to unlock'), findsOneWidget);
-      expect(find.text('FREE'), findsOneWidget);
+      expect(inCart(find.textContaining('Free gift')), findsOneWidget);
+      expect(inCart(find.textContaining('more to unlock')), findsOneWidget);
+      expect(inCart(find.text('FREE')), findsOneWidget);
       for (final w in gifts.evaluate()) {
         expect(tester.getSize(find.byWidget(w.widget)).height, 48);
       }
@@ -186,7 +194,6 @@ void main() {
       await _boot(tester, const Size(950, 733));
       await _add(tester, 7);
       await _add(tester, 7);
-      await tester.tap(find.byType(ProductsTab));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(find.text('8901234560015'), findsNothing);

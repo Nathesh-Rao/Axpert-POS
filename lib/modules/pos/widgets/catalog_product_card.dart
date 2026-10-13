@@ -13,6 +13,7 @@ import '../../../features/offers/presentation/controllers/offers_controller.dart
 import '../../../features/products/presentation/controllers/products_controller.dart';
 import '../../../features/products/domain/entities/product.dart';
 import '../controllers/cart_actions_controller.dart';
+import '../controllers/pos_work_view_controller.dart';
 import '../controllers/cart_controller.dart';
 import '../models/cart_line.dart';
 
@@ -81,7 +82,9 @@ class CatalogProductCard extends StatelessWidget {
       qtyBadge: line == null
           ? null
           : context.strings.qtyBadge(QtyFormatter.compact(line.qty)),
-      onAdd: () => actions.add(product),
+      onAdd: () => Get.find<PosWorkViewController>().addFromCatalog(
+        () => actions.add(product),
+      ),
       onRemoveOne: line == null
           ? null
           : () => actions.changeQty(line, line.qty - Qty.units(1)),

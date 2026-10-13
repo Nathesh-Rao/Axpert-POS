@@ -68,7 +68,7 @@ class _CatalogPanelState extends State<CatalogPanel> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Obx(
-            () => cart.active.value || !m.touch
+            () => cart.active.value
                 ? const SizedBox.shrink()
                 : const _EmptyCartHeader(),
           ),

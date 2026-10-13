@@ -24,7 +24,7 @@ import '../../modules/pos/controllers/cart_controller.dart';
 import '../../modules/pos/controllers/cart_meta_controller.dart';
 import '../../modules/pos/controllers/cart_selection_controller.dart';
 import '../../modules/pos/controllers/forex_controller.dart';
-import '../../modules/pos/controllers/products_panel_controller.dart';
+import '../../modules/pos/controllers/pos_work_view_controller.dart';
 import '../../modules/pos/controllers/held_bills_controller.dart';
 import '../../modules/pos/controllers/member_controller.dart';
 import '../../modules/pos/controllers/order_menu_controller.dart';
@@ -292,9 +292,6 @@ class InitialBinding extends Bindings {
     _put<SettingsController>(SettingsController(Get.find()));
     _put<ToastController>(ToastController());
     _put<SearchFieldController>(SearchFieldController());
-    _put<ProductsPanelController>(
-      ProductsPanelController(Get.find(), Get.find()),
-    );
     _put<PageFilterController>(PageFilterController());
     _put<ShellChromeController>(ShellChromeController());
     _put<OverlayController>(OverlayController());
@@ -338,6 +335,7 @@ class InitialBinding extends Bindings {
         offers: Get.find<OffersController>(),
       ),
     );
+    _put<PosWorkViewController>(PosWorkViewController(Get.find(), Get.find()));
     _put<CartSelectionController>(CartSelectionController());
     _put<CartActionsController>(
       CartActionsController(
@@ -495,8 +493,8 @@ class InitialBinding extends Bindings {
         Get.find<HoldRecallController>().openRecall;
     shortcuts.handlers[ShortcutAction.discount] =
         Get.find<DiscountFormController>().open;
-    shortcuts.handlers[ShortcutAction.productsPanel] =
-        Get.find<ProductsPanelController>().toggle;
+    shortcuts.handlers[ShortcutAction.switchWorkView] =
+        Get.find<PosWorkViewController>().toggle;
   }
 
   /// Loads the persisted data of every permanent controller (call once before

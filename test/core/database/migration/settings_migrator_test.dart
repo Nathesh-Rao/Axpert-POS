@@ -42,7 +42,7 @@ void main() {
     expect(fnv1a32Hex('foobar'), 'bf9cf968');
   });
 
-  test('copies the 6 keys with a marker, LocalStore untouched', () async {
+  test('copies the 5 keys with a marker, LocalStore untouched', () async {
     await store.write(StorageKeys.store, 'SHOP');
     await store.write(StorageKeys.dark, true);
     await store.write(StorageKeys.counter, 'C9');
@@ -56,12 +56,11 @@ void main() {
       StorageKeys.beep: true,
       StorageKeys.counter: 'C9',
       StorageKeys.printPaperMm: 80,
-      StorageKeys.productsPanelOpen: false,
     });
     final marker = await db.select(db.migrationStateEntries).getSingle();
     expect(marker.key, settingsCopyMarkerKey);
     final json = jsonDecode(marker.value) as Map<String, dynamic>;
-    expect(json['count'], 6);
+    expect(json['count'], 5);
     expect(json['checksum'], hasLength(8));
     expect(json['copied_at'], '2026-10-12T00:00:00.000Z');
     expect(await storeSnapshot(), before);

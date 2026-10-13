@@ -325,12 +325,13 @@ abstract class AppStrings {
   String productsShortcutMac();
   String productsShortcutOther();
 
-  /// The Products tab and panel (desktop layout).
+  /// The edge tab of the desktop POS page (DEC-139).
   String productsTabLabel();
-  String productsTabSemantic(String shortcut);
-  String cartEmptyTitle();
-  String cartEmptyHint(String shortcut);
-  String cartEmptyOpenProducts();
+  String workTabCart(int count);
+  String workTabBadge(int count);
+  String workTabToCartSemantic(int count, String shortcut);
+  String workTabToProductsSemantic(String shortcut);
+  String workTabEmptySemantic();
   String helpAddScanned();
   String helpRemoveLine();
   String helpCloseDialog();

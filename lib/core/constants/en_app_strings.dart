@@ -866,7 +866,7 @@ class EnAppStrings extends AppStrings {
   String helpFocusSearch() => 'Focus barcode search';
 
   @override
-  String helpToggleProducts() => 'Show or hide the Products panel';
+  String helpToggleProducts() => 'Switch between Products and Cart';
 
   @override
   String productsShortcutMac() => '⌘B';
@@ -878,18 +878,21 @@ class EnAppStrings extends AppStrings {
   String productsTabLabel() => 'Products';
 
   @override
-  String productsTabSemantic(String shortcut) =>
-      'Products panel, press $shortcut';
+  String workTabCart(int count) => 'Cart ($count)';
 
   @override
-  String cartEmptyTitle() => 'No items yet';
+  String workTabBadge(int count) => '$count';
 
   @override
-  String cartEmptyHint(String shortcut) =>
-      'Scan a barcode, search above, or open Products ($shortcut)';
+  String workTabToCartSemantic(int count, String shortcut) =>
+      'Show the cart, $count items, press $shortcut';
 
   @override
-  String cartEmptyOpenProducts() => 'Open Products';
+  String workTabToProductsSemantic(String shortcut) =>
+      'Show products, press $shortcut';
+
+  @override
+  String workTabEmptySemantic() => 'Cart, empty';
 
   @override
   String helpAddScanned() => 'Add scanned product';

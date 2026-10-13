@@ -15,7 +15,7 @@ enum ShortcutAction {
   recall,
   discount,
   deleteSelected,
-  productsPanel,
+  switchWorkView,
 }
 
 class ShortcutController extends GetxController {
@@ -29,8 +29,8 @@ class ShortcutController extends GetxController {
             _demo(AppStrings.current.shortcutDiscount()),
         // Needs a selected cart line (S3); nothing to delete yet.
         ShortcutAction.deleteSelected: () {},
-        // Set by the POS bindings (the Products panel of the desktop layout).
-        ShortcutAction.productsPanel: () {},
+        // Set by the POS bindings (catalog or cart view of the desktop layout).
+        ShortcutAction.switchWorkView: () {},
       };
 
   void _demo(String action) => Get.find<ToastController>().show(

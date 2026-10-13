@@ -9,6 +9,7 @@ import '../../../shared/controllers/search_field_controller.dart';
 import '../../../shared/controllers/toast_controller.dart';
 import '../../../features/products/presentation/controllers/products_controller.dart';
 import 'cart_actions_controller.dart';
+import 'pos_work_view_controller.dart';
 
 /// `scanProduct` of the prototype (shared by the top-bar search and the scan
 /// simulator) and the simulator dialog's state.
@@ -63,6 +64,7 @@ class ScanController extends GetxController {
     final product = products.byScan(value);
     if (product != null) {
       actions.add(product);
+      _showCart();
     } else {
       toasts.show(
         _s.toastProductNotFoundForBarcode(value),
@@ -70,6 +72,12 @@ class ScanController extends GetxController {
       );
       search.text.clear();
       search.refocus();
+    }
+  }
+
+  void _showCart() {
+    if (Get.isRegistered<PosWorkViewController>()) {
+      Get.find<PosWorkViewController>().showCart();
     }
   }
 
@@ -88,6 +96,7 @@ class ScanController extends GetxController {
     if (available.isEmpty) return;
     final index = available[_random.nextInt(available.length)];
     actions.add(products.products[index]);
+    _showCart();
     overlay.close();
   }
 }

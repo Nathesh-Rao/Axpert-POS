@@ -39,16 +39,9 @@ abstract final class AppDensitySizes {
   static const double footerButtonHeight = 36.0;
   static const double footerIcon = 16.0;
 
-  /// Collapsed Products tab and the expanded panel.
+  /// The edge tab (Cart (n) / Products).
   static const double productsTabWidth = 36.0;
-  static const double productsPanelMin = 320.0;
-  static const double productsPanelMax = 460.0;
-  static const double productsPanelFraction = 0.34;
   static const double productsTabIcon = 18.0;
-
-  /// The expanded panel pushes the cart only while the cart keeps at least
-  /// this width; otherwise it opens over the cart (narrow windows).
-  static const double cartMinWidth = 480.0;
 
   /// Cart widths below this switch to the narrow compact row (no number,
   /// thumbnail or price column, the unit price moves to the second line;

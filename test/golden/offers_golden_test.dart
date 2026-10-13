@@ -19,7 +19,6 @@ import 'package:pos_application/features/products/presentation/controllers/produ
 import 'package:pos_application/main.dart';
 import 'package:pos_application/modules/pos/controllers/cart_actions_controller.dart';
 import 'package:pos_application/modules/pos/controllers/cart_controller.dart';
-import 'package:pos_application/modules/pos/controllers/products_panel_controller.dart';
 import 'package:pos_application/modules/shell/controllers/settings_controller.dart';
 import 'package:pos_application/shared/controllers/toast_controller.dart';
 
@@ -127,12 +126,8 @@ void main() {
     }, skip: skip);
   }
 
-  // The catalog is collapsed by default on desktop: open it to show the tiles.
-  Future<void> tilesOnly(WidgetTester tester) async {
-    await tester.runAsync(Get.find<ProductsPanelController>().open);
-    await tester.pumpAndSettle();
-    await settle(tester);
-  }
+  // An empty cart shows the catalog over the whole work area.
+  Future<void> tilesOnly(WidgetTester tester) => settle(tester);
 
   Future<void> lockedGift(WidgetTester tester) async {
     final products = Get.find<ProductsController>();

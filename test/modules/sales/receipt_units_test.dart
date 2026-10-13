@@ -159,7 +159,7 @@ void main() {
         'Hold bill',
         'Recall bill',
         'Apply discount',
-        'Show or hide the Products panel',
+        'Switch between Products and Cart',
         'Remove selected line',
         'Close dialog',
       ],

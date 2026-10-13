@@ -1,6 +1,6 @@
-// Cart-first desktop layout goldens (DEC-138): the compact rows with offers and
-// free items, the collapsed Products panel (default), the pushed panel, and
-// the panel opened over the cart on a narrow window. Regression only: the
+// Desktop POS work-area goldens (DEC-139): the cart view (compact rows with
+// offers and free items), the catalog view with items in the cart (the tab
+// reads Cart (n)) and the catalog view of an empty cart. Regression only: the
 // layout is an approved deviation from the prototype, no reference screenshot.
 
 @TestOn('vm')
@@ -19,7 +19,7 @@ import 'package:pos_application/features/offers/presentation/controllers/offers_
 import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
 import 'package:pos_application/main.dart';
 import 'package:pos_application/modules/pos/controllers/cart_actions_controller.dart';
-import 'package:pos_application/modules/pos/controllers/products_panel_controller.dart';
+import 'package:pos_application/modules/pos/controllers/pos_work_view_controller.dart';
 import 'package:pos_application/modules/shell/controllers/settings_controller.dart';
 import 'package:pos_application/shared/controllers/clock_controller.dart';
 import 'package:pos_application/shared/controllers/toast_controller.dart';
@@ -77,7 +77,8 @@ void main() {
     String file, {
     required Size size,
     bool dark = false,
-    bool open = false,
+    bool catalogView = false,
+    int lines = 12,
   }) {
     testWidgets('$prefix$name', (tester) async {
       useRealShadows();
@@ -104,15 +105,28 @@ void main() {
             () => Get.find<SettingsController>().setDark(true),
           );
         }
-        if (open) {
-          await tester.runAsync(Get.find<ProductsPanelController>().open);
-        }
         await tester.pumpWidget(testApp(binding));
         await tester.pumpAndSettle();
         await settleImages(tester);
         final actions = Get.find<CartActionsController>();
-        for (final id in <int>[7, 7, 0, 1, 2, 3, 4, 6, 9, 10, 11, 12]) {
+        for (final id in <int>[
+          7,
+          7,
+          0,
+          1,
+          2,
+          3,
+          4,
+          6,
+          9,
+          10,
+          11,
+          12,
+        ].take(lines)) {
           actions.add(products.byId(id)!);
+        }
+        if (catalogView && lines > 0) {
+          Get.find<PosWorkViewController>().toggle();
         }
         await tester.pump();
         await tester.pump(const Duration(seconds: 2));
@@ -136,34 +150,39 @@ void main() {
   for (final dark in <bool>[false, true]) {
     final mode = dark ? 'dark' : 'light';
     golden(
-      'Cart-first 1280x720 collapsed ($mode)',
-      'cart_density_1280_collapsed_$mode',
+      'Cart view 1280x720 ($mode)',
+      'cart_density_1280_cart_$mode',
       size: const Size(1280, 720),
       dark: dark,
     );
     golden(
-      'Cart-first 1868x1035 collapsed ($mode)',
-      'cart_density_1868_collapsed_$mode',
+      'Cart view 1868x1035 ($mode)',
+      'cart_density_1868_cart_$mode',
       size: const Size(1868, 1035),
       dark: dark,
     );
   }
   golden(
-    'Cart-first 1280x720, Products panel pushing the cart (light)',
-    'cart_density_1280_expanded_light',
-    size: const Size(1280, 720),
-    open: true,
-  );
-  golden(
-    'Cart-first 1868x1035, Products panel pushing the cart (light)',
-    'cart_density_1868_expanded_light',
-    size: const Size(1868, 1035),
-    open: true,
-  );
-  golden(
-    'Cart-first 950x733, Products panel over the cart (light)',
-    'cart_density_950_overlay_light',
+    'Cart view 950x733 (light)',
+    'cart_density_950_cart_light',
     size: const Size(950, 733),
-    open: true,
+  );
+  golden(
+    'Catalog view with 12 items 1280x720 (light)',
+    'cart_density_1280_catalog_light',
+    size: const Size(1280, 720),
+    catalogView: true,
+  );
+  golden(
+    'Catalog view with 12 items 1868x1035 (light)',
+    'cart_density_1868_catalog_light',
+    size: const Size(1868, 1035),
+    catalogView: true,
+  );
+  golden(
+    'Catalog view, empty cart 1280x720 (light)',
+    'cart_density_1280_catalog_empty_light',
+    size: const Size(1280, 720),
+    lines: 0,
   );
 }

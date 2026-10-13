@@ -8,9 +8,8 @@ import '../controllers/cart_controller.dart';
 import '../widgets/catalog_panel.dart';
 import '../widgets/center_column.dart';
 import '../widgets/desktop_cart_column.dart';
-import '../widgets/products_tab.dart';
-import '../controllers/products_panel_controller.dart';
-import '../../../core/theme/tokens/app_density_sizes.dart';
+import '../widgets/work_tab.dart';
+import '../controllers/pos_work_view_controller.dart';
 import '../../../core/theme/tokens/app_motion.dart';
 import '../../../core/theme/tokens/app_spacing.dart';
 
@@ -68,78 +67,116 @@ class _Pane extends StatelessWidget {
   );
 }
 
-/// Desktop POS page (DEC-138): a slim Products tab, the Products panel (pushes
-/// the cart when expanded, nothing when collapsed) and the cart, which takes
-/// the rest of the width. Tab order: tab, panel, cart.
+/// Desktop POS page (DEC-139): the edge tab and ONE work-area view at a time,
+/// the catalog or the cart, each over the whole width. Switching expands the
+/// shown view and shrinks the other (clipping only, no re-layout of the
+/// content), and is instant under `disableAnimations`.
 class _DesktopPos extends StatelessWidget {
   const _DesktopPos();
 
   @override
   Widget build(BuildContext context) {
-    final panel = Get.find<ProductsPanelController>();
-    final gap = context.metrics.layoutGap;
-    final animate = !MediaQuery.disableAnimationsOf(context);
     return FocusTraversalGroup(
       policy: OrderedTraversalPolicy(),
-      child: LayoutBuilder(
-        builder: (context, constraints) => Obx(() {
-          final open = panel.isOpen;
-          const lead = AppDensitySizes.productsTabWidth + AppSpacing.s8;
-          final width =
-              (constraints.maxWidth * AppDensitySizes.productsPanelFraction)
-                  .clamp(
-                    AppDensitySizes.productsPanelMin,
-                    AppDensitySizes.productsPanelMax,
-                  );
-          // Push the cart while it keeps its minimum width; on narrow windows
-          // the panel opens over the cart instead.
-          final push =
-              constraints.maxWidth - lead - width - gap >=
-              AppDensitySizes.cartMinWidth;
-          const catalog = _Pane(order: 1, child: CatalogPanel());
-          final duration = Duration(
-            milliseconds: animate ? AppMotion.buttonMs : 0,
-          );
-          return Stack(
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  const _Pane(order: 0, child: ProductsTab()),
-                  const SizedBox(width: AppSpacing.s8),
-                  AnimatedContainer(
-                    duration: duration,
-                    curve: Curves.easeOut,
-                    width: open && push ? width + gap : 0,
-                    child: open && push
-                        ? ClipRect(
-                            child: OverflowBox(
-                              alignment: Alignment.centerLeft,
-                              minWidth: width,
-                              maxWidth: width,
-                              child: Padding(
-                                padding: EdgeInsets.only(right: gap),
-                                child: catalog,
-                              ),
-                            ),
-                          )
-                        : null,
-                  ),
-                  const Expanded(
-                    child: _Pane(order: 2, child: DesktopCartColumn()),
-                  ),
-                ],
-              ),
-              if (open && !push)
-                const Positioned(
-                  left: lead,
-                  top: 0,
-                  bottom: 0,
-                  right: 0,
-                  child: catalog,
+      child: const Row(
+        children: <Widget>[
+          _Pane(order: 0, child: WorkTab()),
+          SizedBox(width: AppSpacing.s8),
+          Expanded(child: _WorkArea()),
+        ],
+      ),
+    );
+  }
+}
+
+class _WorkArea extends StatelessWidget {
+  const _WorkArea();
+
+  @override
+  Widget build(BuildContext context) {
+    final work = Get.find<PosWorkViewController>();
+    final animate = !MediaQuery.disableAnimationsOf(context);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = constraints.maxWidth;
+        return Obx(() {
+          final catalog = work.inCatalog;
+          return TweenAnimationBuilder<double>(
+            tween: Tween<double>(end: catalog ? 1 : 0),
+            duration: Duration(milliseconds: animate ? AppMotion.buttonMs : 0),
+            curve: Curves.easeOut,
+            builder: (context, t, _) => Row(
+              children: <Widget>[
+                _Slot(
+                  width: width,
+                  factor: t,
+                  shown: catalog,
+                  alignment: Alignment.centerLeft,
+                  order: 1,
+                  child: const CatalogPanel(),
                 ),
-            ],
+                _Slot(
+                  width: width,
+                  factor: 1 - t,
+                  shown: !catalog,
+                  alignment: Alignment.centerRight,
+                  order: 2,
+                  child: const DesktopCartColumn(),
+                ),
+              ],
+            ),
           );
-        }),
+        });
+      },
+    );
+  }
+}
+
+/// One view: laid out at the full [width] and revealed by [factor] (0 hides
+/// it completely: no pointer, focus or semantics).
+class _Slot extends StatelessWidget {
+  const _Slot({
+    required this.width,
+    required this.factor,
+    required this.shown,
+    required this.alignment,
+    required this.order,
+    required this.child,
+  });
+
+  final double width;
+  final double factor;
+
+  /// The view the user is switching to: it is live from the first frame of
+  /// the transition (the focus moves into it), even while its factor is 0.
+  final bool shown;
+  final Alignment alignment;
+  final double order;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final hidden = !shown && factor <= 0.0001;
+    return ClipRect(
+      child: Align(
+        alignment: alignment,
+        widthFactor: factor,
+        child: SizedBox(
+          width: width,
+          child: ExcludeSemantics(
+            excluding: hidden,
+            child: ExcludeFocus(
+              excluding: hidden,
+              child: IgnorePointer(
+                ignoring: hidden,
+                child: TickerMode(
+                  enabled: !hidden,
+                  child: _Pane(order: order, child: child),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

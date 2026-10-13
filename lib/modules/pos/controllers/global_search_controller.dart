@@ -7,6 +7,7 @@ import '../../../features/products/presentation/controllers/products_controller.
 import '../../../features/products/domain/entities/product.dart';
 import '../services/product_search.dart';
 import 'cart_actions_controller.dart';
+import 'pos_work_view_controller.dart';
 import 'scan_controller.dart';
 
 /// The top-bar search: the results dropdown (debounced, at most 6 products)
@@ -117,7 +118,16 @@ class GlobalSearchController extends GetxController {
   }
 
   /// A click on a row, or Enter on the highlighted one.
-  void pick(Product product) => actions.add(product);
+  void pick(Product product) {
+    actions.add(product);
+    _showCart();
+  }
+
+  void _showCart() {
+    if (Get.isRegistered<PosWorkViewController>()) {
+      Get.find<PosWorkViewController>().showCart();
+    }
+  }
 
   /// Enter: the highlighted match (the first unless an arrow moved), else the
   /// text is scanned as a barcode or code.

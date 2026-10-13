@@ -116,3 +116,8 @@ Run and read: format and analyze clean; full VM suite 994/994; no PNG changed ve
 - Goldens: 35 existing goldens regenerated (the POS page and every dialog drawn over it; diffs measured inside the work area between sidebar and Bill Summary), 7 new `cart_density_*`. Customers, Products, Sales, Reports, Returns and Settings page goldens are byte-identical.
 - Release web (`cart_first_check.mjs`, cashier1, 1280x720): 13/13 (13 scans with the panel collapsed incl. Buy 1 Get 1 and the free-gift tier, Ctrl+B, Escape, Cmd+B, hold, recall, cash checkout). Debug click-through normal 66/66 and `--semantics` 66/66. Screenshots: `docs/integration/screens/cart_density/{before,after}_*.png`.
 
+## Work area: catalog or cart (2026-10-13, on top of 9c0af52)
+- Plan `docs/plan_work_view.md`, DEC-139 (supersedes the panel part of DEC-138), KG-224 to KG-227. Setting `products_panel_open` removed from the code (row left in old databases).
+- Goldens: 34 existing goldens regenerated (the POS work area and every dialog drawn over it), the `cart_density_*` set redefined (8 new, 7 removed). Customers, Products, Sales, Reports, Returns and Settings page goldens are byte-identical.
+- Release web (`work_view_check.mjs`, cashier1, 1280x720): 12/12. Debug click-through normal 66/66 and `--semantics` 66/66. Screenshots: `docs/integration/screens/work_view/`.
+

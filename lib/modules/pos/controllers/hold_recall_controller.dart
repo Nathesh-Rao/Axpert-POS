@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 
+import 'pos_work_view_controller.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../shared/controllers/clock_controller.dart';
 import '../../../shared/controllers/overlay_controller.dart';
@@ -89,6 +90,9 @@ class HoldRecallController extends GetxController {
     if (holdCurrent && cart.active.value) hold();
     final outcome = service.recall(bill, products.byId);
     cart.replace(outcome.cart);
+    if (Get.isRegistered<PosWorkViewController>()) {
+      Get.find<PosWorkViewController>().showCart();
+    }
     held.remove(bill.ref);
     overlay.close();
     toasts.show(_s.toastBillRecalled(bill.ref));

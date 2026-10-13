@@ -9,10 +9,10 @@ import '../../../core/theme/tokens/app_radii.dart';
 import '../../../core/theme/tokens/app_sizes.dart';
 import '../controllers/cart_controller.dart';
 import '../controllers/cart_selection_controller.dart';
+import '../controllers/pos_work_view_controller.dart';
 import 'cart_compact_gift_row.dart';
 import 'cart_compact_head.dart';
 import 'cart_compact_row.dart';
-import 'cart_empty_state.dart';
 
 /// Desktop cart table: the head and the scrolling list of 48 px rows. Rows
 /// are laid out with a fixed item extent, listen to their own line only, and
@@ -72,37 +72,37 @@ class _CartCompactTableState extends State<CartCompactTable> {
                 thumbColor: c.scrollThumbCart,
                 thickness: AppSizes.scrollbarThickness,
                 radius: const Radius.circular(AppRadii.full),
-                child: Obx(() {
-                  final ids = cart.lineIds.toList();
-                  final gifts = cart.gifts.toList();
-                  if (ids.isEmpty && gifts.isEmpty) {
-                    return const CartEmptyState();
-                  }
-                  return ListView.builder(
-                    controller: _scroll,
-                    itemExtent: AppDensitySizes.cartRowHeight,
-                    itemCount: ids.length + gifts.length,
-                    itemBuilder: (context, index) => index < ids.length
-                        ? CartCompactRow(
-                            key: ValueKey<int>(ids[index]),
-                            productId: ids[index],
-                            index: index,
-                            columns: columns,
-                          )
-                        : CartCompactGiftRow(
-                            key: ValueKey<String>(
-                              'gift-${gifts[index - ids.length].offer.id}',
+                child: Focus(
+                  focusNode: Get.find<PosWorkViewController>().cartFocus,
+                  child: Obx(() {
+                    final ids = cart.lineIds.toList();
+                    final gifts = cart.gifts.toList();
+                    return ListView.builder(
+                      controller: _scroll,
+                      itemExtent: AppDensitySizes.cartRowHeight,
+                      itemCount: ids.length + gifts.length,
+                      itemBuilder: (context, index) => index < ids.length
+                          ? CartCompactRow(
+                              key: ValueKey<int>(ids[index]),
+                              productId: ids[index],
+                              index: index,
+                              columns: columns,
+                            )
+                          : CartCompactGiftRow(
+                              key: ValueKey<String>(
+                                'gift-${gifts[index - ids.length].offer.id}',
+                              ),
+                              gift: gifts[index - ids.length],
+                              columns: columns,
                             ),
-                            gift: gifts[index - ids.length],
-                            columns: columns,
-                          ),
-                    findChildIndexCallback: (key) {
-                      if (key is! ValueKey<int>) return null;
-                      final i = ids.indexOf(key.value);
-                      return i < 0 ? null : i;
-                    },
-                  );
-                }),
+                      findChildIndexCallback: (key) {
+                        if (key is! ValueKey<int>) return null;
+                        final i = ids.indexOf(key.value);
+                        return i < 0 ? null : i;
+                      },
+                    );
+                  }),
+                ),
               ),
             ),
           ],

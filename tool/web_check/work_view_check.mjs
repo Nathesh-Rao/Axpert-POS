@@ -1,8 +1,8 @@
-// Release-build check of the catalog / cart work-area views (DEC-139).
+// Release-build check of the catalog / cart work-area views (DEC-139, DEC-140).
 //   flutter build web --release --dart-define=SKIP_ENTRY=true --dart-define=DEMO_SEED=true --dart-define=SKIP_ENTRY_USER=cashier1
 //   python3 tool/web_check/serve.py build/web 8330 &
 //   node --experimental-websocket tool/web_check/work_view_check.mjs http://127.0.0.1:8330/ <outDir> <width> <height>
-// Empty cart = full catalog; tile clicks keep the catalog and count in the tab;
+// Empty cart = full catalog; the first tile click shows the cart, later ones keep the catalog and count in the tab;
 // the tab, Ctrl+B and Cmd+B switch; a search add switches to the cart; Escape
 // goes back to the cart; hold returns to the catalog, recall to the cart.
 import { spawn, execFileSync } from 'node:child_process';
@@ -67,14 +67,19 @@ const cartUp = (h) => h.includes('Disc %') && h.includes('Qty');
 let h = await html();
 await shot('01_catalog_empty');
 check('an empty cart shows the full catalog and a disabled Cart (0) tab', catalogUp(h) && h.includes('Cart (0)'));
-// Tile clicks (the whole card adds). The catalog header of the empty cart goes
-// away with the first add, so the grid moves: the next picks use the new rows.
+// The first tile click on an empty cart shows the cart (DEC-140).
 await click(Math.round(width * 0.27), Math.round(height * 0.43)); await sleep(1500);
+h = await html();
+await shot('02_cart_after_first_tile_click');
+check('the first tile click on an empty cart switches to the cart', cartUp(h) && !catalogUp(h));
+// Back to the products; more tile clicks keep the catalog (the empty-cart header is gone).
+await click(97, Math.round(height / 2)); await sleep(1500);
+await shot('02b_catalog_with_item');
 await click(Math.round(width * 0.27), Math.round(height * 0.67)); await sleep(1200);
 await click(Math.round(width * 0.57), Math.round(height * 0.67)); await sleep(1500);
-await shot('02_catalog_after_tile_clicks');
+await shot('02c_catalog_after_tile_clicks');
 h = await html();
-check('tile clicks keep the catalog and the tab counts the lines', catalogUp(h) && h.includes('Cart (3)'), (h.match(/Cart \(\d+\)/) ?? [''])[0]);
+check('later tile clicks keep the catalog and the tab counts the lines', catalogUp(h) && h.includes('Cart (3)'), (h.match(/Cart \(\d+\)/) ?? [''])[0]);
 await click(Math.round(width * 0.27), Math.round(height * 0.67)); await sleep(900);
 h = await html();
 check('picking an item again still stays in the catalog', catalogUp(h) && h.includes('Cart (3)'));

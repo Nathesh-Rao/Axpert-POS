@@ -50,6 +50,7 @@ class CustomerRow extends StatelessWidget {
         SizedBox(
           height: m.fieldHeight,
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Expanded(
                 child: CssGradientBox(
@@ -61,22 +62,29 @@ class CustomerRow extends StatelessWidget {
                     horizontal: m.fieldPadX + AppSizes.borderWidth,
                     vertical: AppSizes.borderWidth,
                   ),
+                  // Stretch so the search segment (and its divider) fills the
+                  // field height; the icon and the select stay centred.
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
                       if (!small) ...<Widget>[
-                        Icon(
-                          AppIcons.userRound,
-                          size: m.atMost1280
-                              ? AppSizes.fieldClearIcon
-                              : AppCheckoutSizes.customerRowIcon,
-                          color: c.fieldIcon,
+                        Center(
+                          child: Icon(
+                            AppIcons.userRound,
+                            size: m.atMost1280
+                                ? AppSizes.fieldClearIcon
+                                : AppCheckoutSizes.customerRowIcon,
+                            color: c.fieldIcon,
+                          ),
                         ),
                         SizedBox(width: m.fieldGap),
                       ],
                       Expanded(
-                        child: CustomerSelect(
-                          style: fontStyle,
-                          semanticLabel: s.customerLabel(),
+                        child: Center(
+                          child: CustomerSelect(
+                            style: fontStyle,
+                            semanticLabel: s.customerLabel(),
+                          ),
                         ),
                       ),
                       SizedBox(width: m.fieldGap),
@@ -85,6 +93,7 @@ class CustomerRow extends StatelessWidget {
                         borderRadius: AppRadii.r6,
                         onTap: () => overlay.open('customers'),
                         builder: (context, hovered) => Container(
+                          alignment: Alignment.center,
                           padding: EdgeInsets.only(left: m.fieldGap),
                           decoration: BoxDecoration(
                             border: Border(left: BorderSide(color: c.border)),

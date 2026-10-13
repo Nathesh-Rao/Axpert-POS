@@ -51,3 +51,5 @@ Final report: behavior implemented, goldens regenerated, screenshot paths, known
 - "Item count" = number of cart lines (as the old stat tile `Total Items`).
 - A tile click that fails (out of stock) does not change the view.
 - Stop rules: unrelated golden change or a needed package.
+
+Update (DEC-140): a tile click into an EMPTY cart now shows the cart; later tile clicks stay in the catalog.

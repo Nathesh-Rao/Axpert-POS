@@ -121,3 +121,8 @@ Run and read: format and analyze clean; full VM suite 994/994; no PNG changed ve
 - Goldens: 34 existing goldens regenerated (the POS work area and every dialog drawn over it), the `cart_density_*` set redefined (8 new, 7 removed). Customers, Products, Sales, Reports, Returns and Settings page goldens are byte-identical.
 - Release web (`work_view_check.mjs`, cashier1, 1280x720): 12/12. Debug click-through normal 66/66 and `--semantics` 66/66. Screenshots: `docs/integration/screens/work_view/`.
 
+## First add shows the cart, customer row height (2026-10-13)
+- DEC-140 (supersedes the tile-click rule of DEC-139). `addFromCatalog` switches to the cart when the cart was empty. `CustomerRow`: field, search segment and Add Customer button all `fieldHeight` tall; new `test/modules/pos/customer_row_height_test.dart`. Tile gap unchanged (already 6 to 11 px).
+- Goldens regenerated (customer row only; diffs are one 30 to 45 px strip, plus the live clock text): `cart_density_*_cart_*` (5), `pos_one_line_light*` (4), `offers_cart_*` (4), `summary_*` (4), `discount_drawer_light`, `receipt_draft_light`. Catalog goldens unchanged.
+- Release web (`work_view_check.mjs`, cashier1): all 13 at 1280x720; at 1868x1035 and 950x733 the behaviour checks pass and the failures are click coordinates of the script (grid rows differ by width).
+

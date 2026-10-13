@@ -141,13 +141,17 @@ void main() {
     }
   });
 
-  testWidgets('a tile click adds and stays in the catalog; the tab counts', (
-    tester,
-  ) async {
+  testWidgets('the first tile click shows the cart; later clicks stay in the '
+      'catalog and the tab counts', (tester) async {
     try {
       await _boot(tester);
       await tester.tap(_addTooltip('Coca Cola 500ml').first);
-      await tester.pump();
+      await tester.pumpAndSettle();
+      expect(Get.find<CartController>().cart.value.lines, hasLength(1));
+      expect(_work.view, PosWorkView.cart, reason: 'first add into empty cart');
+      expect(_work.pulse.value, 0);
+      // Back to the products: more clicks stay in the catalog.
+      await _tapTab(tester);
       expect(_work.view, PosWorkView.catalog);
       await tester.tap(_addTooltip('Pepsi 500ml').first);
       await tester.pump();
@@ -155,7 +159,7 @@ void main() {
       expect(Get.find<CartController>().cart.value.lines, hasLength(2));
       expect(_work.view, PosWorkView.catalog, reason: 'picks in a row');
       expect(find.text('Cart (2)'), findsOneWidget);
-      expect(_work.pulse.value, 2);
+      expect(_work.pulse.value, 1);
       // Switch to the cart: the tab now reads Products.
       await _tapTab(tester);
       expect(_work.view, PosWorkView.cart);
@@ -167,6 +171,21 @@ void main() {
         findsOneWidget,
       );
       expect(find.byType(CartCompactRow), findsNWidgets(2));
+    } finally {
+      await _finish(tester);
+    }
+  });
+
+  testWidgets('a tile click that fails on an empty cart changes nothing', (
+    tester,
+  ) async {
+    try {
+      await _boot(tester);
+      _work.addFromCatalog(() => false);
+      await tester.pumpAndSettle();
+      expect(_work.view, PosWorkView.catalog);
+      expect(_work.pulse.value, 0);
+      expect(Get.find<CartController>().cart.value.lines, isEmpty);
     } finally {
       await _finish(tester);
     }

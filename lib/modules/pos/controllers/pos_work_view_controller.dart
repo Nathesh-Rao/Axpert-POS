@@ -73,10 +73,15 @@ class PosWorkViewController extends GetxController {
     _focusAfterSwitch();
   }
 
-  /// A tile click: [add] runs, and when it worked the catalog stays and the
-  /// tab pulses.
+  /// A tile click: [add] runs. When it worked on an empty cart the cart view
+  /// shows (DEC-140); otherwise the catalog stays and the tab pulses.
   void addFromCatalog(bool Function() add) {
+    final wasEmpty = !_cart.active.value;
     if (!add()) return;
+    if (wasEmpty && _cart.active.value) {
+      showCart();
+      return;
+    }
     _chosen.value = PosWorkView.catalog;
     pulse.value++;
   }

@@ -222,6 +222,32 @@ abstract final class AppIcons {
     fontFamily: _family,
     fontPackage: _package,
   );
+  static const IconData dollarSign = IconData(
+    57521,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData euro = IconData(
+    57528,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData poundSterling = IconData(
+    57663,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+
+  /// The Lucide glyph of a currency (by ISO code), or null when Lucide has
+  /// none: the caller then draws the currency's own symbol as text.
+  static IconData? currencyGlyph(String code) => switch (code) {
+    'INR' => indianRupee,
+    'USD' => dollarSign,
+    'EUR' => euro,
+    'GBP' => poundSterling,
+    _ => null,
+  };
+
   static const IconData banknote = IconData(
     57426,
     fontFamily: _family,
@@ -298,6 +324,9 @@ abstract final class AppIcons {
     'rotateCcw': rotateCcw,
     'package': packageBox,
     'indianRupee': indianRupee,
+    'dollarSign': dollarSign,
+    'euro': euro,
+    'poundSterling': poundSterling,
     'banknote': banknote,
     'creditCard': creditCard,
     'percent': percent,

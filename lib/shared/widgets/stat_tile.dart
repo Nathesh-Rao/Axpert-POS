@@ -10,7 +10,6 @@ import 'css_gradient.dart';
 /// icon and a muted label over a bold value.
 class StatTile extends StatelessWidget {
   const StatTile({
-    required this.icon,
     required this.iconColor,
     required this.iconSize,
     required this.label,
@@ -19,12 +18,17 @@ class StatTile extends StatelessWidget {
     required this.padY,
     required this.padX,
     required this.gap,
+    this.icon,
+    this.iconText,
     this.showIcon = true,
     this.vertical = false,
     super.key,
-  });
+  }) : assert(icon != null || iconText != null);
 
-  final IconData icon;
+  /// The tile's glyph; [iconText] (a currency symbol) is drawn instead when
+  /// there is no icon for it.
+  final IconData? icon;
+  final String? iconText;
   final Color iconColor;
   final double iconSize;
   final String label;
@@ -55,7 +59,17 @@ class StatTile extends StatelessWidget {
             : MainAxisAlignment.center,
         children: <Widget>[
           if (showIcon) ...<Widget>[
-            Icon(icon, size: iconSize, color: iconColor),
+            if (icon != null)
+              Icon(icon, size: iconSize, color: iconColor)
+            else
+              Text(
+                iconText!.trim(),
+                maxLines: 1,
+                softWrap: false,
+                style: text
+                    .of(AppFontSize.s16, weight: AppFontWeight.bold)
+                    .copyWith(fontSize: iconSize, color: iconColor, height: 1),
+              ),
             SizedBox(width: gap),
           ],
           Flexible(

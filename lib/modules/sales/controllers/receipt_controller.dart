@@ -5,6 +5,7 @@ import '../../../core/services/print_service.dart';
 import '../../../core/services/receipt_share_service.dart';
 import '../../../features/session/presentation/controllers/active_session.dart';
 import '../../../shared/controllers/overlay_controller.dart';
+import '../../shell/controllers/settings_controller.dart';
 import '../../../shared/controllers/toast_controller.dart';
 import '../models/receipt_document.dart';
 import '../models/sale.dart';
@@ -20,6 +21,7 @@ class ReceiptController extends GetxController {
     required this.toasts,
     required this.printer,
     required this.sharing,
+    required this.settings,
     this.session,
   });
 
@@ -27,6 +29,7 @@ class ReceiptController extends GetxController {
   final ToastController toasts;
   final PrintService printer;
   final ReceiptShareService sharing;
+  final SettingsController settings;
   final ActiveSession? session;
 
   AppStrings get _s => AppStrings.current;
@@ -43,9 +46,24 @@ class ReceiptController extends GetxController {
         : null;
   }
 
-  void print() {
+  /// Sends the open receipt (a completed sale, a reprint or a draft) to the
+  /// print service once; a toast says when the platform cannot print or the
+  /// print failed. The paper width is the `print_paper_mm` setting.
+  Future<void> print() async {
     final doc = receipt;
-    if (doc != null) printer.printReceipt(doc);
+    if (doc == null) return;
+    final outcome = await printer.printReceipt(
+      doc,
+      paperMm: settings.settings.value.printPaperMm,
+    );
+    switch (outcome) {
+      case PrintOutcome.sent:
+        break;
+      case PrintOutcome.unsupported:
+        toasts.show(_s.toastPrintUnavailable());
+      case PrintOutcome.failed:
+        toasts.show(_s.toastPrintFailed());
+    }
   }
 
   void email() {

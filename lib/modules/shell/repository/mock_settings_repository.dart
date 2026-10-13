@@ -43,4 +43,5 @@ const List<String> settingsStorageKeys = <String>[
   StorageKeys.dark,
   StorageKeys.beep,
   StorageKeys.counter,
+  StorageKeys.printPaperMm,
 ];

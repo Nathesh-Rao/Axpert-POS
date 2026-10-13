@@ -40,6 +40,8 @@ dependencies:
   lucide_icons_flutter: ^3.1.22
   path: ^1.9.1
   path_provider: ^2.1.6
+  pdf: 3.12.0
+  printing: 5.14.3
   shared_preferences: ^2.5.5
 
 dev_dependencies:
@@ -71,3 +73,10 @@ flutter:
     - assets/logo/
     - assets/bg/
     - assets/seed/
+    - assets/fonts/
+
+# image 4.11.0 (pulled in by pdf/printing) calls an archive API that archive
+# 4.0.9 (the newest pdf 3.12.0 allows) does not have, and fails to compile.
+# 4.8.0 is the newest release that compiles against archive 4.0.9.
+dependency_overrides:
+  image: 4.8.0

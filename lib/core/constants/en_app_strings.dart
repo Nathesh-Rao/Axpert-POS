@@ -822,6 +822,13 @@ class EnAppStrings extends AppStrings {
   String receiptNewSale() => 'New Sale';
 
   @override
+  String toastPrintUnavailable() =>
+      'Printing is not available on this platform';
+
+  @override
+  String toastPrintFailed() => 'Could not print the receipt';
+
+  @override
   String toastReceiptEmail() => 'Receipt email sent (demo)';
 
   @override

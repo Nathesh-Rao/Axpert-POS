@@ -5,6 +5,7 @@ import '../../modules/customers/controllers/add_customer_controller.dart';
 import '../../modules/pos/controllers/text_dialog_controller.dart';
 import '../../modules/sales/controllers/receipt_controller.dart';
 import '../../modules/sales/controllers/reprint_controller.dart';
+import '../services/print/print_service_factory.dart';
 import '../services/print_service.dart';
 import '../services/receipt_share_service.dart';
 import '../../modules/customers/controllers/customer_picker_controller.dart';
@@ -98,6 +99,7 @@ class InitialBinding extends Bindings {
     required this.infrastructure,
     AudioService? audio,
     PaymentService? payments,
+    PrintService? printer,
     this.checkoutOverride,
     this.commitBeforeReceipt,
     this.sessionOverride,
@@ -105,11 +107,16 @@ class InitialBinding extends Bindings {
     this.seedDemo,
     this.reseedDemo,
   }) : audio = audio ?? createPlatformAudioService(),
-       payments = payments ?? const MockPaymentService();
+       payments = payments ?? const MockPaymentService(),
+       printer = printer ?? createPrintService();
 
   final LocalStore store;
   final AppInfrastructure infrastructure;
   final AudioService audio;
+
+  /// The print boundary: the system print dialog where the platform has one
+  /// (`createPrintService`), tests pass a recording service.
+  final PrintService printer;
 
   /// The payment boundary; a mock until a provider exists (DEC-123).
   final PaymentService payments;
@@ -447,7 +454,7 @@ class InitialBinding extends Bindings {
         clock: Get.find(),
       ),
     );
-    _put<PrintService>(RecordingPrintService());
+    _put<PrintService>(printer);
     _put<ReceiptShareService>(RecordingReceiptShareService());
     _put<ReceiptController>(
       ReceiptController(
@@ -455,6 +462,7 @@ class InitialBinding extends Bindings {
         toasts: Get.find(),
         printer: Get.find(),
         sharing: Get.find(),
+        settings: Get.find(),
         session: Get.find<ActiveSession>(),
       ),
     );

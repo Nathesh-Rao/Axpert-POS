@@ -105,3 +105,8 @@ Run and read: format and analyze clean; full VM suite 994/994; no PNG changed ve
 - Goldens: 37 existing goldens regenerated (every one that shows the Bill Summary or a receipt/reprint: the new CGST/SGST rows and the forex label), 4 new (`summary_vat_forex_*`, `summary_no_forex_*`, light and dark).
 - Release web (`demo_check.mjs`, 1280x720): cashier1 (India) 12/12 (GST Amount, CGST, SGST, forex USD/EUR/AED, rate 83.2, receipt with CGST/SGST); cashier2 (Kampala) 8/8 (VAT Amount, no GST/CGST/SGST anywhere including the receipt, forex USD/EUR/KES, rate 3700). Debug click-through normal 66/66 and `--semantics` 66/66 (`debug_check.mjs` scrolls the summary before the quick-action clicks, see KG-218).
 
+## System print and small fixes (2026-10-13, on top of 117e261; KG-218 left open by the owner)
+- Plan `docs/plan_print_bill.md`, DEC-137, KG-218 (open), KG-219 (rewritten), KG-220, KG-221. Packages `printing` 5.14.3, `pdf` 3.12.0 (+ `image` 4.8.0 override).
+- Tests: new `receipt_print_model_test`, `receipt_pdf_builder_test`, `print_flow_test` (receipt, Reprint, draft, paper setting, unsupported, failed), `summary_split_fit_test`, `currency_symbol_test`; goldens: 36 India goldens regenerated (diff only in the Bill Summary tax block and below, plus the receipt clock text), 1 new (`print_receipt_80mm_light`).
+- Release web (`print_check.mjs`, 1280x1100): receipt Print -> one `window.print` from a blob PDF iframe, Reprint -> sale -> Print -> one more, nothing printed by Reprint itself, 0 console errors. Debug click-through normal 66/66 and `--semantics` 66/66.
+

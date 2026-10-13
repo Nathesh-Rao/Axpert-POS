@@ -1,19 +1,45 @@
 import '../../modules/sales/models/receipt_document.dart';
 
-/// Receipt printing (hardware or the browser's print dialog, later). Only the
-/// interface exists in Phase A; the app calls it and the mock records it.
-/// A real printer is one new implementation chosen with a conditional import
-/// (web: `window.print()`, Windows: the print spooler); no UI changes.
+/// What a print request ended in. `sent` means the system print dialog (or the
+/// browser's) took the document, not that paper came out.
+enum PrintOutcome { sent, unsupported, failed }
+
+/// Receipt printing. The controllers depend on this interface only; the real
+/// implementation (`SystemPrintService`, system print dialog on every
+/// platform) is chosen by `createPrintService()` with a conditional import.
+/// Thermal printers, cash drawers and ESC/POS stay separate interfaces later.
 abstract interface class PrintService {
-  Future<void> printReceipt(ReceiptDocument receipt);
+  /// False when this platform cannot print (the caller shows a toast).
+  bool get supported;
+
+  /// Prints [receipt] on paper [paperMm] millimetres wide. Never throws.
+  Future<PrintOutcome> printReceipt(
+    ReceiptDocument receipt, {
+    required int paperMm,
+  });
 }
 
-/// The stand-in used now: remembers what would have been printed (tests).
+/// The stand-in for tests: remembers what would have been printed.
 class RecordingPrintService implements PrintService {
-  final List<ReceiptDocument> printed = <ReceiptDocument>[];
+  RecordingPrintService({this.supported = true, this.outcome});
 
   @override
-  Future<void> printReceipt(ReceiptDocument receipt) async {
+  final bool supported;
+
+  /// Forces an outcome (default: sent, or unsupported when not [supported]).
+  final PrintOutcome? outcome;
+
+  final List<ReceiptDocument> printed = <ReceiptDocument>[];
+  final List<int> paperMm = <int>[];
+
+  @override
+  Future<PrintOutcome> printReceipt(
+    ReceiptDocument receipt, {
+    required int paperMm,
+  }) async {
+    if (!supported) return PrintOutcome.unsupported;
     printed.add(receipt);
+    this.paperMm.add(paperMm);
+    return outcome ?? PrintOutcome.sent;
   }
 }

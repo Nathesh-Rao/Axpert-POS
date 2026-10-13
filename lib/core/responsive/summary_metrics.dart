@@ -16,6 +16,7 @@ class SummaryMetrics {
     required this.titleFont,
     required this.cardPad,
     required this.rowHeight,
+    required this.splitRowHeight,
     required this.rowFont,
     required this.rowValueFont,
     required this.invoiceHeight,
@@ -105,6 +106,7 @@ class SummaryMetrics {
           titleFont: c.vw(18, 1.25, 22),
           cardPad: _atLeast(c.vh(6, .8, 10), minCardInset),
           rowHeight: c.vh(28, 3.2, 34),
+          splitRowHeight: 22,
           rowFont: 13,
           rowValueFont: c.vw(13, .95, 16),
           invoiceHeight: c.vh(52, 5.6, 68),
@@ -149,6 +151,7 @@ class SummaryMetrics {
           titleFont: 18,
           cardPad: minCardInset,
           rowHeight: c.vh(24, 3.1, 28),
+          splitRowHeight: 20,
           rowFont: 13,
           rowValueFont: c.vw(13, .95, 16),
           invoiceHeight: c.vh(44, 5.5, 52),
@@ -193,6 +196,7 @@ class SummaryMetrics {
           titleFont: 17,
           cardPad: minCardInset,
           rowHeight: 21,
+          splitRowHeight: 18,
           rowFont: 12,
           rowValueFont: 13,
           invoiceHeight: 42,
@@ -238,6 +242,9 @@ class SummaryMetrics {
   final double titleFont;
   final double cardPad;
   final double rowHeight;
+
+  /// The compact CGST/SGST row under the tax row (one row for all parts).
+  final double splitRowHeight;
   final double rowFont;
   final double rowValueFont;
   final double invoiceHeight;

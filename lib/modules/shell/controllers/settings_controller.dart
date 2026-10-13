@@ -36,4 +36,7 @@ class SettingsController extends GetxController {
 
   Future<void> setCounter(String value) =>
       _update(settings.value.copyWith(counter: value));
+
+  Future<void> setPrintPaperMm(int value) =>
+      _update(settings.value.copyWith(printPaperMm: value));
 }

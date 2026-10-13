@@ -12,6 +12,9 @@ abstract final class StorageKeys {
   static const String beep = '${_prefix}beep';
   static const String counter = '${_prefix}counter';
 
+  /// Receipt paper width in millimetres (a settings row, not a prototype key).
+  static const String printPaperMm = 'print_paper_mm';
+
   /// Set while Drift may be behind LocalStore for settings (DEC-125).
   static const String settingsDriftStale = '${_prefix}settings-drift-stale';
 

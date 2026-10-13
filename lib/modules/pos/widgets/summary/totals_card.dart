@@ -61,6 +61,53 @@ class TotalsCard extends StatelessWidget {
             ),
           ),
         );
+        // CGST and SGST share ONE row: each part is a label on the left and
+        // its value on the right of its own half (KG-218).
+        Widget splitRow(List<TaxPart> parts) => SizedBox(
+          height: sm.splitRowHeight,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s2),
+            child: Row(
+              children: <Widget>[
+                for (var i = 0; i < parts.length; i++) ...<Widget>[
+                  if (i > 0) const SizedBox(width: AppSpacing.s12),
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          parts[i].label,
+                          maxLines: 1,
+                          softWrap: false,
+                          style: context.text
+                              .fluid(sm.rowFont)
+                              .copyWith(color: c.summaryRowText),
+                        ),
+                        Flexible(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              MoneyFormatter.format(parts[i].amount),
+                              maxLines: 1,
+                              softWrap: false,
+                              style: context.text
+                                  .fluid(
+                                    sm.rowValueFont,
+                                    weight: AppFontWeight.bold,
+                                  )
+                                  .copyWith(color: c.text),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        );
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
@@ -69,8 +116,8 @@ class TotalsCard extends StatelessWidget {
             row(s.summaryRewardPoints(), MoneyFormatter.format(t.points)),
             if (regime != null) ...<Widget>[
               row(s.summaryTaxAmount(taxLabel), MoneyFormatter.format(t.tax)),
-              for (final part in TaxSplit.parts(t.tax, regime.splitParts))
-                row(part.label, MoneyFormatter.format(part.amount)),
+              if (regime.splitParts.isNotEmpty)
+                splitRow(TaxSplit.parts(t.tax, regime.splitParts)),
             ],
             const SizedBox(height: AppCheckoutSizes.invoiceMarginTop),
             Container(

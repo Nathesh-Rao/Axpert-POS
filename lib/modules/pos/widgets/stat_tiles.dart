@@ -70,7 +70,8 @@ class StatTiles extends StatelessWidget {
               Expanded(
                 flex: 125,
                 child: StatTile(
-                  icon: AppIcons.indianRupee,
+                  icon: AppIcons.currencyGlyph(t.value.currency.code),
+                  iconText: t.value.currency.symbol,
                   iconColor: c.greenIcon,
                   iconSize: m.statTileIcon,
                   label: s.statTotalValue(),

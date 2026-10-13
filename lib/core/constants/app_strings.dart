@@ -303,6 +303,8 @@ abstract class AppStrings {
   String receiptEmail();
   String receiptWhatsApp();
   String receiptNewSale();
+  String toastPrintUnavailable();
+  String toastPrintFailed();
   String toastReceiptEmail();
   String toastReceiptWhatsApp();
   String reprintTitle();

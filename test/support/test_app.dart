@@ -14,6 +14,7 @@ import 'package:pos_application/main.dart';
 
 import 'package:pos_application/features/offers/data/drift_offer_repository.dart';
 import 'package:pos_application/features/offers/domain/entities/offer.dart';
+import 'package:pos_application/core/services/print_service.dart';
 import 'package:pos_application/features/session/presentation/controllers/active_session.dart';
 import 'test_infrastructure.dart';
 import 'test_session.dart';
@@ -44,6 +45,7 @@ Future<InitialBinding> bootTestApp({
     offerRepositoryOverride: InMemoryOfferRepository(offers),
     infrastructure: infrastructure ?? testInfrastructure(),
     audio: RecordingAudioService(),
+    printer: RecordingPrintService(),
     payments: payments,
     checkoutOverride: checkout,
     commitBeforeReceipt: commitBeforeReceipt,

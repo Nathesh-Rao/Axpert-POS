@@ -8,7 +8,11 @@ class AppSettings {
     required this.dark,
     required this.beep,
     required this.counter,
+    this.printPaperMm = defaultPrintPaperMm,
   });
+
+  /// Receipt paper width used until a setting says otherwise.
+  static const int defaultPrintPaperMm = 80;
 
   /// Defaults: light, beep on. `store` and `counter` are
   /// legacy keys: the store and counter come from the database session now
@@ -26,6 +30,8 @@ class AppSettings {
     dark: json[StorageKeys.dark] as bool? ?? defaults.dark,
     beep: json[StorageKeys.beep] as bool? ?? defaults.beep,
     counter: json[StorageKeys.counter] as String? ?? defaults.counter,
+    printPaperMm:
+        json[StorageKeys.printPaperMm] as int? ?? defaults.printPaperMm,
   );
 
   final String store;
@@ -33,11 +39,15 @@ class AppSettings {
   final bool beep;
   final String counter;
 
+  /// Receipt paper width in millimetres (80 or 58 for thermal rolls).
+  final int printPaperMm;
+
   Map<String, dynamic> toJson() => <String, dynamic>{
     StorageKeys.store: store,
     StorageKeys.dark: dark,
     StorageKeys.beep: beep,
     StorageKeys.counter: counter,
+    StorageKeys.printPaperMm: printPaperMm,
   };
 
   AppSettings copyWith({
@@ -45,11 +55,13 @@ class AppSettings {
     bool? dark,
     bool? beep,
     String? counter,
+    int? printPaperMm,
   }) => AppSettings(
     store: store ?? this.store,
     dark: dark ?? this.dark,
     beep: beep ?? this.beep,
     counter: counter ?? this.counter,
+    printPaperMm: printPaperMm ?? this.printPaperMm,
   );
 
   @override
@@ -58,8 +70,9 @@ class AppSettings {
       other.store == store &&
       other.dark == dark &&
       other.beep == beep &&
-      other.counter == counter;
+      other.counter == counter &&
+      other.printPaperMm == printPaperMm;
 
   @override
-  int get hashCode => Object.hash(store, dark, beep, counter);
+  int get hashCode => Object.hash(store, dark, beep, counter, printPaperMm);
 }

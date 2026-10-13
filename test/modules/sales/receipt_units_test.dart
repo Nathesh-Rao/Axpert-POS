@@ -157,8 +157,9 @@ void main() {
   test('the mocks record what they are given', () async {
     final doc = ReceiptBuilder.fromSale(_sale());
     final print = RecordingPrintService();
-    await print.printReceipt(doc);
+    await print.printReceipt(doc, paperMm: 80);
     expect(print.printed, <Object>[doc]);
+    expect(print.paperMm, <int>[80]);
     final share = RecordingReceiptShareService();
     await share.sendEmail(doc);
     await share.sendWhatsApp(doc);

@@ -20,6 +20,9 @@ class ActionButton extends StatelessWidget {
     required this.iconSize,
     required this.fontSize,
     this.stacked = false,
+    this.iconOnly = false,
+    this.fit = false,
+    this.tooltip,
     super.key,
   });
 
@@ -34,6 +37,14 @@ class ActionButton extends StatelessWidget {
   /// Width <= 1700: the icon sits above the label.
   final bool stacked;
 
+  /// Desktop footer: only the icon (the label stays the tooltip and the
+  /// semantic label).
+  final bool iconOnly;
+
+  /// Desktop footer: the button is as wide as its content, not stretched.
+  final bool fit;
+  final String? tooltip;
+
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
@@ -46,9 +57,15 @@ class ActionButton extends StatelessWidget {
     };
     return AppPressable(
       onTap: onTap,
+      tooltip: tooltip,
+      semanticLabel: iconOnly ? label : null,
       borderRadius: AppRadii.r10,
       builder: (context, hovered) => Container(
         height: height,
+        width: iconOnly ? height : null,
+        padding: fit && !iconOnly
+            ? const EdgeInsets.symmetric(horizontal: AppSpacing.s10)
+            : null,
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: bg,
@@ -72,6 +89,7 @@ class ActionButton extends StatelessWidget {
       ),
     );
     final iconWidget = Icon(icon, size: iconSize, color: fg);
+    if (iconOnly) return iconWidget;
     // Stacked: the content (about 40 px) may be taller than the padded box,
     // which CSS lets overflow unseen; here it is simply centered.
     return stacked

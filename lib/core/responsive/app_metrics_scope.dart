@@ -21,7 +21,8 @@ class AppMetricsScope extends InheritedWidget {
   @override
   bool updateShouldNotify(AppMetricsScope oldWidget) =>
       oldWidget.metrics.width != metrics.width ||
-      oldWidget.metrics.height != metrics.height;
+      oldWidget.metrics.height != metrics.height ||
+      oldWidget.metrics.touch != metrics.touch;
 }
 
 extension AppMetricsX on BuildContext {

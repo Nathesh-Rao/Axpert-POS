@@ -22,6 +22,7 @@ class NumberField extends StatefulWidget {
     required this.fillColor,
     required this.borderColor,
     required this.radius,
+    this.textAlign = TextAlign.center,
     super.key,
   });
 
@@ -36,6 +37,7 @@ class NumberField extends StatefulWidget {
   final Color fillColor;
   final Color borderColor;
   final double radius;
+  final TextAlign textAlign;
 
   @override
   State<NumberField> createState() => _NumberFieldState();
@@ -113,7 +115,7 @@ class _NumberFieldState extends State<NumberField> {
           child: TextField(
             controller: _controller,
             focusNode: _focus,
-            textAlign: TextAlign.center,
+            textAlign: widget.textAlign,
             textAlignVertical: TextAlignVertical.center,
             expands: true,
             maxLines: null,

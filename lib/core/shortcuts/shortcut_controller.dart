@@ -8,7 +8,15 @@ import '../constants/app_strings.dart';
 /// What a global shortcut does. Screens replace the defaults when they exist
 /// (S3: delete line, S4: payments, hold, recall, discount). Until then the
 /// F-keys only show a "(demo)" toast.
-enum ShortcutAction { cash, card, hold, recall, discount, deleteSelected }
+enum ShortcutAction {
+  cash,
+  card,
+  hold,
+  recall,
+  discount,
+  deleteSelected,
+  productsPanel,
+}
 
 class ShortcutController extends GetxController {
   late final Map<ShortcutAction, VoidCallback> handlers =
@@ -21,6 +29,8 @@ class ShortcutController extends GetxController {
             _demo(AppStrings.current.shortcutDiscount()),
         // Needs a selected cart line (S3); nothing to delete yet.
         ShortcutAction.deleteSelected: () {},
+        // Set by the POS bindings (the Products panel of the desktop layout).
+        ShortcutAction.productsPanel: () {},
       };
 
   void _demo(String action) => Get.find<ToastController>().show(

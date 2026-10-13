@@ -106,6 +106,12 @@ abstract class AppStrings {
   // Cart
   String cartTableNumber();
   String lineNumber(int number);
+
+  /// Between the barcode and the tax rate on the second line of a cart row.
+  String cartInfoSeparator();
+
+  /// Tooltip of a footer action with its key: `Hold (F4)`.
+  String actionWithKey(String action, String key);
   String cartTableItem();
   String cartTableQty();
   String cartTablePrice();
@@ -315,6 +321,16 @@ abstract class AppStrings {
   String textDialogSave();
   String shortcutsTitle();
   String helpFocusSearch();
+  String helpToggleProducts();
+  String productsShortcutMac();
+  String productsShortcutOther();
+
+  /// The Products tab and panel (desktop layout).
+  String productsTabLabel();
+  String productsTabSemantic(String shortcut);
+  String cartEmptyTitle();
+  String cartEmptyHint(String shortcut);
+  String cartEmptyOpenProducts();
   String helpAddScanned();
   String helpRemoveLine();
   String helpCloseDialog();

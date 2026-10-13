@@ -9,6 +9,7 @@ class AppSettings {
     required this.beep,
     required this.counter,
     this.printPaperMm = defaultPrintPaperMm,
+    this.productsPanelOpen = false,
   });
 
   /// Receipt paper width used until a setting says otherwise.
@@ -32,6 +33,9 @@ class AppSettings {
     counter: json[StorageKeys.counter] as String? ?? defaults.counter,
     printPaperMm:
         json[StorageKeys.printPaperMm] as int? ?? defaults.printPaperMm,
+    productsPanelOpen:
+        json[StorageKeys.productsPanelOpen] as bool? ??
+        defaults.productsPanelOpen,
   );
 
   final String store;
@@ -42,12 +46,16 @@ class AppSettings {
   /// Receipt paper width in millimetres (80 or 58 for thermal rolls).
   final int printPaperMm;
 
+  /// View preference of the desktop POS layout: Products panel expanded.
+  final bool productsPanelOpen;
+
   Map<String, dynamic> toJson() => <String, dynamic>{
     StorageKeys.store: store,
     StorageKeys.dark: dark,
     StorageKeys.beep: beep,
     StorageKeys.counter: counter,
     StorageKeys.printPaperMm: printPaperMm,
+    StorageKeys.productsPanelOpen: productsPanelOpen,
   };
 
   AppSettings copyWith({
@@ -56,12 +64,14 @@ class AppSettings {
     bool? beep,
     String? counter,
     int? printPaperMm,
+    bool? productsPanelOpen,
   }) => AppSettings(
     store: store ?? this.store,
     dark: dark ?? this.dark,
     beep: beep ?? this.beep,
     counter: counter ?? this.counter,
     printPaperMm: printPaperMm ?? this.printPaperMm,
+    productsPanelOpen: productsPanelOpen ?? this.productsPanelOpen,
   );
 
   @override
@@ -71,8 +81,10 @@ class AppSettings {
       other.dark == dark &&
       other.beep == beep &&
       other.counter == counter &&
-      other.printPaperMm == printPaperMm;
+      other.printPaperMm == printPaperMm &&
+      other.productsPanelOpen == productsPanelOpen;
 
   @override
-  int get hashCode => Object.hash(store, dark, beep, counter, printPaperMm);
+  int get hashCode =>
+      Object.hash(store, dark, beep, counter, printPaperMm, productsPanelOpen);
 }

@@ -351,6 +351,12 @@ class EnAppStrings extends AppStrings {
   String statTotalValue() => 'Total Value';
 
   @override
+  String cartInfoSeparator() => ' · ';
+
+  @override
+  String actionWithKey(String action, String key) => '$action ($key)';
+
+  @override
   String lineNumber(int number) => '$number';
 
   @override
@@ -858,6 +864,32 @@ class EnAppStrings extends AppStrings {
 
   @override
   String helpFocusSearch() => 'Focus barcode search';
+
+  @override
+  String helpToggleProducts() => 'Show or hide the Products panel';
+
+  @override
+  String productsShortcutMac() => '⌘B';
+
+  @override
+  String productsShortcutOther() => 'Ctrl+B';
+
+  @override
+  String productsTabLabel() => 'Products';
+
+  @override
+  String productsTabSemantic(String shortcut) =>
+      'Products panel, press $shortcut';
+
+  @override
+  String cartEmptyTitle() => 'No items yet';
+
+  @override
+  String cartEmptyHint(String shortcut) =>
+      'Scan a barcode, search above, or open Products ($shortcut)';
+
+  @override
+  String cartEmptyOpenProducts() => 'Open Products';
 
   @override
   String helpAddScanned() => 'Add scanned product';

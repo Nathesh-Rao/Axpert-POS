@@ -50,10 +50,16 @@ class CartHeaderColumns {
 /// yet are consumed from S3 on; media-query overrides of those arrive with
 /// their consumers.
 class AppMetrics {
-  AppMetrics(Size size)
+  AppMetrics(Size size, {this.touch = true})
     : width = size.width,
       height = size.height,
       _c = ClampRule(size.width, size.height);
+
+  /// True on a touch platform (Android, iOS): the POS page keeps the
+  /// prototype layout with large targets. False on desktop and desktop
+  /// browsers: the cart-first layout with compact rows (DEC-138). The default
+  /// is the prototype's metrics; `ResponsiveLayout` passes the real platform.
+  final bool touch;
 
   /// The measured reference viewport (DEC-062).
   static const Size referenceSize = Size(1868.44, 1034.67);
@@ -197,7 +203,7 @@ class AppMetrics {
 
   /// At width <= 1280 the clock wraps to its own full-width row
   /// (`order:5; flex:1 0 100%; padding:2px 0`).
-  bool get cartTimeOnOwnRow => atMost1280;
+  bool get cartTimeOnOwnRow => atMost1280 && touch;
   double get customerLabelMarginTop => _c.vh(7, 1, 12);
   double get cartTableMarginTop => _c.vh(8, 1.2, 13);
   double get cartLineMinHeight => _c.vh(84, 10, 96);

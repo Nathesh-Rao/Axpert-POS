@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import '../../shared/controllers/overlay_controller.dart';
 import '../../shared/controllers/search_field_controller.dart';
 import '../../shared/controllers/shell_chrome_controller.dart';
+import '../../modules/pos/controllers/products_panel_controller.dart';
 import 'shortcut_controller.dart';
 
 class FocusSearchIntent extends Intent {
@@ -24,7 +25,7 @@ class RunShortcutIntent extends Intent {
 /// Global keyboard shortcuts, placed above the Navigator (DEC-005, DEC-041):
 /// Ctrl+K and Cmd+K focus the search field; F2 to F6 always fire, even inside
 /// inputs and with dialogs open (port as-is, KG-014); Esc closes the dialog
-/// and menus and refocuses search; Delete only outside text input and with no
+/// and menus (or, with none open, the Products panel) and refocuses search; Delete only outside text input and with no
 /// dialog open.
 class AppShortcuts extends StatelessWidget {
   const AppShortcuts({required this.child, super.key});
@@ -37,6 +38,10 @@ class AppShortcuts extends StatelessWidget {
             const FocusSearchIntent(),
         const SingleActivator(LogicalKeyboardKey.keyK, meta: true):
             const FocusSearchIntent(),
+        const SingleActivator(LogicalKeyboardKey.keyB, control: true):
+            const RunShortcutIntent(ShortcutAction.productsPanel),
+        const SingleActivator(LogicalKeyboardKey.keyB, meta: true):
+            const RunShortcutIntent(ShortcutAction.productsPanel),
         const SingleActivator(LogicalKeyboardKey.f2): const RunShortcutIntent(
           ShortcutAction.cash,
         ),
@@ -80,8 +85,18 @@ class AppShortcuts extends StatelessWidget {
           ),
           CloseOverlaysIntent: CallbackAction<CloseOverlaysIntent>(
             onInvoke: (_) {
-              Get.find<ShellChromeController>().closeMenu();
-              Get.find<OverlayController>().close();
+              final chrome = Get.find<ShellChromeController>();
+              final overlay = Get.find<OverlayController>();
+              // A dialog or menu closes first; with none open Escape closes
+              // the Products panel (desktop layout) and refocuses search.
+              final somethingOpen =
+                  overlay.isOpen || chrome.menu.value != ShellMenu.none;
+              chrome.closeMenu();
+              overlay.close();
+              if (!somethingOpen &&
+                  Get.isRegistered<ProductsPanelController>()) {
+                Get.find<ProductsPanelController>().close();
+              }
               return null;
             },
           ),

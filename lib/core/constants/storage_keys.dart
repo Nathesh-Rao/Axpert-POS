@@ -15,6 +15,9 @@ abstract final class StorageKeys {
   /// Receipt paper width in millimetres (a settings row, not a prototype key).
   static const String printPaperMm = 'print_paper_mm';
 
+  /// View preference: the POS Products panel is expanded (desktop layout).
+  static const String productsPanelOpen = 'products_panel_open';
+
   /// Set while Drift may be behind LocalStore for settings (DEC-125).
   static const String settingsDriftStale = '${_prefix}settings-drift-stale';
 

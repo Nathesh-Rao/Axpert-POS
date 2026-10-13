@@ -110,3 +110,9 @@ Run and read: format and analyze clean; full VM suite 994/994; no PNG changed ve
 - Tests: new `receipt_print_model_test`, `receipt_pdf_builder_test`, `print_flow_test` (receipt, Reprint, draft, paper setting, unsupported, failed), `summary_split_fit_test`, `currency_symbol_test`; goldens: 36 India goldens regenerated (diff only in the Bill Summary tax block and below, plus the receipt clock text), 1 new (`print_receipt_80mm_light`).
 - Release web (`print_check.mjs`, 1280x1100): receipt Print -> one `window.print` from a blob PDF iframe, Reprint -> sale -> Print -> one more, nothing printed by Reprint itself, 0 console errors. Debug click-through normal 66/66 and `--semantics` 66/66.
 
+## Cart-first POS layout (2026-10-13, on top of e649a63)
+- Plan `docs/plan_cart_density.md`, DEC-138, KG-222 to KG-225. Desktop only (touch keeps today's page). Settings key `products_panel_open`.
+- Rows fully visible with 14 lines, before to after: 950x733 1 to 9, 1280x720 1 to 9, 1868x1035 4 to 14 (layout test `desktop_cart_layout_test`, light and dark, 48 px rows, footer <= 44 px).
+- Goldens: 35 existing goldens regenerated (the POS page and every dialog drawn over it; diffs measured inside the work area between sidebar and Bill Summary), 7 new `cart_density_*`. Customers, Products, Sales, Reports, Returns and Settings page goldens are byte-identical.
+- Release web (`cart_first_check.mjs`, cashier1, 1280x720): 13/13 (13 scans with the panel collapsed incl. Buy 1 Get 1 and the free-gift tier, Ctrl+B, Escape, Cmd+B, hold, recall, cash checkout). Debug click-through normal 66/66 and `--semantics` 66/66. Screenshots: `docs/integration/screens/cart_density/{before,after}_*.png`.
+

@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/widgets.dart';
 
 import 'app_metrics.dart';
@@ -13,6 +15,12 @@ class ResponsiveLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    return AppMetricsScope(metrics: AppMetrics(size), child: child);
+    final platform = defaultTargetPlatform;
+    final touch =
+        platform == TargetPlatform.android || platform == TargetPlatform.iOS;
+    return AppMetricsScope(
+      metrics: AppMetrics(size, touch: touch),
+      child: child,
+    );
   }
 }

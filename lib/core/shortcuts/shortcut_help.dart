@@ -18,7 +18,7 @@ class ShortcutHelpEntry {
   final List<ShortcutActivator> keys;
 }
 
-/// The nine rows of the prototype's dialog. Each key listed here must exist
+/// The rows of the dialog (the prototype's nine plus the Products panel). Each key listed here must exist
 /// as a binding (a test checks it), so the help never names a shortcut that
 /// does not work.
 abstract final class ShortcutHelp {
@@ -65,6 +65,16 @@ abstract final class ShortcutHelp {
       text: (s) => s.shortcutDiscount(),
       label: (s, _) => _fn(s, 6),
       keys: const <ShortcutActivator>[SingleActivator(LogicalKeyboardKey.f6)],
+    ),
+    ShortcutHelpEntry(
+      text: (s) => s.helpToggleProducts(),
+      label: (s, platform) => platform == TargetPlatform.macOS
+          ? s.productsShortcutMac()
+          : s.productsShortcutOther(),
+      keys: const <ShortcutActivator>[
+        SingleActivator(LogicalKeyboardKey.keyB, control: true),
+        SingleActivator(LogicalKeyboardKey.keyB, meta: true),
+      ],
     ),
     ShortcutHelpEntry(
       text: (s) => s.helpRemoveLine(),

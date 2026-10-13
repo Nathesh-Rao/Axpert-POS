@@ -6,6 +6,7 @@
 // on Reports. After EVERY step: no framework error was reported (all of them
 // are collected, not only the first), no ErrorWidget is on screen and the
 // GetX proxy is not left pointing at an Obx whose builder threw.
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -85,144 +86,152 @@ InMemoryLocalStore _seededStore() {
 void main() {
   useTestApp();
 
-  testWidgets('every page and dialog from a real state raises no error', (
-    tester,
-  ) async {
-    useLogicalViewport(tester, const Size(1280, 720));
-    final store = _seededStore();
-    final binding = await bootInWidgetTest(tester, store: store);
-    await tester.pumpWidget(testApp(binding));
-    await tester.pumpAndSettle();
+  // Touch (the flutter_test default, the prototype layout) and desktop (the
+  // cart-first layout of DEC-138) both run the same walk.
+  for (final desktop in <bool>[false, true]) {
+    testWidgets('every page and dialog from a real state raises no error '
+        '(${desktop ? 'desktop' : 'touch'} layout)', (tester) async {
+      if (desktop) debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      useLogicalViewport(tester, const Size(1280, 720));
+      final store = _seededStore();
+      final binding = await bootInWidgetTest(tester, store: store);
+      await tester.pumpWidget(testApp(binding));
+      await tester.pumpAndSettle();
 
-    // Stored sales with lines, a cart with 3 items, Priya Nair (400 points).
-    final products = Get.find<ProductsController>();
-    final sale = testSale(
-      number: 'AX000001',
-      at: DateTime.now(),
-      customer: 'Ananya Sharma',
-      totalMinor: 12980,
-      valueMinor: 11000,
-      cart: Cart(
-        lines: <CartLine>[
-          CartLine(
-            product: products.byId(0)!,
-            qty: const Qty(2000),
-            price: const Money(4000, CurrencyRegistry.inr),
-            discount: Bp.zero,
-          ),
-        ],
-      ),
-    );
-    await tester.runAsync(() async {
-      await store.write(StorageKeys.sales, <Map<String, dynamic>>[
-        sale.toJson(),
-      ]);
-    });
-    final actions = Get.find<CartActionsController>();
-    for (final id in <int>[5, 6, 7]) {
-      actions.add(products.byId(id)!);
-    }
-    Get.find<CartMetaController>().setCustomer('3');
-    await tester.pump();
-    Get.find<ToastController>().toasts.clear();
-    await tester.pumpAndSettle();
-
-    // Collect EVERY framework error, not only the first one.
-    final errors = <String>[];
-    final previous = FlutterError.onError;
-    FlutterError.onError = (details) {
-      errors.add(
-        '${details.exceptionAsString().split('\n').first}\n${details.stack}',
+      // Stored sales with lines, a cart with 3 items, Priya Nair (400 points).
+      final products = Get.find<ProductsController>();
+      final sale = testSale(
+        number: 'AX000001',
+        at: DateTime.now(),
+        customer: 'Ananya Sharma',
+        totalMinor: 12980,
+        valueMinor: 11000,
+        cart: Cart(
+          lines: <CartLine>[
+            CartLine(
+              product: products.byId(0)!,
+              qty: const Qty(2000),
+              price: const Money(4000, CurrencyRegistry.inr),
+              discount: Bp.zero,
+            ),
+          ],
+        ),
       );
-    };
+      await tester.runAsync(() async {
+        await store.write(StorageKeys.sales, <Map<String, dynamic>>[
+          sale.toJson(),
+        ]);
+      });
+      final actions = Get.find<CartActionsController>();
+      for (final id in <int>[5, 6, 7]) {
+        actions.add(products.byId(id)!);
+      }
+      Get.find<CartMetaController>().setCustomer('3');
+      await tester.pump();
+      Get.find<ToastController>().toasts.clear();
+      await tester.pumpAndSettle();
 
-    try {
-      void check(String step) {
-        expect(
-          errors,
-          isEmpty,
-          reason: 'errors after "$step":\n${errors.join('\n--\n')}',
+      // Collect EVERY framework error, not only the first one.
+      final errors = <String>[];
+      final previous = FlutterError.onError;
+      FlutterError.onError = (details) {
+        errors.add(
+          '${details.exceptionAsString().split('\n').first}\n${details.stack}',
         );
-        expect(
-          find.byType(ErrorWidget),
-          findsNothing,
-          reason: 'error widget after "$step"',
-        );
-        expect(
-          RxInterface.proxy,
-          isNull,
-          reason: 'GetX proxy left set after "$step"',
-        );
-      }
+      };
 
-      Future<void> tapPage(String label) async {
-        await tester.tap(
-          find
-              .descendant(of: find.byType(Sidebar), matching: find.text(label))
-              .first,
-        );
-        await tester.pumpAndSettle();
-        Get.find<ToastController>().toasts.clear();
-        await tester.pump(const Duration(milliseconds: 100));
-      }
+      try {
+        void check(String step) {
+          expect(
+            errors,
+            isEmpty,
+            reason: 'errors after "$step":\n${errors.join('\n--\n')}',
+          );
+          expect(
+            find.byType(ErrorWidget),
+            findsNothing,
+            reason: 'error widget after "$step"',
+          );
+          expect(
+            RxInterface.proxy,
+            isNull,
+            reason: 'GetX proxy left set after "$step"',
+          );
+        }
 
-      check('start on POS');
-      expect(find.text('Priya Nair'), findsWidgets);
-
-      // Each page from POS and back.
-      for (final page in _pages.skip(1)) {
-        await tapPage(page);
-        check('POS -> $page');
-        await tapPage('POS');
-        check('$page -> POS');
-      }
-      // Reports first, then every other page straight from Reports (the order
-      // that showed the red Customers screen in the debug build).
-      for (final page in _pages.where((p) => p != 'POS' && p != 'Reports')) {
-        await tapPage('Reports');
-        check('POS -> Reports (before $page)');
-        await tapPage(page);
-        check('Reports -> $page');
-        await tapPage('POS');
-        check('$page -> POS (after Reports)');
-      }
-      // Each page from the previous page (no POS in between), forward and back.
-      for (final page in _pages.skip(1)) {
-        await tapPage(page);
-        check('-> $page (chain)');
-      }
-      for (final page in _pages.reversed.skip(1)) {
-        await tapPage(page);
-        check('-> $page (reverse chain)');
-      }
-
-      // Dialogs on POS (cart state) and on Reports (clock attached).
-      for (final home in <String>['POS', 'Reports']) {
-        if (home != 'POS') await tapPage(home);
-        check('page $home');
-        for (final id in _dialogs) {
-          final overlay = Get.find<OverlayController>();
-          if (id == 'confirm') {
-            overlay.openConfirm('Confirm?', () {});
-          } else {
-            overlay.open(id, payload: id == 'receipt' ? sale : null);
-          }
-          await tester.pumpAndSettle();
-          check('$id dialog open on $home');
-          await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+        Future<void> tapPage(String label) async {
+          await tester.tap(
+            find
+                .descendant(
+                  of: find.byType(Sidebar),
+                  matching: find.text(label),
+                )
+                .first,
+          );
           await tester.pumpAndSettle();
           Get.find<ToastController>().toasts.clear();
           await tester.pump(const Duration(milliseconds: 100));
-          check('$id dialog closed on $home');
-          expect(overlay.isOpen, isFalse, reason: id);
         }
+
+        check('start on POS');
+        expect(find.text('Priya Nair'), findsWidgets);
+
+        // Each page from POS and back.
+        for (final page in _pages.skip(1)) {
+          await tapPage(page);
+          check('POS -> $page');
+          await tapPage('POS');
+          check('$page -> POS');
+        }
+        // Reports first, then every other page straight from Reports (the order
+        // that showed the red Customers screen in the debug build).
+        for (final page in _pages.where((p) => p != 'POS' && p != 'Reports')) {
+          await tapPage('Reports');
+          check('POS -> Reports (before $page)');
+          await tapPage(page);
+          check('Reports -> $page');
+          await tapPage('POS');
+          check('$page -> POS (after Reports)');
+        }
+        // Each page from the previous page (no POS in between), forward and back.
+        for (final page in _pages.skip(1)) {
+          await tapPage(page);
+          check('-> $page (chain)');
+        }
+        for (final page in _pages.reversed.skip(1)) {
+          await tapPage(page);
+          check('-> $page (reverse chain)');
+        }
+
+        // Dialogs on POS (cart state) and on Reports (clock attached).
+        for (final home in <String>['POS', 'Reports']) {
+          if (home != 'POS') await tapPage(home);
+          check('page $home');
+          for (final id in _dialogs) {
+            final overlay = Get.find<OverlayController>();
+            if (id == 'confirm') {
+              overlay.openConfirm('Confirm?', () {});
+            } else {
+              overlay.open(id, payload: id == 'receipt' ? sale : null);
+            }
+            await tester.pumpAndSettle();
+            check('$id dialog open on $home');
+            await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+            await tester.pumpAndSettle();
+            Get.find<ToastController>().toasts.clear();
+            await tester.pump(const Duration(milliseconds: 100));
+            check('$id dialog closed on $home');
+            expect(overlay.isOpen, isFalse, reason: id);
+          }
+        }
+        await tester.pump(const Duration(seconds: 6));
+        check('end');
+      } finally {
+        FlutterError.onError = previous;
+        debugDefaultTargetPlatformOverride = null;
       }
-      await tester.pump(const Duration(seconds: 6));
-      check('end');
-    } finally {
-      FlutterError.onError = previous;
-    }
-  });
+    });
+  }
 
   testWidgets('store and counter picker raises no error', (tester) async {
     useLogicalViewport(tester, const Size(1280, 720));

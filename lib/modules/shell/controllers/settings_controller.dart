@@ -39,4 +39,7 @@ class SettingsController extends GetxController {
 
   Future<void> setPrintPaperMm(int value) =>
       _update(settings.value.copyWith(printPaperMm: value));
+
+  Future<void> setProductsPanelOpen(bool value) =>
+      _update(settings.value.copyWith(productsPanelOpen: value));
 }

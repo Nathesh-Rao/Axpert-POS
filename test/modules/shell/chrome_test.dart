@@ -14,6 +14,7 @@ import 'package:pos_application/shared/controllers/toast_controller.dart';
 
 import '../../support/viewport.dart';
 import '../../support/test_app.dart';
+import '../../support/rail_finders.dart';
 
 Future<void> _boot(WidgetTester tester) async {
   useReferenceViewport(tester);
@@ -55,14 +56,7 @@ void main() {
       'Reports',
       'More',
     ]) {
-      expect(
-        find.descendant(
-          of: find.byType(Sidebar),
-          matching: find.byTooltip(label),
-        ),
-        findsOneWidget,
-        reason: label,
-      );
+      expect(sidebarItem(label), findsOneWidget, reason: label);
     }
   });
 
@@ -129,12 +123,7 @@ void main() {
     await _boot(tester);
     expect(tester.widget<Sidebar>(find.byType(Sidebar)).current, AppPage.pos);
     Get.find<PageFilterController>().set('abc');
-    await tester.tap(
-      find.descendant(
-        of: find.byType(Sidebar),
-        matching: find.byTooltip('Customers'),
-      ),
-    );
+    await tester.tap(sidebarItem('Customers'));
     await tester.pumpAndSettle();
     expect(Get.currentRoute, AppRoutes.customers);
     expect(
@@ -151,12 +140,7 @@ void main() {
     final search = Get.find<SearchFieldController>();
     await tester.enterText(find.byType(TextField).first, 'cola');
     for (final label in <String>['Products', 'Sales', 'More', 'POS']) {
-      await tester.tap(
-        find.descendant(
-          of: find.byType(Sidebar),
-          matching: find.byTooltip(label),
-        ),
-      );
+      await tester.tap(sidebarItem(label));
       await tester.pumpAndSettle();
       expect(search.text.text, 'cola', reason: label);
     }

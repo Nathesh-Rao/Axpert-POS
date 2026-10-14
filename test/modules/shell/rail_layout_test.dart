@@ -16,6 +16,7 @@ import 'package:pos_application/modules/shell/widgets/rail_item.dart';
 import 'package:pos_application/modules/shell/widgets/sidebar.dart';
 import 'package:pos_application/shared/controllers/toast_controller.dart';
 
+import '../../support/rail_finders.dart';
 import '../../support/test_app.dart';
 import '../../support/viewport.dart';
 
@@ -110,18 +111,11 @@ void main() {
               findsNothing,
               reason: 'no label text for $name',
             );
-            expect(
-              find.descendant(
-                of: find.byType(Sidebar),
-                matching: find.byTooltip(name),
-              ),
-              findsOneWidget,
-              reason: name,
-            );
+            expect(sidebarItem(name), findsOneWidget, reason: name);
           }
           // The selected item is exposed through semantics.
           expect(
-            tester.getSemantics(find.byTooltip('POS')),
+            tester.getSemantics(sidebarItem('POS')),
             matchesSemantics(
               label: 'POS',
               isButton: true,
@@ -171,46 +165,90 @@ void main() {
     }
   });
 
-  testWidgets('hover shows the tooltip and Enter activates an item', (
+  testWidgets('hover opens the tooltip right of the item, leaving hides it', (
     tester,
   ) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
     try {
-      useLogicalViewport(tester, const Size(1280, 720));
+      const size = Size(1280, 720);
+      useLogicalViewport(tester, size);
       final binding = await bootInWidgetTest(tester);
       await tester.pumpWidget(testApp(binding));
       await tester.pumpAndSettle();
+      final tip = find.text('Products');
+      expect(tip, findsNothing);
+      final item = tester.getRect(sidebarItem('Products'));
       final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
       await mouse.addPointer(location: Offset.zero);
-      await mouse.moveTo(tester.getCenter(find.byTooltip('Products')));
-      await tester.pump(const Duration(seconds: 2));
-      expect(
-        find.descendant(
-          of: find.byType(Overlay),
-          matching: find.text('Products'),
-        ),
-        findsWidgets,
+      await mouse.moveTo(item.center);
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tip, findsNothing, reason: 'short delay first');
+      await tester.pump(AppRailSizes.tooltipDelay);
+      expect(tip, findsOneWidget);
+      final bubble = tester.getRect(
+        find.ancestor(of: tip, matching: find.byType(DecoratedBox)).first,
       );
-      await mouse.removePointer();
-      // Keyboard: focus the item and press Enter.
-      Focus.of(
-        tester.element(
-          find
-              .descendant(
-                of: find.byTooltip('Customers'),
-                matching: find.byType(GestureDetector),
-              )
-              .first,
-        ),
-      ).requestFocus();
+      expect(bubble.left, greaterThanOrEqualTo(item.right));
+      expect(bubble.left, closeTo(item.right + AppRailSizes.tooltipGap, 0.5));
+      expect(bubble.center.dy, closeTo(item.center.dy, 0.5));
+      expect(bubble.left, greaterThanOrEqualTo(0));
+      expect(bubble.top, greaterThanOrEqualTo(0));
+      expect(bubble.right, lessThanOrEqualTo(size.width));
+      expect(bubble.bottom, lessThanOrEqualTo(size.height));
+      // The next item stays uncovered.
+      expect(
+        bubble.overlaps(tester.getRect(sidebarItem('Customers'))),
+        isFalse,
+      );
+      await mouse.moveTo(const Offset(600, 400));
       await tester.pump();
-      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
-      await tester.pumpAndSettle();
-      expect(Get.currentRoute, AppRoutes.customers);
+      expect(tip, findsNothing);
+      await mouse.removePointer();
       Get.find<ToastController>().toasts.clear();
       await tester.pump(const Duration(seconds: 6));
     } finally {
       debugDefaultTargetPlatformOverride = null;
     }
   });
+
+  testWidgets(
+    'keyboard focus shows the tooltip, Esc hides it, Enter activates',
+    (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      try {
+        useLogicalViewport(tester, const Size(1280, 720));
+        final binding = await bootInWidgetTest(tester);
+        await tester.pumpWidget(testApp(binding));
+        await tester.pumpAndSettle();
+        // Tab to the rail marks keyboard (traditional) focus mode.
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        FocusManager.instance.highlightStrategy =
+            FocusHighlightStrategy.alwaysTraditional;
+        Focus.of(
+          tester.element(
+            find
+                .descendant(
+                  of: sidebarItem('Customers'),
+                  matching: find.byType(GestureDetector),
+                )
+                .first,
+          ),
+        ).requestFocus();
+        await tester.pump();
+        expect(find.text('Customers'), findsOneWidget);
+        await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+        await tester.pump();
+        expect(find.text('Customers'), findsNothing);
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pumpAndSettle();
+        expect(Get.currentRoute, AppRoutes.customers);
+        Get.find<ToastController>().toasts.clear();
+        await tester.pump(const Duration(seconds: 6));
+      } finally {
+        FocusManager.instance.highlightStrategy =
+            FocusHighlightStrategy.automatic;
+        debugDefaultTargetPlatformOverride = null;
+      }
+    },
+  );
 }

@@ -29,13 +29,13 @@ import 'package:pos_application/modules/pos/controllers/cart_meta_controller.dar
 import 'package:pos_application/modules/pos/models/cart.dart';
 import 'package:pos_application/modules/pos/models/cart_line.dart';
 import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
-import 'package:pos_application/modules/shell/widgets/sidebar.dart';
 import 'package:pos_application/shared/controllers/overlay_controller.dart';
 import 'package:pos_application/shared/controllers/toast_controller.dart';
 
 import '../support/sale_fixtures.dart';
 import '../support/test_app.dart';
 import '../support/viewport.dart';
+import '../support/rail_finders.dart';
 
 const List<String> _dialogs = <String>[
   'settings',
@@ -161,14 +161,7 @@ void main() {
         }
 
         Future<void> tapPage(String label) async {
-          await tester.tap(
-            find
-                .descendant(
-                  of: find.byType(Sidebar),
-                  matching: find.byTooltip(label),
-                )
-                .first,
-          );
+          await tester.tap(sidebarItem(label).first);
           await tester.pumpAndSettle();
           Get.find<ToastController>().toasts.clear();
           await tester.pump(const Duration(milliseconds: 100));

@@ -50,4 +50,13 @@ class AppRailSizes {
 
   /// Slot of a future count badge (top-right corner of the item).
   static const double badgeSlot = 8.0;
+
+  /// Rail tooltip: opens right of the item (gap measured from the item's right
+  /// edge, past the card padding), shown after [tooltipDelay] on hover and at
+  /// once on keyboard focus.
+  static const double tooltipGap = 12.0;
+  static const double tooltipPadX = 10.0;
+  static const double tooltipPadY = 6.0;
+  static const double tooltipShortcutGap = 8.0;
+  static const Duration tooltipDelay = Duration(milliseconds: 300);
 }

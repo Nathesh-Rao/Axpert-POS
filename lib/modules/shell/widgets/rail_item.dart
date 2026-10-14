@@ -6,6 +6,7 @@ import '../../../core/theme/tokens/app_radii.dart';
 import '../../../core/theme/tokens/app_rail_sizes.dart';
 import '../../../shared/widgets/app_pressable.dart';
 import '../models/nav_destination.dart';
+import 'rail_tooltip.dart';
 
 /// One icon-only item of the rail card: a square hit target with the icon
 /// centered. States: default, hover, pressed, focus (ring from
@@ -16,16 +17,20 @@ class RailItem extends StatefulWidget {
     required this.label,
     required this.active,
     required this.onTap,
+    this.shortcut,
     this.badge,
     super.key,
   });
 
   final NavDestination destination;
 
-  /// Tooltip and semantics label (the item's name).
+  /// Tooltip text and semantics label (the item's name).
   final String label;
   final bool active;
   final VoidCallback? onTap;
+
+  /// Shortcut label shown in the tooltip, when the item has one.
+  final String? shortcut;
 
   /// Optional count badge, drawn in the corner slot. Not used yet.
   final Widget? badge;
@@ -53,57 +58,60 @@ class _RailItemState extends State<RailItem> {
         : rail.icon;
     return Semantics(
       selected: widget.active,
-      child: Listener(
-        onPointerDown: (_) => _setPressed(true),
-        onPointerUp: (_) => _setPressed(false),
-        onPointerCancel: (_) => _setPressed(false),
-        child: AppPressable(
-          tooltip: widget.label,
-          semanticLabel: widget.label,
-          borderRadius: AppRadii.r10,
-          onTap: widget.onTap,
-          builder: (context, hovered) {
-            final Color? background = !enabled
-                ? null
-                : _pressed
-                ? rail.pressedBackground
-                : widget.active
-                ? rail.selectedBackground
-                : hovered
-                ? rail.hoverBackground
-                : null;
-            return SizedBox(
-              width: size,
-              height: size,
-              child: Stack(
-                children: <Widget>[
-                  Positioned.fill(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: background,
-                        borderRadius: BorderRadius.circular(AppRadii.r10),
-                      ),
-                      child: Center(
-                        child: Icon(
-                          widget.destination.icon,
-                          size: AppRailSizes.icon,
-                          color: iconColor,
+      child: RailTooltip(
+        message: widget.label,
+        shortcut: widget.shortcut,
+        child: Listener(
+          onPointerDown: (_) => _setPressed(true),
+          onPointerUp: (_) => _setPressed(false),
+          onPointerCancel: (_) => _setPressed(false),
+          child: AppPressable(
+            semanticLabel: widget.label,
+            borderRadius: AppRadii.r10,
+            onTap: widget.onTap,
+            builder: (context, hovered) {
+              final Color? background = !enabled
+                  ? null
+                  : _pressed
+                  ? rail.pressedBackground
+                  : widget.active
+                  ? rail.selectedBackground
+                  : hovered
+                  ? rail.hoverBackground
+                  : null;
+              return SizedBox(
+                width: size,
+                height: size,
+                child: Stack(
+                  children: <Widget>[
+                    Positioned.fill(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: background,
+                          borderRadius: BorderRadius.circular(AppRadii.r10),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            widget.destination.icon,
+                            size: AppRailSizes.icon,
+                            color: iconColor,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  if (widget.badge != null)
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      width: AppRailSizes.badgeSlot,
-                      height: AppRailSizes.badgeSlot,
-                      child: widget.badge!,
-                    ),
-                ],
-              ),
-            );
-          },
+                    if (widget.badge != null)
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        width: AppRailSizes.badgeSlot,
+                        height: AppRailSizes.badgeSlot,
+                        child: widget.badge!,
+                      ),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

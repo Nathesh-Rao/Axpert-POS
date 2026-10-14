@@ -21,9 +21,11 @@ void main() {
       'searchMarginX': (ref.searchMarginX, 14.95),
       'searchFont': (ref.searchFont, 14.00),
       'avatarSize': (ref.avatarSize, 38.00),
-      'sidebarGap': (ref.sidebarGap, 23.80),
-      'sidebarButtonHeight': (ref.sidebarButtonHeight, 76.00),
-      'sidebarIconSize': (ref.sidebarIconSize, 26.00),
+      // Rail sizes are no longer the prototype's (DEC-142 and the by-hand icon
+      // and label edits): gap vh(4,1.1,12), item vh(36,6.2,48), icon vw(18,1.7,21).
+      'sidebarGap': (ref.sidebarGap, 11.38),
+      'sidebarButtonHeight': (ref.sidebarButtonHeight, 48.00),
+      'sidebarIconSize': (ref.sidebarIconSize, 21.00),
       'emptyCustomerMarginBottom': (ref.emptyCustomerMarginBottom, 11.38),
       'emptyCustomerPaddingBottom': (ref.emptyCustomerPaddingBottom, 10.35),
       'customerSelectWidth': (ref.customerSelectWidth, 175.00),
@@ -89,7 +91,7 @@ void main() {
     expect(ref.summaryDensity, SummaryDensity.normal);
     expect(ref.cartLineLayout, CartLineLayout.single);
     expect(ref.topbarHeight, 64);
-    expect(ref.sidebarWidth, 80);
+    expect(ref.sidebarWidth, 68);
     expect(ref.summaryWidth(isPos: true), 380);
     expect(ref.summaryWidth(isPos: false), 310);
     expect(ref.showShortcutHint, isTrue);
@@ -106,7 +108,7 @@ void main() {
 
       final w1280 = AppMetrics(const Size(1280, 1000));
       expect(w1280.topbarHeight, 56);
-      expect(w1280.sidebarWidth, 64);
+      expect(w1280.sidebarWidth, 56);
       expect(w1280.showShortcutHint, isFalse);
       expect(w1280.showProfileText, isFalse);
       expect(w1280.topbarGap, 8);
@@ -142,11 +144,16 @@ void main() {
 
   test('clamp rules saturate at both ends', () {
     final small = AppMetrics(const Size(800, 500));
-    expect(small.sidebarButtonHeight, 48);
+    // Touch (the default) keeps a 44 px hit area; desktop goes down to 36.
+    expect(small.sidebarButtonHeight, 44);
+    expect(
+      AppMetrics(const Size(800, 500), touch: false).sidebarButtonHeight,
+      36,
+    );
     expect(small.searchHeight, 36);
     expect(small.summaryWidth(isPos: true), 300);
     final big = AppMetrics(const Size(3000, 2000));
-    expect(big.sidebarButtonHeight, 76);
+    expect(big.sidebarButtonHeight, 48);
     expect(big.summaryWidth(isPos: true), 380);
   });
 }

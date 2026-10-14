@@ -163,11 +163,17 @@ void main() {
     final qtyControl = find
         .descendant(of: row, matching: find.byTooltip('Decrease quantity'))
         .first;
-    // Qty header is centered over the 144 px control (minus button at its left).
-    expect(
-      cx(find.text('Qty')),
-      closeTo(tester.getTopLeft(qtyControl).dx + 72, tolerance),
-    );
+    // Qty header is centered over the 144 px control itself (measured on the
+    // control's box, so the padding before its minus button does not matter).
+    final box = find
+        .ancestor(
+          of: qtyControl,
+          matching: find.byWidgetPredicate(
+            (w) => w is SizedBox && w.width == 144,
+          ),
+        )
+        .first;
+    expect(cx(find.text('Qty')), closeTo(cx(box), tolerance));
     expect(
       tester.getTopLeft(find.text('Item')).dx,
       closeTo(

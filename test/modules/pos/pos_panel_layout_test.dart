@@ -1,5 +1,7 @@
 // Width math, thresholds and fallback of the three-panel POS layout (DEC-141).
+import 'package:flutter/painting.dart' show Size;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/core/responsive/app_metrics.dart';
 import 'package:pos_application/core/theme/tokens/app_density_sizes.dart';
 import 'package:pos_application/modules/pos/models/pos_panel_layout.dart';
 
@@ -108,5 +110,30 @@ void main() {
       expect(ProductsStep.fromPercent(s.percent), s);
     }
     expect(ProductsStep.fromPercent(33), ProductsStep.off);
+  });
+
+  test('window widths at which the states start to fit (rail 68 / 56)', () {
+    int firstFit(PanelLayout l) {
+      for (var w = 700; w <= 2000; w++) {
+        final m = AppMetrics(Size(w.toDouble(), 800), touch: false);
+        final g = PanelGeometry(
+          workWidth: w - m.sidebarWidth - 2 * m.layoutGap,
+          billingWidth: m.summaryWidth(isPos: true),
+          gap: m.layoutGap,
+          edgeWidth: 36,
+          edgeGap: 8,
+          cartMinWide: AppDensitySizes.cartMinWide,
+          cartMinNarrow: AppDensitySizes.cartMinNarrow,
+          productsMinNarrow: AppDensitySizes.productsMinNarrow,
+        );
+        if (g.fits(l)) return w;
+      }
+      return -1;
+    }
+
+    expect(firstFit(_l(25, true)), 1184);
+    expect(firstFit(_l(25, false)), 884);
+    expect(firstFit(_l(75, false)), 1268);
+    expect(firstFit(_l(0, true)), 700);
   });
 }

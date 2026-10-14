@@ -5,6 +5,7 @@ import '../../../core/constants/app_strings_x.dart';
 import '../../../core/responsive/app_metrics_scope.dart';
 import '../../../core/routes/app_routes.dart';
 import '../../../core/theme/theme_x.dart';
+import '../../../core/theme/tokens/app_density_sizes.dart';
 import '../../../core/theme/tokens/app_radii.dart';
 import '../../../core/theme/tokens/app_spacing.dart';
 import '../../../shared/controllers/page_filter_controller.dart';
@@ -47,7 +48,7 @@ class Sidebar extends StatelessWidget {
       width: m.sidebarWidth,
       child: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.s5,
+          horizontal: AppDensitySizes.railPadX,
           vertical: AppSpacing.s4,
         ),
         child: Column(children: children),

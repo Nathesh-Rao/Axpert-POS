@@ -88,7 +88,8 @@ class AppMetrics {
 
   // --- layout constants ------------------------------------------------------
   double get topbarHeight => atMost1280 ? 56 : AppSizes.topbarHeight;
-  double get sidebarWidth => atMost1280 ? 64 : AppSizes.sidebarWidth;
+  double get sidebarWidth =>
+      atMost1280 ? AppDensitySizes.railWidthNarrow : AppDensitySizes.railWidth;
   double get layoutGap => 16;
   double get panelPad => atMost1100 ? 12 : 16;
 
@@ -127,8 +128,14 @@ class AppMetrics {
   double get avatarSize => _c.vw(30, 2.4, 38);
 
   // --- sidebar ---------------------------------------------------------------
-  double get sidebarGap => _c.vh(8, 2.3, 24);
-  double get sidebarButtonHeight => _c.vh(32, 8, 52);
+  double get sidebarGap => _c.vh(4, 1.1, 12);
+
+  /// Rail item height (compact, DEC-142); 44 at least on touch.
+  double get sidebarButtonHeight {
+    final h = _c.vh(36, 6.2, 48);
+    return touch ? math.max(h, AppDensitySizes.railTouchMin) : h;
+  }
+
   double get sidebarIconSize => _c.vw(18, 1.7, 21);
   double get sidebarLabelFont => _c.vw(8, .6, 12);
 

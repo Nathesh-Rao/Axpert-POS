@@ -99,4 +99,15 @@ abstract final class AppDensitySizes {
   /// Customer row narrower than this (the cart at 25%): icon-only Add
   /// Customer button.
   static const double customerRowCompactBreak = 360.0;
+
+  /// Side rail (DEC-142): narrower than the prototype's 80 (64 at width
+  /// <= 1280); the icon and label sizes are unchanged.
+  static const double railWidth = 68.0;
+  static const double railWidthNarrow = 56.0;
+
+  /// Horizontal padding of the rail around its items (was 5).
+  static const double railPadX = 3.0;
+
+  /// Touch hit area of a rail item.
+  static const double railTouchMin = 44.0;
 }

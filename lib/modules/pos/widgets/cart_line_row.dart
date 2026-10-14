@@ -585,6 +585,7 @@ class _QtyControl extends StatelessWidget {
             borderRadius: radius,
             child: Row(
               children: <Widget>[
+                const SizedBox(width: 10),
                 _QtyButton(
                   icon: AppIcons.minus,
                   tooltip: s.decreaseQtyTooltip(),

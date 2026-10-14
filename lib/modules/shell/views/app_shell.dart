@@ -34,11 +34,16 @@ class AppShell extends StatelessWidget {
             const OfflineBanner(),
             Expanded(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(0, gap, gap, gap),
+                padding: EdgeInsets.fromLTRB(
+                  context.metrics.railMargin,
+                  gap,
+                  gap,
+                  gap,
+                ),
                 child: Row(
                   children: <Widget>[
                     _Region(order: 1, child: Sidebar(current: page)),
-                    SizedBox(width: gap),
+                    SizedBox(width: context.metrics.railGap),
                     Expanded(child: _Region(order: 2, child: child)),
                     if (!embedBilling) ...<Widget>[
                       SizedBox(width: gap),

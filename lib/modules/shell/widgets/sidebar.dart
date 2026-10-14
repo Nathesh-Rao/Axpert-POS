@@ -13,8 +13,10 @@ import '../../../shared/controllers/search_field_controller.dart';
 import '../../../shared/widgets/app_pressable.dart';
 import '../../../shared/widgets/css_gradient.dart';
 import '../models/nav_destination.dart';
+import 'rail_card.dart';
 
-/// Left navigation: seven items, "More" pinned to the bottom.
+/// Left navigation: seven items. Desktop and web show the icon-only
+/// [RailCard]; touch keeps the labelled strip with "More" pinned to the bottom.
 class Sidebar extends StatelessWidget {
   const Sidebar({required this.current, super.key});
 
@@ -30,6 +32,7 @@ class Sidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final m = context.metrics;
+    if (!m.touch) return RailCard(current: current, onSelect: _go);
     final items = NavDestination.all;
     final children = <Widget>[];
     for (var i = 0; i < items.length; i++) {

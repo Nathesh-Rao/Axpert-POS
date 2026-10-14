@@ -125,7 +125,8 @@ async function step(name, fn) {
   results.push({ name, ok, red: +red.toFixed(3), errors: bad.length, first: bad[0]?.text.split('\n')[0]?.slice(0, 110) ?? error ?? '' });
   if (!ok) fs.writeFileSync(`${outDir}/FAIL_${name.replace(/[^a-z0-9]+/gi, '_')}.log`, bad.map((l) => `[${l.type}] ${l.text}`).join('\n'));
 }
-const NAV = { POS: [32, 95], Products: [32, 170], Customers: [32, 245], Sales: [32, 320], Returns: [32, 395], Reports: [32, 470], More: [32, 660] };
+// Icon-only rail card at 1280 x 720: items 40 px every 44 px from y 100, More below the divider.
+const NAV = { POS: [32, 100], Products: [32, 144], Customers: [32, 188], Sales: [32, 232], Returns: [32, 276], Reports: [32, 320], More: [32, 377] };
 const page = (n) => step(`page ${n}`, () => click(...NAV[n]));
 const esc = async () => { await key('Escape', 27); await sleep(500); };
 
@@ -153,9 +154,9 @@ const chord = async (k, code, vk, modifiers) => {
 await step('three panels: Ctrl+B to 25%', () => chord('b', 'KeyB', 66, 2));
 await step('three panels: Ctrl+B to 75%', () => chord('b', 'KeyB', 66, 2));
 await step('three panels: Ctrl+B back to hidden', () => chord('b', 'KeyB', 66, 2));
-await step('three panels: click the edge control (25%)', () => click(97, Math.round(height * 0.7)));
-await step('three panels: click the edge control (75%)', () => click(97, Math.round(height * 0.7)));
-await step('three panels: click the edge control (hidden)', () => click(97, Math.round(height * 0.7)));
+await step('three panels: click the edge control (25%)', () => click(82, Math.round(height * 0.7)));
+await step('three panels: click the edge control (75%)', () => click(82, Math.round(height * 0.7)));
+await step('three panels: click the edge control (hidden)', () => click(82, Math.round(height * 0.7)));
 await step('billing: Ctrl+. collapses', () => chord('.', 'Period', 190, 2));
 await step('billing collapsed: Ctrl+B to 25%', () => chord('b', 'KeyB', 66, 2));
 await step('billing collapsed: Ctrl+B to 75%', () => chord('b', 'KeyB', 66, 2));

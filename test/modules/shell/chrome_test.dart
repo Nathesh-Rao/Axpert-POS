@@ -56,7 +56,10 @@ void main() {
       'More',
     ]) {
       expect(
-        find.descendant(of: find.byType(Sidebar), matching: find.text(label)),
+        find.descendant(
+          of: find.byType(Sidebar),
+          matching: find.byTooltip(label),
+        ),
         findsOneWidget,
         reason: label,
       );
@@ -129,7 +132,7 @@ void main() {
     await tester.tap(
       find.descendant(
         of: find.byType(Sidebar),
-        matching: find.text('Customers'),
+        matching: find.byTooltip('Customers'),
       ),
     );
     await tester.pumpAndSettle();
@@ -149,7 +152,10 @@ void main() {
     await tester.enterText(find.byType(TextField).first, 'cola');
     for (final label in <String>['Products', 'Sales', 'More', 'POS']) {
       await tester.tap(
-        find.descendant(of: find.byType(Sidebar), matching: find.text(label)),
+        find.descendant(
+          of: find.byType(Sidebar),
+          matching: find.byTooltip(label),
+        ),
       );
       await tester.pumpAndSettle();
       expect(search.text.text, 'cola', reason: label);

@@ -165,7 +165,7 @@ void main() {
             find
                 .descendant(
                   of: find.byType(Sidebar),
-                  matching: find.text(label),
+                  matching: find.byTooltip(label),
                 )
                 .first,
           );

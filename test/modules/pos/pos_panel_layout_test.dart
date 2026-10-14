@@ -70,7 +70,7 @@ void main() {
   });
 
   test('thresholds: which states fit where', () {
-    // 1280 wide window: work area 1184 (sidebar 64).
+    // 1280 wide window: the work area is 1200 (rail card 48 + 8 + 8 + 16); 1184 is the stricter case.
     final wide = _geo(1184);
     for (final p in <int>[0, 25, 75]) {
       for (final b in <bool>[true, false]) {
@@ -112,28 +112,32 @@ void main() {
     expect(ProductsStep.fromPercent(33), ProductsStep.off);
   });
 
-  test('window widths at which the states start to fit (rail 68 / 56)', () {
-    int firstFit(PanelLayout l) {
-      for (var w = 700; w <= 2000; w++) {
-        final m = AppMetrics(Size(w.toDouble(), 800), touch: false);
-        final g = PanelGeometry(
-          workWidth: w - m.sidebarWidth - 2 * m.layoutGap,
-          billingWidth: m.summaryWidth(isPos: true),
-          gap: m.layoutGap,
-          edgeWidth: 36,
-          edgeGap: 8,
-          cartMinWide: AppDensitySizes.cartMinWide,
-          cartMinNarrow: AppDensitySizes.cartMinNarrow,
-          productsMinNarrow: AppDensitySizes.productsMinNarrow,
-        );
-        if (g.fits(l)) return w;
+  test(
+    'window widths at which the states start to fit (rail card 56 / 48)',
+    () {
+      int firstFit(PanelLayout l) {
+        for (var w = 700; w <= 2000; w++) {
+          final m = AppMetrics(Size(w.toDouble(), 800), touch: false);
+          final g = PanelGeometry(
+            workWidth:
+                w - m.railMargin - m.sidebarWidth - m.railGap - m.layoutGap,
+            billingWidth: m.summaryWidth(isPos: true),
+            gap: m.layoutGap,
+            edgeWidth: 36,
+            edgeGap: 8,
+            cartMinWide: AppDensitySizes.cartMinWide,
+            cartMinNarrow: AppDensitySizes.cartMinNarrow,
+            productsMinNarrow: AppDensitySizes.productsMinNarrow,
+          );
+          if (g.fits(l)) return w;
+        }
+        return -1;
       }
-      return -1;
-    }
 
-    expect(firstFit(_l(25, true)), 1184);
-    expect(firstFit(_l(25, false)), 884);
-    expect(firstFit(_l(75, false)), 1268);
-    expect(firstFit(_l(0, true)), 700);
-  });
+      expect(firstFit(_l(25, true)), 1176);
+      expect(firstFit(_l(25, false)), 876);
+      expect(firstFit(_l(75, false)), 1260);
+      expect(firstFit(_l(0, true)), 700);
+    },
+  );
 }

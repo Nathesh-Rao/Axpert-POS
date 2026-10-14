@@ -55,7 +55,7 @@ await insert('8901234560015'); await key('Enter', 13); await sleep(1600);
 await click(width / 2, 28); await insert('8901234560000'); await key('Enter', 13); await sleep(1600);
 await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 600, y: 400 }); await sleep(600);
 await shot_('pos');
-const railW = width <= 1280 ? 56 : 68;
+const railW = (width <= 1280 ? 48 : 56) + 8;
 const r = await send('Page.captureScreenshot', { format: 'png', clip: { x: 0, y: 60, width: railW + 8, height: height - 60, scale: 3 } });
 fs.writeFileSync(`${outDir}/rail.png`, Buffer.from(r.data, 'base64'));
 console.log(logs.length ? 'ERRORS ' + logs.join(' | ').slice(0, 300) : 'no console errors');

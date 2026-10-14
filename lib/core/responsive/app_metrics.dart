@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui' show Size;
 
 import '../theme/tokens/app_density_sizes.dart';
+import '../theme/tokens/app_rail_sizes.dart';
 import '../theme/tokens/app_sizes.dart';
 import 'breakpoints.dart';
 import 'clamp_rule.dart';
@@ -88,8 +89,22 @@ class AppMetrics {
 
   // --- layout constants ------------------------------------------------------
   double get topbarHeight => atMost1280 ? 56 : AppSizes.topbarHeight;
-  double get sidebarWidth =>
-      atMost1280 ? AppDensitySizes.railWidthNarrow : AppDensitySizes.railWidth;
+
+  /// Touch keeps the labelled rail; desktop and web use the icon-only card.
+  double get sidebarWidth => touch
+      ? (atMost1280
+            ? AppDensitySizes.railWidthNarrow
+            : AppDensitySizes.railWidth)
+      : railSizes.width;
+
+  /// Sizes of the icon-only rail card (desktop and web).
+  AppRailSizes get railSizes => AppRailSizes.of(narrow: atMost1280);
+
+  /// Margin left of the rail card; 0 on touch.
+  double get railMargin => touch ? 0 : AppRailSizes.margin;
+
+  /// Gap between the rail and the work area.
+  double get railGap => touch ? layoutGap : AppRailSizes.margin;
   double get layoutGap => 16;
   double get panelPad => atMost1100 ? 12 : 16;
 

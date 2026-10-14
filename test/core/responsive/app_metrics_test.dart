@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pos_application/core/responsive/app_metrics.dart';
+import 'package:pos_application/core/theme/tokens/app_rail_sizes.dart';
 
 void main() {
   final ref = AppMetrics(AppMetrics.referenceSize);
@@ -156,4 +157,29 @@ void main() {
     expect(big.sidebarButtonHeight, 48);
     expect(big.summaryWidth(isPos: true), 380);
   });
+
+  test(
+    'desktop rail card: sizes come from the rail tokens (touch keeps 68/56)',
+    () {
+      final wide = AppMetrics(const Size(1868, 1035), touch: false);
+      expect(wide.sidebarWidth, AppRailSizes.normal.width);
+      expect(wide.sidebarWidth, 56);
+      expect(wide.railSizes.item, 44);
+      expect(wide.railMargin, 8);
+      expect(wide.railGap, 8);
+      final narrow = AppMetrics(const Size(1280, 720), touch: false);
+      expect(narrow.sidebarWidth, 48);
+      expect(narrow.railSizes.item, 40);
+      expect(narrow.sidebarWidth, lessThanOrEqualTo(wide.sidebarWidth));
+      expect(
+        AppRailSizes.narrow.item,
+        lessThanOrEqualTo(AppRailSizes.normal.item),
+      );
+      final touch = AppMetrics(const Size(1868, 1035));
+      expect(touch.sidebarWidth, 68);
+      expect(AppMetrics(const Size(1280, 720)).sidebarWidth, 56);
+      expect(touch.railMargin, 0);
+      expect(touch.railGap, touch.layoutGap);
+    },
+  );
 }

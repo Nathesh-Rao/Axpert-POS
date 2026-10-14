@@ -24,11 +24,15 @@ class CatalogProductCard extends StatelessWidget {
   const CatalogProductCard({
     required this.product,
     required this.list,
+    this.compact = false,
     super.key,
   });
 
   final Product product;
   final bool list;
+
+  /// The narrow Products panel's tile (DEC-141).
+  final bool compact;
 
   /// Counts builds of the inner card (performance tests).
   static int builds = 0;
@@ -79,6 +83,7 @@ class CatalogProductCard extends StatelessWidget {
       ),
       favourite: product.favourite,
       list: list,
+      compact: compact,
       qtyBadge: line == null
           ? null
           : context.strings.qtyBadge(QtyFormatter.compact(line.qty)),

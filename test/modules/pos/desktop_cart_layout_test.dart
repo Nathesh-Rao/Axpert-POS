@@ -1,32 +1,43 @@
-// The desktop POS work area (DEC-139): the cart view (compact rows, slim
-// footer) and the catalog view over the whole width, light and dark, at the
-// three reference sizes, with no overflow while the view changes.
+// The six states of the desktop POS work area (DEC-141) at 1280x720, 1440x900
+// and 1868x1035, light and dark: no overflow, panel widths in the stated
+// ratios, Billing at its own width, the footer chip while Billing is closed,
+// and a settled layout after every step.
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:pos_application/core/responsive/app_metrics.dart';
 import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
 import 'package:pos_application/modules/pos/controllers/cart_actions_controller.dart';
 import 'package:pos_application/modules/pos/controllers/pos_work_view_controller.dart';
+import 'package:pos_application/modules/pos/models/pos_panel_layout.dart';
+import 'package:pos_application/modules/pos/widgets/billing_total_chip.dart';
 import 'package:pos_application/modules/pos/widgets/cart_compact_row.dart';
-import 'package:pos_application/modules/pos/widgets/cart_compact_table.dart';
 import 'package:pos_application/modules/pos/widgets/cart_footer.dart';
-import 'package:pos_application/modules/pos/widgets/catalog_panel.dart';
-import 'package:pos_application/modules/pos/widgets/desktop_cart_column.dart';
-import 'package:pos_application/modules/pos/widgets/work_tab.dart';
 import 'package:pos_application/modules/shell/controllers/settings_controller.dart';
 import 'package:pos_application/shared/controllers/toast_controller.dart';
 
 import '../../support/test_app.dart';
 import '../../support/viewport.dart';
 
-const _sizes = <Size>[Size(950, 733), Size(1280, 720), Size(1868, 1035)];
+const _sizes = <Size>[Size(1280, 720), Size(1440, 900), Size(1868, 1035)];
 
-Future<void> _boot(
+/// Products step, Billing open, and the Products : Cart ratio (null when one
+/// of them is closed).
+const _states = <(int, bool, double?)>[
+  (0, true, null), // cart 75, today's cart view
+  (25, true, 0.5), // all three
+  (75, true, null), // cart 0, today's catalog view
+  (0, false, null), // cart 100
+  (25, false, 1 / 3),
+  (75, false, 3),
+];
+
+Future<void> boot(
   WidgetTester tester,
   Size size, {
   required bool dark,
-  required int lines,
+  int lines = 14,
 }) async {
   useLogicalViewport(tester, size);
   final binding = await bootInWidgetTest(tester);
@@ -39,23 +50,31 @@ Future<void> _boot(
   for (var i = 0; i < lines; i++) {
     Get.find<CartActionsController>().add(products.products[i]);
   }
-  // Adding through the actions shows the cart (the cart became active).
   await tester.pump();
   await tester.pump(const Duration(seconds: 2));
   Get.find<ToastController>().toasts.clear();
   await tester.pumpAndSettle();
 }
 
-/// Rows of the cart table that lie fully inside its list viewport.
-int _visibleRows(WidgetTester tester) {
-  final table = tester.getRect(find.byType(CartCompactTable));
-  var count = 0;
-  for (final e in find.byType(CartCompactRow).evaluate()) {
-    final r = tester.getRect(find.byWidget(e.widget));
-    if (r.top >= table.top && r.bottom <= table.bottom + 0.01) count++;
+/// Moves the layout to [products] / [billing] through the public steps.
+Future<void> goTo(WidgetTester tester, int products, bool billing) async {
+  final work = Get.find<PosWorkViewController>();
+  for (var i = 0; i < 4 && work.effective.products.percent < products; i++) {
+    work.wider();
+    await tester.pumpAndSettle();
   }
-  return count;
+  for (var i = 0; i < 4 && work.effective.products.percent > products; i++) {
+    work.narrower();
+    await tester.pumpAndSettle();
+  }
+  if (work.effective.billing != billing) {
+    work.toggleBilling();
+    await tester.pumpAndSettle();
+  }
 }
+
+Rect slot(WidgetTester tester, String name) =>
+    tester.getRect(find.byKey(ValueKey<String>('pos-slot-$name')));
 
 void main() {
   useTestApp();
@@ -65,63 +84,61 @@ void main() {
       final name =
           '${size.width.toInt()}x${size.height.toInt()} '
           '${dark ? 'dark' : 'light'}';
-      testWidgets('cart view and catalog view at $name', (tester) async {
+      testWidgets('six states at $name', (tester) async {
         debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
         try {
-          await _boot(tester, size, dark: dark, lines: 14);
+          await boot(tester, size, dark: dark);
           expect(tester.takeException(), isNull);
           final work = Get.find<PosWorkViewController>();
+          final billingWidth = AppMetrics(
+            size,
+            touch: false,
+          ).summaryWidth(isPos: true);
+          for (final (products, billing, ratio) in _states) {
+            final label = 'P$products/B${billing ? 25 : 0} at $name';
+            await goTo(tester, products, billing);
+            expect(
+              work.effective,
+              PanelLayout(ProductsStep.fromPercent(products), billing: billing),
+              reason: label,
+            );
+            expect(tester.takeException(), isNull, reason: label);
 
-          // CART view: the cart over the whole work area, 48 px rows.
-          expect(work.view, PosWorkView.cart);
-          final tab = tester.getRect(find.byType(WorkTab));
-          final cart = tester.getRect(find.byType(DesktopCartColumn));
-          expect(cart.left, greaterThan(tab.right));
-          expect(cart.right, greaterThan(size.width * 0.6));
-          expect(find.byType(CatalogPanel).hitTestable(), findsNothing);
-          final rows = find.byType(CartCompactRow);
-          expect(tester.getSize(rows.first).height, 48);
-          final visible = _visibleRows(tester);
-          // ignore: avoid_print
-          print('ROWS $name: $visible');
-          expect(visible, greaterThanOrEqualTo(size.height >= 1000 ? 12 : 8));
-          expect(
-            tester.getSize(find.byType(CartFooter)).height,
-            lessThanOrEqualTo(44),
-          );
-          expect(
-            find.descendant(
-              of: find.byType(WorkTab),
-              matching: find.text('Products'),
-            ),
-            findsOneWidget,
-          );
-
-          // CATALOG view: the catalog over the same width, the cart gone.
-          work.toggle();
-          await tester.pumpAndSettle();
-          expect(work.view, PosWorkView.catalog);
-          expect(tester.takeException(), isNull);
-          final catalog = tester.getRect(find.byType(CatalogPanel));
-          expect(catalog.left, closeTo(cart.left, 0.5));
-          expect(catalog.width, closeTo(cart.width, 0.5));
-          expect(find.byType(DesktopCartColumn).hitTestable(), findsNothing);
-          expect(
-            find.descendant(
-              of: find.byType(WorkTab),
-              matching: find.text('Cart (14)'),
-            ),
-            findsOneWidget,
-          );
-
-          // Back, with the animation settled at every step.
-          work.toggle();
-          await tester.pumpAndSettle();
-          expect(tester.takeException(), isNull);
-          expect(
-            tester.getRect(find.byType(DesktopCartColumn)).width,
-            closeTo(cart.width, 0.5),
-          );
+            final p = slot(tester, 'products');
+            final c = slot(tester, 'cart');
+            final b = slot(tester, 'billing');
+            expect(
+              b.width,
+              closeTo(billing ? billingWidth : 0, 1),
+              reason: label,
+            );
+            expect(p.width > 0, products > 0, reason: label);
+            final cartPercent = 100 - products - (billing ? 25 : 0);
+            expect(c.width > 0, cartPercent > 0, reason: label);
+            if (ratio != null) {
+              expect(
+                c.width / p.width,
+                closeTo(1 / ratio, 0.01),
+                reason: label,
+              );
+            }
+            // Panels sit in order and fill the work area to the right edge.
+            if (products > 0 && cartPercent > 0) {
+              expect(c.left - p.right, closeTo(16, 1), reason: label);
+            }
+            final rightmost = billing ? b : (cartPercent > 0 ? c : p);
+            expect(rightmost.right, closeTo(size.width - 16, 1), reason: label);
+            // The footer chip stands in for a closed Billing.
+            expect(
+              find.byType(BillingTotalChip).evaluate().length,
+              billing || cartPercent == 0 ? 0 : 1,
+              reason: label,
+            );
+            if (cartPercent > 0) {
+              expect(find.byType(CartFooter), findsOneWidget, reason: label);
+              expect(find.byType(CartCompactRow), findsWidgets, reason: label);
+            }
+          }
           await tester.pump(const Duration(seconds: 6));
           await tester.pumpAndSettle();
         } finally {
@@ -131,35 +148,77 @@ void main() {
     }
   }
 
-  testWidgets('mid-transition the two views share the work width', (
+  for (final size in const <Size>[
+    Size(900, 600),
+    Size(950, 733),
+    Size(1100, 700),
+    Size(1500, 900),
+  ]) {
+    testWidgets('every reachable state reads without overflow at '
+        '${size.width.toInt()}x${size.height.toInt()}', (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      try {
+        await boot(tester, size, dark: false, lines: 6);
+        final work = Get.find<PosWorkViewController>();
+        for (final (products, billing, _) in _states) {
+          await goTo(tester, products, billing);
+          expect(
+            tester.takeException(),
+            isNull,
+            reason: 'P$products/B${billing ? 25 : 0} -> ${work.effective}',
+          );
+        }
+        // Steps through the whole cycle, each one settled.
+        for (var i = 0; i < 4; i++) {
+          work.cycleProducts();
+          await tester.pumpAndSettle();
+          expect(tester.takeException(), isNull, reason: '${work.effective}');
+        }
+        await tester.pump(const Duration(seconds: 6));
+        await tester.pumpAndSettle();
+      } finally {
+        debugDefaultTargetPlatformOverride = null;
+      }
+    });
+  }
+
+  testWidgets('mid-transition the panels share the work width', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+    try {
+      await boot(tester, const Size(1280, 720), dark: false, lines: 3);
+      final work = Get.find<PosWorkViewController>();
+      final before = slot(tester, 'cart').width;
+      work.wider();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 90));
+      final p = slot(tester, 'products');
+      final c = slot(tester, 'cart');
+      final b = slot(tester, 'billing');
+      expect(p.width, greaterThan(0));
+      expect(c.width, lessThan(before));
+      expect(c.width, greaterThan(0));
+      // Everything still ends at the right edge while it moves.
+      expect(b.right, closeTo(1280 - 16, 1));
+      expect(tester.takeException(), isNull);
+      await tester.pumpAndSettle();
+      await tester.pump(const Duration(seconds: 6));
+      await tester.pumpAndSettle();
+    } finally {
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  testWidgets('the default cart view keeps today\'s rows and slim footer', (
     tester,
   ) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
     try {
-      await _boot(tester, const Size(1280, 720), dark: false, lines: 3);
-      final work = Get.find<PosWorkViewController>();
-      double slot(Type child) => tester
-          .getSize(
-            find
-                .ancestor(
-                  of: find.byType(child),
-                  matching: find.byType(ClipRect),
-                )
-                .first,
-          )
-          .width;
-      final full = slot(DesktopCartColumn);
-      work.toggle();
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 90));
-      final cartNow = slot(DesktopCartColumn);
-      final catalogNow = slot(CatalogPanel);
-      expect(cartNow, lessThan(full));
-      expect(cartNow, greaterThan(0));
-      expect(catalogNow, greaterThan(0));
-      expect(cartNow + catalogNow, closeTo(full, 0.5), reason: 'they share it');
-      expect(tester.takeException(), isNull);
-      await tester.pumpAndSettle();
+      await boot(tester, const Size(1280, 720), dark: false);
+      expect(tester.getSize(find.byType(CartCompactRow).first).height, 48);
+      expect(
+        tester.getSize(find.byType(CartFooter)).height,
+        lessThanOrEqualTo(50),
+      );
       await tester.pump(const Duration(seconds: 6));
       await tester.pumpAndSettle();
     } finally {

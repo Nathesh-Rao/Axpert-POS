@@ -9,10 +9,15 @@ class AppSettings {
     required this.beep,
     required this.counter,
     this.printPaperMm = defaultPrintPaperMm,
+    this.posProductsStep = defaultPosProductsStep,
+    this.posBillingOpen = true,
   });
 
   /// Receipt paper width used until a setting says otherwise.
   static const int defaultPrintPaperMm = 80;
+
+  /// Products panel closed (0), narrow (25) or wide (75) on a new device.
+  static const int defaultPosProductsStep = 0;
 
   /// Defaults: light, beep on. `store` and `counter` are
   /// legacy keys: the store and counter come from the database session now
@@ -32,6 +37,10 @@ class AppSettings {
     counter: json[StorageKeys.counter] as String? ?? defaults.counter,
     printPaperMm:
         json[StorageKeys.printPaperMm] as int? ?? defaults.printPaperMm,
+    posProductsStep:
+        json[StorageKeys.posProductsStep] as int? ?? defaults.posProductsStep,
+    posBillingOpen:
+        json[StorageKeys.posBillingOpen] as bool? ?? defaults.posBillingOpen,
   );
 
   final String store;
@@ -42,12 +51,19 @@ class AppSettings {
   /// Receipt paper width in millimetres (80 or 58 for thermal rolls).
   final int printPaperMm;
 
+  /// The user's chosen POS layout on this device: Products panel step (0, 25,
+  /// 75) and Billing open or collapsed. A view preference, not business data.
+  final int posProductsStep;
+  final bool posBillingOpen;
+
   Map<String, dynamic> toJson() => <String, dynamic>{
     StorageKeys.store: store,
     StorageKeys.dark: dark,
     StorageKeys.beep: beep,
     StorageKeys.counter: counter,
     StorageKeys.printPaperMm: printPaperMm,
+    StorageKeys.posProductsStep: posProductsStep,
+    StorageKeys.posBillingOpen: posBillingOpen,
   };
 
   AppSettings copyWith({
@@ -56,12 +72,16 @@ class AppSettings {
     bool? beep,
     String? counter,
     int? printPaperMm,
+    int? posProductsStep,
+    bool? posBillingOpen,
   }) => AppSettings(
     store: store ?? this.store,
     dark: dark ?? this.dark,
     beep: beep ?? this.beep,
     counter: counter ?? this.counter,
     printPaperMm: printPaperMm ?? this.printPaperMm,
+    posProductsStep: posProductsStep ?? this.posProductsStep,
+    posBillingOpen: posBillingOpen ?? this.posBillingOpen,
   );
 
   @override
@@ -71,8 +91,18 @@ class AppSettings {
       other.dark == dark &&
       other.beep == beep &&
       other.counter == counter &&
-      other.printPaperMm == printPaperMm;
+      other.printPaperMm == printPaperMm &&
+      other.posProductsStep == posProductsStep &&
+      other.posBillingOpen == posBillingOpen;
 
   @override
-  int get hashCode => Object.hash(store, dark, beep, counter, printPaperMm);
+  int get hashCode => Object.hash(
+    store,
+    dark,
+    beep,
+    counter,
+    printPaperMm,
+    posProductsStep,
+    posBillingOpen,
+  );
 }

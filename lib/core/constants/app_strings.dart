@@ -332,6 +332,21 @@ abstract class AppStrings {
   String workTabToCartSemantic(int count, String shortcut);
   String workTabToProductsSemantic(String shortcut);
   String workTabEmptySemantic();
+
+  /// Edge control of the three-panel layout (DEC-141). [state] is
+  /// `productsStepLabel`.
+  String productsStepLabel(int percent);
+  String workTabResizeSemantic(String state, String shortcut);
+  String workTabWiderSemantic(String state);
+  String workTabNarrowerSemantic(String state);
+
+  /// Billing collapse button, footer chip and shortcut row.
+  String helpToggleBilling();
+  String billingShortcutMac();
+  String billingShortcutOther();
+  String billingCollapseTooltip(String shortcut);
+  String billingChipSemantic(String total);
+  String billingChipTooltip(String shortcut);
   String helpAddScanned();
   String helpRemoveLine();
   String helpCloseDialog();

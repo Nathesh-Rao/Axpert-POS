@@ -21,7 +21,7 @@ class SettingsMigrationException implements Exception {
   String toString() => 'SettingsMigrationException: $message';
 }
 
-/// One-way copy of the 5 settings keys from [LocalStore] into Drift.
+/// One-way copy of the 7 settings keys from [LocalStore] into Drift.
 ///
 /// LocalStore is only read, except that the stale key is removed after a
 /// verified re-copy. The marker means "copy completed" (count, copied_at);

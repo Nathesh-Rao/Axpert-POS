@@ -140,6 +140,30 @@ await step('beep on add (Web Audio: sine 1100 Hz, gain 0.04, 80 ms)', async () =
 });
 await step('select member MG2001', async () => { await click(1020, 375); await insert('MG2001'); await sleep(800); });
 
+// Three-panel layout (DEC-141): every Products step and Billing state by keyboard and by the
+// edge control, F2 with Billing collapsed, back to the default layout for the steps below.
+const chord = async (k, code, vk, modifiers) => {
+  const [mk, mcode, mvk] = modifiers === 2 ? ['Control', 'ControlLeft', 17] : ['Meta', 'MetaLeft', 91];
+  await send('Input.dispatchKeyEvent', { type: 'rawKeyDown', key: mk, code: mcode, windowsVirtualKeyCode: mvk, modifiers });
+  await send('Input.dispatchKeyEvent', { type: 'rawKeyDown', key: k, code, windowsVirtualKeyCode: vk, modifiers });
+  await send('Input.dispatchKeyEvent', { type: 'keyUp', key: k, code, windowsVirtualKeyCode: vk, modifiers });
+  await send('Input.dispatchKeyEvent', { type: 'keyUp', key: mk, code: mcode, windowsVirtualKeyCode: mvk, modifiers: 0 });
+  await sleep(700);
+};
+await step('three panels: Ctrl+B to 25%', () => chord('b', 'KeyB', 66, 2));
+await step('three panels: Ctrl+B to 75%', () => chord('b', 'KeyB', 66, 2));
+await step('three panels: Ctrl+B back to hidden', () => chord('b', 'KeyB', 66, 2));
+await step('three panels: click the edge control (25%)', () => click(97, Math.round(height * 0.7)));
+await step('three panels: click the edge control (75%)', () => click(97, Math.round(height * 0.7)));
+await step('three panels: click the edge control (hidden)', () => click(97, Math.round(height * 0.7)));
+await step('billing: Ctrl+. collapses', () => chord('.', 'Period', 190, 2));
+await step('billing collapsed: Ctrl+B to 25%', () => chord('b', 'KeyB', 66, 2));
+await step('billing collapsed: Ctrl+B to 75%', () => chord('b', 'KeyB', 66, 2));
+await step('billing collapsed: Ctrl+B to hidden', () => chord('b', 'KeyB', 66, 2));
+await step('billing collapsed: F2 opens it', async () => { await click(width / 2, 28); await key('F2', 113); await sleep(900); });
+await step('billing: Ctrl+. collapses again', () => chord('.', 'Period', 190, 2));
+await step('billing: Ctrl+. expands', () => chord('.', 'Period', 190, 2));
+
 // every page from POS and back, then the order that showed the red screen
 for (const n of ['Products', 'Customers', 'Sales', 'Returns', 'Reports', 'More']) { await page(n); await page('POS'); }
 for (const n of ['Reports', 'Customers', 'Reports', 'Products', 'Reports', 'Sales', 'Returns', 'More', 'Reports', 'POS']) await page(n);

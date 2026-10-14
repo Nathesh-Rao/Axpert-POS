@@ -335,7 +335,9 @@ class InitialBinding extends Bindings {
         offers: Get.find<OffersController>(),
       ),
     );
-    _put<PosWorkViewController>(PosWorkViewController(Get.find(), Get.find()));
+    _put<PosWorkViewController>(
+      PosWorkViewController(Get.find(), Get.find(), Get.find()),
+    );
     _put<CartSelectionController>(CartSelectionController());
     _put<CartActionsController>(
       CartActionsController(
@@ -483,18 +485,25 @@ class InitialBinding extends Bindings {
     shortcuts.handlers[ShortcutAction.deleteSelected] =
         Get.find<CartActionsController>().removeSelected;
     final payment = Get.find<PaymentController>();
-    shortcuts.handlers[ShortcutAction.cash] = () =>
-        payment.payment(PaymentMode.cash);
-    shortcuts.handlers[ShortcutAction.card] = () =>
-        payment.payment(PaymentMode.card);
+    final work = Get.find<PosWorkViewController>();
+    // The payment panel lives in Billing: F2 and F3 open it first, then act
+    // as before.
+    shortcuts.handlers[ShortcutAction.cash] = () {
+      work.openBillingForPayment();
+      payment.payment(PaymentMode.cash);
+    };
+    shortcuts.handlers[ShortcutAction.card] = () {
+      work.openBillingForPayment();
+      payment.payment(PaymentMode.card);
+    };
     shortcuts.handlers[ShortcutAction.hold] =
         Get.find<HoldRecallController>().hold;
     shortcuts.handlers[ShortcutAction.recall] =
         Get.find<HoldRecallController>().openRecall;
     shortcuts.handlers[ShortcutAction.discount] =
         Get.find<DiscountFormController>().open;
-    shortcuts.handlers[ShortcutAction.switchWorkView] =
-        Get.find<PosWorkViewController>().toggle;
+    shortcuts.handlers[ShortcutAction.switchWorkView] = work.cycleProducts;
+    shortcuts.handlers[ShortcutAction.toggleBilling] = work.toggleBilling;
   }
 
   /// Loads the persisted data of every permanent controller (call once before

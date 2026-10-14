@@ -113,7 +113,7 @@ void main() {
       );
     }
 
-    expect(ShortcutHelp.entries, hasLength(10));
+    expect(ShortcutHelp.entries, hasLength(11));
     for (final entry in ShortcutHelp.entries) {
       for (final key in entry.keys) {
         expect(
@@ -135,7 +135,7 @@ void main() {
     expect(label(0, TargetPlatform.windows), 'Ctrl+K');
     expect(label(0, TargetPlatform.android), 'Ctrl+K');
     expect(
-      <String>[for (var i = 1; i < 10; i++) label(i, TargetPlatform.windows)],
+      <String>[for (var i = 1; i < 11; i++) label(i, TargetPlatform.windows)],
       <String>[
         'Enter',
         'F2',
@@ -144,11 +144,13 @@ void main() {
         'F5',
         'F6',
         'Ctrl+B',
+        'Ctrl+.',
         'Delete',
         'Esc',
       ],
     );
     expect(label(7, TargetPlatform.macOS), '⌘B');
+    expect(label(8, TargetPlatform.macOS), '⌘.');
     expect(
       <String>[for (final e in ShortcutHelp.entries) e.text(s)],
       <String>[
@@ -159,7 +161,8 @@ void main() {
         'Hold bill',
         'Recall bill',
         'Apply discount',
-        'Switch between Products and Cart',
+        'Resize Products (hidden, 25%, 75%)',
+        'Show or hide Billing',
         'Remove selected line',
         'Close dialog',
       ],

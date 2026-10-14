@@ -14,6 +14,8 @@ import '../../../shared/controllers/overlay_controller.dart';
 import '../../../shared/widgets/action_button.dart';
 import '../controllers/cart_actions_controller.dart';
 import '../controllers/cart_controller.dart';
+import '../controllers/pos_work_view_controller.dart';
+import 'billing_total_chip.dart';
 
 /// The one-row footer of the desktop cart: the totals (items, quantity, value;
 /// the same numbers as the stat tiles) on the left, the four cart actions as
@@ -29,9 +31,18 @@ class CartFooter extends StatelessWidget {
     final cart = Get.find<CartController>();
     final overlay = Get.find<OverlayController>();
     final shortcuts = Get.find<ShortcutController>();
+    final work = Get.find<PosWorkViewController>();
     return LayoutBuilder(
-      builder: (context, constraints) {
-        final narrow = constraints.maxWidth < AppDensitySizes.cartNarrowBreak;
+      builder: (context, constraints) => Obx(() {
+        // The invoice-total chip stands in for the collapsed Billing panel.
+        final chip = work.geometry != null && !work.billingOpen;
+        final width = constraints.maxWidth;
+        final narrow = width < AppDensitySizes.cartNarrowBreak;
+        final stacked =
+            width <
+            (chip
+                ? AppDensitySizes.cartFooterStackBreakChip
+                : AppDensitySizes.cartFooterStackBreak);
         Widget button(
           String label,
           IconData icon,
@@ -53,86 +64,121 @@ class CartFooter extends StatelessWidget {
             fontSize: AppFontSize.s12.px,
           ),
         );
-        return Container(
-          height: AppDensitySizes.cartFooterHeight,
-          decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(
-                color: c.border,
-                width: AppDensitySizes.cartRowHairline,
+        final totals = Expanded(
+          child: Obx(() {
+            final t = cart.totals.value;
+            return FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  _Total(
+                    label: s.statTotalItems(),
+                    icon: AppIcons.shoppingCart,
+                    color: c.blue,
+                    value: '${t.items}',
+                  ),
+                  const SizedBox(width: AppSpacing.s16),
+                  _Total(
+                    label: s.statTotalQty(),
+                    icon: AppIcons.packageBox,
+                    color: c.text,
+                    value: QtyFormatter.fixed3(t.qty),
+                  ),
+                  const SizedBox(width: AppSpacing.s16),
+                  _Total(
+                    label: s.statTotalValue(),
+                    icon: AppIcons.currencyGlyph(t.value.currency.code),
+                    iconText: t.value.currency.symbol,
+                    color: c.greenIcon,
+                    value: MoneyFormatter.format(t.value, symbol: false),
+                  ),
+                ],
               ),
+            );
+          }),
+        );
+        final actions = <Widget>[
+          button(
+            s.actionClearCart(),
+            AppIcons.trash2,
+            ActionTone.red,
+            () => overlay.openConfirm(
+              s.confirmClearCart(),
+              Get.find<CartActionsController>().clear,
             ),
           ),
+          button(
+            s.actionHold(),
+            AppIcons.pauseCircle,
+            ActionTone.blue,
+            () => shortcuts.run(ShortcutAction.hold),
+            key: s.keyFunction(4),
+          ),
+          button(
+            s.actionRecall(),
+            AppIcons.rotateCcw,
+            ActionTone.purple,
+            () => shortcuts.run(ShortcutAction.recall),
+            key: s.keyFunction(5),
+          ),
+          button(
+            s.actionPriceCheck(),
+            AppIcons.search,
+            ActionTone.blue,
+            () => overlay.open('priceCheck'),
+          ),
+        ];
+        final border = Border(
+          top: BorderSide(
+            color: c.border,
+            width: AppDensitySizes.cartRowHairline,
+          ),
+        );
+        if (stacked) {
+          // Narrow cart: totals (and the chip) above, the four actions below.
+          return Container(
+            height: AppDensitySizes.cartFooterHeightStacked,
+            decoration: BoxDecoration(border: border),
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  child: Row(
+                    children: <Widget>[
+                      totals,
+                      if (chip) ...<Widget>[
+                        const SizedBox(width: AppSpacing.s6),
+                        const Flexible(child: BillingTotalChip()),
+                      ],
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: actions,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        return Container(
+          height: AppDensitySizes.cartFooterHeight,
+          decoration: BoxDecoration(border: border),
           child: Row(
             children: <Widget>[
-              Expanded(
-                child: Obx(() {
-                  final t = cart.totals.value;
-                  return FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        _Total(
-                          label: s.statTotalItems(),
-                          icon: AppIcons.shoppingCart,
-                          color: c.blue,
-                          value: '${t.items}',
-                        ),
-                        const SizedBox(width: AppSpacing.s16),
-                        _Total(
-                          label: s.statTotalQty(),
-                          icon: AppIcons.packageBox,
-                          color: c.text,
-                          value: QtyFormatter.fixed3(t.qty),
-                        ),
-                        const SizedBox(width: AppSpacing.s16),
-                        _Total(
-                          label: s.statTotalValue(),
-                          icon: AppIcons.currencyGlyph(t.value.currency.code),
-                          iconText: t.value.currency.symbol,
-                          color: c.greenIcon,
-                          value: MoneyFormatter.format(t.value, symbol: false),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-              ),
-              button(
-                s.actionClearCart(),
-                AppIcons.trash2,
-                ActionTone.red,
-                () => overlay.openConfirm(
-                  s.confirmClearCart(),
-                  Get.find<CartActionsController>().clear,
-                ),
-              ),
-              button(
-                s.actionHold(),
-                AppIcons.pauseCircle,
-                ActionTone.blue,
-                () => shortcuts.run(ShortcutAction.hold),
-                key: s.keyFunction(4),
-              ),
-              button(
-                s.actionRecall(),
-                AppIcons.rotateCcw,
-                ActionTone.purple,
-                () => shortcuts.run(ShortcutAction.recall),
-                key: s.keyFunction(5),
-              ),
-              button(
-                s.actionPriceCheck(),
-                AppIcons.search,
-                ActionTone.blue,
-                () => overlay.open('priceCheck'),
-              ),
+              totals,
+              if (chip) ...<Widget>[
+                const SizedBox(width: AppSpacing.s6),
+                const BillingTotalChip(),
+              ],
+              ...actions,
             ],
           ),
         );
-      },
+      }),
     );
   }
 }

@@ -15,6 +15,7 @@ class CartCompactColumns {
     required this.delete,
     required this.gap,
     required this.narrow,
+    this.veryNarrow = false,
   });
 
   /// [cartWidth] is the width of the table area; below
@@ -26,6 +27,20 @@ class CartCompactColumns {
     required double windowHeight,
   }) {
     final narrow = cartWidth < AppDensitySizes.cartNarrowBreak;
+    if (cartWidth < AppDensitySizes.cartVeryNarrowBreak) {
+      return const CartCompactColumns(
+        index: 0,
+        thumb: 0,
+        qty: AppDensitySizes.colQtyVeryNarrow,
+        price: 0,
+        disc: 0,
+        total: AppDensitySizes.colTotalVeryNarrow,
+        delete: 0,
+        gap: AppDensitySizes.colGapVeryNarrow,
+        narrow: true,
+        veryNarrow: true,
+      );
+    }
     final showThumb = !narrow && !Breakpoints.heightAtMost719(windowHeight);
     return CartCompactColumns(
       index: narrow ? 0 : AppDensitySizes.colIndex,
@@ -55,6 +70,11 @@ class CartCompactColumns {
   final double gap;
   final bool narrow;
 
+  /// Below `cartVeryNarrowBreak`: item, quantity and total only.
+  final bool veryNarrow;
+
+  bool get showDisc => disc > 0;
+  bool get showDelete => delete > 0;
   bool get showThumb => thumb > 0;
   bool get showIndex => index > 0;
   bool get showPrice => price > 0;

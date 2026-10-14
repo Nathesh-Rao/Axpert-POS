@@ -273,16 +273,18 @@ class _RowContent extends StatelessWidget {
           ),
           gap,
         ],
-        SizedBox(
-          width: columns.disc,
-          child: input(
-            value: line.discount.value,
-            scale: 2,
-            label: s.discountInputLabel(product.name),
-            onValue: (v) => cart.setLineDiscount(product.id, Bp(v)),
+        if (columns.showDisc) ...<Widget>[
+          SizedBox(
+            width: columns.disc,
+            child: input(
+              value: line.discount.value,
+              scale: 2,
+              label: s.discountInputLabel(product.name),
+              onValue: (v) => cart.setLineDiscount(product.id, Bp(v)),
+            ),
           ),
-        ),
-        gap,
+          gap,
+        ],
         SizedBox(
           width: columns.total,
           child: Align(
@@ -290,15 +292,17 @@ class _RowContent extends StatelessWidget {
             child: _Total(line: line),
           ),
         ),
-        gap,
-        SizedBox(
-          width: columns.delete,
-          child: Center(
-            child: _DeleteButton(
-              onTap: () => Get.find<CartActionsController>().remove(line),
+        if (columns.showDelete) ...<Widget>[
+          gap,
+          SizedBox(
+            width: columns.delete,
+            child: Center(
+              child: _DeleteButton(
+                onTap: () => Get.find<CartActionsController>().remove(line),
+              ),
             ),
           ),
-        ),
+        ],
       ],
     );
   }
@@ -377,8 +381,10 @@ class _Names extends StatelessWidget {
       children: <Widget>[
         Text(
           product.name,
-          maxLines: 1,
-          softWrap: false,
+          // Very narrow cart (25%): the name may take two lines and the info
+          // line goes, so the item stays recognizable.
+          maxLines: columns.veryNarrow ? 2 : 1,
+          softWrap: columns.veryNarrow,
           overflow: TextOverflow.ellipsis,
           style: text
               .of(
@@ -388,44 +394,45 @@ class _Names extends StatelessWidget {
               )
               .copyWith(color: c.text),
         ),
-        ValueListenableBuilder<AppliedOffer?>(
-          valueListenable: Get.find<CartController>().offerListenable(
-            product.id,
-          ),
-          builder: (context, applied, _) => Row(
-            children: <Widget>[
-              Flexible(
-                child: Text(
-                  info,
-                  maxLines: 1,
-                  softWrap: false,
-                  overflow: TextOverflow.ellipsis,
-                  style: small,
-                ),
-              ),
-              if (applied != null) ...<Widget>[
-                const SizedBox(width: AppSpacing.s6),
+        if (!columns.veryNarrow)
+          ValueListenableBuilder<AppliedOffer?>(
+            valueListenable: Get.find<CartController>().offerListenable(
+              product.id,
+            ),
+            builder: (context, applied, _) => Row(
+              children: <Widget>[
                 Flexible(
-                  flex: 2,
                   child: Text(
-                    s.offerSaved(
-                      applied.name,
-                      MoneyFormatter.format(applied.saving),
-                    ),
+                    info,
                     maxLines: 1,
                     softWrap: false,
                     overflow: TextOverflow.ellipsis,
-                    style: small.copyWith(
-                      color: applied.kind == OfferKind.promotion
-                          ? c.actionPurpleFg
-                          : c.actionRedFg,
-                    ),
+                    style: small,
                   ),
                 ),
+                if (applied != null) ...<Widget>[
+                  const SizedBox(width: AppSpacing.s6),
+                  Flexible(
+                    flex: 2,
+                    child: Text(
+                      s.offerSaved(
+                        applied.name,
+                        MoneyFormatter.format(applied.saving),
+                      ),
+                      maxLines: 1,
+                      softWrap: false,
+                      overflow: TextOverflow.ellipsis,
+                      style: small.copyWith(
+                        color: applied.kind == OfferKind.promotion
+                            ? c.actionPurpleFg
+                            : c.actionRedFg,
+                      ),
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
       ],
     );
   }
@@ -469,42 +476,45 @@ class _Stepper extends StatelessWidget {
             ),
             ClipRRect(
               borderRadius: radius,
-              child: Row(
-                children: <Widget>[
-                  _StepButton(
-                    icon: AppIcons.minus,
-                    tooltip: s.decreaseQtyTooltip(),
-                    remove: line.qty <= _one,
-                    onAction: () => _step(-_one.milli),
-                  ),
-                  Expanded(
-                    child: QuantityField(
-                      value: line.qty,
-                      semanticLabel: s.qtyInputLabel(line.product.name),
-                      style: context.text
-                          .of(
-                            AppFontSize.s14,
-                            weight: AppFontWeight.bold,
-                            height: AppLineHeight.base,
-                          )
-                          .copyWith(color: c.text),
-                      onValue: (qty) =>
-                          Get.find<CartActionsController>().changeQty(
-                            Get.find<CartController>().lineOf(
-                                  line.product.id,
-                                ) ??
-                                line,
-                            qty,
-                          ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: Row(
+                  children: <Widget>[
+                    _StepButton(
+                      icon: AppIcons.minus,
+                      tooltip: s.decreaseQtyTooltip(),
+                      remove: line.qty <= _one,
+                      onAction: () => _step(-_one.milli),
                     ),
-                  ),
-                  _StepButton(
-                    icon: AppIcons.plus,
-                    tooltip: s.increaseQtyTooltip(),
-                    remove: false,
-                    onAction: () => _step(_one.milli),
-                  ),
-                ],
+                    Expanded(
+                      child: QuantityField(
+                        value: line.qty,
+                        semanticLabel: s.qtyInputLabel(line.product.name),
+                        style: context.text
+                            .of(
+                              AppFontSize.s14,
+                              weight: AppFontWeight.bold,
+                              height: AppLineHeight.base,
+                            )
+                            .copyWith(color: c.text),
+                        onValue: (qty) =>
+                            Get.find<CartActionsController>().changeQty(
+                              Get.find<CartController>().lineOf(
+                                    line.product.id,
+                                  ) ??
+                                  line,
+                              qty,
+                            ),
+                      ),
+                    ),
+                    _StepButton(
+                      icon: AppIcons.plus,
+                      tooltip: s.increaseQtyTooltip(),
+                      remove: false,
+                      onAction: () => _step(_one.milli),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

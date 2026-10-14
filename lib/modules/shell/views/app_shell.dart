@@ -19,6 +19,9 @@ class AppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final gap = context.metrics.layoutGap;
+    // The desktop POS page lays Billing out itself (DEC-141): it is one of
+    // the three animated panels of the work area.
+    final embedBilling = page == AppPage.pos && !context.metrics.touch;
     // Tab visits the regions in the prototype's DOM order (top bar, sidebar,
     // page, Bill Summary) instead of the default top-to-bottom, left-to-right
     // sweep, which would interleave sidebar buttons and page controls.
@@ -37,11 +40,13 @@ class AppShell extends StatelessWidget {
                     _Region(order: 1, child: Sidebar(current: page)),
                     SizedBox(width: gap),
                     Expanded(child: _Region(order: 2, child: child)),
-                    SizedBox(width: gap),
-                    _Region(
-                      order: 3,
-                      child: BillSummaryFrame(isPos: page == AppPage.pos),
-                    ),
+                    if (!embedBilling) ...<Widget>[
+                      SizedBox(width: gap),
+                      _Region(
+                        order: 3,
+                        child: BillSummaryFrame(isPos: page == AppPage.pos),
+                      ),
+                    ],
                   ],
                 ),
               ),

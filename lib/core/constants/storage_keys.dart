@@ -15,6 +15,11 @@ abstract final class StorageKeys {
   /// Receipt paper width in millimetres (a settings row, not a prototype key).
   static const String printPaperMm = 'print_paper_mm';
 
+  /// POS work-area layout of this device (view preference, DEC-141): the
+  /// Products panel step (0, 25 or 75) and whether Billing is open.
+  static const String posProductsStep = 'pos_products_step';
+  static const String posBillingOpen = 'pos_billing_open';
+
   /// Set while Drift may be behind LocalStore for settings (DEC-125).
   static const String settingsDriftStale = '${_prefix}settings-drift-stale';
 

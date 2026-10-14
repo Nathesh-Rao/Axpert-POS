@@ -39,4 +39,16 @@ class SettingsController extends GetxController {
 
   Future<void> setPrintPaperMm(int value) =>
       _update(settings.value.copyWith(printPaperMm: value));
+
+  /// The POS layout choice of this device (Products step 0, 25 or 75; Billing
+  /// open). One write, so the two values never disagree on disk.
+  Future<void> setPosLayout({
+    required int productsStep,
+    required bool billing,
+  }) => _update(
+    settings.value.copyWith(
+      posProductsStep: productsStep,
+      posBillingOpen: billing,
+    ),
+  );
 }

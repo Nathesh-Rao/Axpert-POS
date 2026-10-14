@@ -866,7 +866,7 @@ class EnAppStrings extends AppStrings {
   String helpFocusSearch() => 'Focus barcode search';
 
   @override
-  String helpToggleProducts() => 'Switch between Products and Cart';
+  String helpToggleProducts() => 'Resize Products (hidden, 25%, 75%)';
 
   @override
   String productsShortcutMac() => '⌘B';
@@ -893,6 +893,41 @@ class EnAppStrings extends AppStrings {
 
   @override
   String workTabEmptySemantic() => 'Cart, empty';
+
+  @override
+  String productsStepLabel(int percent) =>
+      percent == 0 ? 'hidden' : '$percent%';
+
+  @override
+  String workTabResizeSemantic(String state, String shortcut) =>
+      'Resize products, now $state, press $shortcut';
+
+  @override
+  String workTabWiderSemantic(String state) =>
+      'Make products wider, now $state';
+
+  @override
+  String workTabNarrowerSemantic(String state) =>
+      'Make products narrower, now $state';
+
+  @override
+  String helpToggleBilling() => 'Show or hide Billing';
+
+  @override
+  String billingShortcutMac() => '⌘.';
+
+  @override
+  String billingShortcutOther() => 'Ctrl+.';
+
+  @override
+  String billingCollapseTooltip(String shortcut) => 'Hide billing ($shortcut)';
+
+  @override
+  String billingChipSemantic(String total) =>
+      'Invoice total $total. Show billing';
+
+  @override
+  String billingChipTooltip(String shortcut) => 'Show billing ($shortcut)';
 
   @override
   String helpAddScanned() => 'Add scanned product';

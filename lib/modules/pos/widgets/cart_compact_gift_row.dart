@@ -127,7 +127,8 @@ class CartCompactGiftRow extends StatelessWidget {
                         )
                         .copyWith(color: c.modalSymbolGreenFg),
                   ),
-                  SizedBox(width: columns.gap + columns.delete),
+                  if (columns.showDelete)
+                    SizedBox(width: columns.gap + columns.delete),
                 ],
               ],
             ),

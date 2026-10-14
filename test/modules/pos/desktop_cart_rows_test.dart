@@ -71,7 +71,8 @@ Future<void> _add(WidgetTester tester, int id) async {
     Get.find<ProductsController>().byId(id)!,
   );
   await tester.pump();
-  await tester.pump(const Duration(milliseconds: 100));
+  // The first add moves the layout to the cart view (180 ms).
+  await tester.pump(const Duration(milliseconds: 300));
 }
 
 Future<void> _drain(WidgetTester tester) async {

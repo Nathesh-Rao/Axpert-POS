@@ -35,6 +35,8 @@ void main() {
     'cookie': LucideIcons.cookie,
     'bottleWine': LucideIcons.bottleWine,
     'chevronRight': LucideIcons.chevronRight,
+    'chevronLeft': LucideIcons.chevronLeft,
+    'panelRightClose': LucideIcons.panelRightClose,
     'layoutGrid': LucideIcons.layoutGrid,
     'list': LucideIcons.list,
     'plus': LucideIcons.plus,

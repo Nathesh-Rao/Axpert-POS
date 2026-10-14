@@ -509,7 +509,8 @@ void main() {
           'Hold bill',
           'Recall bill',
           'Apply discount',
-          'Switch between Products and Cart',
+          'Resize Products (hidden, 25%, 75%)',
+          'Show or hide Billing',
           'Remove selected line',
           'Close dialog',
         ];

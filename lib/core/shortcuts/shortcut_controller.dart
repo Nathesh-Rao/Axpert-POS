@@ -16,6 +16,7 @@ enum ShortcutAction {
   discount,
   deleteSelected,
   switchWorkView,
+  toggleBilling,
 }
 
 class ShortcutController extends GetxController {
@@ -31,6 +32,8 @@ class ShortcutController extends GetxController {
         ShortcutAction.deleteSelected: () {},
         // Set by the POS bindings (catalog or cart view of the desktop layout).
         ShortcutAction.switchWorkView: () {},
+        // Same: shows or hides Billing in the desktop POS layout.
+        ShortcutAction.toggleBilling: () {},
       };
 
   void _demo(String action) => Get.find<ToastController>().show(

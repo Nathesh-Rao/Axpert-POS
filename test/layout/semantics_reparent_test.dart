@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import 'package:pos_application/core/routes/app_routes.dart';
 import 'package:pos_application/shared/controllers/overlay_controller.dart';
 import 'package:pos_application/modules/pos/controllers/cart_actions_controller.dart';
+import 'package:pos_application/modules/pos/controllers/pos_work_view_controller.dart';
 import 'package:pos_application/features/products/presentation/controllers/products_controller.dart';
 
 import '../support/test_app.dart';
@@ -122,6 +123,19 @@ void main() {
     }
     Get.find<CartActionsController>().add(products.byId(5)!);
     await settle('add again');
+    // The three-panel layout: stepping Products and Billing must not reparent
+    // a semantics node (panels stay mounted).
+    if (Get.isRegistered<PosWorkViewController>()) {
+      final work = Get.find<PosWorkViewController>();
+      for (var i = 0; i < 3; i++) {
+        work.cycleProducts();
+        await settle('cycle products $i');
+      }
+      work.toggleBilling();
+      await settle('billing closed');
+      work.toggleBilling();
+      await settle('billing open');
+    }
     for (final page in <String>[
       AppRoutes.products,
       AppRoutes.customers,

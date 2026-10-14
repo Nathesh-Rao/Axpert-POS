@@ -177,6 +177,16 @@ abstract final class AppIcons {
     fontFamily: _family,
     fontPackage: _package,
   );
+  static const IconData chevronLeft = IconData(
+    57454,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
+  static const IconData panelRightClose = IconData(
+    58418,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
   static const IconData layoutGrid = IconData(
     57599,
     fontFamily: _family,
@@ -315,6 +325,8 @@ abstract final class AppIcons {
     'cookie': cookie,
     'bottleWine': bottleWine,
     'chevronRight': chevronRight,
+    'chevronLeft': chevronLeft,
+    'panelRightClose': panelRightClose,
     'layoutGrid': layoutGrid,
     'list': list,
     'plus': plus,

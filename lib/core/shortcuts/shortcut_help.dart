@@ -18,7 +18,7 @@ class ShortcutHelpEntry {
   final List<ShortcutActivator> keys;
 }
 
-/// The rows of the dialog (the prototype's nine plus the Products panel). Each key listed here must exist
+/// The rows of the dialog (the prototype's nine plus the Products panel and Billing). Each key listed here must exist
 /// as a binding (a test checks it), so the help never names a shortcut that
 /// does not work.
 abstract final class ShortcutHelp {
@@ -74,6 +74,16 @@ abstract final class ShortcutHelp {
       keys: const <ShortcutActivator>[
         SingleActivator(LogicalKeyboardKey.keyB, control: true),
         SingleActivator(LogicalKeyboardKey.keyB, meta: true),
+      ],
+    ),
+    ShortcutHelpEntry(
+      text: (s) => s.helpToggleBilling(),
+      label: (s, platform) => platform == TargetPlatform.macOS
+          ? s.billingShortcutMac()
+          : s.billingShortcutOther(),
+      keys: const <ShortcutActivator>[
+        SingleActivator(LogicalKeyboardKey.period, control: true),
+        SingleActivator(LogicalKeyboardKey.period, meta: true),
       ],
     ),
     ShortcutHelpEntry(

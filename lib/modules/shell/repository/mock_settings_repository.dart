@@ -44,4 +44,6 @@ const List<String> settingsStorageKeys = <String>[
   StorageKeys.beep,
   StorageKeys.counter,
   StorageKeys.printPaperMm,
+  StorageKeys.posProductsStep,
+  StorageKeys.posBillingOpen,
 ];

@@ -5,6 +5,7 @@ import '../../../core/constants/app_strings_x.dart';
 import '../../../core/responsive/app_metrics_scope.dart';
 import '../../../core/theme/theme_x.dart';
 import '../../../core/theme/tokens/app_checkout_sizes.dart';
+import '../../../core/theme/tokens/app_density_sizes.dart';
 import '../../../core/theme/tokens/app_icons.dart';
 import '../../../core/theme/tokens/app_radii.dart';
 import '../../../core/theme/tokens/app_sizes.dart';
@@ -47,113 +48,127 @@ class CustomerRow extends StatelessWidget {
                 .copyWith(color: c.labelText),
           ),
         ),
-        SizedBox(
-          height: m.fieldHeight,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Expanded(
-                child: CssGradientBox(
-                  angleDeg: 120,
-                  colors: <Color>[c.secondary, c.card],
-                  borderRadius: BorderRadius.circular(AppRadii.r7),
-                  border: Border.all(color: c.border),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: m.fieldPadX + AppSizes.borderWidth,
-                    vertical: AppSizes.borderWidth,
-                  ),
-                  // Stretch so the search segment (and its divider) fills the
-                  // field height; the icon and the select stay centred.
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      if (!small) ...<Widget>[
-                        Center(
-                          child: Icon(
-                            AppIcons.userRound,
-                            size: m.atMost1280
-                                ? AppSizes.fieldClearIcon
-                                : AppCheckoutSizes.customerRowIcon,
-                            color: c.fieldIcon,
-                          ),
-                        ),
-                        SizedBox(width: m.fieldGap),
-                      ],
-                      Expanded(
-                        child: Center(
-                          child: CustomerSelect(
-                            style: fontStyle,
-                            semanticLabel: s.customerLabel(),
-                          ),
-                        ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            // The narrow cart of the three-panel layout (DEC-141): the Add
+            // Customer button shows only its icon (the label stays its
+            // semantic label) and the field drops its user icon.
+            final compact =
+                !m.touch &&
+                constraints.maxWidth < AppDensitySizes.customerRowCompactBreak;
+            return SizedBox(
+              height: m.fieldHeight,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Expanded(
+                    child: CssGradientBox(
+                      angleDeg: 120,
+                      colors: <Color>[c.secondary, c.card],
+                      borderRadius: BorderRadius.circular(AppRadii.r7),
+                      border: Border.all(color: c.border),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: m.fieldPadX + AppSizes.borderWidth,
+                        vertical: AppSizes.borderWidth,
                       ),
-                      SizedBox(width: m.fieldGap),
-                      AppPressable(
-                        tooltip: s.customerFindTooltip(),
-                        borderRadius: AppRadii.r6,
-                        onTap: () => overlay.open('customers'),
-                        builder: (context, hovered) => Container(
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.only(left: m.fieldGap),
-                          decoration: BoxDecoration(
-                            border: Border(left: BorderSide(color: c.border)),
+                      // Stretch so the search segment (and its divider) fills the
+                      // field height; the icon and the select stay centred.
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          if (!small && !compact) ...<Widget>[
+                            Center(
+                              child: Icon(
+                                AppIcons.userRound,
+                                size: m.atMost1280
+                                    ? AppSizes.fieldClearIcon
+                                    : AppCheckoutSizes.customerRowIcon,
+                                color: c.fieldIcon,
+                              ),
+                            ),
+                            SizedBox(width: m.fieldGap),
+                          ],
+                          Expanded(
+                            child: Center(
+                              child: CustomerSelect(
+                                style: fontStyle,
+                                semanticLabel: s.customerLabel(),
+                              ),
+                            ),
                           ),
-                          child: Icon(
-                            AppIcons.search,
-                            size: AppCheckoutSizes.customerFindIcon,
-                            color: c.fieldIcon,
+                          SizedBox(width: m.fieldGap),
+                          AppPressable(
+                            tooltip: s.customerFindTooltip(),
+                            borderRadius: AppRadii.r6,
+                            onTap: () => overlay.open('customers'),
+                            builder: (context, hovered) => Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.only(left: m.fieldGap),
+                              decoration: BoxDecoration(
+                                border: Border(
+                                  left: BorderSide(color: c.border),
+                                ),
+                              ),
+                              child: Icon(
+                                AppIcons.search,
+                                size: AppCheckoutSizes.customerFindIcon,
+                                color: c.fieldIcon,
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  const SizedBox(width: AppSpacing.s6),
+                  AppPressable(
+                    borderRadius: AppRadii.r7,
+                    semanticLabel: s.addCustomerButton(),
+                    onTap: () => overlay.open('addCustomer'),
+                    builder: (context, hovered) => Container(
+                      height: m.fieldHeight,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: small
+                            ? AppSpacing.s6
+                            : AppCheckoutSizes.addCustomerPadX,
+                      ),
+                      decoration: BoxDecoration(
+                        color: c.actionBlueBg,
+                        borderRadius: BorderRadius.circular(AppRadii.r7),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Icon(
+                            AppIcons.plus,
+                            size: small
+                                ? AppCheckoutSizes.addCustomerIconSmall
+                                : AppCheckoutSizes.addCustomerIcon,
+                            color: c.blue,
+                          ),
+                          if (!compact) ...<Widget>[
+                            const SizedBox(width: AppSpacing.s5),
+                            Text(
+                              s.addCustomerButton(),
+                              maxLines: 1,
+                              softWrap: false,
+                              style: context.text
+                                  .fluid(
+                                    small
+                                        ? AppCheckoutSizes.addCustomerFontSmall
+                                        : AppCheckoutSizes.addCustomerFont,
+                                  )
+                                  .copyWith(color: c.blue),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: AppSpacing.s6),
-              AppPressable(
-                borderRadius: AppRadii.r7,
-                semanticLabel: s.addCustomerButton(),
-                onTap: () => overlay.open('addCustomer'),
-                builder: (context, hovered) => Container(
-                  height: m.fieldHeight,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: small
-                        ? AppSpacing.s6
-                        : AppCheckoutSizes.addCustomerPadX,
-                  ),
-                  decoration: BoxDecoration(
-                    color: c.actionBlueBg,
-                    borderRadius: BorderRadius.circular(AppRadii.r7),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Icon(
-                        AppIcons.plus,
-                        size: small
-                            ? AppCheckoutSizes.addCustomerIconSmall
-                            : AppCheckoutSizes.addCustomerIcon,
-                        color: c.blue,
-                      ),
-                      const SizedBox(width: AppSpacing.s5),
-                      Text(
-                        s.addCustomerButton(),
-                        maxLines: 1,
-                        softWrap: false,
-                        style: context.text
-                            .fluid(
-                              small
-                                  ? AppCheckoutSizes.addCustomerFontSmall
-                                  : AppCheckoutSizes.addCustomerFont,
-                            )
-                            .copyWith(color: c.blue),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         ),
         Obx(() {
           final value = cart.cart.value;

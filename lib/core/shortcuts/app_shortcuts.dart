@@ -23,9 +23,10 @@ class RunShortcutIntent extends Intent {
 }
 
 /// Global keyboard shortcuts, placed above the Navigator (DEC-005, DEC-041):
-/// Ctrl+K and Cmd+K focus the search field; F2 to F6 always fire, even inside
+/// Ctrl+K and Cmd+K focus the search field; Ctrl/Cmd+B resizes the Products
+/// panel and Ctrl/Cmd+. shows or hides Billing (DEC-141); F2 to F6 always fire, even inside
 /// inputs and with dialogs open (port as-is, KG-014); Esc closes the dialog
-/// and menus (or, with none open, goes from the catalog back to the cart) and refocuses search; Delete only outside text input and with no
+/// and menus (or, with none open, goes from the catalog layout back to the cart) and refocuses search; Delete only outside text input and with no
 /// dialog open.
 class AppShortcuts extends StatelessWidget {
   const AppShortcuts({required this.child, super.key});
@@ -42,6 +43,10 @@ class AppShortcuts extends StatelessWidget {
             const RunShortcutIntent(ShortcutAction.switchWorkView),
         const SingleActivator(LogicalKeyboardKey.keyB, meta: true):
             const RunShortcutIntent(ShortcutAction.switchWorkView),
+        const SingleActivator(LogicalKeyboardKey.period, control: true):
+            const RunShortcutIntent(ShortcutAction.toggleBilling),
+        const SingleActivator(LogicalKeyboardKey.period, meta: true):
+            const RunShortcutIntent(ShortcutAction.toggleBilling),
         const SingleActivator(LogicalKeyboardKey.f2): const RunShortcutIntent(
           ShortcutAction.cash,
         ),

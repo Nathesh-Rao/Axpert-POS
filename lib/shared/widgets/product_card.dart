@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_strings_x.dart';
 import '../../core/responsive/app_metrics_scope.dart';
 import '../../core/theme/theme_x.dart';
+import '../../core/theme/tokens/app_density_sizes.dart';
 import '../../core/theme/tokens/app_icons.dart';
 import '../../core/theme/tokens/app_motion.dart';
 import '../../core/theme/tokens/app_radii.dart';
@@ -33,6 +34,7 @@ class ProductCard extends StatelessWidget {
     this.offerLabel,
     this.offerStyle,
     this.strikePrice,
+    this.compact = false,
     super.key,
   });
 
@@ -57,6 +59,10 @@ class ProductCard extends StatelessWidget {
 
   /// The original price, struck through beside [price] (discounts only).
   final String? strikePrice;
+
+  /// The narrow Products panel (DEC-141): a smaller grid card with the offer
+  /// badge on its own line under the picture. Ignored in list mode.
+  final bool compact;
 
   bool get inCart => qtyBadge != null;
 
@@ -101,7 +107,7 @@ class ProductCard extends StatelessWidget {
                     onTap: onToggleFavourite,
                   ),
                 ),
-                if (offerLabel != null && offerStyle != null)
+                if (offerLabel != null && offerStyle != null && !compact)
                   Positioned(
                     right:
                         (list ? AppSpacing.s4 : AppSpacing.s9) +
@@ -141,26 +147,55 @@ class ProductCard extends StatelessWidget {
         children: <Widget>[
           const SizedBox(height: AppSpacing.s4),
           SizedBox(
-            height: m.productImageHeight,
+            height: compact
+                ? AppDensitySizes.compactImageHeight
+                : m.productImageHeight,
             width: double.infinity,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppRadii.r5),
               child: Center(child: image),
             ),
           ),
-          const SizedBox(height: AppSpacing.s8),
-          _name(context, m.catalogFont),
-          const SizedBox(height: AppSpacing.s4),
-          Text(
-            code,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: text
-                .fluid(m.productCodeFont, height: AppLineHeight.base)
-                .copyWith(color: c.muted),
-          ),
-          const SizedBox(height: AppSpacing.s5),
-          _bottom(context),
+          if (compact) ...<Widget>[
+            const SizedBox(height: AppSpacing.s4),
+            // The one offer badge, or the code when there is none.
+            SizedBox(
+              height: AppDensitySizes.compactBadgeRow,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: offerLabel != null && offerStyle != null
+                    ? _OfferBadge(label: offerLabel!, style: offerStyle!)
+                    : Text(
+                        code,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: text
+                            .fluid(
+                              m.productCodeFont,
+                              height: AppLineHeight.base,
+                            )
+                            .copyWith(color: c.muted),
+                      ),
+              ),
+            ),
+            _name(context, m.catalogFont),
+            const SizedBox(height: AppSpacing.s4),
+            _bottom(context),
+          ] else ...<Widget>[
+            const SizedBox(height: AppSpacing.s8),
+            _name(context, m.catalogFont),
+            const SizedBox(height: AppSpacing.s4),
+            Text(
+              code,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: text
+                  .fluid(m.productCodeFont, height: AppLineHeight.base)
+                  .copyWith(color: c.muted),
+            ),
+            const SizedBox(height: AppSpacing.s5),
+            _bottom(context),
+          ],
         ],
       ),
     );

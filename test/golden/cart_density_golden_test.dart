@@ -1,4 +1,4 @@
-// Desktop POS work-area goldens (DEC-139): the cart view (compact rows with
+// Desktop POS work-area goldens (DEC-139, DEC-141): the cart view (compact rows with
 // offers and free items), the catalog view with items in the cart (the tab
 // reads Cart (n)) and the catalog view of an empty cart. Regression only: the
 // layout is an approved deviation from the prototype, no reference screenshot.
@@ -77,7 +77,8 @@ void main() {
     String file, {
     required Size size,
     bool dark = false,
-    bool catalogView = false,
+    int step = 0,
+    bool billingClosed = false,
     int lines = 12,
   }) {
     testWidgets('$prefix$name', (tester) async {
@@ -125,8 +126,16 @@ void main() {
         ].take(lines)) {
           actions.add(products.byId(id)!);
         }
-        if (catalogView && lines > 0) {
-          Get.find<PosWorkViewController>().toggle();
+        final work = Get.find<PosWorkViewController>();
+        if (lines > 0) {
+          await tester.pumpAndSettle();
+          for (var i = 0; i < 2; i++) {
+            if (work.effective.products.percent < step) {
+              work.wider();
+              await tester.pumpAndSettle();
+            }
+          }
+          if (billingClosed) work.closeBilling();
         }
         await tester.pump();
         await tester.pump(const Duration(seconds: 2));
@@ -171,13 +180,66 @@ void main() {
     'Catalog view with 12 items 1280x720 (light)',
     'cart_density_1280_catalog_light',
     size: const Size(1280, 720),
-    catalogView: true,
+    step: 75,
   );
   golden(
     'Catalog view with 12 items 1868x1035 (light)',
     'cart_density_1868_catalog_light',
     size: const Size(1868, 1035),
-    catalogView: true,
+    step: 75,
+  );
+  // Three panels at once (DEC-141) and Billing collapsed (the footer chip).
+  golden(
+    'Three panels 1280x720 (light)',
+    'three_panel_1280_p25_light',
+    size: const Size(1280, 720),
+    step: 25,
+  );
+  golden(
+    'Three panels 1868x1035 (light)',
+    'three_panel_1868_p25_light',
+    size: const Size(1868, 1035),
+    step: 25,
+  );
+  golden(
+    'Three panels 1280x720 (dark)',
+    'three_panel_1280_p25_dark',
+    size: const Size(1280, 720),
+    dark: true,
+    step: 25,
+  );
+  golden(
+    'Billing collapsed 1280x720 (light)',
+    'three_panel_1280_billing_closed_light',
+    size: const Size(1280, 720),
+    billingClosed: true,
+  );
+  golden(
+    'Billing collapsed 1868x1035 (light)',
+    'three_panel_1868_billing_closed_light',
+    size: const Size(1868, 1035),
+    billingClosed: true,
+  );
+  golden(
+    'Billing collapsed 1280x720 (dark)',
+    'three_panel_1280_billing_closed_dark',
+    size: const Size(1280, 720),
+    dark: true,
+    billingClosed: true,
+  );
+  golden(
+    'Products 25 and Billing collapsed 1280x720 (light)',
+    'three_panel_1280_p25_billing_closed_light',
+    size: const Size(1280, 720),
+    step: 25,
+    billingClosed: true,
+  );
+  golden(
+    'Products 75 and Billing collapsed 1280x720 (light)',
+    'three_panel_1280_p75_billing_closed_light',
+    size: const Size(1280, 720),
+    step: 75,
+    billingClosed: true,
   );
   golden(
     'Catalog view, empty cart 1280x720 (light)',

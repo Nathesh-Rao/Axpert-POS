@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_strings_x.dart';
 import '../../../core/responsive/app_metrics_scope.dart';
 import '../../../core/theme/theme_x.dart';
+import '../../../core/theme/tokens/app_density_sizes.dart';
 import '../../../core/theme/tokens/app_icons.dart';
 import '../../../core/theme/tokens/app_radii.dart';
 import '../../../core/theme/tokens/app_sizes.dart';
@@ -34,11 +35,13 @@ class _ProductGridState extends State<ProductGrid> {
   /// and mode are unchanged, so the element tree skips rebuilding it.
   final Map<int, CatalogProductCard> _cards = <int, CatalogProductCard>{};
   bool _cardsForList = false;
+  bool _cardsCompact = false;
 
-  CatalogProductCard _card(Product product, bool list) {
-    if (list != _cardsForList) {
+  CatalogProductCard _card(Product product, bool list, bool compact) {
+    if (list != _cardsForList || compact != _cardsCompact) {
       _cards.clear();
       _cardsForList = list;
+      _cardsCompact = compact;
     }
     final cached = _cards[product.id];
     if (cached != null && cached.product == product) return cached;
@@ -46,6 +49,7 @@ class _ProductGridState extends State<ProductGrid> {
       key: ValueKey<int>(product.id),
       product: product,
       list: list,
+      compact: compact,
     );
   }
 
@@ -67,15 +71,23 @@ class _ProductGridState extends State<ProductGrid> {
       radius: const Radius.circular(AppRadii.full),
       child: LayoutBuilder(
         builder: (context, constraints) => Obx(() {
-          final list = catalog.list.value;
+          final wantList = catalog.list.value;
           final items = catalog.filtered;
           final inner = constraints.maxWidth - 2 * AppSpacing.s2;
           final gap = m.productGridGap;
+          // The narrow Products panel (DEC-141): when two regular cards do not
+          // fit, a compact tile in one or two columns replaces grid and list.
+          final compact = inner < 2 * m.productGridMinColumn + gap;
+          final list = wantList && !compact;
           final fixed = m.catalogFixedColumns(
             cartOpen: Get.find<CartController>().active.value,
             list: list,
           );
-          final columns = list
+          final columns = compact
+              ? ((inner + gap) / (AppDensitySizes.compactColumnMin + gap))
+                    .floor()
+                    .clamp(1, AppDensitySizes.compactMaxColumns)
+              : list
               ? 1
               : fixed ??
                     math.max(
@@ -94,14 +106,16 @@ class _ProductGridState extends State<ProductGrid> {
                           crossAxisCount: columns,
                           mainAxisSpacing: gap,
                           crossAxisSpacing: gap,
-                          mainAxisExtent: list
+                          mainAxisExtent: compact
+                              ? m.productCompactCardHeight
+                              : list
                               ? m.productListCardHeight
                               : m.productCardHeight,
                         ),
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
                             final product = items[index];
-                            return _card(product, list);
+                            return _card(product, list, compact);
                           },
                           childCount: items.length,
                           findChildIndexCallback: (key) {

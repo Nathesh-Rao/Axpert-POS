@@ -77,24 +77,61 @@ class _CartCompactTableState extends State<CartCompactTable> {
                   child: Obx(() {
                     final ids = cart.lineIds.toList();
                     final gifts = cart.gifts.toList();
+                    // return ListView.builder(
+                    //   controller: _scroll,
+                    //   itemExtent: AppDensitySizes.cartRowHeight,
+                    //   itemCount: ids.length + gifts.length,
+                    //   itemBuilder: (context, index) => index < ids.length
+                    //       ? CartCompactRow(
+                    //           key: ValueKey<int>(ids[index]),
+                    //           productId: ids[index],
+                    //           index: index,
+                    //           columns: columns,
+                    //         )
+                    //       : CartCompactGiftRow(
+                    //           key: ValueKey<String>(
+                    //             'gift-${gifts[index - ids.length].offer.id}',
+                    //           ),
+                    //           gift: gifts[index - ids.length],
+                    //           columns: columns,
+                    //         ),
+                    //   findChildIndexCallback: (key) {
+                    //     if (key is! ValueKey<int>) return null;
+                    //     final i = ids.indexOf(key.value);
+                    //     return i < 0 ? null : i;
+                    //   },
+                    // );
+
                     return ListView.builder(
                       controller: _scroll,
-                      itemExtent: AppDensitySizes.cartRowHeight,
+                      // Slot = row + gap. The row keeps its 48 px; the gap is empty space.
+                      itemExtent:
+                          AppDensitySizes.cartRowHeight +
+                          AppDensitySizes.cartRowGap,
                       itemCount: ids.length + gifts.length,
-                      itemBuilder: (context, index) => index < ids.length
-                          ? CartCompactRow(
-                              key: ValueKey<int>(ids[index]),
-                              productId: ids[index],
-                              index: index,
-                              columns: columns,
-                            )
-                          : CartCompactGiftRow(
-                              key: ValueKey<String>(
-                                'gift-${gifts[index - ids.length].offer.id}',
-                              ),
-                              gift: gifts[index - ids.length],
-                              columns: columns,
-                            ),
+                      itemBuilder: (context, index) {
+                        final isLine = index < ids.length;
+                        final gift = isLine ? null : gifts[index - ids.length];
+                        return Padding(
+                          // The key must sit on the outermost widget for findChildIndexCallback.
+                          key: isLine
+                              ? ValueKey<int>(ids[index])
+                              : ValueKey<String>('gift-${gift!.offer.id}'),
+                          padding: const EdgeInsets.only(
+                            bottom: AppDensitySizes.cartRowGap,
+                          ),
+                          child: isLine
+                              ? CartCompactRow(
+                                  productId: ids[index],
+                                  index: index,
+                                  columns: columns,
+                                )
+                              : CartCompactGiftRow(
+                                  gift: gift!,
+                                  columns: columns,
+                                ),
+                        );
+                      },
                       findChildIndexCallback: (key) {
                         if (key is! ValueKey<int>) return null;
                         final i = ids.indexOf(key.value);

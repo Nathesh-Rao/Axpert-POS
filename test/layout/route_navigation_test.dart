@@ -24,6 +24,7 @@ import 'package:pos_application/core/services/pricing/qty.dart';
 import 'package:pos_application/core/services/storage/in_memory_local_store.dart';
 import 'package:pos_application/modules/customers/models/customer.dart';
 import 'package:pos_application/modules/pos/controllers/cart_actions_controller.dart';
+import 'package:pos_application/modules/pos/controllers/pos_work_view_controller.dart';
 import 'package:pos_application/modules/pos/controllers/cart_meta_controller.dart';
 import 'package:pos_application/modules/pos/models/cart.dart';
 import 'package:pos_application/modules/pos/models/cart_line.dart';
@@ -223,6 +224,31 @@ void main() {
             check('$id dialog closed on $home');
             expect(overlay.isOpen, isFalse, reason: id);
           }
+        }
+        // The three-panel layout (DEC-141): every Products step with Billing
+        // open and collapsed, the cycle, then dialogs over a layout that is
+        // not the default.
+        if (desktop) {
+          await tapPage('POS');
+          final work = Get.find<PosWorkViewController>();
+          for (final billing in <bool>[true, false]) {
+            if (work.effective.billing != billing) work.toggleBilling();
+            await tester.pumpAndSettle();
+            check('billing ${billing ? 'open' : 'closed'}');
+            for (var i = 0; i < 4; i++) {
+              work.cycleProducts();
+              await tester.pumpAndSettle();
+              check('cycle ${work.effective} (billing $billing)');
+            }
+          }
+          work.wider();
+          await tester.pumpAndSettle();
+          Get.find<OverlayController>().open('priceCheck');
+          await tester.pumpAndSettle();
+          check('dialog over ${work.effective}');
+          await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+          await tester.pumpAndSettle();
+          check('closed over ${work.effective}');
         }
         await tester.pump(const Duration(seconds: 6));
         check('end');

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -8,7 +10,10 @@ import '../controllers/cart_controller.dart';
 import '../widgets/catalog_panel.dart';
 import '../widgets/center_column.dart';
 import '../widgets/desktop_cart_column.dart';
-import '../widgets/work_tab.dart';
+import '../widgets/products_edge_control.dart';
+import '../../shell/widgets/bill_summary_frame.dart';
+import '../models/pos_panel_layout.dart';
+import '../../../core/theme/tokens/app_density_sizes.dart';
 import '../controllers/pos_work_view_controller.dart';
 import '../../../core/theme/tokens/app_motion.dart';
 import '../../../core/theme/tokens/app_spacing.dart';
@@ -67,77 +72,155 @@ class _Pane extends StatelessWidget {
   );
 }
 
-/// Desktop POS page (DEC-139): the edge tab and ONE work-area view at a time,
-/// the catalog or the cart, each over the whole width. Switching expands the
-/// shown view and shrinks the other (clipping only, no re-layout of the
-/// content), and is instant under `disableAnimations`.
-class _DesktopPos extends StatelessWidget {
+/// Desktop POS page (DEC-141): the edge control, then Products | Cart |
+/// Billing. Each panel has size states (Products hidden, 25%, 75%; Billing
+/// open or collapsed) and the cart takes the rest; `PanelGeometry` holds the
+/// width math and the fallback for small windows. A state change animates the
+/// widths (180 ms, instant under `disableAnimations`). All panels stay mounted,
+/// so the catalog keeps its scroll and search text and the cart its scroll.
+class _DesktopPos extends StatefulWidget {
   const _DesktopPos();
 
   @override
+  State<_DesktopPos> createState() => _DesktopPosState();
+}
+
+class _DesktopPosState extends State<_DesktopPos> {
+  late final PosWorkViewController _work = Get.find<PosWorkViewController>();
+
+  /// The layout drawn last: a change of the window alone must not animate
+  /// (the panels would trail behind the window edge).
+  PanelLayout? _drawn;
+
+  @override
+  void dispose() {
+    _work.geometry = null;
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final m = context.metrics;
+    final animate = !MediaQuery.disableAnimationsOf(context);
     return FocusTraversalGroup(
       policy: OrderedTraversalPolicy(),
-      child: const Row(
-        children: <Widget>[
-          _Pane(order: 0, child: WorkTab()),
-          SizedBox(width: AppSpacing.s8),
-          Expanded(child: _WorkArea()),
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final geometry = PanelGeometry(
+            workWidth: constraints.maxWidth,
+            billingWidth: m.summaryWidth(isPos: true),
+            gap: m.layoutGap,
+            edgeWidth: AppDensitySizes.productsTabWidth,
+            edgeGap: AppSpacing.s8,
+            cartMinWide: AppDensitySizes.cartMinWide,
+            cartMinNarrow: AppDensitySizes.cartMinNarrow,
+            productsMinNarrow: AppDensitySizes.productsMinNarrow,
+          );
+          _work.geometry = geometry;
+          return Obx(() {
+            final layout = _work.effective;
+            final target = geometry.widthsFor(layout);
+            final changed = _drawn != null && _drawn != layout;
+            _drawn = layout;
+            return TweenAnimationBuilder<PanelWidths>(
+              tween: _WidthsTween(end: target),
+              duration: Duration(
+                milliseconds: animate && changed ? AppMotion.buttonMs : 0,
+              ),
+              curve: Curves.easeOut,
+              builder: (context, w, _) => _WorkRow(
+                widths: w,
+                target: target,
+                layout: layout,
+                geometry: geometry,
+              ),
+            );
+          });
+        },
       ),
     );
   }
 }
 
-class _WorkArea extends StatelessWidget {
-  const _WorkArea();
+class _WidthsTween extends Tween<PanelWidths> {
+  _WidthsTween({required PanelWidths super.end});
+
+  @override
+  PanelWidths lerp(double t) => PanelWidths.lerp(begin ?? end!, end!, t);
+}
+
+class _WorkRow extends StatelessWidget {
+  const _WorkRow({
+    required this.widths,
+    required this.target,
+    required this.layout,
+    required this.geometry,
+  });
+
+  /// The widths of this frame; [target] is where they are heading (a panel
+  /// is live from the first frame of its opening).
+  final PanelWidths widths;
+  final PanelWidths target;
+
+  /// The layout those widths belong to.
+  final PanelLayout layout;
+  final PanelGeometry geometry;
 
   @override
   Widget build(BuildContext context) {
-    final work = Get.find<PosWorkViewController>();
-    final animate = !MediaQuery.disableAnimationsOf(context);
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = constraints.maxWidth;
-        return Obx(() {
-          final catalog = work.inCatalog;
-          return TweenAnimationBuilder<double>(
-            tween: Tween<double>(end: catalog ? 1 : 0),
-            duration: Duration(milliseconds: animate ? AppMotion.buttonMs : 0),
-            curve: Curves.easeOut,
-            builder: (context, t, _) => Row(
-              children: <Widget>[
-                _Slot(
-                  width: width,
-                  factor: t,
-                  shown: catalog,
-                  alignment: Alignment.centerLeft,
-                  order: 1,
-                  child: const CatalogPanel(),
-                ),
-                _Slot(
-                  width: width,
-                  factor: 1 - t,
-                  shown: !catalog,
-                  alignment: Alignment.centerRight,
-                  order: 2,
-                  child: const DesktopCartColumn(),
-                ),
-              ],
-            ),
-          );
-        });
-      },
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        const _Pane(order: 0, child: ProductsEdgeControl()),
+        const SizedBox(width: AppSpacing.s8),
+        _Slot(
+          key: const ValueKey<String>('pos-slot-products'),
+          width: widths.products,
+          layoutWidth: math.max(
+            widths.products,
+            layout.products == ProductsStep.wide
+                ? AppDensitySizes.productsLayoutWide
+                : geometry.productsMinNarrow,
+          ),
+          shown: target.products > 0,
+          alignment: Alignment.centerLeft,
+          order: 1,
+          child: const CatalogPanel(),
+        ),
+        SizedBox(width: widths.productsGap),
+        _Slot(
+          key: const ValueKey<String>('pos-slot-cart'),
+          width: widths.cart,
+          layoutWidth: math.max(widths.cart, geometry.cartMinNarrow),
+          shown: target.cart > 0,
+          alignment: Alignment.centerLeft,
+          order: 2,
+          child: const DesktopCartColumn(),
+        ),
+        SizedBox(width: widths.cartGap),
+        _Slot(
+          key: const ValueKey<String>('pos-slot-billing'),
+          width: widths.billing,
+          layoutWidth: geometry.billingWidth,
+          shown: target.billing > 0,
+          alignment: Alignment.centerRight,
+          order: 3,
+          child: const BillSummaryFrame(isPos: true, collapsible: true),
+        ),
+      ],
     );
   }
 }
 
-/// One view: laid out at the full [width] and revealed by [factor] (0 hides
-/// it completely: no pointer, focus or semantics).
+/// One panel: [width] wide on screen, laid out at [layoutWidth] and clipped
+/// (a panel narrower than its floor does not reflow into nothing). A panel
+/// that is closed and not opening is out of pointer, focus, semantics and
+/// tickers, but stays mounted.
 class _Slot extends StatelessWidget {
   const _Slot({
+    super.key,
     required this.width,
-    required this.factor,
+    required this.layoutWidth,
     required this.shown,
     required this.alignment,
     required this.order,
@@ -145,10 +228,7 @@ class _Slot extends StatelessWidget {
   });
 
   final double width;
-  final double factor;
-
-  /// The view the user is switching to: it is live from the first frame of
-  /// the transition (the focus moves into it), even while its factor is 0.
+  final double layoutWidth;
   final bool shown;
   final Alignment alignment;
   final double order;
@@ -156,13 +236,14 @@ class _Slot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hidden = !shown && factor <= 0.0001;
+    final hidden = !shown && width <= 0.5;
     return ClipRect(
-      child: Align(
-        alignment: alignment,
-        widthFactor: factor,
-        child: SizedBox(
-          width: width,
+      child: SizedBox(
+        width: width,
+        child: OverflowBox(
+          alignment: alignment,
+          minWidth: layoutWidth,
+          maxWidth: layoutWidth,
           child: ExcludeSemantics(
             excluding: hidden,
             child: ExcludeFocus(

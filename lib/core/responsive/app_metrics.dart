@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui' show Size;
 
+import '../theme/tokens/app_density_sizes.dart';
 import '../theme/tokens/app_sizes.dart';
 import 'breakpoints.dart';
 import 'clamp_rule.dart';
@@ -127,9 +128,9 @@ class AppMetrics {
 
   // --- sidebar ---------------------------------------------------------------
   double get sidebarGap => _c.vh(8, 2.3, 24);
-  double get sidebarButtonHeight => _c.vh(48, 8, 76);
-  double get sidebarIconSize => _c.vw(21, 1.7, 26);
-  double get sidebarLabelFont => _c.vw(10, .8, 13);
+  double get sidebarButtonHeight => _c.vh(32, 8, 52);
+  double get sidebarIconSize => _c.vw(18, 1.7, 21);
+  double get sidebarLabelFont => _c.vw(8, .6, 12);
 
   // --- catalog and cart (consumed from S3) --------------------------------------
   double get emptyCustomerMarginBottom => _c.vh(8, 1.1, 13);
@@ -186,6 +187,19 @@ class AppMetrics {
       4 +
       productCodeFont * 1.5 +
       5 +
+      productStepperButton;
+
+  /// Compact card of the narrow Products panel: border, padding, picture, the
+  /// offer line, the name line, the stepper row.
+  double get productCompactCardHeight =>
+      2 +
+      2 * productCardPad +
+      4 +
+      AppDensitySizes.compactImageHeight +
+      4 +
+      AppDensitySizes.compactBadgeRow +
+      catalogFont * 1.5 +
+      4 +
       productStepperButton;
 
   /// `.product-list .product-card` height, `clamp(72px,9vh,90px)`.

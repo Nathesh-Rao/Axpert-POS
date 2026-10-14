@@ -10,3 +10,11 @@ String productsShortcutLabel(BuildContext context) {
       ? s.productsShortcutMac()
       : s.productsShortcutOther();
 }
+
+/// `⌘.` on macOS, `Ctrl+.` elsewhere (the Billing shortcut).
+String billingShortcutLabel(BuildContext context) {
+  final s = context.strings;
+  return defaultTargetPlatform == TargetPlatform.macOS
+      ? s.billingShortcutMac()
+      : s.billingShortcutOther();
+}

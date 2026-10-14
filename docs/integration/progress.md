@@ -126,3 +126,8 @@ Run and read: format and analyze clean; full VM suite 994/994; no PNG changed ve
 - Goldens regenerated (customer row only; diffs are one 30 to 45 px strip, plus the live clock text): `cart_density_*_cart_*` (5), `pos_one_line_light*` (4), `offers_cart_*` (4), `summary_*` (4), `discount_drawer_light`, `receipt_draft_light`. Catalog goldens unchanged.
 - Release web (`work_view_check.mjs`, cashier1): all 13 at 1280x720; at 1868x1035 and 950x733 the behaviour checks pass and the failures are click coordinates of the script (grid rows differ by width).
 
+## Three-panel POS layout (2026-10-14, on top of c22de22)
+- Plan `docs/plan_three_panel.md`, DEC-141 (supersedes DEC-139/140), KG-228 to KG-232. New: `pos_panel_layout.dart`, `products_edge_control.dart`, `billing_total_chip.dart`, settings `pos_products_step` / `pos_billing_open`, shortcut Ctrl/Cmd+. (Billing).
+- Tests: `pos_panel_layout_test` (math, thresholds, fallback), `desktop_work_view_test` (rules 1 to 6, shortcuts, persistence, animation), `desktop_cart_layout_test` (six states at 1280x720, 1440x900, 1868x1035, light and dark, plus 900, 950, 1100, 1500), route navigation and semantics walks over the layouts.
+- Goldens: 42 POS goldens regenerated (edge control strip, Billing header, plus the pre-existing sidebar edits), 8 new `three_panel_*`. Six non-POS page goldens untouched (KG-232).
+- Release web (`three_panel_check.mjs`, cashier1): 22/22 at 1280x720 and at 1868x1035. Debug click-through normal 79/79 and `--semantics` 79/79. Screenshots: `docs/integration/screens/three_panel/`.

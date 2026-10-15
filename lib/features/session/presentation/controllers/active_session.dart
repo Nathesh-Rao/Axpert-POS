@@ -89,6 +89,14 @@ class ActiveSession extends GetxController {
   /// the scope changed and before the session is announced.
   Future<void> Function(StoreInfo store)? onActivate;
 
+  /// Runs first on sign-out, while the user and store are still set (set by
+  /// the binding).
+  Future<void> Function()? beforeSignOut;
+
+  /// Runs last on sign-out: reset controllers, go to the login screen (set by
+  /// the binding).
+  void Function()? onSignedOut;
+
   bool get isSignedIn => user.value != null;
 
   String get displayName => user.value?.displayName ?? '';
@@ -234,7 +242,14 @@ class ActiveSession extends GetxController {
     counter.value = CounterInfo(id: c.id, storeId: c.storeId, name: name);
   }
 
-  void signOut() {
+  /// The one logout (DEC-150). Runs [beforeSignOut] (the binding flushes the
+  /// pending cart save), clears the user, store, counter and scope, then runs
+  /// [onSignedOut] (the binding resets the session-scoped controllers and
+  /// navigates to the login screen). Saved data is never deleted. Does nothing
+  /// when nobody is signed in.
+  Future<void> signOut() async {
+    if (!isSignedIn) return;
+    await beforeSignOut?.call();
     _scope.clear();
     user.value = null;
     store.value = null;
@@ -242,6 +257,7 @@ class ActiveSession extends GetxController {
     regime.value = null;
     forex.clear();
     access.clear();
+    onSignedOut?.call();
   }
 }
 

@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 
 import 'search_field_controller.dart';
 import 'shell_chrome_controller.dart';
+import '../../core/session/session_scoped.dart';
 
 /// Which modal is open (the prototype's single `modal` string). Opening a
 /// modal closes menus; closing refocuses the search field.
@@ -13,7 +14,7 @@ class Confirmation {
   final void Function() onConfirm;
 }
 
-class OverlayController extends GetxController {
+class OverlayController extends GetxController implements SessionScoped {
   static const String confirmId = 'confirm';
 
   final RxnString modal = RxnString();
@@ -50,5 +51,13 @@ class OverlayController extends GetxController {
     payload = null;
     modal.value = null;
     Get.find<SearchFieldController>().refocus();
+  }
+
+  @override
+  void resetForSignOut() {
+    // No refocus: the search field is not on the next screen.
+    confirmation = null;
+    payload = null;
+    modal.value = null;
   }
 }

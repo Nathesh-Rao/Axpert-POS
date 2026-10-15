@@ -28,6 +28,19 @@ abstract final class EntryNavigation {
     );
   }
 
+  /// After sign-out: the login screen with the whole route stack cleared, so
+  /// Back cannot reach a signed-in page, and a fresh login controller.
+  static void toLoginAfterSignOut(bool reducedMotion) {
+    Get.offAll<void>(
+      () => const LoginView(),
+      binding: LoginBinding(),
+      routeName: AppRoutes.login,
+      transition: Transition.fadeIn,
+      duration: _duration(AppEntryMotion.loginToLandingMs, reducedMotion),
+      curve: AppEntryMotion.loginToLandingCurve,
+    );
+  }
+
   /// Login to the store and counter picker (more than one choice).
   static void toPicker(bool reducedMotion) {
     Get.off<void>(

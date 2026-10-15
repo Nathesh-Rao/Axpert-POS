@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:flutter/widgets.dart' show WidgetsBinding;
+
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:get/get.dart';
 
@@ -66,7 +70,9 @@ import '../../features/inventory/data/drift_inventory_repository.dart';
 import '../../features/payment/data/repositories/drift_payment_method_repository.dart';
 import '../../features/payment/domain/repositories/payment_method_repository.dart';
 import '../../features/inventory/domain/repositories/inventory_repository.dart';
+import '../../modules/entry/bindings/entry_navigation.dart';
 import '../database/database_provider.dart';
+import '../session/session_scoped.dart';
 import '../device/device_context_service.dart';
 import '../identifiers/uuid_generator.dart';
 import '../lifecycle/app_lifecycle_service.dart';
@@ -551,6 +557,8 @@ class InitialBinding extends Bindings {
     if (seedDemo ?? DemoSeedConfig.enabled) await _seedDemo();
     final session = Get.find<ActiveSession>();
     session.onActivate = _activate;
+    session.beforeSignOut = Get.find<CartController>().flush;
+    session.onSignedOut = _signedOut;
     var scoped = false;
     try {
       await StartupTimeline.measure('load currencies', session.loadCurrencies);
@@ -608,6 +616,37 @@ class InitialBinding extends Bindings {
   }
 
   /// Opens a store: loads everything that belongs to it.
+  /// Sign-out (DEC-150): empties the in-memory state of the session and shows
+  /// the login screen. Nothing is deleted from the database.
+  void _signedOut() {
+    for (final scoped in <SessionScoped>[
+      Get.find<CartController>(),
+      Get.find<ProductsController>(),
+      Get.find<SalesController>(),
+      Get.find<HeldBillsController>(),
+      Get.find<OffersController>(),
+      Get.find<ShiftController>(),
+      Get.find<DatabaseExportController>(),
+      Get.find<PageFilterController>(),
+      Get.find<SearchFieldController>(),
+      Get.find<CartSelectionController>(),
+      Get.find<ShellChromeController>(),
+      Get.find<OverlayController>(),
+    ]) {
+      scoped.resetForSignOut();
+    }
+    unawaited(Get.find<SessionController>().signOut());
+    // No navigator (a unit test without the app): nothing to navigate.
+    if (Get.key.currentState == null) return;
+    EntryNavigation.toLoginAfterSignOut(
+      WidgetsBinding
+          .instance
+          .platformDispatcher
+          .accessibilityFeatures
+          .disableAnimations,
+    );
+  }
+
   Future<void> _activate(StoreInfo store) async {
     await Future.wait(<Future<void>>[
       Get.find<ProductsController>().load(),

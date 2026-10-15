@@ -9,11 +9,12 @@ import '../../../core/database/export/export_file_name.dart';
 import '../../../features/session/presentation/controllers/active_session.dart';
 import '../../../shared/controllers/overlay_controller.dart';
 import '../../../shared/controllers/toast_controller.dart';
+import '../../../core/session/session_scoped.dart';
 
 /// "Export database" (admin only): confirms, builds a snapshot through the
 /// [DatabaseExportService], hands it to the [DatabaseExportSaver] and tells the
 /// user where it went. The role is checked here as well as in the view.
-class DatabaseExportController extends GetxController {
+class DatabaseExportController extends GetxController implements SessionScoped {
   DatabaseExportController({
     required DatabaseExportService service,
     required DatabaseExportSaver saver,
@@ -91,5 +92,10 @@ class DatabaseExportController extends GetxController {
     } finally {
       busy.value = false;
     }
+  }
+
+  @override
+  void resetForSignOut() {
+    busy.value = false;
   }
 }

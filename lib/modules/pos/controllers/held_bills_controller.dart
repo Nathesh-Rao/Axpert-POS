@@ -2,9 +2,10 @@ import 'package:get/get.dart';
 
 import '../models/held_bill.dart';
 import '../repository/held_bill_repository.dart';
+import '../../../core/session/session_scoped.dart';
 
 /// Permanent list of held bills (prototype `held`).
-class HeldBillsController extends GetxController {
+class HeldBillsController extends GetxController implements SessionScoped {
   HeldBillsController(this._repository);
 
   final HeldBillRepository _repository;
@@ -36,4 +37,9 @@ class HeldBillsController extends GetxController {
   }
 
   Future<void> save() => _repository.save(bills.toList());
+
+  @override
+  void resetForSignOut() {
+    bills.clear(); // memory only: the held_bills rows stay
+  }
 }

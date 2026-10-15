@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import '../../core/session/session_scoped.dart';
 
 /// Owns the global search field's focus node and text so both survive page
 /// navigation. [refocus] mirrors the prototype's `focus()` (40 ms delay).
-class SearchFieldController extends GetxController {
+class SearchFieldController extends GetxController implements SessionScoped {
   static const Duration refocusDelay = Duration(milliseconds: 40);
 
   final FocusNode focusNode = FocusNode(debugLabel: 'global-search');
@@ -26,5 +27,11 @@ class SearchFieldController extends GetxController {
     focusNode.dispose();
     text.dispose();
     super.onClose();
+  }
+
+  @override
+  void resetForSignOut() {
+    _timer?.cancel();
+    text.clear();
   }
 }

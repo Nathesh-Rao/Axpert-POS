@@ -1,9 +1,10 @@
 import 'package:get/get.dart';
+import '../../core/session/session_scoped.dart';
 
 enum ShellMenu { none, notifications, user, order, member }
 
 /// Top bar state: online flag, unread badge, which popover is open.
-class ShellChromeController extends GetxController {
+class ShellChromeController extends GetxController implements SessionScoped {
   final RxBool online = true.obs;
   final RxBool unread = true.obs;
   final Rx<ShellMenu> menu = ShellMenu.none.obs;
@@ -34,4 +35,9 @@ class ShellChromeController extends GetxController {
   }
 
   void closeMenu() => menu.value = ShellMenu.none;
+
+  @override
+  void resetForSignOut() {
+    menu.value = ShellMenu.none;
+  }
 }

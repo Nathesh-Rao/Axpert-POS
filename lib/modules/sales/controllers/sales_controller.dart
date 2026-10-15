@@ -2,10 +2,11 @@ import 'package:get/get.dart';
 
 import '../models/sale.dart';
 import '../repository/sale_repository.dart';
+import '../../../core/session/session_scoped.dart';
 
 /// Permanent sales ledger (prototype `sales`). Sales are appended on checkout;
 /// numbering comes from the list length (KG-008).
-class SalesController extends GetxController {
+class SalesController extends GetxController implements SessionScoped {
   SalesController(this._repository);
 
   final SaleRepository _repository;
@@ -30,5 +31,10 @@ class SalesController extends GetxController {
   void replace(Sale updated) {
     final index = sales.indexWhere((s) => s.number == updated.number);
     if (index >= 0) sales[index] = updated;
+  }
+
+  @override
+  void resetForSignOut() {
+    sales.clear();
   }
 }

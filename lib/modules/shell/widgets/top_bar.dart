@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -421,11 +423,19 @@ class _UserMenuButton extends StatelessWidget {
     final s = context.strings;
     final chrome = Get.find<ShellChromeController>();
     final overlay = Get.find<OverlayController>();
-    final entries = <(IconData, String, String)>[
-      (AppIcons.userRound, s.menuProfile(), 'profile'),
-      (AppIcons.settings, s.menuSettings(), 'settings'),
-      (AppIcons.keyboard, s.menuShortcuts(), 'shortcuts'),
-      (AppIcons.logOut, s.menuLogout(), 'close'),
+    // The last entry signs out (DEC-150); the others open a dialog.
+    final entries = <(IconData, String, VoidCallback)>[
+      (AppIcons.userRound, s.menuProfile(), () => overlay.open('profile')),
+      (AppIcons.settings, s.menuSettings(), () => overlay.open('settings')),
+      (AppIcons.keyboard, s.menuShortcuts(), () => overlay.open('shortcuts')),
+      (
+        AppIcons.logOut,
+        s.menuLogout(),
+        () {
+          chrome.closeMenu();
+          unawaited(Get.find<ActiveSession>().signOut());
+        },
+      ),
     ];
     return Obx(
       () => AppPopover(
@@ -443,10 +453,10 @@ class _UserMenuButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            for (final (icon, label, id) in entries)
+            for (final (icon, label, onSelect) in entries)
               AppPressable(
                 borderRadius: AppRadii.r6,
-                onTap: () => overlay.open(id),
+                onTap: onSelect,
                 builder: (context, hovered) => DecoratedBox(
                   decoration: BoxDecoration(
                     color: hovered ? c.secondary : null,

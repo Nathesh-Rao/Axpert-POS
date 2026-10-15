@@ -2,10 +2,11 @@ import 'package:get/get.dart';
 
 import '../../domain/entities/product.dart';
 import '../../domain/repositories/product_repository.dart';
+import '../../../../core/session/session_scoped.dart';
 
 /// Permanent product list with prebuilt lookup maps (id, barcode, lowercase
 /// code) and the lowercase "name code" search strings used by the catalog.
-class ProductsController extends GetxController {
+class ProductsController extends GetxController implements SessionScoped {
   ProductsController(this._repository);
 
   final ProductRepository _repository;
@@ -98,5 +99,11 @@ class ProductsController extends GetxController {
       for (final p in list) p.id: '${p.name} ${p.code}'.toLowerCase(),
     };
     products.assignAll(list);
+  }
+
+  @override
+  void resetForSignOut() {
+    products.clear();
+    _index(const <Product>[]);
   }
 }

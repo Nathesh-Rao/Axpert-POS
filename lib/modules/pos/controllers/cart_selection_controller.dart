@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:get/get.dart';
+import '../../../core/session/session_scoped.dart';
 
 /// Selected cart line, the 1.6 s "just added" highlight and the scroll-to-end
 /// request of the cart table. Permanent (the prototype keeps this state in the
 /// root component, so it survives page changes and top-bar adds).
-class CartSelectionController extends GetxController {
+class CartSelectionController extends GetxController implements SessionScoped {
   static const Duration highlightDuration = Duration(milliseconds: 1600);
 
   final Rxn<int> selected = Rxn<int>();
@@ -29,5 +30,12 @@ class CartSelectionController extends GetxController {
   void onClose() {
     _timer?.cancel();
     super.onClose();
+  }
+
+  @override
+  void resetForSignOut() {
+    _timer?.cancel();
+    selected.value = null;
+    highlight.value = null;
   }
 }

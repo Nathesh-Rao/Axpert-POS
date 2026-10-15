@@ -6,6 +6,7 @@ import '../../../../core/utils/money_formatter.dart';
 import '../../../products/domain/entities/product.dart';
 import '../../domain/entities/offer.dart';
 import '../../domain/repositories/offer_repository.dart';
+import '../../../../core/session/session_scoped.dart';
 
 /// What a product tile shows for its offer: one badge, and for a discount the
 /// struck-through original price beside the new one.
@@ -22,7 +23,7 @@ class TileOffer {
 /// The offers of the active store (permanent). Offers are loaded with the
 /// session; the engine evaluates their date windows each time the cart
 /// changes, tile badges are refreshed on load (DEC-134).
-class OffersController extends GetxController {
+class OffersController extends GetxController implements SessionScoped {
   OffersController(this._repository, {DateTime Function()? now})
     : _now = now ?? DateTime.now;
 
@@ -118,5 +119,10 @@ class OffersController extends GetxController {
     if (frac == 0) return '$whole';
     final text = frac.toString().padLeft(2, '0');
     return '$whole.${text.endsWith('0') ? text.substring(0, 1) : text}';
+  }
+
+  @override
+  void resetForSignOut() {
+    clear();
   }
 }

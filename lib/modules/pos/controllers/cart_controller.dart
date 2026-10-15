@@ -18,11 +18,12 @@ import '../models/cart.dart';
 import '../services/offer_cart_builder.dart';
 import '../models/cart_line.dart';
 import '../repository/cart_repository.dart';
+import '../../../core/session/session_scoped.dart';
 
 /// Permanent cart state. Applies the reducer rules, persists the draft after
 /// every change (serialised, latest state wins) and computes the totals with
 /// [PricingService] once per change, never in `build`.
-class CartController extends GetxController {
+class CartController extends GetxController implements SessionScoped {
   CartController(
     this._repository,
     this._customers, {
@@ -307,5 +308,12 @@ class CartController extends GetxController {
     }
     _offerNotifiers.clear();
     super.onClose();
+  }
+
+  @override
+  void resetForSignOut() {
+    // Memory only (persist: false): the saved current_cart row stays and
+    // is reloaded by the next sign-in (same store) or dropped (other store).
+    _apply(Cart.empty, persist: false);
   }
 }

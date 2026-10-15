@@ -2,6 +2,7 @@ import '../../../../core/services/pricing/basis_points.dart';
 import '../../../../core/services/pricing/currency.dart';
 import '../../../../core/services/pricing/currency_registry.dart';
 import '../../../../core/services/pricing/money.dart';
+import '../../../offers/domain/services/offer_draft_rules.dart';
 import '../../domain/entities/packaging_entities.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/entities/product_admin_entities.dart';
@@ -60,6 +61,10 @@ class MockProductAdminRepository implements ProductAdminRepository {
   void _check(ProductDraft d, {String? except}) {
     final problems = validator.validate(d);
     if (problems.isNotEmpty) throw InvalidProductException(problems);
+    for (var i = 0; i < d.offers.length; i++) {
+      final issues = const OfferDraftRules().validate(d.offers[i]);
+      if (issues.isNotEmpty) throw InvalidOfferException(i, issues);
+    }
     final taken = _taken(except: except);
     for (final code in [
       ...d.barcodes,
@@ -199,6 +204,7 @@ class MockProductAdminRepository implements ProductAdminRepository {
               enabled: r.draft.packagings[i].enabled,
             ),
         ],
+        offers: r.draft.offers,
         packagingBarcodes: {
           for (var i = 0; i < r.draft.packagings.length; i++)
             if ((r.draft.packagings[i].barcode ?? '').isNotEmpty)

@@ -115,7 +115,7 @@ class ProductCard extends StatelessWidget {
                         AppSpacing.s3 * 2 +
                         AppSpacing.s4,
                     top: list ? AppSpacing.s8 : AppSpacing.s10,
-                    child: _OfferBadge(label: offerLabel!, style: offerStyle!),
+                    child: OfferBadge(label: offerLabel!, style: offerStyle!),
                   ),
                 if (qtyBadge != null)
                   Positioned(
@@ -164,7 +164,7 @@ class ProductCard extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: offerLabel != null && offerStyle != null
-                    ? _OfferBadge(label: offerLabel!, style: offerStyle!)
+                    ? OfferBadge(label: offerLabel!, style: offerStyle!)
                     : Text(
                         code,
                         maxLines: 1,
@@ -436,8 +436,8 @@ class _QtyBadge extends StatelessWidget {
   }
 }
 
-class _OfferBadge extends StatelessWidget {
-  const _OfferBadge({required this.label, required this.style});
+class OfferBadge extends StatelessWidget {
+  const OfferBadge({required this.label, required this.style, super.key});
 
   final String label;
   final ProductOfferStyle style;

@@ -52,11 +52,19 @@ class OffersController extends GetxController implements SessionScoped {
   /// The badge of [product]: promotion, then discount, then gift.
   TileOffer? tileOffer(Product product) {
     if (offers.isEmpty) return null;
-    return _tiles.putIfAbsent(product.id, () => _build(product));
+    return _tiles.putIfAbsent(
+      product.id,
+      () => tileFor(offers, product, _now()),
+    );
   }
 
-  TileOffer? _build(Product product) {
-    final now = _now();
+  /// The badge [offers] give [product] at [now] (also used by the product
+  /// form's live preview, so the badge is computed in one place).
+  static TileOffer? tileFor(
+    Iterable<Offer> offers,
+    Product product,
+    DateTime now,
+  ) {
     Offer? promo;
     Offer? discount;
     Offer? gift;

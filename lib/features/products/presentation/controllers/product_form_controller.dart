@@ -14,6 +14,7 @@ import '../../../../core/utils/qty_formatter.dart';
 import '../../../../shared/controllers/overlay_controller.dart';
 import '../../../../shared/controllers/toast_controller.dart';
 import '../../../session/presentation/controllers/active_session.dart';
+import '../../../offers/presentation/controllers/offer_editor_controller.dart';
 import '../../domain/entities/packaging_entities.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/entities/product_admin_entities.dart';
@@ -97,6 +98,14 @@ class ProductFormController extends GetxController {
   /// The product being edited; null = a new one.
   final Product? editing;
   final ProductDraftValidator validator;
+
+  /// The offers of the product (DEC-153), saved with it.
+  late final OfferEditorController offerEditor = OfferEditorController(
+    currency: () => currency,
+    basePriceMinor: () => DecimalInput.tryScaled(price.text, currency.exponent),
+    productId: () => editing?.id ?? -1,
+    productName: () => name.text.trim(),
+  );
   final PackagingService _packaging = const PackagingService();
 
   bool get isEdit => editing != null;
@@ -175,6 +184,7 @@ class ProductFormController extends GetxController {
     for (final c in <TextEditingController>[name, sku, price, stockBase]) {
       c.addListener(_changed);
     }
+    offerEditor.init();
     final unitRows = await units.all();
     unitList.assignAll(unitRows);
     brandList.assignAll(await brands.all());
@@ -219,6 +229,7 @@ class ProductFormController extends GetxController {
         ),
     ]);
     packagings.forEach(_listen);
+    offerEditor.load(d.offers);
     currentStock.value = _stockOf(d.balanceMilli, d.packagings);
   }
 
@@ -423,6 +434,7 @@ class ProductFormController extends GetxController {
       barcodes: List.of(barcodes),
       packagings: rows,
       openingMilli: opening ?? 0,
+      offers: offerEditor.offers.toList(),
     );
     for (final p in validator.validate(draft)) {
       final key = switch (p.issue) {
@@ -459,6 +471,9 @@ class ProductFormController extends GetxController {
   /// Enter and the Save button. Returns true when the product was saved.
   Future<bool> submit() async {
     if (saving.value || loading.value) return false;
+    // An offer still open in the editor is added first; if it is not valid
+    // the editor shows why and nothing is saved.
+    if (offerEditor.open.value && !offerEditor.apply()) return false;
     final draft = _draft();
     if (draft == null) return false;
     saving.value = true;
@@ -502,6 +517,7 @@ class ProductFormController extends GetxController {
     for (final row in packagings) {
       row.dispose();
     }
+    offerEditor.dispose();
     super.onClose();
   }
 }

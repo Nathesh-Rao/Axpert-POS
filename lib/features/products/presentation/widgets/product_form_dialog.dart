@@ -20,6 +20,7 @@ import '../../../../shared/widgets/modal_actions.dart';
 import '../controllers/product_admin_controller.dart';
 import '../controllers/product_form_controller.dart';
 import 'product_form_parts.dart';
+import 'product_offers_section.dart';
 
 /// Add and edit product (`modal === 'productForm'`, DEC-152). Desktop: a wide
 /// modal with two columns; touch: the same sections full screen.
@@ -117,6 +118,7 @@ class _Sections extends StatelessWidget {
           _ActiveField(form: form),
           _PackagingSection(form: form),
           _StockSection(form: form),
+          ProductOffersSection(form: form),
         ],
       );
     });

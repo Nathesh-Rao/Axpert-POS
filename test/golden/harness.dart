@@ -97,7 +97,8 @@ void useTolerantGoldens({double tolerance = 0.005}) {
 
 /// Goldens that still compare pixels (the key screens). Every other golden
 /// test only checks that the screen renders; see KG-GOLDEN-TRIM. Budget: about
-/// 15 full-screen images. Add one only by replacing another.
+/// 15 full-screen images. Add one only by replacing another (the two product
+/// form images were added on request, DEC-152).
 const Set<String> keptGoldens = <String>{
   'shell_pos_light',
   'shell_pos_dark',
@@ -113,6 +114,8 @@ const Set<String> keptGoldens = <String>{
   'entry_login_light_1280',
   'customer_picker_light',
   'shell_signed_out_light',
+  'product_form_light',
+  'product_form_dark',
 };
 
 /// Compares [finder] with `goldens/<file>.png` when [file] is in

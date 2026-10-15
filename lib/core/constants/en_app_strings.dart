@@ -1428,4 +1428,126 @@ class EnAppStrings extends AppStrings {
 
   @override
   String productAdjustHint() => 'Stock changes are recorded as an adjustment';
+
+  // Offer setup in the product form (DEC-153)
+  @override
+  String offerSectionTitle() => 'Offers & promotions';
+
+  @override
+  String offerAdd() => 'Add offer';
+
+  @override
+  String offerEmpty() => 'No offers yet';
+
+  @override
+  String offerKindDiscount() => 'Discount';
+
+  @override
+  String offerKindPromotion() => 'Promotion';
+
+  @override
+  String offerKindGift() => 'Free item';
+
+  @override
+  String offerFieldKind() => 'Type';
+
+  @override
+  String offerFieldName() => 'Name';
+
+  @override
+  String offerModePercent() => 'Percent';
+
+  @override
+  String offerModeAmount() => 'Amount';
+
+  @override
+  String offerFieldMode() => 'Discount by';
+
+  @override
+  String offerFieldPercent() => 'Percent off';
+
+  @override
+  String offerFieldAmount(String currency) => 'Amount off per unit ($currency)';
+
+  @override
+  String offerFieldMinCart(String currency) => 'Minimum cart value ($currency)';
+
+  @override
+  String offerFieldStart() => 'Starts (YYYY-MM-DD)';
+
+  @override
+  String offerFieldEnd() => 'Ends (YYYY-MM-DD)';
+
+  @override
+  String offerFieldPriority() => 'Priority';
+
+  @override
+  String offerPromotionInfo() =>
+      'Buy 1 Get 1 half price: the whole product at 50%';
+
+  @override
+  String offerGiftInfo() =>
+      'This product is the free item once the cart reaches the minimum';
+
+  @override
+  String offerApply() => 'Add offer';
+
+  @override
+  String offerUpdate() => 'Update offer';
+
+  @override
+  String offerCancel() => 'Cancel offer';
+
+  @override
+  String offerEdit() => 'Edit';
+
+  @override
+  String offerRemove() => 'Delete';
+
+  @override
+  String offerHintEnter() => 'Enter adds the offer';
+
+  @override
+  String offerRulesHint() =>
+      'Offers never stack: a promotion wins over a discount, then the higher priority';
+
+  @override
+  String offerOverlapWarning() =>
+      'Overlaps another active offer: only one of them applies';
+
+  @override
+  String offerPreviewLabel() => 'Preview';
+
+  @override
+  String offerPreviewPrice(String from, String to) => '$from to $to';
+
+  @override
+  String offerPreviewGift(String min) => 'Free item from a cart of $min';
+
+  @override
+  String offerWindow(String from, String to) => '$from to $to';
+
+  @override
+  String offerWindowFrom(String from) => 'from $from';
+
+  @override
+  String offerWindowUntil(String to) => 'until $to';
+
+  @override
+  String offerErrName() => 'Enter a name';
+
+  @override
+  String offerErrValue() => 'Enter a valid value';
+
+  @override
+  String offerErrMinCart() => 'Enter a cart value above 0';
+
+  @override
+  String offerErrDate() => 'Use YYYY-MM-DD';
+
+  @override
+  String offerErrDateOrder() => 'The end is before the start';
+
+  @override
+  String offerErrPriority() => 'Enter a whole number, 0 or more';
 }

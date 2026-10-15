@@ -515,4 +515,45 @@ abstract class AppStrings {
   String productHintSave();
   String productStockEntryHint();
   String productAdjustHint();
+
+  // Offer setup in the product form (DEC-153)
+  String offerSectionTitle();
+  String offerAdd();
+  String offerEmpty();
+  String offerKindDiscount();
+  String offerKindPromotion();
+  String offerKindGift();
+  String offerFieldKind();
+  String offerFieldName();
+  String offerModePercent();
+  String offerModeAmount();
+  String offerFieldMode();
+  String offerFieldPercent();
+  String offerFieldAmount(String currency);
+  String offerFieldMinCart(String currency);
+  String offerFieldStart();
+  String offerFieldEnd();
+  String offerFieldPriority();
+  String offerPromotionInfo();
+  String offerGiftInfo();
+  String offerApply();
+  String offerUpdate();
+  String offerCancel();
+  String offerEdit();
+  String offerRemove();
+  String offerHintEnter();
+  String offerRulesHint();
+  String offerOverlapWarning();
+  String offerPreviewLabel();
+  String offerPreviewPrice(String from, String to);
+  String offerPreviewGift(String min);
+  String offerWindow(String from, String to);
+  String offerWindowFrom(String from);
+  String offerWindowUntil(String to);
+  String offerErrName();
+  String offerErrValue();
+  String offerErrMinCart();
+  String offerErrDate();
+  String offerErrDateOrder();
+  String offerErrPriority();
 }

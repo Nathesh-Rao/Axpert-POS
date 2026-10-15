@@ -1,4 +1,6 @@
 import '../services/product_draft_validator.dart';
+import '../../../offers/domain/entities/offer_draft.dart';
+import '../../../offers/domain/services/offer_draft_rules.dart';
 import 'packaging_entities.dart';
 import 'product.dart';
 
@@ -55,6 +57,7 @@ class ProductDraft {
     this.barcodes = const <String>[],
     this.packagings = const <PackagingDraft>[],
     this.openingMilli = 0,
+    this.offers = const <OfferDraft>[],
   });
 
   final String name;
@@ -75,6 +78,9 @@ class ProductDraft {
 
   /// Opening stock (create only), base milli-units.
   final int openingMilli;
+
+  /// The product's offers (DEC-153), saved in the same transaction.
+  final List<OfferDraft> offers;
 }
 
 /// A product with its catalog attributes, for the edit form.
@@ -88,6 +94,7 @@ class ProductDetail {
     required this.barcodes,
     required this.packagings,
     required this.packagingBarcodes,
+    required this.offers,
     required this.balanceMilli,
     required this.active,
   });
@@ -102,6 +109,9 @@ class ProductDetail {
 
   /// Barcode of each packaging that has one, by packaging id.
   final Map<String, String> packagingBarcodes;
+
+  /// Live offers of the product (inactive and expired ones included).
+  final List<OfferDraft> offers;
 
   /// Exact stock (the ledger balance, base milli-units).
   final int balanceMilli;
@@ -142,6 +152,17 @@ class InvalidProductException implements Exception {
 
   @override
   String toString() => 'InvalidProductException($problems)';
+}
+
+/// An offer of the form cannot be stored ([index] is its place in the list).
+class InvalidOfferException implements Exception {
+  const InvalidOfferException(this.index, this.issues);
+
+  final int index;
+  final List<OfferIssue> issues;
+
+  @override
+  String toString() => 'InvalidOfferException($index, $issues)';
 }
 
 /// The user's role may not change the catalog.

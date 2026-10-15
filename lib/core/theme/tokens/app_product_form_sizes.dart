@@ -12,11 +12,15 @@ abstract final class AppProductFormSizes {
   static const double countWidth = 84;
 
   /// Width of the unit dropdown in a packaging row.
-  static const double unitWidth = 170;
+  static const double unitWidth = 150;
 
   /// Width of the factor box in a packaging row.
   static const double factorWidth = 120;
 
   /// Width of the SKU and price boxes in a packaging row.
-  static const double smallFieldWidth = 150;
+  static const double smallFieldWidth = 130;
+
+  /// Width of the offer name box and of the minimum cart value box.
+  static const double offerNameWidth = 300;
+  static const double minCartWidth = 210;
 }

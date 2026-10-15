@@ -10,6 +10,9 @@ import '../../../../core/services/pricing/currency_registry.dart';
 import '../../../../core/session/store_scope.dart';
 import '../../../../core/utils/serial_queue.dart';
 import '../../../inventory/data/drift_inventory_repository.dart';
+import '../../../offers/domain/entities/offer.dart';
+import '../../../offers/domain/entities/offer_draft.dart';
+import '../../../offers/domain/services/offer_draft_rules.dart';
 import '../../domain/entities/packaging_entities.dart';
 import '../../domain/entities/product_admin_entities.dart';
 import '../../domain/repositories/product_admin_repository.dart';
@@ -89,6 +92,7 @@ class DriftProductAdminRepository implements ProductAdminRepository {
             ),
           );
       await _writeChildren(db, id, storeId, draft, now);
+      await _writeOffers(db, id, storeId, draft, now);
       if (storeId != null) {
         if (draft.openingMilli > 0) {
           await db
@@ -147,6 +151,7 @@ class DriftProductAdminRepository implements ProductAdminRepository {
         ),
       );
       await _writeChildren(db, uuid, row.storeId, draft, now);
+      await _writeOffers(db, uuid, row.storeId, draft, now);
     });
   });
 
@@ -300,6 +305,7 @@ class DriftProductAdminRepository implements ProductAdminRepository {
       categoryId: row.categoryId,
       barcodes: [for (final c in codes) c.barcode],
       packagings: packagings,
+      offers: await _offersOf(db, row.id),
       packagingBarcodes: {
         for (final c in all)
           if (c.packagingId != null) c.packagingId!: c.barcode,
@@ -416,6 +422,10 @@ class DriftProductAdminRepository implements ProductAdminRepository {
   void _check(ProductDraft draft) {
     final problems = validator.validate(draft);
     if (problems.isNotEmpty) throw InvalidProductException(problems);
+    for (var i = 0; i < draft.offers.length; i++) {
+      final issues = const OfferDraftRules().validate(draft.offers[i]);
+      if (issues.isNotEmpty) throw InvalidOfferException(i, issues);
+    }
   }
 
   String _firstBarcode(ProductDraft draft) =>
@@ -566,6 +576,107 @@ class DriftProductAdminRepository implements ProductAdminRepository {
         throw DuplicateBarcodeException(code);
       }
     }
+  }
+
+  /// The product's offers match [draft]: edited ones update, removed ones get
+  /// a tombstone, new ones are inserted. A discount or promotion belongs to
+  /// the product; a free-item tier has the product as its gift.
+  Future<void> _writeOffers(
+    AxpertDatabase db,
+    String productId,
+    String? storeId,
+    ProductDraft draft,
+    int now,
+  ) async {
+    final existing =
+        await (db.select(db.offerEntries)..where(
+              (t) =>
+                  t.deletedAt.isNull() &
+                  (t.productId.equals(productId) |
+                      t.giftProductId.equals(productId)),
+            ))
+            .get();
+    final keep = {
+      for (final o in draft.offers)
+        if (o.id != null) o.id!,
+    };
+    for (final old in existing) {
+      if (keep.contains(old.id)) continue;
+      await (db.update(
+        db.offerEntries,
+      )..where((t) => t.id.equals(old.id))).write(
+        OfferEntriesCompanion(deletedAt: Value(now), updatedAt: Value(now)),
+      );
+    }
+    final known = {for (final o in existing) o.id};
+    final currency = _currency(draft);
+    for (final o in draft.offers) {
+      final gift = o.kind == OfferKind.giftTier;
+      final fixed = o.kind == OfferKind.discount && o.fixedMinor != null;
+      final id = o.id ?? _uuid.generate();
+      final values = OfferEntriesCompanion(
+        kind: Value(o.kind.code),
+        name: Value(o.name.trim()),
+        storeId: Value(storeId),
+        productId: Value(gift ? null : productId),
+        giftProductId: Value(gift ? productId : null),
+        percentBp: Value(gift || fixed ? null : o.percentBp),
+        fixedAmountMinor: Value(fixed ? o.fixedMinor : null),
+        currencyCode: Value(gift || fixed ? currency : null),
+        minCartMinor: Value(gift ? o.minCartMinor : null),
+        startsAt: Value(o.startsAt?.toUtc().millisecondsSinceEpoch),
+        endsAt: Value(o.endsAt?.toUtc().millisecondsSinceEpoch),
+        active: Value(o.active),
+        priority: Value(o.priority),
+        updatedAt: Value(now),
+      );
+      if (o.id != null && known.contains(o.id)) {
+        await (db.update(
+          db.offerEntries,
+        )..where((t) => t.id.equals(id))).write(values);
+      } else {
+        await db
+            .into(db.offerEntries)
+            .insert(values.copyWith(id: Value(id), createdAt: Value(now)));
+      }
+    }
+  }
+
+  Future<List<OfferDraft>> _offersOf(
+    AxpertDatabase db,
+    String productId,
+  ) async {
+    final rows =
+        await (db.select(db.offerEntries)
+              ..where(
+                (t) =>
+                    t.deletedAt.isNull() &
+                    (t.productId.equals(productId) |
+                        t.giftProductId.equals(productId)),
+              )
+              ..orderBy([
+                (t) => OrderingTerm.desc(t.priority),
+                (t) => OrderingTerm.asc(t.createdAt),
+              ]))
+            .get();
+    DateTime? utc(int? ms) => ms == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true);
+    return [
+      for (final r in rows)
+        OfferDraft(
+          id: r.id,
+          kind: OfferKind.parse(r.kind),
+          name: r.name,
+          percentBp: r.percentBp,
+          fixedMinor: r.fixedAmountMinor,
+          minCartMinor: r.minCartMinor,
+          startsAt: utc(r.startsAt),
+          endsAt: utc(r.endsAt),
+          active: r.active,
+          priority: r.priority,
+        ),
+    ];
   }
 
   /// Throws [DuplicateBarcodeException] when another live row of the same

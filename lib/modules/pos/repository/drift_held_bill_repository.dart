@@ -12,6 +12,7 @@ import '../../../core/utils/serial_queue.dart';
 import '../models/held_bill.dart';
 import 'held_bill_repository.dart';
 import 'mock_held_bill_repository.dart';
+import '../../../core/utils/epoch_time.dart';
 
 /// Held bills in Drift (source of truth), dual-written to [LocalStore] so the
 /// rollback to the LocalStore backend loses nothing (DEC-127).
@@ -96,7 +97,7 @@ class DriftHeldBillRepository implements HeldBillRepository {
       return _fallback.save(bills);
     }
     try {
-      final now = _now().toUtc().toIso8601String();
+      final now = EpochTime.fromDateTime(_now());
       await db.durableTransaction(
         () => HeldBillRows.apply(
           db,

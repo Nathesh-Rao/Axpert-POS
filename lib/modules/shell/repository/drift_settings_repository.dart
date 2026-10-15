@@ -10,6 +10,7 @@ import '../../../core/utils/serial_queue.dart';
 import '../models/app_settings.dart';
 import 'mock_settings_repository.dart';
 import 'settings_repository.dart';
+import '../../../core/utils/epoch_time.dart';
 
 /// Settings in Drift (source of truth), dual-written to [LocalStore] so the
 /// rollback to the LocalStore backend loses nothing (DEC-125).
@@ -69,7 +70,7 @@ class DriftSettingsRepository implements SettingsRepository {
     }
     final json = settings.toJson();
     try {
-      final now = _now().toUtc().toIso8601String();
+      final now = EpochTime.fromDateTime(_now());
       await db.durableTransaction(() async {
         for (final entry in json.entries) {
           await db

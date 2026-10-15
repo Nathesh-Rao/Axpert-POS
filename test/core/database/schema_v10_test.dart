@@ -12,7 +12,7 @@ void main() {
   test('a fresh database has the v10 tables', () async {
     final db = AxpertDatabase(NativeDatabase.memory());
     addTearDown(db.close);
-    expect(db.schemaVersion, 10);
+    expect(db.schemaVersion, 11);
     expect(await db.select(db.storeForexEntries).get(), isEmpty);
     expect(await db.select(db.taxRegimeEntries).get(), isEmpty);
     expect(await db.select(db.taxSlabEntries).get(), isEmpty);
@@ -28,11 +28,11 @@ void main() {
     await seed.customStatement(
       "INSERT INTO currencies (code, name, symbol, exponent, grouping, "
       "quick_cash, created_at, updated_at) VALUES ('INR', 'Rupee', 'R', 2, "
-      "'lakh', '', 'x', 'x')",
+      "'lakh', '', 0, 0)",
     );
     await seed.customStatement(
       "INSERT INTO stores (id, name, currency_code, created_at, updated_at) "
-      "VALUES ('s1', 'Shop', 'INR', 'x', 'x')",
+      "VALUES ('s1', 'Shop', 'INR', 0, 0)",
     );
     for (final t in v10Tables.reversed) {
       await seed.customStatement('DROP TABLE $t');
@@ -43,7 +43,7 @@ void main() {
     final db = AxpertDatabase(NativeDatabase(file));
     addTearDown(db.close);
     final v = await db.customSelect('PRAGMA user_version').getSingle();
-    expect(v.read<int>('user_version'), 10);
+    expect(v.read<int>('user_version'), 11);
     final names = {
       for (final r
           in await db
@@ -69,7 +69,7 @@ void main() {
     await seed.customStatement(
       "INSERT INTO currencies (code, name, symbol, exponent, grouping, "
       "quick_cash, created_at, updated_at) VALUES ('INR', 'Rupee', 'R', 2, "
-      "'lakh', '', 'x', 'x')",
+      "'lakh', '', 0, 0)",
     );
     for (final t in v10Tables.reversed) {
       await seed.customStatement('DROP TABLE $t');

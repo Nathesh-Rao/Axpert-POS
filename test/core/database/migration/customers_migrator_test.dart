@@ -1,3 +1,4 @@
+import 'package:pos_application/core/utils/epoch_time.dart';
 import 'dart:convert';
 
 import 'package:drift/drift.dart' show OrderingTerm, Value;
@@ -63,7 +64,7 @@ void main() {
       expect(r.map((e) => e.legacyId), ['walk', '1', '2', '3']);
       expect(r.map((e) => e.position), [0, 1, 2, 3]);
       expect(r.every((e) => _uuidV4.hasMatch(e.id)), isTrue);
-      expect(r.first.createdAt, '2026-10-12T00:00:00.000Z');
+      expect(r.first.createdAt, EpochTime.parse('2026-10-12T00:00:00.000Z'));
       expect(r.first.deletedAt, isNull);
       expect(await store.has(StorageKeys.customers), isTrue);
       final marker = await markerJson();

@@ -9,6 +9,7 @@ import '../../services/pricing/currency.dart';
 import '../../services/pricing/currency_registry.dart';
 import '../axpert_database.dart';
 import 'fnv1a.dart';
+import '../../utils/epoch_time.dart';
 
 /// Held list <-> `held_bills` table mapping shared by the one-way copy and
 /// every save (DEC-127). Callers wrap [apply] in `durableTransaction`.
@@ -33,7 +34,7 @@ abstract final class HeldBillRows {
   static Future<void> apply(
     AxpertDatabase db,
     List<HeldBill> list, {
-    required String now,
+    required int now,
     required UuidGenerator uuid,
     String? storeId,
   }) async {
@@ -68,7 +69,7 @@ abstract final class HeldBillRows {
                 id: uuid.generate(),
                 ref: bill.ref,
                 position: i,
-                heldAt: bill.time,
+                heldAt: EpochTime.parseOrZero(bill.time),
                 cartJson: json,
                 createdAt: now,
                 updatedAt: now,
@@ -79,7 +80,7 @@ abstract final class HeldBillRows {
       }
       matched.add(row.id);
       if (row.position == i &&
-          row.heldAt == bill.time &&
+          row.heldAt == EpochTime.parseOrZero(bill.time) &&
           row.cartJson == json) {
         continue;
       }
@@ -88,7 +89,7 @@ abstract final class HeldBillRows {
       )..where((t) => t.id.equals(row.id))).write(
         HeldBillEntriesCompanion(
           position: Value(i),
-          heldAt: Value(bill.time),
+          heldAt: Value(EpochTime.parseOrZero(bill.time)),
           cartJson: Value(json),
           updatedAt: Value(now),
         ),
@@ -123,7 +124,7 @@ abstract final class HeldBillRows {
       for (final r in rows)
         HeldBill(
           ref: r.ref,
-          time: r.heldAt,
+          time: EpochTime.toIso(r.heldAt),
           cart: Cart.fromJson(
             jsonDecode(r.cartJson) as Map<String, dynamic>,
             currency: currency,

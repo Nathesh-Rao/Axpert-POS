@@ -4,6 +4,7 @@ import '../../../features/products/domain/entities/product.dart';
 import '../models/cart.dart';
 import '../models/cart_line.dart';
 import '../models/held_bill.dart';
+import '../../../core/utils/epoch_time.dart';
 
 /// What recalling a held bill gives: the rebuilt cart and the product ids of
 /// the lines that could not be restored (product no longer exists).
@@ -30,11 +31,8 @@ class HoldRecallService {
   }
 
   /// `{ref, time: toISOString(), cart}`.
-  HeldBill hold(Cart cart, DateTime now) => HeldBill(
-    ref: refFor(now),
-    time: now.toUtc().toIso8601String(),
-    cart: cart,
-  );
+  HeldBill hold(Cart cart, DateTime now) =>
+      HeldBill(ref: refFor(now), time: EpochTime.nowIso(now), cart: cart);
 
   /// Re-reads every line's product, clamps the quantity to the current stock
   /// and drops lines at zero. A missing product crashes the prototype

@@ -7,6 +7,7 @@ import '../../services/storage/local_store.dart';
 import '../axpert_database.dart';
 import 'sale_rows.dart';
 import 'settings_migrator.dart' show SettingsMigrationException;
+import '../../utils/epoch_time.dart';
 
 /// Marker row key in `migration_state`: the LocalStore to Drift copy of the
 /// sales finished at least once.
@@ -70,7 +71,12 @@ class SalesMigrator {
       return const SalesCopyOutcome(SalesCopyResult.alreadyCopied, null);
     }
 
-    final parsed = await _readParsed(store);
+    final parsed = <Sale>[
+      for (final sale in await _readParsed(store))
+        // The database holds milliseconds: re-express the date in the one
+        // canonical form so the read-back checksum compares like with like.
+        sale.copyWith(date: EpochTime.canonicalIso(sale.date)),
+    ];
     SaleRows.validate(parsed);
     final report = SalesCopyReport(
       duplicateNumbers: SaleRows.duplicateNumbers(parsed),
@@ -79,7 +85,7 @@ class SalesMigrator {
     final expectedChecksum = SaleRows.checksum(parsed);
 
     await db.durableTransaction(() async {
-      final now = _now().toUtc().toIso8601String();
+      final now = EpochTime.fromDateTime(_now());
       final existing = await SaleRows.read(db);
       final plan = SaleRows.plan(parsed, existing.known, now: now, uuid: _uuid);
       await SaleRows.write(db, plan, now: now, uuid: _uuid);
@@ -99,7 +105,7 @@ class SalesMigrator {
               value: jsonEncode({
                 'count': readBack.length,
                 'checksum': expectedChecksum,
-                'copied_at': now,
+                'copied_at': EpochTime.toIso(now),
                 'report': report.toJson(),
               }),
             ),

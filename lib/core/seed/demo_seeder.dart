@@ -22,6 +22,7 @@ import '../services/pricing/pricing_service.dart';
 import '../services/pricing/qty.dart';
 import '../services/pricing/tax_config.dart';
 import '../session/store_scope.dart';
+import '../utils/epoch_time.dart';
 
 /// Compile-time switches (`--dart-define=DEMO_SEED=true`, `RESEED_DEMO=true`).
 abstract final class DemoSeedConfig {
@@ -132,19 +133,21 @@ class DemoSeeder {
     await _writeMarker(now);
   }
 
-  Future<void> _writeMarker(String now) => db
+  Future<void> _writeMarker(int now) => db
       .into(db.migrationStateEntries)
       .insert(
         MigrationStateEntriesCompanion.insert(
           key: marker,
-          value: jsonEncode(<String, Object>{'seeded_at': now}),
+          value: jsonEncode(<String, Object>{
+            'seeded_at': EpochTime.toIso(now),
+          }),
         ),
         mode: InsertMode.insertOrReplace,
       );
 
   // ---------------------------------------------------------------- insert
 
-  String get _stamp => _now().toUtc().toIso8601String();
+  int get _stamp => EpochTime.fromDateTime(_now());
 
   Future<void> _track(String table, String id) => db
       .into(db.seedManifestEntries)
@@ -160,10 +163,7 @@ class DemoSeeder {
     var storeIndex = 0;
     for (final s in d.stores) {
       // Stores sort by creation time: keep the file order.
-      final storeStamp = _now()
-          .toUtc()
-          .add(Duration(milliseconds: storeIndex++))
-          .toIso8601String();
+      final storeStamp = _stamp + storeIndex++;
       await db
           .into(db.storeEntries)
           .insert(
@@ -349,7 +349,7 @@ class DemoSeeder {
     await _writeMarker(now);
   }
 
-  Future<void> _insertCurrencies(_SeedData d, String now) async {
+  Future<void> _insertCurrencies(_SeedData d, int now) async {
     for (final c in d.currencies) {
       final inserted = await db
           .into(db.currencyEntries)
@@ -370,7 +370,7 @@ class DemoSeeder {
     }
   }
 
-  Future<void> _insertRegimes(_SeedData d, String now) async {
+  Future<void> _insertRegimes(_SeedData d, int now) async {
     for (final r in d.regimes) {
       final id = r['id'] as String;
       final inserted = await db
@@ -409,7 +409,7 @@ class DemoSeeder {
     }
   }
 
-  Future<void> _insertForex(_SeedData d, String now) async {
+  Future<void> _insertForex(_SeedData d, int now) async {
     for (final f in d.forex) {
       final id = f['id'] as String;
       final inserted = await db
@@ -430,12 +430,11 @@ class DemoSeeder {
     }
   }
 
-  String? _relative(Object? days, int direction) => days == null
+  int? _relative(Object? days, int direction) => days == null
       ? null
-      : _now()
-            .toUtc()
-            .add(Duration(days: (days as int) * direction))
-            .toIso8601String();
+      : EpochTime.fromDateTime(
+          _now().toUtc().add(Duration(days: (days as int) * direction)),
+        );
 
   Future<void> _insertSales(
     _SeedData d,
@@ -536,7 +535,7 @@ class DemoSeeder {
             saleId: spec['id'] as String,
             cashier: names[spec['user'] as String],
             number: 'AX${(built.length + 1).toString().padLeft(6, '0')}',
-            date: at.toIso8601String(),
+            date: EpochTime.nowIso(at),
             store: store['name'] as String,
             customer: customerNames[spec['customer'] as String] ?? '',
             cart: cart,

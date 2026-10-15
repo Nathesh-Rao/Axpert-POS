@@ -225,8 +225,8 @@ void main() {
         });
       }
 
-      test('no validation: empty ref and odd time text are kept', () async {
-        final list = [heldBill('', time: 'not a date')];
+      test('no validation: an empty ref is kept', () async {
+        final list = [heldBill('', time: '1999-12-31T23:59:59.999Z')];
         final repo = backend.create(store);
         await repo.load();
         await repo.save(list);
@@ -234,7 +234,7 @@ void main() {
         final loaded = await backend.create(store).load();
 
         expect(loaded.single.ref, '');
-        expect(loaded.single.time, 'not a date');
+        expect(loaded.single.time, '1999-12-31T23:59:59.999Z');
       });
 
       test(
@@ -243,7 +243,7 @@ void main() {
           final list = [
             HeldBill(
               ref: 'E',
-              time: 't',
+              time: '2026-10-12T10:00:00.000Z',
               cart: heldBill(
                 'x',
                 note: 'n',
@@ -251,7 +251,7 @@ void main() {
             ),
             HeldBill(
               ref: 'F',
-              time: 't',
+              time: '2026-10-12T10:00:00.000Z',
               cart: heldBill('x').cart.copyWith(lines: []),
             ),
           ];

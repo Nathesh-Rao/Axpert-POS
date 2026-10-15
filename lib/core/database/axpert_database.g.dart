@@ -351,11 +351,11 @@ class $SettingsEntriesTable extends SettingsEntries
     'updatedAt',
   );
   @override
-  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   @override
@@ -414,7 +414,7 @@ class $SettingsEntriesTable extends SettingsEntries
         data['${effectivePrefix}value_json'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}updated_at'],
       )!,
     );
@@ -431,7 +431,7 @@ class SettingsEntry extends DataClass implements Insertable<SettingsEntry> {
   final String valueJson;
 
   /// UTC ISO 8601 text.
-  final String updatedAt;
+  final int updatedAt;
   const SettingsEntry({
     required this.key,
     required this.valueJson,
@@ -442,7 +442,7 @@ class SettingsEntry extends DataClass implements Insertable<SettingsEntry> {
     final map = <String, Expression>{};
     map['key'] = Variable<String>(key);
     map['value_json'] = Variable<String>(valueJson);
-    map['updated_at'] = Variable<String>(updatedAt);
+    map['updated_at'] = Variable<int>(updatedAt);
     return map;
   }
 
@@ -462,7 +462,7 @@ class SettingsEntry extends DataClass implements Insertable<SettingsEntry> {
     return SettingsEntry(
       key: serializer.fromJson<String>(json['key']),
       valueJson: serializer.fromJson<String>(json['valueJson']),
-      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
     );
   }
   @override
@@ -471,11 +471,11 @@ class SettingsEntry extends DataClass implements Insertable<SettingsEntry> {
     return <String, dynamic>{
       'key': serializer.toJson<String>(key),
       'valueJson': serializer.toJson<String>(valueJson),
-      'updatedAt': serializer.toJson<String>(updatedAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
     };
   }
 
-  SettingsEntry copyWith({String? key, String? valueJson, String? updatedAt}) =>
+  SettingsEntry copyWith({String? key, String? valueJson, int? updatedAt}) =>
       SettingsEntry(
         key: key ?? this.key,
         valueJson: valueJson ?? this.valueJson,
@@ -513,7 +513,7 @@ class SettingsEntry extends DataClass implements Insertable<SettingsEntry> {
 class SettingsEntriesCompanion extends UpdateCompanion<SettingsEntry> {
   final Value<String> key;
   final Value<String> valueJson;
-  final Value<String> updatedAt;
+  final Value<int> updatedAt;
   final Value<int> rowid;
   const SettingsEntriesCompanion({
     this.key = const Value.absent(),
@@ -524,7 +524,7 @@ class SettingsEntriesCompanion extends UpdateCompanion<SettingsEntry> {
   SettingsEntriesCompanion.insert({
     required String key,
     required String valueJson,
-    required String updatedAt,
+    required int updatedAt,
     this.rowid = const Value.absent(),
   }) : key = Value(key),
        valueJson = Value(valueJson),
@@ -532,7 +532,7 @@ class SettingsEntriesCompanion extends UpdateCompanion<SettingsEntry> {
   static Insertable<SettingsEntry> custom({
     Expression<String>? key,
     Expression<String>? valueJson,
-    Expression<String>? updatedAt,
+    Expression<int>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -546,7 +546,7 @@ class SettingsEntriesCompanion extends UpdateCompanion<SettingsEntry> {
   SettingsEntriesCompanion copyWith({
     Value<String>? key,
     Value<String>? valueJson,
-    Value<String>? updatedAt,
+    Value<int>? updatedAt,
     Value<int>? rowid,
   }) {
     return SettingsEntriesCompanion(
@@ -567,7 +567,7 @@ class SettingsEntriesCompanion extends UpdateCompanion<SettingsEntry> {
       map['value_json'] = Variable<String>(valueJson.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<String>(updatedAt.value);
+      map['updated_at'] = Variable<int>(updatedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -886,33 +886,33 @@ class $CustomerEntriesTable extends CustomerEntries
     'createdAt',
   );
   @override
-  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
   @override
-  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
   );
   @override
-  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
     'deleted_at',
     aliasedName,
     true,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
   static const VerificationMeta _serverIdMeta = const VerificationMeta(
@@ -1123,15 +1123,15 @@ class $CustomerEntriesTable extends CustomerEntries
         data['${effectivePrefix}points'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}updated_at'],
       )!,
       deletedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}deleted_at'],
       ),
       serverId: attachedDatabase.typeMapping.read(
@@ -1170,9 +1170,9 @@ class CustomerEntry extends DataClass implements Insertable<CustomerEntry> {
   final int points;
 
   /// UTC ISO 8601 text.
-  final String createdAt;
-  final String updatedAt;
-  final String? deletedAt;
+  final int createdAt;
+  final int updatedAt;
+  final int? deletedAt;
   final String? serverId;
   final int? serverVersion;
   final String? deviceId;
@@ -1203,10 +1203,10 @@ class CustomerEntry extends DataClass implements Insertable<CustomerEntry> {
     map['email'] = Variable<String>(email);
     map['member_no'] = Variable<String>(memberNo);
     map['points'] = Variable<int>(points);
-    map['created_at'] = Variable<String>(createdAt);
-    map['updated_at'] = Variable<String>(updatedAt);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
     if (!nullToAbsent || deletedAt != null) {
-      map['deleted_at'] = Variable<String>(deletedAt);
+      map['deleted_at'] = Variable<int>(deletedAt);
     }
     if (!nullToAbsent || serverId != null) {
       map['server_id'] = Variable<String>(serverId);
@@ -1261,9 +1261,9 @@ class CustomerEntry extends DataClass implements Insertable<CustomerEntry> {
       email: serializer.fromJson<String>(json['email']),
       memberNo: serializer.fromJson<String>(json['memberNo']),
       points: serializer.fromJson<int>(json['points']),
-      createdAt: serializer.fromJson<String>(json['createdAt']),
-      updatedAt: serializer.fromJson<String>(json['updatedAt']),
-      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
       serverId: serializer.fromJson<String?>(json['serverId']),
       serverVersion: serializer.fromJson<int?>(json['serverVersion']),
       deviceId: serializer.fromJson<String?>(json['deviceId']),
@@ -1281,9 +1281,9 @@ class CustomerEntry extends DataClass implements Insertable<CustomerEntry> {
       'email': serializer.toJson<String>(email),
       'memberNo': serializer.toJson<String>(memberNo),
       'points': serializer.toJson<int>(points),
-      'createdAt': serializer.toJson<String>(createdAt),
-      'updatedAt': serializer.toJson<String>(updatedAt),
-      'deletedAt': serializer.toJson<String?>(deletedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
       'serverId': serializer.toJson<String?>(serverId),
       'serverVersion': serializer.toJson<int?>(serverVersion),
       'deviceId': serializer.toJson<String?>(deviceId),
@@ -1299,9 +1299,9 @@ class CustomerEntry extends DataClass implements Insertable<CustomerEntry> {
     String? email,
     String? memberNo,
     int? points,
-    String? createdAt,
-    String? updatedAt,
-    Value<String?> deletedAt = const Value.absent(),
+    int? createdAt,
+    int? updatedAt,
+    Value<int?> deletedAt = const Value.absent(),
     Value<String?> serverId = const Value.absent(),
     Value<int?> serverVersion = const Value.absent(),
     Value<String?> deviceId = const Value.absent(),
@@ -1411,9 +1411,9 @@ class CustomerEntriesCompanion extends UpdateCompanion<CustomerEntry> {
   final Value<String> email;
   final Value<String> memberNo;
   final Value<int> points;
-  final Value<String> createdAt;
-  final Value<String> updatedAt;
-  final Value<String?> deletedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
   final Value<String?> serverId;
   final Value<int?> serverVersion;
   final Value<String?> deviceId;
@@ -1444,8 +1444,8 @@ class CustomerEntriesCompanion extends UpdateCompanion<CustomerEntry> {
     required String email,
     required String memberNo,
     required int points,
-    required String createdAt,
-    required String updatedAt,
+    required int createdAt,
+    required int updatedAt,
     this.deletedAt = const Value.absent(),
     this.serverId = const Value.absent(),
     this.serverVersion = const Value.absent(),
@@ -1470,9 +1470,9 @@ class CustomerEntriesCompanion extends UpdateCompanion<CustomerEntry> {
     Expression<String>? email,
     Expression<String>? memberNo,
     Expression<int>? points,
-    Expression<String>? createdAt,
-    Expression<String>? updatedAt,
-    Expression<String>? deletedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
     Expression<String>? serverId,
     Expression<int>? serverVersion,
     Expression<String>? deviceId,
@@ -1506,9 +1506,9 @@ class CustomerEntriesCompanion extends UpdateCompanion<CustomerEntry> {
     Value<String>? email,
     Value<String>? memberNo,
     Value<int>? points,
-    Value<String>? createdAt,
-    Value<String>? updatedAt,
-    Value<String?>? deletedAt,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int?>? deletedAt,
     Value<String?>? serverId,
     Value<int?>? serverVersion,
     Value<String?>? deviceId,
@@ -1561,13 +1561,13 @@ class CustomerEntriesCompanion extends UpdateCompanion<CustomerEntry> {
       map['points'] = Variable<int>(points.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<String>(createdAt.value);
+      map['created_at'] = Variable<int>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<String>(updatedAt.value);
+      map['updated_at'] = Variable<int>(updatedAt.value);
     }
     if (deletedAt.present) {
-      map['deleted_at'] = Variable<String>(deletedAt.value);
+      map['deleted_at'] = Variable<int>(deletedAt.value);
     }
     if (serverId.present) {
       map['server_id'] = Variable<String>(serverId.value);
@@ -1680,22 +1680,22 @@ class $CurrencyEntriesTable extends CurrencyEntries
     'createdAt',
   );
   @override
-  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
   @override
-  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   @override
@@ -1817,11 +1817,11 @@ class $CurrencyEntriesTable extends CurrencyEntries
         data['${effectivePrefix}quick_cash'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}updated_at'],
       )!,
     );
@@ -1849,8 +1849,8 @@ class CurrencyEntry extends DataClass implements Insertable<CurrencyEntry> {
 
   /// Quick cash buttons in whole currency units, comma separated.
   final String quickCash;
-  final String createdAt;
-  final String updatedAt;
+  final int createdAt;
+  final int updatedAt;
   const CurrencyEntry({
     required this.code,
     required this.name,
@@ -1870,8 +1870,8 @@ class CurrencyEntry extends DataClass implements Insertable<CurrencyEntry> {
     map['exponent'] = Variable<int>(exponent);
     map['grouping'] = Variable<String>(grouping);
     map['quick_cash'] = Variable<String>(quickCash);
-    map['created_at'] = Variable<String>(createdAt);
-    map['updated_at'] = Variable<String>(updatedAt);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
     return map;
   }
 
@@ -1900,8 +1900,8 @@ class CurrencyEntry extends DataClass implements Insertable<CurrencyEntry> {
       exponent: serializer.fromJson<int>(json['exponent']),
       grouping: serializer.fromJson<String>(json['grouping']),
       quickCash: serializer.fromJson<String>(json['quickCash']),
-      createdAt: serializer.fromJson<String>(json['createdAt']),
-      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
     );
   }
   @override
@@ -1914,8 +1914,8 @@ class CurrencyEntry extends DataClass implements Insertable<CurrencyEntry> {
       'exponent': serializer.toJson<int>(exponent),
       'grouping': serializer.toJson<String>(grouping),
       'quickCash': serializer.toJson<String>(quickCash),
-      'createdAt': serializer.toJson<String>(createdAt),
-      'updatedAt': serializer.toJson<String>(updatedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
     };
   }
 
@@ -1926,8 +1926,8 @@ class CurrencyEntry extends DataClass implements Insertable<CurrencyEntry> {
     int? exponent,
     String? grouping,
     String? quickCash,
-    String? createdAt,
-    String? updatedAt,
+    int? createdAt,
+    int? updatedAt,
   }) => CurrencyEntry(
     code: code ?? this.code,
     name: name ?? this.name,
@@ -1998,8 +1998,8 @@ class CurrencyEntriesCompanion extends UpdateCompanion<CurrencyEntry> {
   final Value<int> exponent;
   final Value<String> grouping;
   final Value<String> quickCash;
-  final Value<String> createdAt;
-  final Value<String> updatedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
   final Value<int> rowid;
   const CurrencyEntriesCompanion({
     this.code = const Value.absent(),
@@ -2019,8 +2019,8 @@ class CurrencyEntriesCompanion extends UpdateCompanion<CurrencyEntry> {
     required int exponent,
     required String grouping,
     this.quickCash = const Value.absent(),
-    required String createdAt,
-    required String updatedAt,
+    required int createdAt,
+    required int updatedAt,
     this.rowid = const Value.absent(),
   }) : code = Value(code),
        name = Value(name),
@@ -2036,8 +2036,8 @@ class CurrencyEntriesCompanion extends UpdateCompanion<CurrencyEntry> {
     Expression<int>? exponent,
     Expression<String>? grouping,
     Expression<String>? quickCash,
-    Expression<String>? createdAt,
-    Expression<String>? updatedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2060,8 +2060,8 @@ class CurrencyEntriesCompanion extends UpdateCompanion<CurrencyEntry> {
     Value<int>? exponent,
     Value<String>? grouping,
     Value<String>? quickCash,
-    Value<String>? createdAt,
-    Value<String>? updatedAt,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
     Value<int>? rowid,
   }) {
     return CurrencyEntriesCompanion(
@@ -2099,10 +2099,10 @@ class CurrencyEntriesCompanion extends UpdateCompanion<CurrencyEntry> {
       map['quick_cash'] = Variable<String>(quickCash.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<String>(createdAt.value);
+      map['created_at'] = Variable<int>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<String>(updatedAt.value);
+      map['updated_at'] = Variable<int>(updatedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -2248,33 +2248,33 @@ class $StoreEntriesTable extends StoreEntries
     'createdAt',
   );
   @override
-  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
   @override
-  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
   );
   @override
-  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
     'deleted_at',
     aliasedName,
     true,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
   @override
@@ -2449,15 +2449,15 @@ class $StoreEntriesTable extends StoreEntries
         data['${effectivePrefix}active'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}updated_at'],
       )!,
       deletedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}deleted_at'],
       ),
     );
@@ -2482,9 +2482,9 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
   /// Country or region code for tax selection (not used yet).
   final String region;
   final bool active;
-  final String createdAt;
-  final String updatedAt;
-  final String? deletedAt;
+  final int createdAt;
+  final int updatedAt;
+  final int? deletedAt;
   const StoreEntry({
     required this.id,
     required this.name,
@@ -2513,10 +2513,10 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
     map['currency_code'] = Variable<String>(currencyCode);
     map['region'] = Variable<String>(region);
     map['active'] = Variable<bool>(active);
-    map['created_at'] = Variable<String>(createdAt);
-    map['updated_at'] = Variable<String>(updatedAt);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
     if (!nullToAbsent || deletedAt != null) {
-      map['deleted_at'] = Variable<String>(deletedAt);
+      map['deleted_at'] = Variable<int>(deletedAt);
     }
     return map;
   }
@@ -2557,9 +2557,9 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
       currencyCode: serializer.fromJson<String>(json['currencyCode']),
       region: serializer.fromJson<String>(json['region']),
       active: serializer.fromJson<bool>(json['active']),
-      createdAt: serializer.fromJson<String>(json['createdAt']),
-      updatedAt: serializer.fromJson<String>(json['updatedAt']),
-      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
     );
   }
   @override
@@ -2576,9 +2576,9 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
       'currencyCode': serializer.toJson<String>(currencyCode),
       'region': serializer.toJson<String>(region),
       'active': serializer.toJson<bool>(active),
-      'createdAt': serializer.toJson<String>(createdAt),
-      'updatedAt': serializer.toJson<String>(updatedAt),
-      'deletedAt': serializer.toJson<String?>(deletedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
     };
   }
 
@@ -2593,9 +2593,9 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
     String? currencyCode,
     String? region,
     bool? active,
-    String? createdAt,
-    String? updatedAt,
-    Value<String?> deletedAt = const Value.absent(),
+    int? createdAt,
+    int? updatedAt,
+    Value<int?> deletedAt = const Value.absent(),
   }) => StoreEntry(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -2701,9 +2701,9 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
   final Value<String> currencyCode;
   final Value<String> region;
   final Value<bool> active;
-  final Value<String> createdAt;
-  final Value<String> updatedAt;
-  final Value<String?> deletedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
   final Value<int> rowid;
   const StoreEntriesCompanion({
     this.id = const Value.absent(),
@@ -2732,8 +2732,8 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
     required String currencyCode,
     this.region = const Value.absent(),
     this.active = const Value.absent(),
-    required String createdAt,
-    required String updatedAt,
+    required int createdAt,
+    required int updatedAt,
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -2752,9 +2752,9 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
     Expression<String>? currencyCode,
     Expression<String>? region,
     Expression<bool>? active,
-    Expression<String>? createdAt,
-    Expression<String>? updatedAt,
-    Expression<String>? deletedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2786,9 +2786,9 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
     Value<String>? currencyCode,
     Value<String>? region,
     Value<bool>? active,
-    Value<String>? createdAt,
-    Value<String>? updatedAt,
-    Value<String?>? deletedAt,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int?>? deletedAt,
     Value<int>? rowid,
   }) {
     return StoreEntriesCompanion(
@@ -2843,13 +2843,13 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
       map['active'] = Variable<bool>(active.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<String>(createdAt.value);
+      map['created_at'] = Variable<int>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<String>(updatedAt.value);
+      map['updated_at'] = Variable<int>(updatedAt.value);
     }
     if (deletedAt.present) {
-      map['deleted_at'] = Variable<String>(deletedAt.value);
+      map['deleted_at'] = Variable<int>(deletedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -2916,11 +2916,11 @@ class $HeldBillEntriesTable extends HeldBillEntries
   );
   static const VerificationMeta _heldAtMeta = const VerificationMeta('heldAt');
   @override
-  late final GeneratedColumn<String> heldAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> heldAt = GeneratedColumn<int>(
     'held_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _cartJsonMeta = const VerificationMeta(
@@ -2938,33 +2938,33 @@ class $HeldBillEntriesTable extends HeldBillEntries
     'createdAt',
   );
   @override
-  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
   @override
-  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
   );
   @override
-  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
     'deleted_at',
     aliasedName,
     true,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
   static const VerificationMeta _storeIdMeta = const VerificationMeta(
@@ -3092,7 +3092,7 @@ class $HeldBillEntriesTable extends HeldBillEntries
         data['${effectivePrefix}position'],
       )!,
       heldAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}held_at'],
       )!,
       cartJson: attachedDatabase.typeMapping.read(
@@ -3100,15 +3100,15 @@ class $HeldBillEntriesTable extends HeldBillEntries
         data['${effectivePrefix}cart_json'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}updated_at'],
       )!,
       deletedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}deleted_at'],
       ),
       storeId: attachedDatabase.typeMapping.read(
@@ -3132,15 +3132,15 @@ class HeldBillEntry extends DataClass implements Insertable<HeldBillEntry> {
   final int position;
 
   /// `HeldBill.time` verbatim (ISO text in the app, never parsed here).
-  final String heldAt;
+  final int heldAt;
 
   /// Canonical JSON of the cart snapshot (full product snapshot per line).
   final String cartJson;
 
   /// UTC ISO 8601 text.
-  final String createdAt;
-  final String updatedAt;
-  final String? deletedAt;
+  final int createdAt;
+  final int updatedAt;
+  final int? deletedAt;
 
   /// Owning store (v9); null on legacy rows.
   final String? storeId;
@@ -3161,12 +3161,12 @@ class HeldBillEntry extends DataClass implements Insertable<HeldBillEntry> {
     map['id'] = Variable<String>(id);
     map['ref'] = Variable<String>(ref);
     map['position'] = Variable<int>(position);
-    map['held_at'] = Variable<String>(heldAt);
+    map['held_at'] = Variable<int>(heldAt);
     map['cart_json'] = Variable<String>(cartJson);
-    map['created_at'] = Variable<String>(createdAt);
-    map['updated_at'] = Variable<String>(updatedAt);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
     if (!nullToAbsent || deletedAt != null) {
-      map['deleted_at'] = Variable<String>(deletedAt);
+      map['deleted_at'] = Variable<int>(deletedAt);
     }
     if (!nullToAbsent || storeId != null) {
       map['store_id'] = Variable<String>(storeId);
@@ -3201,11 +3201,11 @@ class HeldBillEntry extends DataClass implements Insertable<HeldBillEntry> {
       id: serializer.fromJson<String>(json['id']),
       ref: serializer.fromJson<String>(json['ref']),
       position: serializer.fromJson<int>(json['position']),
-      heldAt: serializer.fromJson<String>(json['heldAt']),
+      heldAt: serializer.fromJson<int>(json['heldAt']),
       cartJson: serializer.fromJson<String>(json['cartJson']),
-      createdAt: serializer.fromJson<String>(json['createdAt']),
-      updatedAt: serializer.fromJson<String>(json['updatedAt']),
-      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
       storeId: serializer.fromJson<String?>(json['storeId']),
     );
   }
@@ -3216,11 +3216,11 @@ class HeldBillEntry extends DataClass implements Insertable<HeldBillEntry> {
       'id': serializer.toJson<String>(id),
       'ref': serializer.toJson<String>(ref),
       'position': serializer.toJson<int>(position),
-      'heldAt': serializer.toJson<String>(heldAt),
+      'heldAt': serializer.toJson<int>(heldAt),
       'cartJson': serializer.toJson<String>(cartJson),
-      'createdAt': serializer.toJson<String>(createdAt),
-      'updatedAt': serializer.toJson<String>(updatedAt),
-      'deletedAt': serializer.toJson<String?>(deletedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
       'storeId': serializer.toJson<String?>(storeId),
     };
   }
@@ -3229,11 +3229,11 @@ class HeldBillEntry extends DataClass implements Insertable<HeldBillEntry> {
     String? id,
     String? ref,
     int? position,
-    String? heldAt,
+    int? heldAt,
     String? cartJson,
-    String? createdAt,
-    String? updatedAt,
-    Value<String?> deletedAt = const Value.absent(),
+    int? createdAt,
+    int? updatedAt,
+    Value<int?> deletedAt = const Value.absent(),
     Value<String?> storeId = const Value.absent(),
   }) => HeldBillEntry(
     id: id ?? this.id,
@@ -3307,11 +3307,11 @@ class HeldBillEntriesCompanion extends UpdateCompanion<HeldBillEntry> {
   final Value<String> id;
   final Value<String> ref;
   final Value<int> position;
-  final Value<String> heldAt;
+  final Value<int> heldAt;
   final Value<String> cartJson;
-  final Value<String> createdAt;
-  final Value<String> updatedAt;
-  final Value<String?> deletedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
   final Value<String?> storeId;
   final Value<int> rowid;
   const HeldBillEntriesCompanion({
@@ -3330,10 +3330,10 @@ class HeldBillEntriesCompanion extends UpdateCompanion<HeldBillEntry> {
     required String id,
     required String ref,
     required int position,
-    required String heldAt,
+    required int heldAt,
     required String cartJson,
-    required String createdAt,
-    required String updatedAt,
+    required int createdAt,
+    required int updatedAt,
     this.deletedAt = const Value.absent(),
     this.storeId = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -3348,11 +3348,11 @@ class HeldBillEntriesCompanion extends UpdateCompanion<HeldBillEntry> {
     Expression<String>? id,
     Expression<String>? ref,
     Expression<int>? position,
-    Expression<String>? heldAt,
+    Expression<int>? heldAt,
     Expression<String>? cartJson,
-    Expression<String>? createdAt,
-    Expression<String>? updatedAt,
-    Expression<String>? deletedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
     Expression<String>? storeId,
     Expression<int>? rowid,
   }) {
@@ -3374,11 +3374,11 @@ class HeldBillEntriesCompanion extends UpdateCompanion<HeldBillEntry> {
     Value<String>? id,
     Value<String>? ref,
     Value<int>? position,
-    Value<String>? heldAt,
+    Value<int>? heldAt,
     Value<String>? cartJson,
-    Value<String>? createdAt,
-    Value<String>? updatedAt,
-    Value<String?>? deletedAt,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int?>? deletedAt,
     Value<String?>? storeId,
     Value<int>? rowid,
   }) {
@@ -3409,19 +3409,19 @@ class HeldBillEntriesCompanion extends UpdateCompanion<HeldBillEntry> {
       map['position'] = Variable<int>(position.value);
     }
     if (heldAt.present) {
-      map['held_at'] = Variable<String>(heldAt.value);
+      map['held_at'] = Variable<int>(heldAt.value);
     }
     if (cartJson.present) {
       map['cart_json'] = Variable<String>(cartJson.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<String>(createdAt.value);
+      map['created_at'] = Variable<int>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<String>(updatedAt.value);
+      map['updated_at'] = Variable<int>(updatedAt.value);
     }
     if (deletedAt.present) {
-      map['deleted_at'] = Variable<String>(deletedAt.value);
+      map['deleted_at'] = Variable<int>(deletedAt.value);
     }
     if (storeId.present) {
       map['store_id'] = Variable<String>(storeId.value);
@@ -3527,33 +3527,33 @@ class $CategoryEntriesTable extends CategoryEntries
     'createdAt',
   );
   @override
-  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
   @override
-  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
   );
   @override
-  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
     'deleted_at',
     aliasedName,
     true,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
   @override
@@ -3673,15 +3673,15 @@ class $CategoryEntriesTable extends CategoryEntries
         data['${effectivePrefix}position'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}updated_at'],
       )!,
       deletedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}deleted_at'],
       ),
     );
@@ -3702,9 +3702,9 @@ class CategoryEntry extends DataClass implements Insertable<CategoryEntry> {
   final String? parentId;
   final String iconKey;
   final int position;
-  final String createdAt;
-  final String updatedAt;
-  final String? deletedAt;
+  final int createdAt;
+  final int updatedAt;
+  final int? deletedAt;
   const CategoryEntry({
     required this.id,
     this.storeId,
@@ -3729,10 +3729,10 @@ class CategoryEntry extends DataClass implements Insertable<CategoryEntry> {
     }
     map['icon_key'] = Variable<String>(iconKey);
     map['position'] = Variable<int>(position);
-    map['created_at'] = Variable<String>(createdAt);
-    map['updated_at'] = Variable<String>(updatedAt);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
     if (!nullToAbsent || deletedAt != null) {
-      map['deleted_at'] = Variable<String>(deletedAt);
+      map['deleted_at'] = Variable<int>(deletedAt);
     }
     return map;
   }
@@ -3769,9 +3769,9 @@ class CategoryEntry extends DataClass implements Insertable<CategoryEntry> {
       parentId: serializer.fromJson<String?>(json['parentId']),
       iconKey: serializer.fromJson<String>(json['iconKey']),
       position: serializer.fromJson<int>(json['position']),
-      createdAt: serializer.fromJson<String>(json['createdAt']),
-      updatedAt: serializer.fromJson<String>(json['updatedAt']),
-      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
     );
   }
   @override
@@ -3784,9 +3784,9 @@ class CategoryEntry extends DataClass implements Insertable<CategoryEntry> {
       'parentId': serializer.toJson<String?>(parentId),
       'iconKey': serializer.toJson<String>(iconKey),
       'position': serializer.toJson<int>(position),
-      'createdAt': serializer.toJson<String>(createdAt),
-      'updatedAt': serializer.toJson<String>(updatedAt),
-      'deletedAt': serializer.toJson<String?>(deletedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
     };
   }
 
@@ -3797,9 +3797,9 @@ class CategoryEntry extends DataClass implements Insertable<CategoryEntry> {
     Value<String?> parentId = const Value.absent(),
     String? iconKey,
     int? position,
-    String? createdAt,
-    String? updatedAt,
-    Value<String?> deletedAt = const Value.absent(),
+    int? createdAt,
+    int? updatedAt,
+    Value<int?> deletedAt = const Value.absent(),
   }) => CategoryEntry(
     id: id ?? this.id,
     storeId: storeId.present ? storeId.value : this.storeId,
@@ -3875,9 +3875,9 @@ class CategoryEntriesCompanion extends UpdateCompanion<CategoryEntry> {
   final Value<String?> parentId;
   final Value<String> iconKey;
   final Value<int> position;
-  final Value<String> createdAt;
-  final Value<String> updatedAt;
-  final Value<String?> deletedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
   final Value<int> rowid;
   const CategoryEntriesCompanion({
     this.id = const Value.absent(),
@@ -3898,8 +3898,8 @@ class CategoryEntriesCompanion extends UpdateCompanion<CategoryEntry> {
     this.parentId = const Value.absent(),
     this.iconKey = const Value.absent(),
     this.position = const Value.absent(),
-    required String createdAt,
-    required String updatedAt,
+    required int createdAt,
+    required int updatedAt,
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -3913,9 +3913,9 @@ class CategoryEntriesCompanion extends UpdateCompanion<CategoryEntry> {
     Expression<String>? parentId,
     Expression<String>? iconKey,
     Expression<int>? position,
-    Expression<String>? createdAt,
-    Expression<String>? updatedAt,
-    Expression<String>? deletedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -3939,9 +3939,9 @@ class CategoryEntriesCompanion extends UpdateCompanion<CategoryEntry> {
     Value<String?>? parentId,
     Value<String>? iconKey,
     Value<int>? position,
-    Value<String>? createdAt,
-    Value<String>? updatedAt,
-    Value<String?>? deletedAt,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int?>? deletedAt,
     Value<int>? rowid,
   }) {
     return CategoryEntriesCompanion(
@@ -3980,13 +3980,13 @@ class CategoryEntriesCompanion extends UpdateCompanion<CategoryEntry> {
       map['position'] = Variable<int>(position.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<String>(createdAt.value);
+      map['created_at'] = Variable<int>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<String>(updatedAt.value);
+      map['updated_at'] = Variable<int>(updatedAt.value);
     }
     if (deletedAt.present) {
-      map['deleted_at'] = Variable<String>(deletedAt.value);
+      map['deleted_at'] = Variable<int>(deletedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -4217,33 +4217,33 @@ class $ProductEntriesTable extends ProductEntries
     'createdAt',
   );
   @override
-  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
   @override
-  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
   );
   @override
-  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
     'deleted_at',
     aliasedName,
     true,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
   static const VerificationMeta _serverIdMeta = const VerificationMeta(
@@ -4583,15 +4583,15 @@ class $ProductEntriesTable extends ProductEntries
         data['${effectivePrefix}variant_label'],
       ),
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}updated_at'],
       )!,
       deletedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}deleted_at'],
       ),
       serverId: attachedDatabase.typeMapping.read(
@@ -4651,9 +4651,9 @@ class ProductEntry extends DataClass implements Insertable<ProductEntry> {
   final String? variantLabel;
 
   /// UTC ISO 8601 text.
-  final String createdAt;
-  final String updatedAt;
-  final String? deletedAt;
+  final int createdAt;
+  final int updatedAt;
+  final int? deletedAt;
   final String? serverId;
   final int? serverVersion;
   final String? deviceId;
@@ -4712,10 +4712,10 @@ class ProductEntry extends DataClass implements Insertable<ProductEntry> {
     if (!nullToAbsent || variantLabel != null) {
       map['variant_label'] = Variable<String>(variantLabel);
     }
-    map['created_at'] = Variable<String>(createdAt);
-    map['updated_at'] = Variable<String>(updatedAt);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
     if (!nullToAbsent || deletedAt != null) {
-      map['deleted_at'] = Variable<String>(deletedAt);
+      map['deleted_at'] = Variable<int>(deletedAt);
     }
     if (!nullToAbsent || serverId != null) {
       map['server_id'] = Variable<String>(serverId);
@@ -4798,9 +4798,9 @@ class ProductEntry extends DataClass implements Insertable<ProductEntry> {
       categoryId: serializer.fromJson<String?>(json['categoryId']),
       variantGroup: serializer.fromJson<String?>(json['variantGroup']),
       variantLabel: serializer.fromJson<String?>(json['variantLabel']),
-      createdAt: serializer.fromJson<String>(json['createdAt']),
-      updatedAt: serializer.fromJson<String>(json['updatedAt']),
-      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
       serverId: serializer.fromJson<String?>(json['serverId']),
       serverVersion: serializer.fromJson<int?>(json['serverVersion']),
       deviceId: serializer.fromJson<String?>(json['deviceId']),
@@ -4828,9 +4828,9 @@ class ProductEntry extends DataClass implements Insertable<ProductEntry> {
       'categoryId': serializer.toJson<String?>(categoryId),
       'variantGroup': serializer.toJson<String?>(variantGroup),
       'variantLabel': serializer.toJson<String?>(variantLabel),
-      'createdAt': serializer.toJson<String>(createdAt),
-      'updatedAt': serializer.toJson<String>(updatedAt),
-      'deletedAt': serializer.toJson<String?>(deletedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
       'serverId': serializer.toJson<String?>(serverId),
       'serverVersion': serializer.toJson<int?>(serverVersion),
       'deviceId': serializer.toJson<String?>(deviceId),
@@ -4856,9 +4856,9 @@ class ProductEntry extends DataClass implements Insertable<ProductEntry> {
     Value<String?> categoryId = const Value.absent(),
     Value<String?> variantGroup = const Value.absent(),
     Value<String?> variantLabel = const Value.absent(),
-    String? createdAt,
-    String? updatedAt,
-    Value<String?> deletedAt = const Value.absent(),
+    int? createdAt,
+    int? updatedAt,
+    Value<int?> deletedAt = const Value.absent(),
     Value<String?> serverId = const Value.absent(),
     Value<int?> serverVersion = const Value.absent(),
     Value<String?> deviceId = const Value.absent(),
@@ -5038,9 +5038,9 @@ class ProductEntriesCompanion extends UpdateCompanion<ProductEntry> {
   final Value<String?> categoryId;
   final Value<String?> variantGroup;
   final Value<String?> variantLabel;
-  final Value<String> createdAt;
-  final Value<String> updatedAt;
-  final Value<String?> deletedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
   final Value<String?> serverId;
   final Value<int?> serverVersion;
   final Value<String?> deviceId;
@@ -5091,8 +5091,8 @@ class ProductEntriesCompanion extends UpdateCompanion<ProductEntry> {
     this.categoryId = const Value.absent(),
     this.variantGroup = const Value.absent(),
     this.variantLabel = const Value.absent(),
-    required String createdAt,
-    required String updatedAt,
+    required int createdAt,
+    required int updatedAt,
     this.deletedAt = const Value.absent(),
     this.serverId = const Value.absent(),
     this.serverVersion = const Value.absent(),
@@ -5132,9 +5132,9 @@ class ProductEntriesCompanion extends UpdateCompanion<ProductEntry> {
     Expression<String>? categoryId,
     Expression<String>? variantGroup,
     Expression<String>? variantLabel,
-    Expression<String>? createdAt,
-    Expression<String>? updatedAt,
-    Expression<String>? deletedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
     Expression<String>? serverId,
     Expression<int>? serverVersion,
     Expression<String>? deviceId,
@@ -5188,9 +5188,9 @@ class ProductEntriesCompanion extends UpdateCompanion<ProductEntry> {
     Value<String?>? categoryId,
     Value<String?>? variantGroup,
     Value<String?>? variantLabel,
-    Value<String>? createdAt,
-    Value<String>? updatedAt,
-    Value<String?>? deletedAt,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int?>? deletedAt,
     Value<String?>? serverId,
     Value<int?>? serverVersion,
     Value<String?>? deviceId,
@@ -5283,13 +5283,13 @@ class ProductEntriesCompanion extends UpdateCompanion<ProductEntry> {
       map['variant_label'] = Variable<String>(variantLabel.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<String>(createdAt.value);
+      map['created_at'] = Variable<int>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<String>(updatedAt.value);
+      map['updated_at'] = Variable<int>(updatedAt.value);
     }
     if (deletedAt.present) {
-      map['deleted_at'] = Variable<String>(deletedAt.value);
+      map['deleted_at'] = Variable<int>(deletedAt.value);
     }
     if (serverId.present) {
       map['server_id'] = Variable<String>(serverId.value);
@@ -5394,33 +5394,33 @@ class $CounterEntriesTable extends CounterEntries
     'createdAt',
   );
   @override
-  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
   @override
-  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
   );
   @override
-  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
     'deleted_at',
     aliasedName,
     true,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
   @override
@@ -5520,15 +5520,15 @@ class $CounterEntriesTable extends CounterEntries
         data['${effectivePrefix}active'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}updated_at'],
       )!,
       deletedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}deleted_at'],
       ),
     );
@@ -5545,9 +5545,9 @@ class CounterEntry extends DataClass implements Insertable<CounterEntry> {
   final String storeId;
   final String name;
   final bool active;
-  final String createdAt;
-  final String updatedAt;
-  final String? deletedAt;
+  final int createdAt;
+  final int updatedAt;
+  final int? deletedAt;
   const CounterEntry({
     required this.id,
     required this.storeId,
@@ -5564,10 +5564,10 @@ class CounterEntry extends DataClass implements Insertable<CounterEntry> {
     map['store_id'] = Variable<String>(storeId);
     map['name'] = Variable<String>(name);
     map['active'] = Variable<bool>(active);
-    map['created_at'] = Variable<String>(createdAt);
-    map['updated_at'] = Variable<String>(updatedAt);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
     if (!nullToAbsent || deletedAt != null) {
-      map['deleted_at'] = Variable<String>(deletedAt);
+      map['deleted_at'] = Variable<int>(deletedAt);
     }
     return map;
   }
@@ -5596,9 +5596,9 @@ class CounterEntry extends DataClass implements Insertable<CounterEntry> {
       storeId: serializer.fromJson<String>(json['storeId']),
       name: serializer.fromJson<String>(json['name']),
       active: serializer.fromJson<bool>(json['active']),
-      createdAt: serializer.fromJson<String>(json['createdAt']),
-      updatedAt: serializer.fromJson<String>(json['updatedAt']),
-      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
     );
   }
   @override
@@ -5609,9 +5609,9 @@ class CounterEntry extends DataClass implements Insertable<CounterEntry> {
       'storeId': serializer.toJson<String>(storeId),
       'name': serializer.toJson<String>(name),
       'active': serializer.toJson<bool>(active),
-      'createdAt': serializer.toJson<String>(createdAt),
-      'updatedAt': serializer.toJson<String>(updatedAt),
-      'deletedAt': serializer.toJson<String?>(deletedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
     };
   }
 
@@ -5620,9 +5620,9 @@ class CounterEntry extends DataClass implements Insertable<CounterEntry> {
     String? storeId,
     String? name,
     bool? active,
-    String? createdAt,
-    String? updatedAt,
-    Value<String?> deletedAt = const Value.absent(),
+    int? createdAt,
+    int? updatedAt,
+    Value<int?> deletedAt = const Value.absent(),
   }) => CounterEntry(
     id: id ?? this.id,
     storeId: storeId ?? this.storeId,
@@ -5679,9 +5679,9 @@ class CounterEntriesCompanion extends UpdateCompanion<CounterEntry> {
   final Value<String> storeId;
   final Value<String> name;
   final Value<bool> active;
-  final Value<String> createdAt;
-  final Value<String> updatedAt;
-  final Value<String?> deletedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
   final Value<int> rowid;
   const CounterEntriesCompanion({
     this.id = const Value.absent(),
@@ -5698,8 +5698,8 @@ class CounterEntriesCompanion extends UpdateCompanion<CounterEntry> {
     required String storeId,
     required String name,
     this.active = const Value.absent(),
-    required String createdAt,
-    required String updatedAt,
+    required int createdAt,
+    required int updatedAt,
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -5712,9 +5712,9 @@ class CounterEntriesCompanion extends UpdateCompanion<CounterEntry> {
     Expression<String>? storeId,
     Expression<String>? name,
     Expression<bool>? active,
-    Expression<String>? createdAt,
-    Expression<String>? updatedAt,
-    Expression<String>? deletedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -5734,9 +5734,9 @@ class CounterEntriesCompanion extends UpdateCompanion<CounterEntry> {
     Value<String>? storeId,
     Value<String>? name,
     Value<bool>? active,
-    Value<String>? createdAt,
-    Value<String>? updatedAt,
-    Value<String?>? deletedAt,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int?>? deletedAt,
     Value<int>? rowid,
   }) {
     return CounterEntriesCompanion(
@@ -5767,13 +5767,13 @@ class CounterEntriesCompanion extends UpdateCompanion<CounterEntry> {
       map['active'] = Variable<bool>(active.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<String>(createdAt.value);
+      map['created_at'] = Variable<int>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<String>(updatedAt.value);
+      map['updated_at'] = Variable<int>(updatedAt.value);
     }
     if (deletedAt.present) {
-      map['deleted_at'] = Variable<String>(deletedAt.value);
+      map['deleted_at'] = Variable<int>(deletedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -5892,33 +5892,33 @@ class $UserEntriesTable extends UserEntries
     'createdAt',
   );
   @override
-  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
   @override
-  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
   );
   @override
-  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
     'deleted_at',
     aliasedName,
     true,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
   @override
@@ -6076,15 +6076,15 @@ class $UserEntriesTable extends UserEntries
         data['${effectivePrefix}active'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}updated_at'],
       )!,
       deletedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}deleted_at'],
       ),
     );
@@ -6109,9 +6109,9 @@ class UserEntry extends DataClass implements Insertable<UserEntry> {
   /// Hash scheme tag, `sha256-salted-v1`, so a stronger KDF can follow.
   final String hashAlgo;
   final bool active;
-  final String createdAt;
-  final String updatedAt;
-  final String? deletedAt;
+  final int createdAt;
+  final int updatedAt;
+  final int? deletedAt;
   const UserEntry({
     required this.id,
     required this.username,
@@ -6136,10 +6136,10 @@ class UserEntry extends DataClass implements Insertable<UserEntry> {
     map['password_hash'] = Variable<String>(passwordHash);
     map['hash_algo'] = Variable<String>(hashAlgo);
     map['active'] = Variable<bool>(active);
-    map['created_at'] = Variable<String>(createdAt);
-    map['updated_at'] = Variable<String>(updatedAt);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
     if (!nullToAbsent || deletedAt != null) {
-      map['deleted_at'] = Variable<String>(deletedAt);
+      map['deleted_at'] = Variable<int>(deletedAt);
     }
     return map;
   }
@@ -6176,9 +6176,9 @@ class UserEntry extends DataClass implements Insertable<UserEntry> {
       passwordHash: serializer.fromJson<String>(json['passwordHash']),
       hashAlgo: serializer.fromJson<String>(json['hashAlgo']),
       active: serializer.fromJson<bool>(json['active']),
-      createdAt: serializer.fromJson<String>(json['createdAt']),
-      updatedAt: serializer.fromJson<String>(json['updatedAt']),
-      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
     );
   }
   @override
@@ -6193,9 +6193,9 @@ class UserEntry extends DataClass implements Insertable<UserEntry> {
       'passwordHash': serializer.toJson<String>(passwordHash),
       'hashAlgo': serializer.toJson<String>(hashAlgo),
       'active': serializer.toJson<bool>(active),
-      'createdAt': serializer.toJson<String>(createdAt),
-      'updatedAt': serializer.toJson<String>(updatedAt),
-      'deletedAt': serializer.toJson<String?>(deletedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
     };
   }
 
@@ -6208,9 +6208,9 @@ class UserEntry extends DataClass implements Insertable<UserEntry> {
     String? passwordHash,
     String? hashAlgo,
     bool? active,
-    String? createdAt,
-    String? updatedAt,
-    Value<String?> deletedAt = const Value.absent(),
+    int? createdAt,
+    int? updatedAt,
+    Value<int?> deletedAt = const Value.absent(),
   }) => UserEntry(
     id: id ?? this.id,
     username: username ?? this.username,
@@ -6302,9 +6302,9 @@ class UserEntriesCompanion extends UpdateCompanion<UserEntry> {
   final Value<String> passwordHash;
   final Value<String> hashAlgo;
   final Value<bool> active;
-  final Value<String> createdAt;
-  final Value<String> updatedAt;
-  final Value<String?> deletedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
   final Value<int> rowid;
   const UserEntriesCompanion({
     this.id = const Value.absent(),
@@ -6329,8 +6329,8 @@ class UserEntriesCompanion extends UpdateCompanion<UserEntry> {
     required String passwordHash,
     required String hashAlgo,
     this.active = const Value.absent(),
-    required String createdAt,
-    required String updatedAt,
+    required int createdAt,
+    required int updatedAt,
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -6351,9 +6351,9 @@ class UserEntriesCompanion extends UpdateCompanion<UserEntry> {
     Expression<String>? passwordHash,
     Expression<String>? hashAlgo,
     Expression<bool>? active,
-    Expression<String>? createdAt,
-    Expression<String>? updatedAt,
-    Expression<String>? deletedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -6381,9 +6381,9 @@ class UserEntriesCompanion extends UpdateCompanion<UserEntry> {
     Value<String>? passwordHash,
     Value<String>? hashAlgo,
     Value<bool>? active,
-    Value<String>? createdAt,
-    Value<String>? updatedAt,
-    Value<String?>? deletedAt,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int?>? deletedAt,
     Value<int>? rowid,
   }) {
     return UserEntriesCompanion(
@@ -6430,13 +6430,13 @@ class UserEntriesCompanion extends UpdateCompanion<UserEntry> {
       map['active'] = Variable<bool>(active.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<String>(createdAt.value);
+      map['created_at'] = Variable<int>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<String>(updatedAt.value);
+      map['updated_at'] = Variable<int>(updatedAt.value);
     }
     if (deletedAt.present) {
-      map['deleted_at'] = Variable<String>(deletedAt.value);
+      map['deleted_at'] = Variable<int>(deletedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -6517,11 +6517,11 @@ class $SaleEntriesTable extends SaleEntries
     'occurredAt',
   );
   @override
-  late final GeneratedColumn<String> occurredAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> occurredAt = GeneratedColumn<int>(
     'occurred_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _storeNameMeta = const VerificationMeta(
@@ -6842,33 +6842,33 @@ class $SaleEntriesTable extends SaleEntries
     'createdAt',
   );
   @override
-  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
   @override
-  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
   );
   @override
-  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
     'deleted_at',
     aliasedName,
     true,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
   static const VerificationMeta _serverIdMeta = const VerificationMeta(
@@ -7316,7 +7316,7 @@ class $SaleEntriesTable extends SaleEntries
         data['${effectivePrefix}position'],
       )!,
       occurredAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}occurred_at'],
       )!,
       storeName: attachedDatabase.typeMapping.read(
@@ -7432,15 +7432,15 @@ class $SaleEntriesTable extends SaleEntries
         data['${effectivePrefix}returned_order'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}updated_at'],
       )!,
       deletedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}deleted_at'],
       ),
       serverId: attachedDatabase.typeMapping.read(
@@ -7477,7 +7477,7 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
   final int position;
 
   /// `Sale.date` verbatim (UTC ISO text, never parsed here).
-  final String occurredAt;
+  final int occurredAt;
   final String storeName;
 
   /// Session context of the sale (v9); null on legacy rows.
@@ -7524,9 +7524,9 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
   final String returnedOrder;
 
   /// UTC ISO 8601 text; `updated_at` changes only when a return is applied.
-  final String createdAt;
-  final String updatedAt;
-  final String? deletedAt;
+  final int createdAt;
+  final int updatedAt;
+  final int? deletedAt;
   final String? serverId;
   final int? serverVersion;
   final String? deviceId;
@@ -7578,7 +7578,7 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
     map['has_sale_id'] = Variable<bool>(hasSaleId);
     map['number'] = Variable<String>(number);
     map['position'] = Variable<int>(position);
-    map['occurred_at'] = Variable<String>(occurredAt);
+    map['occurred_at'] = Variable<int>(occurredAt);
     map['store_name'] = Variable<String>(storeName);
     if (!nullToAbsent || storeId != null) {
       map['store_id'] = Variable<String>(storeId);
@@ -7617,10 +7617,10 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
     map['tendered_minor'] = Variable<int>(tenderedMinor);
     map['change_minor'] = Variable<int>(changeMinor);
     map['returned_order'] = Variable<String>(returnedOrder);
-    map['created_at'] = Variable<String>(createdAt);
-    map['updated_at'] = Variable<String>(updatedAt);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
     if (!nullToAbsent || deletedAt != null) {
-      map['deleted_at'] = Variable<String>(deletedAt);
+      map['deleted_at'] = Variable<int>(deletedAt);
     }
     if (!nullToAbsent || serverId != null) {
       map['server_id'] = Variable<String>(serverId);
@@ -7706,7 +7706,7 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
       hasSaleId: serializer.fromJson<bool>(json['hasSaleId']),
       number: serializer.fromJson<String>(json['number']),
       position: serializer.fromJson<int>(json['position']),
-      occurredAt: serializer.fromJson<String>(json['occurredAt']),
+      occurredAt: serializer.fromJson<int>(json['occurredAt']),
       storeName: serializer.fromJson<String>(json['storeName']),
       storeId: serializer.fromJson<String?>(json['storeId']),
       counterId: serializer.fromJson<String?>(json['counterId']),
@@ -7735,9 +7735,9 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
       tenderedMinor: serializer.fromJson<int>(json['tenderedMinor']),
       changeMinor: serializer.fromJson<int>(json['changeMinor']),
       returnedOrder: serializer.fromJson<String>(json['returnedOrder']),
-      createdAt: serializer.fromJson<String>(json['createdAt']),
-      updatedAt: serializer.fromJson<String>(json['updatedAt']),
-      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
       serverId: serializer.fromJson<String?>(json['serverId']),
       serverVersion: serializer.fromJson<int?>(json['serverVersion']),
       deviceId: serializer.fromJson<String?>(json['deviceId']),
@@ -7751,7 +7751,7 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
       'hasSaleId': serializer.toJson<bool>(hasSaleId),
       'number': serializer.toJson<String>(number),
       'position': serializer.toJson<int>(position),
-      'occurredAt': serializer.toJson<String>(occurredAt),
+      'occurredAt': serializer.toJson<int>(occurredAt),
       'storeName': serializer.toJson<String>(storeName),
       'storeId': serializer.toJson<String?>(storeId),
       'counterId': serializer.toJson<String?>(counterId),
@@ -7780,9 +7780,9 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
       'tenderedMinor': serializer.toJson<int>(tenderedMinor),
       'changeMinor': serializer.toJson<int>(changeMinor),
       'returnedOrder': serializer.toJson<String>(returnedOrder),
-      'createdAt': serializer.toJson<String>(createdAt),
-      'updatedAt': serializer.toJson<String>(updatedAt),
-      'deletedAt': serializer.toJson<String?>(deletedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
       'serverId': serializer.toJson<String?>(serverId),
       'serverVersion': serializer.toJson<int?>(serverVersion),
       'deviceId': serializer.toJson<String?>(deviceId),
@@ -7794,7 +7794,7 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
     bool? hasSaleId,
     String? number,
     int? position,
-    String? occurredAt,
+    int? occurredAt,
     String? storeName,
     Value<String?> storeId = const Value.absent(),
     Value<String?> counterId = const Value.absent(),
@@ -7823,9 +7823,9 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
     int? tenderedMinor,
     int? changeMinor,
     String? returnedOrder,
-    String? createdAt,
-    String? updatedAt,
-    Value<String?> deletedAt = const Value.absent(),
+    int? createdAt,
+    int? updatedAt,
+    Value<int?> deletedAt = const Value.absent(),
     Value<String?> serverId = const Value.absent(),
     Value<int?> serverVersion = const Value.absent(),
     Value<String?> deviceId = const Value.absent(),
@@ -8092,7 +8092,7 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
   final Value<bool> hasSaleId;
   final Value<String> number;
   final Value<int> position;
-  final Value<String> occurredAt;
+  final Value<int> occurredAt;
   final Value<String> storeName;
   final Value<String?> storeId;
   final Value<String?> counterId;
@@ -8121,9 +8121,9 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
   final Value<int> tenderedMinor;
   final Value<int> changeMinor;
   final Value<String> returnedOrder;
-  final Value<String> createdAt;
-  final Value<String> updatedAt;
-  final Value<String?> deletedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
   final Value<String?> serverId;
   final Value<int?> serverVersion;
   final Value<String?> deviceId;
@@ -8175,7 +8175,7 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
     required bool hasSaleId,
     required String number,
     required int position,
-    required String occurredAt,
+    required int occurredAt,
     required String storeName,
     this.storeId = const Value.absent(),
     this.counterId = const Value.absent(),
@@ -8204,8 +8204,8 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
     required int tenderedMinor,
     required int changeMinor,
     this.returnedOrder = const Value.absent(),
-    required String createdAt,
-    required String updatedAt,
+    required int createdAt,
+    required int updatedAt,
     this.deletedAt = const Value.absent(),
     this.serverId = const Value.absent(),
     this.serverVersion = const Value.absent(),
@@ -8244,7 +8244,7 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
     Expression<bool>? hasSaleId,
     Expression<String>? number,
     Expression<int>? position,
-    Expression<String>? occurredAt,
+    Expression<int>? occurredAt,
     Expression<String>? storeName,
     Expression<String>? storeId,
     Expression<String>? counterId,
@@ -8273,9 +8273,9 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
     Expression<int>? tenderedMinor,
     Expression<int>? changeMinor,
     Expression<String>? returnedOrder,
-    Expression<String>? createdAt,
-    Expression<String>? updatedAt,
-    Expression<String>? deletedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
     Expression<String>? serverId,
     Expression<int>? serverVersion,
     Expression<String>? deviceId,
@@ -8330,7 +8330,7 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
     Value<bool>? hasSaleId,
     Value<String>? number,
     Value<int>? position,
-    Value<String>? occurredAt,
+    Value<int>? occurredAt,
     Value<String>? storeName,
     Value<String?>? storeId,
     Value<String?>? counterId,
@@ -8359,9 +8359,9 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
     Value<int>? tenderedMinor,
     Value<int>? changeMinor,
     Value<String>? returnedOrder,
-    Value<String>? createdAt,
-    Value<String>? updatedAt,
-    Value<String?>? deletedAt,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int?>? deletedAt,
     Value<String?>? serverId,
     Value<int?>? serverVersion,
     Value<String?>? deviceId,
@@ -8427,7 +8427,7 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
       map['position'] = Variable<int>(position.value);
     }
     if (occurredAt.present) {
-      map['occurred_at'] = Variable<String>(occurredAt.value);
+      map['occurred_at'] = Variable<int>(occurredAt.value);
     }
     if (storeName.present) {
       map['store_name'] = Variable<String>(storeName.value);
@@ -8514,13 +8514,13 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
       map['returned_order'] = Variable<String>(returnedOrder.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<String>(createdAt.value);
+      map['created_at'] = Variable<int>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<String>(updatedAt.value);
+      map['updated_at'] = Variable<int>(updatedAt.value);
     }
     if (deletedAt.present) {
-      map['deleted_at'] = Variable<String>(deletedAt.value);
+      map['deleted_at'] = Variable<int>(deletedAt.value);
     }
     if (serverId.present) {
       map['server_id'] = Variable<String>(serverId.value);
@@ -8865,11 +8865,11 @@ class $SaleLineEntriesTable extends SaleLineEntries
     'createdAt',
   );
   @override
-  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   @override
@@ -9240,7 +9240,7 @@ class $SaleLineEntriesTable extends SaleLineEntries
         data['${effectivePrefix}returned_qty_milli'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}created_at'],
       )!,
     );
@@ -9287,7 +9287,7 @@ class SaleLineEntry extends DataClass implements Insertable<SaleLineEntry> {
   /// A free-item row (price 0).
   final bool isGift;
   final int returnedQtyMilli;
-  final String createdAt;
+  final int createdAt;
   const SaleLineEntry({
     required this.id,
     required this.saleId,
@@ -9352,7 +9352,7 @@ class SaleLineEntry extends DataClass implements Insertable<SaleLineEntry> {
     }
     map['is_gift'] = Variable<bool>(isGift);
     map['returned_qty_milli'] = Variable<int>(returnedQtyMilli);
-    map['created_at'] = Variable<String>(createdAt);
+    map['created_at'] = Variable<int>(createdAt);
     return map;
   }
 
@@ -9426,7 +9426,7 @@ class SaleLineEntry extends DataClass implements Insertable<SaleLineEntry> {
       offerUnitOffMinor: serializer.fromJson<int?>(json['offerUnitOffMinor']),
       isGift: serializer.fromJson<bool>(json['isGift']),
       returnedQtyMilli: serializer.fromJson<int>(json['returnedQtyMilli']),
-      createdAt: serializer.fromJson<String>(json['createdAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
     );
   }
   @override
@@ -9457,7 +9457,7 @@ class SaleLineEntry extends DataClass implements Insertable<SaleLineEntry> {
       'offerUnitOffMinor': serializer.toJson<int?>(offerUnitOffMinor),
       'isGift': serializer.toJson<bool>(isGift),
       'returnedQtyMilli': serializer.toJson<int>(returnedQtyMilli),
-      'createdAt': serializer.toJson<String>(createdAt),
+      'createdAt': serializer.toJson<int>(createdAt),
     };
   }
 
@@ -9486,7 +9486,7 @@ class SaleLineEntry extends DataClass implements Insertable<SaleLineEntry> {
     Value<int?> offerUnitOffMinor = const Value.absent(),
     bool? isGift,
     int? returnedQtyMilli,
-    String? createdAt,
+    int? createdAt,
   }) => SaleLineEntry(
     id: id ?? this.id,
     saleId: saleId ?? this.saleId,
@@ -9696,7 +9696,7 @@ class SaleLineEntriesCompanion extends UpdateCompanion<SaleLineEntry> {
   final Value<int?> offerUnitOffMinor;
   final Value<bool> isGift;
   final Value<int> returnedQtyMilli;
-  final Value<String> createdAt;
+  final Value<int> createdAt;
   final Value<int> rowid;
   const SaleLineEntriesCompanion({
     this.id = const Value.absent(),
@@ -9751,7 +9751,7 @@ class SaleLineEntriesCompanion extends UpdateCompanion<SaleLineEntry> {
     this.offerUnitOffMinor = const Value.absent(),
     this.isGift = const Value.absent(),
     this.returnedQtyMilli = const Value.absent(),
-    required String createdAt,
+    required int createdAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        saleId = Value(saleId),
@@ -9796,7 +9796,7 @@ class SaleLineEntriesCompanion extends UpdateCompanion<SaleLineEntry> {
     Expression<int>? offerUnitOffMinor,
     Expression<bool>? isGift,
     Expression<int>? returnedQtyMilli,
-    Expression<String>? createdAt,
+    Expression<int>? createdAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -9854,7 +9854,7 @@ class SaleLineEntriesCompanion extends UpdateCompanion<SaleLineEntry> {
     Value<int?>? offerUnitOffMinor,
     Value<bool>? isGift,
     Value<int>? returnedQtyMilli,
-    Value<String>? createdAt,
+    Value<int>? createdAt,
     Value<int>? rowid,
   }) {
     return SaleLineEntriesCompanion(
@@ -9963,7 +9963,7 @@ class SaleLineEntriesCompanion extends UpdateCompanion<SaleLineEntry> {
       map['returned_qty_milli'] = Variable<int>(returnedQtyMilli.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<String>(createdAt.value);
+      map['created_at'] = Variable<int>(createdAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -10077,22 +10077,22 @@ class $PaymentEntriesTable extends PaymentEntries
     'occurredAt',
   );
   @override
-  late final GeneratedColumn<String> occurredAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> occurredAt = GeneratedColumn<int>(
     'occurred_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
   @override
-  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   @override
@@ -10217,11 +10217,11 @@ class $PaymentEntriesTable extends PaymentEntries
         data['${effectivePrefix}status'],
       )!,
       occurredAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}occurred_at'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}created_at'],
       )!,
     );
@@ -10244,8 +10244,8 @@ class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
 
   /// `succeeded` (the only value written today).
   final String status;
-  final String occurredAt;
-  final String createdAt;
+  final int occurredAt;
+  final int createdAt;
   const PaymentEntry({
     required this.id,
     required this.saleId,
@@ -10265,8 +10265,8 @@ class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
     map['amount_minor'] = Variable<int>(amountMinor);
     map['currency_code'] = Variable<String>(currencyCode);
     map['status'] = Variable<String>(status);
-    map['occurred_at'] = Variable<String>(occurredAt);
-    map['created_at'] = Variable<String>(createdAt);
+    map['occurred_at'] = Variable<int>(occurredAt);
+    map['created_at'] = Variable<int>(createdAt);
     return map;
   }
 
@@ -10295,8 +10295,8 @@ class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
       amountMinor: serializer.fromJson<int>(json['amountMinor']),
       currencyCode: serializer.fromJson<String>(json['currencyCode']),
       status: serializer.fromJson<String>(json['status']),
-      occurredAt: serializer.fromJson<String>(json['occurredAt']),
-      createdAt: serializer.fromJson<String>(json['createdAt']),
+      occurredAt: serializer.fromJson<int>(json['occurredAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
     );
   }
   @override
@@ -10309,8 +10309,8 @@ class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
       'amountMinor': serializer.toJson<int>(amountMinor),
       'currencyCode': serializer.toJson<String>(currencyCode),
       'status': serializer.toJson<String>(status),
-      'occurredAt': serializer.toJson<String>(occurredAt),
-      'createdAt': serializer.toJson<String>(createdAt),
+      'occurredAt': serializer.toJson<int>(occurredAt),
+      'createdAt': serializer.toJson<int>(createdAt),
     };
   }
 
@@ -10321,8 +10321,8 @@ class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
     int? amountMinor,
     String? currencyCode,
     String? status,
-    String? occurredAt,
-    String? createdAt,
+    int? occurredAt,
+    int? createdAt,
   }) => PaymentEntry(
     id: id ?? this.id,
     saleId: saleId ?? this.saleId,
@@ -10399,8 +10399,8 @@ class PaymentEntriesCompanion extends UpdateCompanion<PaymentEntry> {
   final Value<int> amountMinor;
   final Value<String> currencyCode;
   final Value<String> status;
-  final Value<String> occurredAt;
-  final Value<String> createdAt;
+  final Value<int> occurredAt;
+  final Value<int> createdAt;
   final Value<int> rowid;
   const PaymentEntriesCompanion({
     this.id = const Value.absent(),
@@ -10420,8 +10420,8 @@ class PaymentEntriesCompanion extends UpdateCompanion<PaymentEntry> {
     required int amountMinor,
     this.currencyCode = const Value.absent(),
     required String status,
-    required String occurredAt,
-    required String createdAt,
+    required int occurredAt,
+    required int createdAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        saleId = Value(saleId),
@@ -10437,8 +10437,8 @@ class PaymentEntriesCompanion extends UpdateCompanion<PaymentEntry> {
     Expression<int>? amountMinor,
     Expression<String>? currencyCode,
     Expression<String>? status,
-    Expression<String>? occurredAt,
-    Expression<String>? createdAt,
+    Expression<int>? occurredAt,
+    Expression<int>? createdAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -10461,8 +10461,8 @@ class PaymentEntriesCompanion extends UpdateCompanion<PaymentEntry> {
     Value<int>? amountMinor,
     Value<String>? currencyCode,
     Value<String>? status,
-    Value<String>? occurredAt,
-    Value<String>? createdAt,
+    Value<int>? occurredAt,
+    Value<int>? createdAt,
     Value<int>? rowid,
   }) {
     return PaymentEntriesCompanion(
@@ -10500,10 +10500,10 @@ class PaymentEntriesCompanion extends UpdateCompanion<PaymentEntry> {
       map['status'] = Variable<String>(status.value);
     }
     if (occurredAt.present) {
-      map['occurred_at'] = Variable<String>(occurredAt.value);
+      map['occurred_at'] = Variable<int>(occurredAt.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<String>(createdAt.value);
+      map['created_at'] = Variable<int>(createdAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -10560,11 +10560,11 @@ class $CurrentCartEntriesTable extends CurrentCartEntries
     'updatedAt',
   );
   @override
-  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   @override
@@ -10618,7 +10618,7 @@ class $CurrentCartEntriesTable extends CurrentCartEntries
         data['${effectivePrefix}cart_json'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}updated_at'],
       )!,
     );
@@ -10636,7 +10636,7 @@ class CurrentCartEntry extends DataClass
   final String cartJson;
 
   /// UTC ISO 8601 text.
-  final String updatedAt;
+  final int updatedAt;
   const CurrentCartEntry({
     required this.id,
     required this.cartJson,
@@ -10647,7 +10647,7 @@ class CurrentCartEntry extends DataClass
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['cart_json'] = Variable<String>(cartJson);
-    map['updated_at'] = Variable<String>(updatedAt);
+    map['updated_at'] = Variable<int>(updatedAt);
     return map;
   }
 
@@ -10667,7 +10667,7 @@ class CurrentCartEntry extends DataClass
     return CurrentCartEntry(
       id: serializer.fromJson<int>(json['id']),
       cartJson: serializer.fromJson<String>(json['cartJson']),
-      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
     );
   }
   @override
@@ -10676,11 +10676,11 @@ class CurrentCartEntry extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'cartJson': serializer.toJson<String>(cartJson),
-      'updatedAt': serializer.toJson<String>(updatedAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
     };
   }
 
-  CurrentCartEntry copyWith({int? id, String? cartJson, String? updatedAt}) =>
+  CurrentCartEntry copyWith({int? id, String? cartJson, int? updatedAt}) =>
       CurrentCartEntry(
         id: id ?? this.id,
         cartJson: cartJson ?? this.cartJson,
@@ -10718,7 +10718,7 @@ class CurrentCartEntry extends DataClass
 class CurrentCartEntriesCompanion extends UpdateCompanion<CurrentCartEntry> {
   final Value<int> id;
   final Value<String> cartJson;
-  final Value<String> updatedAt;
+  final Value<int> updatedAt;
   const CurrentCartEntriesCompanion({
     this.id = const Value.absent(),
     this.cartJson = const Value.absent(),
@@ -10727,13 +10727,13 @@ class CurrentCartEntriesCompanion extends UpdateCompanion<CurrentCartEntry> {
   CurrentCartEntriesCompanion.insert({
     this.id = const Value.absent(),
     required String cartJson,
-    required String updatedAt,
+    required int updatedAt,
   }) : cartJson = Value(cartJson),
        updatedAt = Value(updatedAt);
   static Insertable<CurrentCartEntry> custom({
     Expression<int>? id,
     Expression<String>? cartJson,
-    Expression<String>? updatedAt,
+    Expression<int>? updatedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -10745,7 +10745,7 @@ class CurrentCartEntriesCompanion extends UpdateCompanion<CurrentCartEntry> {
   CurrentCartEntriesCompanion copyWith({
     Value<int>? id,
     Value<String>? cartJson,
-    Value<String>? updatedAt,
+    Value<int>? updatedAt,
   }) {
     return CurrentCartEntriesCompanion(
       id: id ?? this.id,
@@ -10764,7 +10764,7 @@ class CurrentCartEntriesCompanion extends UpdateCompanion<CurrentCartEntry> {
       map['cart_json'] = Variable<String>(cartJson.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<String>(updatedAt.value);
+      map['updated_at'] = Variable<int>(updatedAt.value);
     }
     return map;
   }
@@ -11225,20 +11225,20 @@ class $OfferEntriesTable extends OfferEntries
     'startsAt',
   );
   @override
-  late final GeneratedColumn<String> startsAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> startsAt = GeneratedColumn<int>(
     'starts_at',
     aliasedName,
     true,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
   static const VerificationMeta _endsAtMeta = const VerificationMeta('endsAt');
   @override
-  late final GeneratedColumn<String> endsAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> endsAt = GeneratedColumn<int>(
     'ends_at',
     aliasedName,
     true,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
   static const VerificationMeta _activeMeta = const VerificationMeta('active');
@@ -11270,33 +11270,33 @@ class $OfferEntriesTable extends OfferEntries
     'createdAt',
   );
   @override
-  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
   @override
-  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta(
     'deletedAt',
   );
   @override
-  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
     'deleted_at',
     aliasedName,
     true,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
   @override
@@ -11502,11 +11502,11 @@ class $OfferEntriesTable extends OfferEntries
         data['${effectivePrefix}gift_product_id'],
       ),
       startsAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}starts_at'],
       ),
       endsAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}ends_at'],
       ),
       active: attachedDatabase.typeMapping.read(
@@ -11518,15 +11518,15 @@ class $OfferEntriesTable extends OfferEntries
         data['${effectivePrefix}priority'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}updated_at'],
       )!,
       deletedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}deleted_at'],
       ),
     );
@@ -11553,13 +11553,13 @@ class OfferEntry extends DataClass implements Insertable<OfferEntry> {
   final String? giftProductId;
 
   /// UTC ISO 8601 text; null = no bound.
-  final String? startsAt;
-  final String? endsAt;
+  final int? startsAt;
+  final int? endsAt;
   final bool active;
   final int priority;
-  final String createdAt;
-  final String updatedAt;
-  final String? deletedAt;
+  final int createdAt;
+  final int updatedAt;
+  final int? deletedAt;
   const OfferEntry({
     required this.id,
     required this.kind,
@@ -11607,17 +11607,17 @@ class OfferEntry extends DataClass implements Insertable<OfferEntry> {
       map['gift_product_id'] = Variable<String>(giftProductId);
     }
     if (!nullToAbsent || startsAt != null) {
-      map['starts_at'] = Variable<String>(startsAt);
+      map['starts_at'] = Variable<int>(startsAt);
     }
     if (!nullToAbsent || endsAt != null) {
-      map['ends_at'] = Variable<String>(endsAt);
+      map['ends_at'] = Variable<int>(endsAt);
     }
     map['active'] = Variable<bool>(active);
     map['priority'] = Variable<int>(priority);
-    map['created_at'] = Variable<String>(createdAt);
-    map['updated_at'] = Variable<String>(updatedAt);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
     if (!nullToAbsent || deletedAt != null) {
-      map['deleted_at'] = Variable<String>(deletedAt);
+      map['deleted_at'] = Variable<int>(deletedAt);
     }
     return map;
   }
@@ -11680,13 +11680,13 @@ class OfferEntry extends DataClass implements Insertable<OfferEntry> {
       currencyCode: serializer.fromJson<String?>(json['currencyCode']),
       minCartMinor: serializer.fromJson<int?>(json['minCartMinor']),
       giftProductId: serializer.fromJson<String?>(json['giftProductId']),
-      startsAt: serializer.fromJson<String?>(json['startsAt']),
-      endsAt: serializer.fromJson<String?>(json['endsAt']),
+      startsAt: serializer.fromJson<int?>(json['startsAt']),
+      endsAt: serializer.fromJson<int?>(json['endsAt']),
       active: serializer.fromJson<bool>(json['active']),
       priority: serializer.fromJson<int>(json['priority']),
-      createdAt: serializer.fromJson<String>(json['createdAt']),
-      updatedAt: serializer.fromJson<String>(json['updatedAt']),
-      deletedAt: serializer.fromJson<String?>(json['deletedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
     );
   }
   @override
@@ -11703,13 +11703,13 @@ class OfferEntry extends DataClass implements Insertable<OfferEntry> {
       'currencyCode': serializer.toJson<String?>(currencyCode),
       'minCartMinor': serializer.toJson<int?>(minCartMinor),
       'giftProductId': serializer.toJson<String?>(giftProductId),
-      'startsAt': serializer.toJson<String?>(startsAt),
-      'endsAt': serializer.toJson<String?>(endsAt),
+      'startsAt': serializer.toJson<int?>(startsAt),
+      'endsAt': serializer.toJson<int?>(endsAt),
       'active': serializer.toJson<bool>(active),
       'priority': serializer.toJson<int>(priority),
-      'createdAt': serializer.toJson<String>(createdAt),
-      'updatedAt': serializer.toJson<String>(updatedAt),
-      'deletedAt': serializer.toJson<String?>(deletedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
     };
   }
 
@@ -11724,13 +11724,13 @@ class OfferEntry extends DataClass implements Insertable<OfferEntry> {
     Value<String?> currencyCode = const Value.absent(),
     Value<int?> minCartMinor = const Value.absent(),
     Value<String?> giftProductId = const Value.absent(),
-    Value<String?> startsAt = const Value.absent(),
-    Value<String?> endsAt = const Value.absent(),
+    Value<int?> startsAt = const Value.absent(),
+    Value<int?> endsAt = const Value.absent(),
     bool? active,
     int? priority,
-    String? createdAt,
-    String? updatedAt,
-    Value<String?> deletedAt = const Value.absent(),
+    int? createdAt,
+    int? updatedAt,
+    Value<int?> deletedAt = const Value.absent(),
   }) => OfferEntry(
     id: id ?? this.id,
     kind: kind ?? this.kind,
@@ -11862,13 +11862,13 @@ class OfferEntriesCompanion extends UpdateCompanion<OfferEntry> {
   final Value<String?> currencyCode;
   final Value<int?> minCartMinor;
   final Value<String?> giftProductId;
-  final Value<String?> startsAt;
-  final Value<String?> endsAt;
+  final Value<int?> startsAt;
+  final Value<int?> endsAt;
   final Value<bool> active;
   final Value<int> priority;
-  final Value<String> createdAt;
-  final Value<String> updatedAt;
-  final Value<String?> deletedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
   final Value<int> rowid;
   const OfferEntriesCompanion({
     this.id = const Value.absent(),
@@ -11905,8 +11905,8 @@ class OfferEntriesCompanion extends UpdateCompanion<OfferEntry> {
     this.endsAt = const Value.absent(),
     this.active = const Value.absent(),
     this.priority = const Value.absent(),
-    required String createdAt,
-    required String updatedAt,
+    required int createdAt,
+    required int updatedAt,
     this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -11925,13 +11925,13 @@ class OfferEntriesCompanion extends UpdateCompanion<OfferEntry> {
     Expression<String>? currencyCode,
     Expression<int>? minCartMinor,
     Expression<String>? giftProductId,
-    Expression<String>? startsAt,
-    Expression<String>? endsAt,
+    Expression<int>? startsAt,
+    Expression<int>? endsAt,
     Expression<bool>? active,
     Expression<int>? priority,
-    Expression<String>? createdAt,
-    Expression<String>? updatedAt,
-    Expression<String>? deletedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -11967,13 +11967,13 @@ class OfferEntriesCompanion extends UpdateCompanion<OfferEntry> {
     Value<String?>? currencyCode,
     Value<int?>? minCartMinor,
     Value<String?>? giftProductId,
-    Value<String?>? startsAt,
-    Value<String?>? endsAt,
+    Value<int?>? startsAt,
+    Value<int?>? endsAt,
     Value<bool>? active,
     Value<int>? priority,
-    Value<String>? createdAt,
-    Value<String>? updatedAt,
-    Value<String?>? deletedAt,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int?>? deletedAt,
     Value<int>? rowid,
   }) {
     return OfferEntriesCompanion(
@@ -12032,10 +12032,10 @@ class OfferEntriesCompanion extends UpdateCompanion<OfferEntry> {
       map['gift_product_id'] = Variable<String>(giftProductId.value);
     }
     if (startsAt.present) {
-      map['starts_at'] = Variable<String>(startsAt.value);
+      map['starts_at'] = Variable<int>(startsAt.value);
     }
     if (endsAt.present) {
-      map['ends_at'] = Variable<String>(endsAt.value);
+      map['ends_at'] = Variable<int>(endsAt.value);
     }
     if (active.present) {
       map['active'] = Variable<bool>(active.value);
@@ -12044,13 +12044,13 @@ class OfferEntriesCompanion extends UpdateCompanion<OfferEntry> {
       map['priority'] = Variable<int>(priority.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<String>(createdAt.value);
+      map['created_at'] = Variable<int>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<String>(updatedAt.value);
+      map['updated_at'] = Variable<int>(updatedAt.value);
     }
     if (deletedAt.present) {
-      map['deleted_at'] = Variable<String>(deletedAt.value);
+      map['deleted_at'] = Variable<int>(deletedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -12389,22 +12389,22 @@ class $StoreForexEntriesTable extends StoreForexEntries
     'createdAt',
   );
   @override
-  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
   @override
-  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   @override
@@ -12528,11 +12528,11 @@ class $StoreForexEntriesTable extends StoreForexEntries
         data['${effectivePrefix}position'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}updated_at'],
       )!,
     );
@@ -12551,8 +12551,8 @@ class StoreForexEntry extends DataClass implements Insertable<StoreForexEntry> {
   final int rateMicro;
   final bool active;
   final int position;
-  final String createdAt;
-  final String updatedAt;
+  final int createdAt;
+  final int updatedAt;
   const StoreForexEntry({
     required this.id,
     required this.storeId,
@@ -12572,8 +12572,8 @@ class StoreForexEntry extends DataClass implements Insertable<StoreForexEntry> {
     map['rate_micro'] = Variable<int>(rateMicro);
     map['active'] = Variable<bool>(active);
     map['position'] = Variable<int>(position);
-    map['created_at'] = Variable<String>(createdAt);
-    map['updated_at'] = Variable<String>(updatedAt);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
     return map;
   }
 
@@ -12604,8 +12604,8 @@ class StoreForexEntry extends DataClass implements Insertable<StoreForexEntry> {
       rateMicro: serializer.fromJson<int>(json['rateMicro']),
       active: serializer.fromJson<bool>(json['active']),
       position: serializer.fromJson<int>(json['position']),
-      createdAt: serializer.fromJson<String>(json['createdAt']),
-      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
     );
   }
   @override
@@ -12618,8 +12618,8 @@ class StoreForexEntry extends DataClass implements Insertable<StoreForexEntry> {
       'rateMicro': serializer.toJson<int>(rateMicro),
       'active': serializer.toJson<bool>(active),
       'position': serializer.toJson<int>(position),
-      'createdAt': serializer.toJson<String>(createdAt),
-      'updatedAt': serializer.toJson<String>(updatedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
     };
   }
 
@@ -12630,8 +12630,8 @@ class StoreForexEntry extends DataClass implements Insertable<StoreForexEntry> {
     int? rateMicro,
     bool? active,
     int? position,
-    String? createdAt,
-    String? updatedAt,
+    int? createdAt,
+    int? updatedAt,
   }) => StoreForexEntry(
     id: id ?? this.id,
     storeId: storeId ?? this.storeId,
@@ -12704,8 +12704,8 @@ class StoreForexEntriesCompanion extends UpdateCompanion<StoreForexEntry> {
   final Value<int> rateMicro;
   final Value<bool> active;
   final Value<int> position;
-  final Value<String> createdAt;
-  final Value<String> updatedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
   final Value<int> rowid;
   const StoreForexEntriesCompanion({
     this.id = const Value.absent(),
@@ -12725,8 +12725,8 @@ class StoreForexEntriesCompanion extends UpdateCompanion<StoreForexEntry> {
     required int rateMicro,
     this.active = const Value.absent(),
     this.position = const Value.absent(),
-    required String createdAt,
-    required String updatedAt,
+    required int createdAt,
+    required int updatedAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        storeId = Value(storeId),
@@ -12741,8 +12741,8 @@ class StoreForexEntriesCompanion extends UpdateCompanion<StoreForexEntry> {
     Expression<int>? rateMicro,
     Expression<bool>? active,
     Expression<int>? position,
-    Expression<String>? createdAt,
-    Expression<String>? updatedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -12766,8 +12766,8 @@ class StoreForexEntriesCompanion extends UpdateCompanion<StoreForexEntry> {
     Value<int>? rateMicro,
     Value<bool>? active,
     Value<int>? position,
-    Value<String>? createdAt,
-    Value<String>? updatedAt,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
     Value<int>? rowid,
   }) {
     return StoreForexEntriesCompanion(
@@ -12807,10 +12807,10 @@ class StoreForexEntriesCompanion extends UpdateCompanion<StoreForexEntry> {
       map['position'] = Variable<int>(position.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<String>(createdAt.value);
+      map['created_at'] = Variable<int>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<String>(updatedAt.value);
+      map['updated_at'] = Variable<int>(updatedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -12897,22 +12897,22 @@ class $TaxRegimeEntriesTable extends TaxRegimeEntries
     'createdAt',
   );
   @override
-  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
     'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
   @override
-  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
     'updated_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   @override
@@ -13018,11 +13018,11 @@ class $TaxRegimeEntriesTable extends TaxRegimeEntries
         data['${effectivePrefix}split_parts'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}created_at'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
+        DriftSqlType.int,
         data['${effectivePrefix}updated_at'],
       )!,
     );
@@ -13049,8 +13049,8 @@ class TaxRegimeEntry extends DataClass implements Insertable<TaxRegimeEntry> {
   /// Comma separated split components of the total tax (`CGST,SGST`); empty
   /// means a single line.
   final String splitParts;
-  final String createdAt;
-  final String updatedAt;
+  final int createdAt;
+  final int updatedAt;
   const TaxRegimeEntry({
     required this.id,
     required this.region,
@@ -13068,8 +13068,8 @@ class TaxRegimeEntry extends DataClass implements Insertable<TaxRegimeEntry> {
     map['label'] = Variable<String>(label);
     map['price_mode'] = Variable<String>(priceMode);
     map['split_parts'] = Variable<String>(splitParts);
-    map['created_at'] = Variable<String>(createdAt);
-    map['updated_at'] = Variable<String>(updatedAt);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
     return map;
   }
 
@@ -13096,8 +13096,8 @@ class TaxRegimeEntry extends DataClass implements Insertable<TaxRegimeEntry> {
       label: serializer.fromJson<String>(json['label']),
       priceMode: serializer.fromJson<String>(json['priceMode']),
       splitParts: serializer.fromJson<String>(json['splitParts']),
-      createdAt: serializer.fromJson<String>(json['createdAt']),
-      updatedAt: serializer.fromJson<String>(json['updatedAt']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
     );
   }
   @override
@@ -13109,8 +13109,8 @@ class TaxRegimeEntry extends DataClass implements Insertable<TaxRegimeEntry> {
       'label': serializer.toJson<String>(label),
       'priceMode': serializer.toJson<String>(priceMode),
       'splitParts': serializer.toJson<String>(splitParts),
-      'createdAt': serializer.toJson<String>(createdAt),
-      'updatedAt': serializer.toJson<String>(updatedAt),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
     };
   }
 
@@ -13120,8 +13120,8 @@ class TaxRegimeEntry extends DataClass implements Insertable<TaxRegimeEntry> {
     String? label,
     String? priceMode,
     String? splitParts,
-    String? createdAt,
-    String? updatedAt,
+    int? createdAt,
+    int? updatedAt,
   }) => TaxRegimeEntry(
     id: id ?? this.id,
     region: region ?? this.region,
@@ -13188,8 +13188,8 @@ class TaxRegimeEntriesCompanion extends UpdateCompanion<TaxRegimeEntry> {
   final Value<String> label;
   final Value<String> priceMode;
   final Value<String> splitParts;
-  final Value<String> createdAt;
-  final Value<String> updatedAt;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
   final Value<int> rowid;
   const TaxRegimeEntriesCompanion({
     this.id = const Value.absent(),
@@ -13207,8 +13207,8 @@ class TaxRegimeEntriesCompanion extends UpdateCompanion<TaxRegimeEntry> {
     required String label,
     required String priceMode,
     this.splitParts = const Value.absent(),
-    required String createdAt,
-    required String updatedAt,
+    required int createdAt,
+    required int updatedAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        region = Value(region),
@@ -13222,8 +13222,8 @@ class TaxRegimeEntriesCompanion extends UpdateCompanion<TaxRegimeEntry> {
     Expression<String>? label,
     Expression<String>? priceMode,
     Expression<String>? splitParts,
-    Expression<String>? createdAt,
-    Expression<String>? updatedAt,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -13244,8 +13244,8 @@ class TaxRegimeEntriesCompanion extends UpdateCompanion<TaxRegimeEntry> {
     Value<String>? label,
     Value<String>? priceMode,
     Value<String>? splitParts,
-    Value<String>? createdAt,
-    Value<String>? updatedAt,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
     Value<int>? rowid,
   }) {
     return TaxRegimeEntriesCompanion(
@@ -13279,10 +13279,10 @@ class TaxRegimeEntriesCompanion extends UpdateCompanion<TaxRegimeEntry> {
       map['split_parts'] = Variable<String>(splitParts.value);
     }
     if (createdAt.present) {
-      map['created_at'] = Variable<String>(createdAt.value);
+      map['created_at'] = Variable<int>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<String>(updatedAt.value);
+      map['updated_at'] = Variable<int>(updatedAt.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);

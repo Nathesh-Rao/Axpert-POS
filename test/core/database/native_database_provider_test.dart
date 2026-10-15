@@ -31,7 +31,7 @@ void main() {
       final second = await provider.open();
 
       expect(first, same(second));
-      expect(first.schemaVersion, 10);
+      expect(first.schemaVersion, 11);
       expect(first.allTables.map((table) => table.actualTableName).toSet(), {
         'device_context_entries',
         'settings',
@@ -75,7 +75,7 @@ void main() {
 
     await store.write(context);
 
-    expect(database.schemaVersion, 10);
+    expect(database.schemaVersion, 11);
     expect(await store.read(), context);
   });
 
@@ -148,7 +148,7 @@ void main() {
 
       expect(names, containsAll(['settings', 'migration_state', 'customers']));
       expect(device.read<String>('device_id'), 'dev-1');
-      expect(version.read<int>('user_version'), 10);
+      expect(version.read<int>('user_version'), 11);
     });
 
     test('failed upgrade rolls back and leaves data intact', () async {
@@ -207,7 +207,7 @@ void main() {
       'CREATE TABLE migration_state (key TEXT NOT NULL, value TEXT NOT NULL, '
           'PRIMARY KEY (key))',
       "INSERT INTO device_context_entries (device_id) VALUES ('dev-1')",
-      "INSERT INTO settings VALUES ('axpert-dark', 'true', 'x')",
+      "INSERT INTO settings VALUES ('axpert-dark', 'true', 0)",
     ];
 
     void seedV3(dynamic database, {String extra = ''}) {
@@ -237,7 +237,7 @@ void main() {
 
       expect(names, contains('customers'));
       expect(setting.read<String>('value_json'), 'true');
-      expect(version.read<int>('user_version'), 10);
+      expect(version.read<int>('user_version'), 11);
     });
 
     test('failed upgrade leaves v3 data and user_version intact', () async {
@@ -294,10 +294,10 @@ void main() {
           'server_id TEXT NULL, server_version INTEGER NULL, device_id TEXT NULL, '
           'PRIMARY KEY (id))',
       "INSERT INTO device_context_entries (device_id) VALUES ('dev-1')",
-      "INSERT INTO settings VALUES ('axpert-dark', 'true', 'x')",
+      "INSERT INTO settings VALUES ('axpert-dark', 'true', 0)",
       "INSERT INTO customers (id, legacy_id, position, name, phone, email, "
           "member_no, points, created_at, updated_at) VALUES "
-          "('u1', 'walk', 0, 'Walk-in', '', '', '', 0, 'x', 'x')",
+          "('u1', 'walk', 0, 'Walk-in', '', '', '', 0, 0, 0)",
     ];
 
     void seedV4(dynamic database, {String extra = ''}) {
@@ -334,7 +334,7 @@ void main() {
       expect(names, contains('held_bills'));
       expect(setting.read<String>('value_json'), 'true');
       expect(customer.read<String>('name'), 'Walk-in');
-      expect(version.read<int>('user_version'), 10);
+      expect(version.read<int>('user_version'), 11);
       expect(columns.map((c) => c.read<String>('name')).toList(), [
         'id',
         'ref',
@@ -355,7 +355,7 @@ void main() {
       addTearDown(database.close);
       await database.customSelect('SELECT 1').getSingle();
       await database.customStatement(
-        "INSERT INTO held_bills (id, ref, position, held_at, cart_json, created_at, updated_at, deleted_at) VALUES ('u', 'H1', 0, 't', '{}', 'x', 'x', NULL)",
+        "INSERT INTO held_bills (id, ref, position, held_at, cart_json, created_at, updated_at, deleted_at) VALUES ('u', 'H1', 0, 0, '{}', 0, 0, NULL)",
       );
       expect(
         (await database.customSelect('SELECT ref FROM held_bills').getSingle())
@@ -419,8 +419,8 @@ void main() {
           'position INTEGER NOT NULL, held_at TEXT NOT NULL, '
           'cart_json TEXT NOT NULL, created_at TEXT NOT NULL, '
           'updated_at TEXT NOT NULL, deleted_at TEXT NULL, PRIMARY KEY (id))',
-      "INSERT INTO settings VALUES ('axpert-dark', 'true', 'x')",
-      "INSERT INTO held_bills (id, ref, position, held_at, cart_json, created_at, updated_at, deleted_at) VALUES ('u', 'H1', 0, 't', '{}', 'x', 'x', NULL)",
+      "INSERT INTO settings VALUES ('axpert-dark', 'true', 0)",
+      "INSERT INTO held_bills (id, ref, position, held_at, cart_json, created_at, updated_at, deleted_at) VALUES ('u', 'H1', 0, 0, '{}', 0, 0, NULL)",
     ];
 
     void seedV5(dynamic database, {String extra = ''}) {
@@ -484,7 +484,7 @@ void main() {
         contains('products_position'),
       );
       expect(held.read<String>('ref'), 'H1');
-      expect(version.read<int>('user_version'), 10);
+      expect(version.read<int>('user_version'), 11);
     });
 
     test('legacy_id is unique, code and barcode are not', () async {
@@ -496,7 +496,7 @@ void main() {
           'INSERT INTO products (id, legacy_id, position, name, code, barcode, '
           "price_minor, category, sub, stock, gst_bp, image, favourite, "
           "created_at, updated_at) VALUES ('%s', %d, 0, 'n', 'C', 'B', 1, "
-          "'c', 's', 1, 1800, -1, 0, 'x', 'x')";
+          "'c', 's', 1, 1800, -1, 0, 0, 0)";
 
       await database.customStatement(
         insert.replaceFirst('%s', 'a').replaceFirst('%d', '1'),
@@ -576,9 +576,9 @@ void main() {
           'created_at TEXT NOT NULL, updated_at TEXT NOT NULL, '
           'deleted_at TEXT NULL, server_id TEXT NULL, '
           'server_version INTEGER NULL, device_id TEXT NULL, PRIMARY KEY (id))',
-      "INSERT INTO settings VALUES ('axpert-dark', 'true', 'x')",
+      "INSERT INTO settings VALUES ('axpert-dark', 'true', 0)",
       "INSERT INTO customers VALUES ('c1', 'walk', 0, 'Walk-in', '', '', '', 0, "
-          "'x', 'x', NULL, NULL, NULL, NULL)",
+          "0, 0, NULL, NULL, NULL, NULL)",
     ];
 
     void seedV6(dynamic database, {String extra = ''}) {
@@ -696,7 +696,7 @@ void main() {
           .customSelect('PRAGMA user_version')
           .getSingle();
       expect(customer.read<String>('legacy_id'), 'walk');
-      expect(version.read<int>('user_version'), 10);
+      expect(version.read<int>('user_version'), 11);
     });
 
     test('number is not unique and a link must point at a real row', () async {
@@ -713,7 +713,7 @@ void main() {
           'points_minor, total_minor, tendered_minor, change_minor, '
           "created_at, updated_at) VALUES ('$id', 0, 'AX000001', 0, 't', 's', "
           "'n', 'walk', $customer, 'Cash', 'Cash', 'flat', 0, 0, '', 0, '', "
-          "1, 1000, 1, 1, 0, 0, 0, 1, 1, 0, 'x', 'x')";
+          "1, 1000, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0)";
 
       await database.customStatement(insert('a'));
       await database.customStatement(insert('b'));
@@ -767,7 +767,7 @@ void main() {
           'updated_at TEXT NOT NULL, PRIMARY KEY (key))',
       'CREATE TABLE migration_state (key TEXT NOT NULL, value TEXT NOT NULL, '
           'PRIMARY KEY (key))',
-      "INSERT INTO settings VALUES ('axpert-dark', 'true', 'x')",
+      "INSERT INTO settings VALUES ('axpert-dark', 'true', 0)",
       // Stand-ins so the v9 column additions find their tables.
       'CREATE TABLE products (id TEXT PRIMARY KEY)',
       'CREATE TABLE held_bills (id TEXT PRIMARY KEY)',
@@ -805,7 +805,7 @@ void main() {
         'updated_at',
       ]);
       expect(settings.read<String>('key'), 'axpert-dark');
-      expect(version.read<int>('user_version'), 10);
+      expect(version.read<int>('user_version'), 11);
     });
 
     test('only one row (id 1) is allowed', () async {
@@ -815,18 +815,18 @@ void main() {
       addTearDown(database.close);
 
       await database.customStatement(
-        "INSERT INTO current_cart (cart_json, updated_at) VALUES ('{}', 'x')",
+        "INSERT INTO current_cart (cart_json, updated_at) VALUES ('{}', 0)",
       );
       await expectLater(
         database.customStatement(
           "INSERT INTO current_cart (id, cart_json, updated_at) "
-          "VALUES (2, '{}', 'x')",
+          "VALUES (2, '{}', 0)",
         ),
         throwsA(anything),
       );
       await expectLater(
         database.customStatement(
-          "INSERT INTO current_cart (cart_json, updated_at) VALUES ('{}', 'x')",
+          "INSERT INTO current_cart (cart_json, updated_at) VALUES ('{}', 0)",
         ),
         throwsA(anything),
       );

@@ -25,9 +25,9 @@ class PaymentEntries extends Table {
   /// `succeeded` (the only value written today).
   TextColumn get status => text()();
 
-  TextColumn get occurredAt => text()();
+  IntColumn get occurredAt => integer()();
 
-  TextColumn get createdAt => text()();
+  IntColumn get createdAt => integer()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};

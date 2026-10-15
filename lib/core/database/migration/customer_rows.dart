@@ -75,7 +75,7 @@ abstract final class CustomerRows {
   static Future<void> apply(
     AxpertDatabase db,
     List<Customer> list, {
-    required String now,
+    required int now,
     required UuidGenerator uuid,
   }) async {
     final existing = {

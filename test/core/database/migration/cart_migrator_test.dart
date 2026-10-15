@@ -1,3 +1,4 @@
+import 'package:pos_application/core/utils/epoch_time.dart';
 import 'dart:convert';
 
 import 'package:drift/native.dart';
@@ -61,7 +62,7 @@ void main() {
       final r = await rows();
       expect(r.single.id, 1);
       expect(r.single.cartJson, jsonEncode(full.toJson()));
-      expect(r.single.updatedAt, '2026-10-12T00:00:00.000Z');
+      expect(r.single.updatedAt, EpochTime.parse('2026-10-12T00:00:00.000Z'));
       expect((await CartRows.read(db)).cart.toJson(), full.toJson());
       expect(await store.read(StorageKeys.cart), before);
       expect((await markerJson())['count'], 1);
@@ -165,7 +166,7 @@ void main() {
 
   test('an unreadable Drift row reads as the empty cart, flagged', () async {
     await db.customStatement(
-      "INSERT INTO current_cart (cart_json, updated_at) VALUES ('{bad', 'x')",
+      "INSERT INTO current_cart (cart_json, updated_at) VALUES ('{bad', 0)",
     );
 
     final read = await CartRows.read(db);
@@ -176,12 +177,12 @@ void main() {
   });
 
   test('write upserts the single row', () async {
-    await CartRows.write(db, CartRows.encode(full), now: 'T1');
-    await CartRows.write(db, CartRows.encode(Cart.empty), now: 'T2');
+    await CartRows.write(db, CartRows.encode(full), now: 1000);
+    await CartRows.write(db, CartRows.encode(Cart.empty), now: 2000);
 
     final r = await rows();
     expect(r, hasLength(1));
-    expect(r.single.updatedAt, 'T2');
+    expect(r.single.updatedAt, 2000);
     expect((await CartRows.read(db)).cart.lines, isEmpty);
   });
 }

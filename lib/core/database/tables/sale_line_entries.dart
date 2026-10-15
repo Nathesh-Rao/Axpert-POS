@@ -67,7 +67,7 @@ class SaleLineEntries extends Table {
 
   IntColumn get returnedQtyMilli => integer().withDefault(const Constant(0))();
 
-  TextColumn get createdAt => text()();
+  IntColumn get createdAt => integer()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};

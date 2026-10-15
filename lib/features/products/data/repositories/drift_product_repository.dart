@@ -12,6 +12,7 @@ import '../../../../core/utils/serial_queue.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/repositories/product_repository.dart';
 import 'mock_product_repository.dart';
+import '../../../../core/utils/epoch_time.dart';
 
 /// Products in Drift (source of truth), dual-written to [LocalStore] so the
 /// rollback to the LocalStore backend loses nothing (DEC-128).
@@ -119,7 +120,7 @@ class DriftProductRepository implements ProductRepository {
       return _fallback.save(products);
     }
     try {
-      final now = _now().toUtc().toIso8601String();
+      final now = EpochTime.fromDateTime(_now());
       final plan = ProductRows.plan(
         products,
         _known,
@@ -153,7 +154,7 @@ class DriftProductRepository implements ProductRepository {
   /// Plans the row writes for [products] against the snapshot (no database
   /// access); the caller writes it inside its own transaction and calls
   /// [adopt] after the commit.
-  ProductWrite stage(List<Product> products, {required String now}) =>
+  ProductWrite stage(List<Product> products, {required int now}) =>
       ProductRows.plan(
         products,
         _known,

@@ -29,10 +29,10 @@ const _v8 = <String>[
       'returned_qty_milli INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL, '
       'PRIMARY KEY (id))',
   "INSERT INTO products VALUES ('p1', 1, 0, 'Cola', 'C1', 'B1', 4000, 'INR', "
-      "'Beverages', 'Soft Drinks', 10, 1800, 2, 1, 'x', 'x', NULL, NULL, NULL, NULL)",
-  "INSERT INTO held_bills VALUES ('h1', 'H1', 0, 't', '{}', 'x', 'x', NULL)",
+      "'Beverages', 'Soft Drinks', 10, 1800, 2, 1, 0, 0, NULL, NULL, NULL, NULL)",
+  "INSERT INTO held_bills VALUES ('h1', 'H1', 0, 0, '{}', 0, 0, NULL)",
   "INSERT INTO sales VALUES ('s1', 1, 'AX000001', 0, 't', 'MAISON', 'Walk-in', "
-      "'walk', NULL, 'INR', 'Cash', 4720, 'x', 'x', NULL)",
+      "'walk', NULL, 'INR', 'Cash', 4720, 0, 0, NULL)",
   "INSERT INTO sale_lines VALUES ('l1', 's1', 0, 'p1', 4000, 1000, 0, 0, 'x')",
 ];
 
@@ -55,7 +55,7 @@ void main() {
     addTearDown(db.close);
 
     final version = await db.customSelect('PRAGMA user_version').getSingle();
-    expect(version.read<int>('user_version'), 10);
+    expect(version.read<int>('user_version'), 11);
 
     final tables = {
       for (final r
@@ -131,7 +131,7 @@ void main() {
   test('a fresh database is created at v9 with the same tables', () async {
     final db = AxpertDatabase(NativeDatabase.memory());
     addTearDown(db.close);
-    expect(db.schemaVersion, 10);
+    expect(db.schemaVersion, 11);
     expect(await db.select(db.offerEntries).get(), isEmpty);
     expect(await db.select(db.storeEntries).get(), isEmpty);
   });
@@ -187,13 +187,13 @@ void main() {
       'INSERT INTO products (id, legacy_id, position, name, code, barcode, '
       'price_minor, category, sub, stock, gst_bp, image, favourite, '
       "created_at, updated_at) VALUES ('p1', 1, 0, 'Cola', 'C1', 'B1', 4000, "
-      "'B', 'S', 10, 1800, 2, 1, 'x', 'x')",
+      "'B', 'S', 10, 1800, 2, 1, 0, 0)",
     );
 
     Future<void> offer(String values) => db.customStatement(
       'INSERT INTO offers (id, kind, name, product_id, percent_bp, '
       'fixed_amount_minor, currency_code, min_cart_minor, gift_product_id, '
-      "created_at, updated_at) VALUES ('o', $values, 'x', 'x')",
+      "created_at, updated_at) VALUES ('o', $values, 0, 0)",
     );
 
     test('valid rows of each kind are accepted', () async {

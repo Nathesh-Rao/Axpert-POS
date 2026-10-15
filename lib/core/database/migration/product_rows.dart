@@ -21,7 +21,7 @@ class KnownProduct {
   });
 
   final String uuid;
-  final String createdAt;
+  final int createdAt;
   final int position;
 
   /// What the row holds (a tombstone keeps its last values).
@@ -116,7 +116,7 @@ abstract final class ProductRows {
   static ProductWrite plan(
     List<Product> list,
     Map<int, KnownProduct> known, {
-    required String now,
+    required int now,
     required UuidGenerator uuid,
     String? storeId,
   }) {
@@ -180,7 +180,7 @@ abstract final class ProductRows {
   static Future<void> write(
     AxpertDatabase db,
     ProductWrite plan, {
-    required String now,
+    required int now,
   }) async {
     for (var i = 0; i < plan.inserts.length; i += _chunk) {
       final part = plan.inserts.skip(i).take(_chunk).toList();
@@ -263,7 +263,7 @@ abstract final class ProductRows {
     String id,
     Product p,
     int position,
-    String now,
+    int now,
     String? storeId,
   ) => ProductEntriesCompanion.insert(
     id: id,
@@ -285,7 +285,7 @@ abstract final class ProductRows {
     updatedAt: now,
   );
 
-  static ProductEntriesCompanion _update(Product p, int position, String now) =>
+  static ProductEntriesCompanion _update(Product p, int position, int now) =>
       ProductEntriesCompanion(
         position: Value(position),
         name: Value(p.name),

@@ -12,6 +12,7 @@ import '../../../core/utils/serial_queue.dart';
 import '../models/sale.dart';
 import 'mock_sale_repository.dart';
 import 'sale_repository.dart';
+import '../../../core/utils/epoch_time.dart';
 
 /// Sales in Drift (source of truth), dual-written to [LocalStore] in the old
 /// `axpert-sales` shape so the rollback to the LocalStore backend loses
@@ -133,7 +134,7 @@ class DriftSaleRepository implements SaleRepository {
       return _fallback.save(sales);
     }
     try {
-      final now = _now().toUtc().toIso8601String();
+      final now = EpochTime.fromDateTime(_now());
       final plan = SaleRows.plan(sales, _known, now: now, uuid: _uuid);
       if (!plan.isEmpty) {
         await StartupTimeline.logged(
@@ -159,7 +160,7 @@ class DriftSaleRepository implements SaleRepository {
   /// Plans the writes for [sales] against the current snapshot (no database
   /// access). The caller writes the plan inside its own transaction and calls
   /// [adopt] after the commit.
-  SaleWrite stage(List<Sale> sales, {required String now}) =>
+  SaleWrite stage(List<Sale> sales, {required int now}) =>
       SaleRows.plan(sales, _known, now: now, uuid: _uuid);
 
   /// Replaces the snapshot after the caller's transaction committed.

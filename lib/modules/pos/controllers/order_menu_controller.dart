@@ -9,6 +9,7 @@ import '../../../features/session/presentation/controllers/active_session.dart';
 import '../services/checkout_service.dart';
 import 'cart_controller.dart';
 import 'cart_meta_controller.dart';
+import '../../../core/utils/epoch_time.dart';
 
 /// The "..." order menu: Rename counter, Add note, Print draft. Dialog ids
 /// match the prototype's `modal` names.
@@ -40,7 +41,7 @@ class OrderMenuController extends GetxController {
     final zero = Money(0, totals.total.currency);
     return Sale(
       number: 'DRAFT',
-      date: clock.current.toUtc().toIso8601String(),
+      date: EpochTime.nowIso(clock.current),
       store: session.store.value?.name ?? '',
       cashier: session.displayName.isEmpty ? null : session.displayName,
       customer: meta.customer.name,

@@ -6,6 +6,7 @@ import '../../services/storage/local_store.dart';
 import '../axpert_database.dart';
 import 'cart_rows.dart';
 import 'settings_migrator.dart' show SettingsMigrationException;
+import '../../utils/epoch_time.dart';
 
 /// Marker row key in `migration_state`: the LocalStore to Drift copy of the
 /// cart finished at least once.
@@ -83,7 +84,7 @@ class CartMigrator {
     final expected = parsed ?? Cart.empty;
 
     await db.durableTransaction(() async {
-      final now = _now().toUtc().toIso8601String();
+      final now = EpochTime.fromDateTime(_now());
       final existing = await CartRows.read(db);
       final hasRow = existing.unreadable || existing.json != null;
       if (parsed != null) {
@@ -107,7 +108,7 @@ class CartMigrator {
               value: jsonEncode({
                 'count': parsed != null ? 1 : 0,
                 'checksum': CartRows.checksum(expected),
-                'copied_at': now,
+                'copied_at': EpochTime.toIso(now),
                 'report': report.toJson(),
               }),
             ),

@@ -5,6 +5,7 @@ import '../../../core/database/database_provider.dart';
 import '../../../core/services/pricing/currency.dart';
 import '../domain/entities/session_entities.dart';
 import '../domain/repositories/session_repositories.dart';
+import '../../../core/utils/epoch_time.dart';
 
 /// Users, stores and counters from Drift. Drift-only: no LocalStore mirror.
 class DriftUserRepository implements UserRepository {
@@ -209,7 +210,7 @@ class DriftStoreRepository implements StoreRepository {
     )..where((t) => t.id.equals(counterId))).write(
       CounterEntriesCompanion(
         name: Value(name),
-        updatedAt: Value(_now().toUtc().toIso8601String()),
+        updatedAt: Value(EpochTime.fromDateTime(_now())),
       ),
     );
   }

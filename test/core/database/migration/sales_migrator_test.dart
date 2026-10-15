@@ -1,3 +1,4 @@
+import 'package:pos_application/core/utils/epoch_time.dart';
 import 'dart:convert';
 
 import 'package:drift/drift.dart' show OrderingTerm;
@@ -82,7 +83,7 @@ void main() {
     expect(r.map((e) => e.hasSaleId), [true, false, true]);
     expect(r[0].id, _id1);
     expect(_uuidV4.hasMatch(r[1].id), isTrue, reason: 'legacy gets a UUID');
-    expect(r[0].createdAt, '2026-10-12T00:00:00.000Z');
+    expect(r[0].createdAt, EpochTime.parse('2026-10-12T00:00:00.000Z'));
     final back = await loaded();
     expect(
       jsonEncode([for (final s in back) s.toJson()]),
@@ -255,7 +256,7 @@ void main() {
 
     final r = await rows();
     expect(r, hasLength(2));
-    expect(r[1].deletedAt, '2026-10-12T00:00:00.000Z');
+    expect(r[1].deletedAt, EpochTime.parse('2026-10-12T00:00:00.000Z'));
     expect((await loaded()).map((s) => s.number), ['AX000001']);
     expect(await db.select(db.saleLineEntries).get(), hasLength(4));
   });

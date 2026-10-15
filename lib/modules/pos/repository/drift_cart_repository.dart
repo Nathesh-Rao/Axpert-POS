@@ -10,6 +10,7 @@ import '../../../core/utils/serial_queue.dart';
 import '../models/cart.dart';
 import 'cart_repository.dart';
 import 'mock_cart_repository.dart';
+import '../../../core/utils/epoch_time.dart';
 
 /// The cart draft in Drift (source of truth), dual-written to [LocalStore]
 /// so the rollback to the LocalStore backend loses nothing (DEC-130).
@@ -99,7 +100,7 @@ class DriftCartRepository implements CartRepository {
     final json = CartRows.encode(cart);
     if (json == _lastJson) return;
     try {
-      final now = _now().toUtc().toIso8601String();
+      final now = EpochTime.fromDateTime(_now());
       await StartupTimeline.logged(
         'cart save drift',
         () => CartRows.write(db, json, now: now),

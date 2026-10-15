@@ -1,3 +1,4 @@
+import 'package:pos_application/core/utils/epoch_time.dart';
 import 'dart:convert';
 
 import 'package:drift/drift.dart' show OrderingTerm, Value;
@@ -48,7 +49,7 @@ void main() {
     <Map<String, dynamic>>[for (final b in bills) b.toJson()],
   );
 
-  Future<void> save(List<HeldBill> bills, {String now = 'T1'}) =>
+  Future<void> save(List<HeldBill> bills, {int now = 1000}) =>
       db.durableTransaction(
         () => HeldBillRows.apply(db, bills, now: now, uuid: uuid),
       );
@@ -74,8 +75,8 @@ void main() {
     expect(r.map((e) => e.ref), ['H2', 'H1']);
     expect(r.map((e) => e.position), [0, 1]);
     expect(r.every((e) => _uuidV4.hasMatch(e.id)), isTrue);
-    expect(r.first.heldAt, '2026-10-12T10:00:00.000Z');
-    expect(r.first.createdAt, '2026-10-12T00:00:00.000Z');
+    expect(r.first.heldAt, EpochTime.parse('2026-10-12T10:00:00.000Z'));
+    expect(r.first.createdAt, EpochTime.parse('2026-10-12T00:00:00.000Z'));
     expect(r.first.deletedAt, isNull);
     expect(jsonDecode(r.first.cartJson)['note'], 'n');
     expect(await store.read(StorageKeys.held), before);
@@ -226,12 +227,12 @@ void main() {
       await save([heldBill('A'), heldBill('B'), heldBill('C')]);
       final ids = {for (final r in await rows()) r.ref: r.id};
 
-      await save([heldBill('B')], now: 'T2');
+      await save([heldBill('B')], now: 2000);
       final all = await db.select(db.heldBillEntries).get();
       expect(all, hasLength(3));
       final byRef = {for (final r in all) r.ref: r};
-      expect(byRef['A']!.deletedAt, 'T2');
-      expect(byRef['C']!.deletedAt, 'T2');
+      expect(byRef['A']!.deletedAt, 2000);
+      expect(byRef['C']!.deletedAt, 2000);
       expect(byRef['B']!.deletedAt, isNull);
       expect(byRef['B']!.id, ids['B']);
       expect(byRef['B']!.position, 0);
@@ -240,11 +241,11 @@ void main() {
 
     test('clearing tombstones every active row', () async {
       await save([heldBill('A'), heldBill('B')]);
-      await save(<HeldBill>[], now: 'T2');
+      await save(<HeldBill>[], now: 2000);
       expect(await HeldBillRows.readList(db), isEmpty);
       expect(
         (await db.select(db.heldBillEntries).get()).every(
-          (r) => r.deletedAt == 'T2',
+          (r) => r.deletedAt == 2000,
         ),
         isTrue,
       );
@@ -253,13 +254,13 @@ void main() {
     test('a ref used again after a tombstone is a NEW row', () async {
       await save([heldBill('A')]);
       final first = (await rows()).single.id;
-      await save(<HeldBill>[], now: 'T2');
-      await save([heldBill('A')], now: 'T3');
+      await save(<HeldBill>[], now: 2000);
+      await save([heldBill('A')], now: 3000);
       final all = await db.select(db.heldBillEntries).get();
       expect(all, hasLength(2));
       final active = all.where((r) => r.deletedAt == null).single;
       expect(active.id, isNot(first));
-      expect(active.createdAt, 'T3');
+      expect(active.createdAt, 3000);
     });
 
     test(
@@ -267,7 +268,7 @@ void main() {
       () async {
         await save([heldBill('D', productId: 1), heldBill('D', productId: 2)]);
         final ids = [for (final r in await rows()) r.id];
-        await save([heldBill('D', productId: 1)], now: 'T2');
+        await save([heldBill('D', productId: 1)], now: 2000);
         final active = (await rows())
             .where((r) => r.deletedAt == null)
             .toList();
@@ -277,8 +278,8 @@ void main() {
 
     test('an unchanged list writes nothing (updated_at stays)', () async {
       await save([heldBill('A')]);
-      await save([heldBill('A')], now: 'T2');
-      expect((await rows()).single.updatedAt, 'T1');
+      await save([heldBill('A')], now: 2000);
+      expect((await rows()).single.updatedAt, 1000);
     });
   });
 }

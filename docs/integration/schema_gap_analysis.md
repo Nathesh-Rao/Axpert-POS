@@ -5,7 +5,7 @@ Date 2026-10-13. Analysis only: no schema change. Sources: Axpert_POS_SQLite_Dat
 ## 1. Headline
 - axpert_pos has ONE table (`device_context_entries`, schema v2); ADR-014 forbids operational tables until the 16 gate items are answered. It implements 1 of 41 doc tables (device_state in part).
 - pos_application has 22 tables (v10), built as a provisional local-only schema (DEC-124, DEC-132, DEC-136). It matches about 9 doc tables by purpose (partly) and has none of the 8 "first" items below as a real table.
-- Global differences (not repeated per table): ours stores timestamps as ISO TEXT, the doc uses INTEGER UTC ms; ours quantity is `qty_milli` (scale 3), the doc `quantity_scaled` (precision not frozen, A6); ours has no `sync_status`; `server_version` is INTEGER in ours, TEXT in the doc (A8); no `search_name`; ours are scoped by `store_id` columns (nullable) instead of required `outlet_id`/`register_id` FKs.
+- Global differences (not repeated per table): timestamps: DONE in v11 (DEC-147), ours is now INTEGER UTC ms like the doc (domain models and the mirror still use ISO text, KG-240); ours quantity is `qty_milli` (scale 3), the doc `quantity_scaled` (precision not frozen, A6); ours has no `sync_status`; `server_version` is INTEGER in ours, TEXT in the doc (A8); no `search_name`; ours are scoped by `store_id` columns (nullable) instead of required `outlet_id`/`register_id` FKs.
 
 ## 2. Phase 1 minimum schema (doc section 17), status
 | Doc table | axpert_pos | pos_application | Column differences (ours vs doc) |
@@ -65,7 +65,7 @@ Each stage = one transactional Drift step plus a migration test (v(n-1) data sur
 | S7 catalog shape | `units`, `brands`, `product_barcodes`, product columns (`search_name`, `brand_id`, `unit_id`, `is_weighted`, `track_inventory`, `active`), category `code/active` | scan and search structure | A1 to A6 (identity, code uniqueness, names, lifecycle, relationships) |
 | S8 context and identity | `organizations`, `outlets/registers` aliases or renames (add `server_id`, `code`, `timezone`), roles/permissions tables, `user_roles`, drop local password hashes when real auth exists, `device_state`, `printer_config`, `app_config` | align names with the backend | A2 (id mapping), B2 (bootstrap source), A12 (security/recovery) |
 | S9 sales header and lines | `sales`: `invoice_no`, `business_date`, `status`, `rounding_minor`, `paid_minor`; `sale_items`: gross/net/tax, snapshots, `price_source`, `voided`; `sale_taxes`, `sale_discounts`, `payment_attempts` | historical immutability | A7, A11 (idempotency), invoice numbering (ADR-011) |
-| S10 sync (last) | `sync_queue`, `sync_state`, `sync_errors`, `entity_versions`; `sync_status` on sales, payments, shifts, inventory, audit, returns; timestamp type decision (TEXT to epoch ms) | needs every entity above to exist | A8, A10 (cursor, tombstones), A11 (idempotency, conflicts), B1 (envelopes, ordering, retry), A12 |
+| S10 sync (last) | `sync_queue`, `sync_state`, `sync_errors`, `entity_versions`; `sync_status` on sales, payments, shifts, inventory, audit, returns; (timestamp type already epoch ms since v11) | needs every entity above to exist | A8, A10 (cursor, tombstones), A11 (idempotency, conflicts), B1 (envelopes, ordering, retry), A12 |
 
 ## 5. Backend answers: what blocks what
 | Id | Topic | Blocks stage | Can start without it? |
@@ -84,6 +84,6 @@ Each stage = one transactional Drift step plus a migration test (v(n-1) data sur
 Stages S1 to S4 need no backend answer to start. S5 to S9 can be built provisionally (as DEC-124) but must be re-checked when A7, A1 to A6 and A11 arrive. S10 cannot be finished before A8, A10, A11, B1, A12.
 
 ## 6. Open points for the owner
-- Timestamp type (ISO TEXT vs epoch ms) is the cheapest to change before S1; deciding it later rewrites every table.
+- Timestamp type: DONE, epoch ms in schema v11 (S0, 2026-10-15, DEC-147).
 - Rename `stores`/`counters` to `outlets`/`registers` or keep and map (S8).
 - ADR-014 in axpert_pos still forbids operational tables; our schema stays provisional and local-only (DEC-124) until its 16 items are closed.

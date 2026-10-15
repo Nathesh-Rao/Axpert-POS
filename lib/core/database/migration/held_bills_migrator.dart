@@ -7,6 +7,7 @@ import '../../services/storage/local_store.dart';
 import '../axpert_database.dart';
 import 'held_bill_rows.dart';
 import 'settings_migrator.dart' show SettingsMigrationException;
+import '../../utils/epoch_time.dart';
 
 /// Marker row key in `migration_state`: the LocalStore to Drift copy of the
 /// held bills finished at least once.
@@ -59,14 +60,21 @@ class HeldBillsMigrator {
       return const HeldCopyOutcome(HeldCopyResult.alreadyCopied, null);
     }
 
-    final parsed = await _readParsed(store);
+    final parsed = <HeldBill>[
+      for (final bill in await _readParsed(store))
+        HeldBill(
+          ref: bill.ref,
+          time: EpochTime.canonicalIso(bill.time),
+          cart: bill.cart,
+        ),
+    ];
     final report = HeldCopyReport(
       duplicateRefs: HeldBillRows.duplicateRefs(parsed),
     );
     final expectedChecksum = HeldBillRows.checksum(parsed);
 
     await db.durableTransaction(() async {
-      final now = _now().toUtc().toIso8601String();
+      final now = EpochTime.fromDateTime(_now());
       await HeldBillRows.apply(db, parsed, now: now, uuid: _uuid);
       // Read-back verification (rolls the whole copy back when it fails).
       final readBack = await HeldBillRows.readList(db);
@@ -84,7 +92,7 @@ class HeldBillsMigrator {
               value: jsonEncode({
                 'count': readBack.length,
                 'checksum': expectedChecksum,
-                'copied_at': now,
+                'copied_at': EpochTime.toIso(now),
                 'report': report.toJson(),
               }),
             ),

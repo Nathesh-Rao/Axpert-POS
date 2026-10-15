@@ -133,3 +133,8 @@ Run and read: format and analyze clean; full VM suite 994/994; no PNG changed ve
 - Tests: `pos_panel_layout_test` (math, thresholds, fallback), `desktop_work_view_test` (rules 1 to 6, shortcuts, persistence, animation), `desktop_cart_layout_test` (six states at 1280x720, 1440x900, 1868x1035, light and dark, plus 900, 950, 1100, 1500), route navigation and semantics walks over the layouts.
 - Goldens: 42 POS goldens regenerated (edge control strip, Billing header, plus the pre-existing sidebar edits), 8 new `three_panel_*`. Six non-POS page goldens untouched (KG-232).
 - Release web (`three_panel_check.mjs`, cashier1): 22/22 at 1280x720 and at 1868x1035. Debug click-through normal 79/79 and `--semantics` 79/79. Screenshots: `docs/integration/screens/three_panel/`.
+
+## Database batch X, S0: epoch timestamps (2026-10-15, on top of 8f2eb37)
+- Schema v11, DEC-147, KG-240, KG-241. Every `*_at` column is INTEGER epoch ms; conversion only at the row boundary (`EpochTime`); UI, models and LocalStore mirror unchanged.
+- Migration `epoch_v11_migration.dart`: one transaction, foreign keys off, table rebuild from the table's own DDL, `foreign_key_check`, NULL stays NULL, non-null unparsable to 0 with a count in `migration_state`.
+- Tests: `schema_v11_test` (v10 seed with TEXT stamps and cascading foreign keys: all table row counts, exact ms for every ISO shape, NULLs, unparsable count, no text left, upgraded shape equals a fresh database, rollback leaves v10), `epoch_time_test`; older schema tests updated to v11.

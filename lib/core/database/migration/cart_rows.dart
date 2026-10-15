@@ -34,7 +34,7 @@ abstract final class CartRows {
   static Future<void> write(
     AxpertDatabase db,
     String json, {
-    required String now,
+    required int now,
   }) => db
       .into(db.currentCartEntries)
       .insertOnConflictUpdate(

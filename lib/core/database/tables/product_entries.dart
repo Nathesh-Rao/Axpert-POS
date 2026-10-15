@@ -59,11 +59,11 @@ class ProductEntries extends Table {
   TextColumn get variantLabel => text().nullable()();
 
   /// UTC ISO 8601 text.
-  TextColumn get createdAt => text()();
+  IntColumn get createdAt => integer()();
 
-  TextColumn get updatedAt => text()();
+  IntColumn get updatedAt => integer()();
 
-  TextColumn get deletedAt => text().nullable()();
+  IntColumn get deletedAt => integer().nullable()();
 
   // Sync-readiness columns, nullable and unused (database_plan.md section 3).
   TextColumn get serverId => text().nullable()();

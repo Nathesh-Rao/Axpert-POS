@@ -10,6 +10,9 @@ import '../domain/repositories/offer_repository.dart';
 
 /// Offers from Drift only (no LocalStore mirror, DEC-134).
 class DriftOfferRepository implements OfferRepository {
+  static DateTime? _utc(int? ms) =>
+      ms == null ? null : DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true);
+
   DriftOfferRepository(this._provider);
 
   final DatabaseProvider _provider;
@@ -72,8 +75,8 @@ class DriftOfferRepository implements OfferRepository {
               : ProductRows.toProduct(
                   giftRow,
                 ).inCurrency(CurrencyRegistry.byCode(giftRow.currencyCode)),
-          startsAt: r.startsAt == null ? null : DateTime.parse(r.startsAt!),
-          endsAt: r.endsAt == null ? null : DateTime.parse(r.endsAt!),
+          startsAt: _utc(r.startsAt),
+          endsAt: _utc(r.endsAt),
           priority: r.priority,
         ),
       );

@@ -4,6 +4,7 @@ import '../../../core/services/pricing/qty.dart';
 import '../../customers/models/customer.dart';
 import '../../sales/models/sale.dart';
 import '../models/cart.dart';
+import '../../../core/utils/epoch_time.dart';
 
 /// Payment modes written on a sale (prototype `mode`).
 abstract final class SaleMode {
@@ -71,7 +72,7 @@ class CheckoutService {
       saleId: saleId,
       cashier: cashier == null || cashier.isEmpty ? null : cashier,
       number: 'AX${(salesCount + 1).toString().padLeft(6, '0')}',
-      date: now.toUtc().toIso8601String(),
+      date: EpochTime.nowIso(now),
       store: store,
       customer: customer.name,
       cart: cart,

@@ -23,9 +23,9 @@ class TaxRegimeEntries extends Table {
   /// means a single line.
   TextColumn get splitParts => text().withDefault(const Constant(''))();
 
-  TextColumn get createdAt => text()();
+  IntColumn get createdAt => integer()();
 
-  TextColumn get updatedAt => text()();
+  IntColumn get updatedAt => integer()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};

@@ -1,3 +1,4 @@
+import 'package:pos_application/core/utils/epoch_time.dart';
 // 10,000 products in Drift (D4): copy, load and checkout write cost, native
 // in-memory SQLite. Row counts are asserted strictly elsewhere; the time
 // thresholds here are loose guards, the measured values are printed for the
@@ -81,7 +82,7 @@ void main() {
       final plan = ProductRows.plan(
         sold,
         repository.snapshot,
-        now: '2026-10-12T00:00:00.000Z',
+        now: EpochTime.parse('2026-10-12T00:00:00.000Z'),
         uuid: UuidV4Generator(),
       );
       sw.stop();
@@ -91,7 +92,11 @@ void main() {
 
       sw = Stopwatch()..start();
       await db.durableTransaction(
-        () => ProductRows.write(db, plan, now: '2026-10-12T00:00:00.000Z'),
+        () => ProductRows.write(
+          db,
+          plan,
+          now: EpochTime.parse('2026-10-12T00:00:00.000Z'),
+        ),
       );
       sw.stop();
       _report('checkout Drift write (3 rows)', sw);

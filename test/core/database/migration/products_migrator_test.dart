@@ -1,3 +1,4 @@
+import 'package:pos_application/core/utils/epoch_time.dart';
 import 'dart:convert';
 
 import 'package:drift/drift.dart' show OrderingTerm;
@@ -72,7 +73,7 @@ void main() {
     expect(all.every((r) => _uuidV4.hasMatch(r.id)), isTrue);
     expect(all.first.gstBp, 550);
     expect(all.first.currencyCode, 'INR');
-    expect(all.first.createdAt, '2026-10-12T00:00:00.000Z');
+    expect(all.first.createdAt, EpochTime.parse('2026-10-12T00:00:00.000Z'));
     expect((await ProductRows.read(db)).list, list);
     expect(
       jsonEncode(await store.read(StorageKeys.products)),

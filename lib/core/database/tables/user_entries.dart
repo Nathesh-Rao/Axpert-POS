@@ -28,11 +28,11 @@ class UserEntries extends Table {
 
   BoolColumn get active => boolean().withDefault(const Constant(true))();
 
-  TextColumn get createdAt => text()();
+  IntColumn get createdAt => integer()();
 
-  TextColumn get updatedAt => text()();
+  IntColumn get updatedAt => integer()();
 
-  TextColumn get deletedAt => text().nullable()();
+  IntColumn get deletedAt => integer().nullable()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};

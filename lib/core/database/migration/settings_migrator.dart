@@ -5,6 +5,7 @@ import '../../services/storage/local_store.dart';
 import '../../../modules/shell/models/app_settings.dart';
 import '../axpert_database.dart';
 import 'fnv1a.dart';
+import '../../utils/epoch_time.dart';
 
 /// Marker row key in `migration_state`: the LocalStore to Drift copy of the
 /// settings finished at least once.
@@ -50,7 +51,7 @@ class SettingsMigrator {
     final expectedChecksum = _checksum(expected);
 
     await db.durableTransaction(() async {
-      final now = _now().toUtc().toIso8601String();
+      final now = EpochTime.fromDateTime(_now());
       await db.delete(db.settingsEntries).go();
       for (final entry in expected.entries) {
         await db
@@ -82,7 +83,7 @@ class SettingsMigrator {
               value: jsonEncode({
                 'count': actual.length,
                 'checksum': expectedChecksum,
-                'copied_at': now,
+                'copied_at': EpochTime.toIso(now),
               }),
             ),
           );

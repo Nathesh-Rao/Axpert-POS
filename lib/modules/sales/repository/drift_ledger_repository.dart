@@ -14,6 +14,7 @@ import '../../returns/repository/return_repository.dart';
 import '../../../features/payment/domain/entities/payment_result.dart';
 import '../models/sale.dart';
 import 'drift_sale_repository.dart';
+import '../../../core/utils/epoch_time.dart';
 
 /// The checkout and refund as ONE Drift transaction each (DEC-129).
 ///
@@ -56,7 +57,7 @@ class DriftLedgerRepository implements CheckoutRepository, ReturnRepository {
       productsAfter: commit.productsAfter,
       customersAfter: commit.customersAfter,
       payment: commit.payment,
-      paymentAt: commit.sale.date,
+      paymentAt: EpochTime.parseOrZero(commit.sale.date),
       label: 'checkout',
     ),
   );
@@ -75,7 +76,7 @@ class DriftLedgerRepository implements CheckoutRepository, ReturnRepository {
     required List<Product> productsAfter,
     List<Customer>? customersAfter,
     PaymentResult? payment,
-    String? paymentAt,
+    int? paymentAt,
     required String label,
   }) async {
     final db = sales.database;
@@ -87,7 +88,7 @@ class DriftLedgerRepository implements CheckoutRepository, ReturnRepository {
       return _separately(salesAfter, productsAfter, customersAfter);
     }
     try {
-      final now = _now().toUtc().toIso8601String();
+      final now = EpochTime.fromDateTime(_now());
       final salePlan = sales.stage(salesAfter, now: now);
       final productPlan = products.stage(productsAfter, now: now);
       final rows = salePlan.rowCount + productPlan.rowCount;

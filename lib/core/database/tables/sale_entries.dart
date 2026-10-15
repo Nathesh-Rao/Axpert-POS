@@ -32,7 +32,7 @@ class SaleEntries extends Table {
   IntColumn get position => integer()();
 
   /// `Sale.date` verbatim (UTC ISO text, never parsed here).
-  TextColumn get occurredAt => text()();
+  IntColumn get occurredAt => integer()();
 
   TextColumn get storeName => text()();
 
@@ -104,11 +104,11 @@ class SaleEntries extends Table {
   TextColumn get returnedOrder => text().withDefault(const Constant('[]'))();
 
   /// UTC ISO 8601 text; `updated_at` changes only when a return is applied.
-  TextColumn get createdAt => text()();
+  IntColumn get createdAt => integer()();
 
-  TextColumn get updatedAt => text()();
+  IntColumn get updatedAt => integer()();
 
-  TextColumn get deletedAt => text().nullable()();
+  IntColumn get deletedAt => integer().nullable()();
 
   // Sync-readiness columns, nullable and unused (database_plan.md section 3).
   TextColumn get serverId => text().nullable()();

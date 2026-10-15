@@ -1,3 +1,4 @@
+import 'package:pos_application/core/utils/epoch_time.dart';
 import 'dart:convert';
 
 import 'package:drift/native.dart';
@@ -11,7 +12,7 @@ import 'package:pos_application/core/utils/gst_json.dart';
 import '../../../support/product_fixtures.dart';
 
 void main() {
-  const now = '2026-10-12T00:00:00.000Z';
+  final now = EpochTime.parse('2026-10-12T00:00:00.000Z');
   final uuid = UuidV4Generator();
   late AxpertDatabase db;
 
@@ -21,10 +22,17 @@ void main() {
   Future<Map<int, KnownProduct>> apply(
     List<dynamic> list,
     Map<int, KnownProduct> known, {
-    String at = now,
+    int? at,
   }) async {
-    final plan = ProductRows.plan(list.cast(), known, now: at, uuid: uuid);
-    await db.durableTransaction(() => ProductRows.write(db, plan, now: at));
+    final plan = ProductRows.plan(
+      list.cast(),
+      known,
+      now: at ?? now,
+      uuid: uuid,
+    );
+    await db.durableTransaction(
+      () => ProductRows.write(db, plan, now: at ?? now),
+    );
     return plan.next;
   }
 
@@ -77,7 +85,7 @@ void main() {
       known = await apply(
         [list[0], prod(9)],
         known,
-        at: '2026-10-13T00:00:00.000Z',
+        at: EpochTime.parse('2026-10-13T00:00:00.000Z'),
       );
       expect(known[1]!.active, isFalse);
       expect(known[9]!.position, 1);
@@ -88,14 +96,14 @@ void main() {
       known = await apply(
         [list[0], list[1]],
         known,
-        at: '2026-10-14T00:00:00.000Z',
+        at: EpochTime.parse('2026-10-14T00:00:00.000Z'),
       );
       all = await db.select(db.productEntries).get();
       final back = all.firstWhere((r) => r.legacyId == 1);
       expect(back.id, uuid1, reason: 'same UUID');
       expect(back.deletedAt, isNull);
       expect(back.createdAt, now);
-      expect(back.updatedAt, '2026-10-14T00:00:00.000Z');
+      expect(back.updatedAt, EpochTime.parse('2026-10-14T00:00:00.000Z'));
     },
   );
 

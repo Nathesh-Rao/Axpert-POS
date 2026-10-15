@@ -165,7 +165,7 @@ void main() {
     () async {
       await repo(db).load();
       await db.customStatement(
-        "INSERT INTO current_cart (cart_json, updated_at) VALUES ('{bad', 'x')",
+        "INSERT INTO current_cart (cart_json, updated_at) VALUES ('{bad', 0)",
       );
       final repository = repo(db);
 

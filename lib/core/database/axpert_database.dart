@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../bindings/startup_timeline.dart';
+import 'migration/epoch_v11_migration.dart';
 import 'tables/category_entries.dart';
 import 'tables/counter_entries.dart';
 import 'tables/currency_entries.dart';
@@ -25,6 +26,7 @@ part 'axpert_database.g.dart';
 
 /// Drift database: device context metadata and device-local settings.
 ///
+/// Schema v11 stores every timestamp as integer epoch milliseconds (UTC).
 /// Schema v10 adds store_forex, tax_regimes and tax_slabs.
 /// Schema v3 (settings, migration_state), v4 (customers), v5 (held_bills), v6 (products), v7 (sales, sale_lines, payments)
 /// v8 (current_cart) and v9 (currencies, stores, counters, users,
@@ -59,7 +61,7 @@ class AxpertDatabase extends _$AxpertDatabase {
   AxpertDatabase(super.executor);
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -192,6 +194,10 @@ class AxpertDatabase extends _$AxpertDatabase {
         await migrator.createTable(taxRegimeEntries);
         await migrator.createTable(taxSlabEntries);
       });
+    }
+    if (from < 11 && to >= 11) {
+      // Rebuilds the tables with INTEGER stamps in one transaction (DEC-147).
+      await EpochV11Migration(this).run();
     }
   }
 

@@ -21,7 +21,7 @@ class CurrentCartEntries extends Table {
   TextColumn get cartJson => text()();
 
   /// UTC ISO 8601 text.
-  TextColumn get updatedAt => text()();
+  IntColumn get updatedAt => integer()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};

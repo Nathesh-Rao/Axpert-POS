@@ -14,6 +14,7 @@ import '../../services/pricing/money.dart';
 import '../../services/pricing/pricing_models.dart';
 import '../../services/pricing/qty.dart';
 import '../../session/store_scope.dart';
+import '../../utils/epoch_time.dart';
 import '../axpert_database.dart';
 import 'fnv1a.dart';
 
@@ -30,7 +31,7 @@ class KnownSale {
 
   final String uuid;
   final bool hasSaleId;
-  final String createdAt;
+  final int createdAt;
   final int position;
 
   /// What the row holds (a tombstone keeps its last values).
@@ -185,7 +186,7 @@ abstract final class SaleRows {
   static SaleWrite plan(
     List<Sale> list,
     Map<String, KnownSale> known, {
-    required String now,
+    required int now,
     required UuidGenerator uuid,
   }) {
     validate(list);
@@ -274,7 +275,7 @@ abstract final class SaleRows {
   static Future<void> write(
     AxpertDatabase db,
     SaleWrite plan, {
-    required String now,
+    required int now,
     required UuidGenerator uuid,
     StoreScope? scope,
   }) async {
@@ -327,8 +328,8 @@ abstract final class SaleRows {
   static Future<void> insertPayment(
     AxpertDatabase db,
     PaymentResult payment, {
-    required String occurredAt,
-    required String now,
+    required int occurredAt,
+    required int now,
   }) => db
       .into(db.paymentEntries)
       .insert(
@@ -524,7 +525,7 @@ abstract final class SaleRows {
 
   static SaleEntriesCompanion _saleRow(
     PlannedSaleInsert p,
-    String now,
+    int now,
     ({Map<String, String> customers, Map<int, String> products}) links,
     StoreScope? scope,
   ) {
@@ -536,7 +537,7 @@ abstract final class SaleRows {
       hasSaleId: s.saleId != null,
       number: s.number,
       position: p.position,
-      occurredAt: s.date,
+      occurredAt: EpochTime.parseOrZero(s.date),
       storeName: s.store,
       storeId: Value(scope?.storeId),
       counterId: Value(scope?.counterId),
@@ -573,7 +574,7 @@ abstract final class SaleRows {
   static SaleLineEntriesCompanion _lineRow(
     PlannedSaleInsert p,
     int n,
-    String now,
+    int now,
     ({Map<String, String> customers, Map<int, String> products}) links,
     UuidGenerator uuid,
   ) {
@@ -657,7 +658,7 @@ abstract final class SaleRows {
       number: r.number,
       saleId: r.hasSaleId ? r.id : null,
       cashier: r.userName,
-      date: r.occurredAt,
+      date: EpochTime.toIso(r.occurredAt),
       store: r.storeName,
       customer: r.customerName,
       cart: Cart(

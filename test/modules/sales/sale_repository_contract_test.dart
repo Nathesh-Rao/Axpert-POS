@@ -238,9 +238,14 @@ void main() {
         });
       }
 
-      test('no validation: empty number and odd date text are kept', () async {
+      test('no validation: an empty number is kept', () async {
         final list = [
-          ledgerSale('', saleId: _id1, date: 'not a date', customerName: ''),
+          ledgerSale(
+            '',
+            saleId: _id1,
+            date: '1999-12-31T23:59:59.999Z',
+            customerName: '',
+          ),
         ];
         final repo = backend.create(store);
         await repo.load();
@@ -249,7 +254,7 @@ void main() {
         final loaded = await backend.create(store).load();
 
         expect(loaded.single.number, '');
-        expect(loaded.single.date, 'not a date');
+        expect(loaded.single.date, '1999-12-31T23:59:59.999Z');
         expect(_json(loaded), _json(list));
       });
 

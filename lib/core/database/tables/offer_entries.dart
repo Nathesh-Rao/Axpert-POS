@@ -42,19 +42,19 @@ class OfferEntries extends Table {
       text().nullable().references(ProductEntries, #id)();
 
   /// UTC ISO 8601 text; null = no bound.
-  TextColumn get startsAt => text().nullable()();
+  IntColumn get startsAt => integer().nullable()();
 
-  TextColumn get endsAt => text().nullable()();
+  IntColumn get endsAt => integer().nullable()();
 
   BoolColumn get active => boolean().withDefault(const Constant(true))();
 
   IntColumn get priority => integer().withDefault(const Constant(0))();
 
-  TextColumn get createdAt => text()();
+  IntColumn get createdAt => integer()();
 
-  TextColumn get updatedAt => text()();
+  IntColumn get updatedAt => integer()();
 
-  TextColumn get deletedAt => text().nullable()();
+  IntColumn get deletedAt => integer().nullable()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};

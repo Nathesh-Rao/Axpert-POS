@@ -10,6 +10,7 @@ import '../../../core/utils/serial_queue.dart';
 import '../models/customer.dart';
 import 'customer_repository.dart';
 import 'mock_customer_repository.dart';
+import '../../../core/utils/epoch_time.dart';
 
 /// Customers in Drift (source of truth), dual-written to [LocalStore] so the
 /// rollback to the LocalStore backend loses nothing (DEC-126).
@@ -85,7 +86,7 @@ class DriftCustomerRepository implements CustomerRepository {
     }
     final normalized = CustomerRows.normalize(customers).customers;
     try {
-      final now = _now().toUtc().toIso8601String();
+      final now = EpochTime.fromDateTime(_now());
       await db.durableTransaction(
         () => CustomerRows.apply(db, normalized, now: now, uuid: _uuid),
       );
@@ -109,7 +110,7 @@ class DriftCustomerRepository implements CustomerRepository {
   Future<void> writeWithin(
     AxpertDatabase db,
     List<Customer> customers, {
-    required String now,
+    required int now,
   }) => CustomerRows.apply(
     db,
     CustomerRows.normalize(customers).customers,

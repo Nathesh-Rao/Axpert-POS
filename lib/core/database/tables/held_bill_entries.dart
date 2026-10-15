@@ -18,17 +18,17 @@ class HeldBillEntries extends Table {
   IntColumn get position => integer()();
 
   /// `HeldBill.time` verbatim (ISO text in the app, never parsed here).
-  TextColumn get heldAt => text()();
+  IntColumn get heldAt => integer()();
 
   /// Canonical JSON of the cart snapshot (full product snapshot per line).
   TextColumn get cartJson => text()();
 
   /// UTC ISO 8601 text.
-  TextColumn get createdAt => text()();
+  IntColumn get createdAt => integer()();
 
-  TextColumn get updatedAt => text()();
+  IntColumn get updatedAt => integer()();
 
-  TextColumn get deletedAt => text().nullable()();
+  IntColumn get deletedAt => integer().nullable()();
 
   /// Owning store (v9); null on legacy rows.
   TextColumn get storeId => text().nullable().references(StoreEntries, #id)();

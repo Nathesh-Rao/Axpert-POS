@@ -119,11 +119,11 @@ class Sale {
   final Money change;
   final Map<int, Qty> returned;
 
-  Sale copyWith({Map<int, Qty>? returned}) => Sale(
+  Sale copyWith({Map<int, Qty>? returned, String? date}) => Sale(
     number: number,
     saleId: saleId,
     cashier: cashier,
-    date: date,
+    date: date ?? this.date,
     store: store,
     customer: customer,
     cart: cart,

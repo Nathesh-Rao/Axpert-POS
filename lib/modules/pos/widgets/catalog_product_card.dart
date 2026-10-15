@@ -84,7 +84,7 @@ class CatalogProductCard extends StatelessWidget {
       favourite: product.favourite,
       list: list,
       compact: compact,
-      packs: TilePackChip(product: product),
+      packs: TilePackChip(product: product, compact: compact),
       // A product held only in packagings shows its total base units.
       qtyBadge: inCart == null
           ? null

@@ -10,6 +10,7 @@ abstract final class AppPackSizes {
   static const double popoverRow = 34.0;
   static const double popoverMinWidth = 200.0;
   static const double chipPadX = 8.0;
+  static const double chipPadCompact = 4.0;
   static const double chipGap = 4.0;
   static const double chevron = 14.0;
   static const double chevronSmall = 12.0;

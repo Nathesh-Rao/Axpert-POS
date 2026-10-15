@@ -122,6 +122,18 @@ class ProductCard extends StatelessWidget {
                     top: list ? AppSpacing.s8 : AppSpacing.s10,
                     child: OfferBadge(label: offerLabel!, style: offerStyle!),
                   ),
+                // The narrow panel has no room beside the stepper: the unit
+                // chooser sits under the star, over the picture.
+                if (compact && !list && packs != null)
+                  Positioned(
+                    right: AppSpacing.s9,
+                    top:
+                        AppSpacing.s10 +
+                        AppSizes.favouriteIcon +
+                        AppSpacing.s3 * 2 +
+                        AppSpacing.s4,
+                    child: packs!,
+                  ),
                 if (qtyBadge != null)
                   Positioned(
                     left: list ? 60 : AppSpacing.s8,
@@ -308,7 +320,7 @@ class ProductCard extends StatelessWidget {
     final stepper = Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        ?packs,
+        if (list || !compact) ?packs,
         if (onRemoveOne != null) ...<Widget>[
           _StepButton(
             size: m.productStepperFirst,

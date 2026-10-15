@@ -74,9 +74,13 @@ class LineUnitChip extends StatelessWidget {
 /// The small "packs" control of a product tile: a click on the tile still
 /// adds the base unit, this opens the unit list (DEC-154).
 class TilePackChip extends StatelessWidget {
-  const TilePackChip({required this.product, super.key});
+  const TilePackChip({required this.product, this.compact = false, super.key});
 
   final Product product;
+
+  /// The narrow Products panel: the chevron alone, so the tile keeps its
+  /// price and stepper.
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +97,7 @@ class TilePackChip extends StatelessWidget {
           onPick: (o) => Get.find<UnitSwitchController>().add(product, o),
           trigger: (context, toggle) => _Chip(
             label: '${options.length}',
+            iconOnly: compact,
             tooltip: context.strings.packChipTooltip(
               product.name,
               options.length,
@@ -110,11 +115,13 @@ class _Chip extends StatelessWidget {
     required this.label,
     required this.tooltip,
     required this.onTap,
+    this.iconOnly = false,
   });
 
   final String label;
   final String tooltip;
   final VoidCallback onTap;
+  final bool iconOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +134,11 @@ class _Chip extends StatelessWidget {
       onTap: onTap,
       builder: (context, hovered) => Container(
         height: touch ? AppPackSizes.chipHeightTouch : AppPackSizes.chipHeight,
-        padding: const EdgeInsets.symmetric(horizontal: AppPackSizes.chipPadX),
+        padding: EdgeInsets.symmetric(
+          horizontal: iconOnly
+              ? AppPackSizes.chipPadCompact
+              : AppPackSizes.chipPadX,
+        ),
         decoration: BoxDecoration(
           color: hovered ? c.secondary : c.productStepperBg,
           borderRadius: BorderRadius.circular(AppRadii.full),
@@ -135,18 +146,20 @@ class _Chip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Flexible(
-              child: Text(
-                label,
-                maxLines: 1,
-                softWrap: false,
-                overflow: TextOverflow.ellipsis,
-                style: context.text
-                    .of(AppFontSize.s12, weight: AppFontWeight.semiBold)
-                    .copyWith(color: c.blue),
+            if (!iconOnly) ...<Widget>[
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.text
+                      .of(AppFontSize.s12, weight: AppFontWeight.semiBold)
+                      .copyWith(color: c.blue),
+                ),
               ),
-            ),
-            const SizedBox(width: AppPackSizes.chipGap),
+              const SizedBox(width: AppPackSizes.chipGap),
+            ],
             Icon(
               AppIcons.chevronDown,
               size: AppPackSizes.chevron,

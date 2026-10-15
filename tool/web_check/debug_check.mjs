@@ -177,6 +177,8 @@ const signInAgain = async () => {
   await insert(process.env.ENTRY_PASS ?? (entryOn ? 'Demo#Cashier1' : 'Demo#Admin1'));
   await key('Enter', 13);
   await sleep(3000);
+  // The administrator has two stores: the picker opens (cashier1 has one and goes straight to POS).
+  if (!entryOn) { await click(1020, 548); await sleep(3000); }
 };
 
 // dialogs over POS (cart, member) and over Reports

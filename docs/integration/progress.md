@@ -138,3 +138,8 @@ Run and read: format and analyze clean; full VM suite 994/994; no PNG changed ve
 - Schema v11, DEC-147, KG-240, KG-241. Every `*_at` column is INTEGER epoch ms; conversion only at the row boundary (`EpochTime`); UI, models and LocalStore mirror unchanged.
 - Migration `epoch_v11_migration.dart`: one transaction, foreign keys off, table rebuild from the table's own DDL, `foreign_key_check`, NULL stays NULL, non-null unparsable to 0 with a count in `migration_state`.
 - Tests: `schema_v11_test` (v10 seed with TEXT stamps and cascading foreign keys: all table row counts, exact ms for every ISO shape, NULLs, unparsable count, no text left, upgraded shape equals a fresh database, rollback leaves v10), `epoch_time_test`; older schema tests updated to v11.
+
+## Database batch X, S1: inventory (2026-10-15)
+- Schema v12, DEC-148, KG-242 to KG-246. `inventory_balance`, `inventory_transactions`, `stores.allow_negative_stock`; backfill from `products.stock`; `InventoryService` (plain Dart), `InventoryRepository` + Drift + Mock; checkout and refund write the movement inside the ledger transaction; demo seed opening stock.
+- Stock rule: refuse below zero by default (today's behavior), per-store flag allows it with a warning.
+- Tests: `inventory_service_test`, `schema_v12_test` (backfill, CHECK, rollback), `ledger_inventory_test` (atomic write, injected failure rolls the sale back, blocked, negative allowed, refund, running balance), `checkout_service_test` (flag).

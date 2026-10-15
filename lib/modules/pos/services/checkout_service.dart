@@ -58,10 +58,15 @@ class CheckoutService {
     required String mode,
     required Money tendered,
     String? saleId,
+    bool allowNegativeStock = false,
   }) {
-    for (final line in cart.lines) {
-      if (line.qty > stockOf(line.product.id)) {
-        return const CheckoutStockChanged();
+    // A store that allows negative stock sells past the recorded stock
+    // (the controller warns); otherwise today's rule holds.
+    if (!allowNegativeStock) {
+      for (final line in cart.lines) {
+        if (line.qty > stockOf(line.product.id)) {
+          return const CheckoutStockChanged();
+        }
       }
     }
     final zero = Money(0, totals.total.currency);

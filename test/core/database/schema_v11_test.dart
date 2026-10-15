@@ -36,6 +36,10 @@ Future<void> _buildV10(File file) async {
 
   final raw = sqlite3.open(file.path);
   raw.execute('PRAGMA foreign_keys = OFF');
+  // v10 has neither the v12 tables nor the v12 store column.
+  raw.execute('DROP TABLE inventory_transactions');
+  raw.execute('DROP TABLE inventory_balance');
+  raw.execute('ALTER TABLE stores DROP COLUMN allow_negative_stock');
   final tables = raw.select(
     "SELECT name, sql FROM sqlite_master WHERE type = 'table' "
     "AND name NOT LIKE 'sqlite_%'",

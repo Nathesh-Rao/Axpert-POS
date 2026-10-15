@@ -1,10 +1,13 @@
 import '../../../core/bindings/startup_diagnostics.dart';
 import '../../../core/bindings/startup_timeline.dart';
+import '../../../core/database/axpert_database.dart';
 import '../../../core/database/migration/product_rows.dart';
 import '../../../core/database/migration/sale_rows.dart';
 import '../../../core/database/persist_outcome.dart';
 import '../../../core/identifiers/uuid_generator.dart';
+import '../../../core/services/inventory/inventory_service.dart';
 import '../../../core/utils/serial_queue.dart';
+import '../../../features/inventory/data/drift_inventory_repository.dart';
 import '../../../features/products/data/repositories/drift_product_repository.dart';
 import '../../../features/products/domain/entities/product.dart';
 import '../../customers/models/customer.dart';
@@ -36,6 +39,7 @@ class DriftLedgerRepository implements CheckoutRepository, ReturnRepository {
     required SerialQueue queue,
     required UuidGenerator uuid,
     required StartupDiagnostics diagnostics,
+    this.inventory,
     DateTime Function()? now,
   }) : _queue = queue,
        _uuid = uuid,
@@ -45,6 +49,10 @@ class DriftLedgerRepository implements CheckoutRepository, ReturnRepository {
   final DriftSaleRepository sales;
   final DriftProductRepository products;
   final DriftCustomerRepository customers;
+
+  /// The stock ledger, written inside the same transaction as the sale. Null
+  /// (tests, unscoped legacy mode) means no inventory rows are written.
+  final DriftInventoryRepository? inventory;
   final SerialQueue _queue;
   final UuidGenerator _uuid;
   final StartupDiagnostics _diagnostics;
@@ -58,6 +66,7 @@ class DriftLedgerRepository implements CheckoutRepository, ReturnRepository {
       customersAfter: commit.customersAfter,
       payment: commit.payment,
       paymentAt: EpochTime.parseOrZero(commit.sale.date),
+      stockFor: (ids) => _saleMovements(commit.sale, ids),
       label: 'checkout',
     ),
   );
@@ -67,6 +76,7 @@ class DriftLedgerRepository implements CheckoutRepository, ReturnRepository {
     () => _run(
       salesAfter: commit.sales,
       productsAfter: commit.products,
+      stockFor: (ids) => _refundMovements(commit, ids),
       label: 'refund',
     ),
   );
@@ -77,6 +87,7 @@ class DriftLedgerRepository implements CheckoutRepository, ReturnRepository {
     List<Customer>? customersAfter,
     PaymentResult? payment,
     int? paymentAt,
+    List<StockMovement> Function(Map<int, String> productIds)? stockFor,
     required String label,
   }) async {
     final db = sales.database;
@@ -114,6 +125,7 @@ class DriftLedgerRepository implements CheckoutRepository, ReturnRepository {
           if (customersAfter != null) {
             await customers.writeWithin(db, customersAfter, now: now);
           }
+          await _writeStock(db, stockFor, now);
         }),
       );
       // Only after the commit: a failed transaction leaves the snapshots.
@@ -143,6 +155,73 @@ class DriftLedgerRepository implements CheckoutRepository, ReturnRepository {
       ]),
     );
     return PersistOutcome.saved;
+  }
+
+  /// Product uuids of the current snapshot, by legacy id.
+  Map<int, String> get _productUuids => {
+    for (final e in products.snapshot.entries) e.key: e.value.uuid,
+  };
+
+  List<StockMovement> _saleMovements(Sale sale, Map<int, String> ids) => [
+    for (final line in sale.cart.lines)
+      if (ids[line.product.id] != null)
+        StockMovement(
+          productId: ids[line.product.id]!,
+          deltaMilli: -line.qty.milli,
+          reason: StockReason.sale,
+          refType: 'sale',
+          refId: sale.saleId ?? sale.number,
+        ),
+  ];
+
+  List<StockMovement> _refundMovements(
+    RefundCommit commit,
+    Map<int, String> ids,
+  ) {
+    final number = commit.request.saleNumber;
+    final sale = commit.sales.where((s) => s.number == number).firstOrNull;
+    return [
+      for (final e in commit.request.entries.entries)
+        if (ids[e.key] != null && e.value.milli > 0)
+          StockMovement(
+            productId: ids[e.key]!,
+            deltaMilli: e.value.milli,
+            reason: StockReason.returned,
+            refType: 'sale',
+            refId: sale?.saleId ?? number,
+          ),
+    ];
+  }
+
+  /// Writes the stock movements of this commit inside its transaction. The
+  /// cache units are read from the snapshot BEFORE the commit is adopted. A
+  /// blocked plan (stock would go below zero in a store that forbids it)
+  /// throws so the whole transaction rolls back.
+  Future<void> _writeStock(
+    AxpertDatabase db,
+    List<StockMovement> Function(Map<int, String> productIds)? stockFor,
+    int now,
+  ) async {
+    final repository = inventory;
+    final storeId = sales.scope.storeId;
+    if (repository == null || storeId == null || stockFor == null) return;
+    final ids = _productUuids;
+    final movements = stockFor(ids);
+    if (movements.isEmpty) return;
+    final byUuid = {for (final e in ids.entries) e.value: e.key};
+    final plan = await repository.applyWithin(
+      db,
+      storeId: storeId,
+      userId: sales.scope.userId,
+      now: now,
+      movements: movements,
+      stockUnits: {
+        for (final m in movements)
+          if (products.snapshot[byUuid[m.productId]] != null)
+            m.productId: products.snapshot[byUuid[m.productId]]!.product.stock,
+      },
+    );
+    if (plan.isBlocked) throw StockBlockedException(plan.blocked);
   }
 
   /// At least one store is already on the LocalStore path (an earlier
@@ -201,4 +280,15 @@ class DriftLedgerRepository implements CheckoutRepository, ReturnRepository {
       return false;
     }
   }
+}
+
+/// A commit would take stock below zero in a store that forbids it.
+class StockBlockedException implements Exception {
+  const StockBlockedException(this.shortfalls);
+
+  final List<StockShortfall> shortfalls;
+
+  @override
+  String toString() =>
+      'StockBlockedException(${shortfalls.map((s) => s.productId).join(', ')})';
 }

@@ -117,6 +117,7 @@ class DriftUserRepository implements UserRepository {
     receiptHeader: r.receiptHeader,
     receiptFooter: r.receiptFooter,
     region: r.region,
+    allowNegativeStock: r.allowNegativeStock,
   );
 }
 

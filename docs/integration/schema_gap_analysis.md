@@ -56,7 +56,7 @@ Date 2026-10-13. Analysis only: no schema change. Sources: Axpert_POS_SQLite_Dat
 Each stage = one transactional Drift step plus a migration test (v(n-1) data survives, forced failure rolls back), as in v9/v10. Order follows your priority; sync last.
 | Stage | Adds / changes | Why here | Backend answers it depends on |
 |---|---|---|---|
-| S1 inventory | `inventory_balance`, `inventory_transactions`; checkout writes a SALE movement and the balance in the existing checkout transaction; backfill balance from `products.stock`; keep `products.stock` as a derived cache until retired | local, high value, fixes in-place stock updates | A6 (quantity semantics, unit); A8 only for the `server_version` column type (keep nullable) |
+| S1 inventory (DONE v12, DEC-148) | `inventory_balance`, `inventory_transactions`; checkout writes a SALE movement and the balance in the existing checkout transaction; backfill balance from `products.stock`; keep `products.stock` as a derived cache until retired | local, high value, fixes in-place stock updates | A6 (quantity semantics, unit); A8 only for the `server_version` column type (keep nullable) |
 | S2 shifts | `shifts` (+ `sales.shift_id`, `cash_movements` optional); shift close from real rows | the shift screen is derived today | none to start (register id from counters); A12 for retention |
 | S3 payment_methods | `payment_methods`; `payments.method_id` FK, `provider_reference`, `user_id` | removes the free-text method | none for local config; A7 only if methods map to backend codes |
 | S4 audit_events | `audit_events`; write for discount override, void, refund, price override, shift close, stock adjust | enterprise traceability, local only | none to start; approver needs roles (S9) |

@@ -260,6 +260,12 @@ class PaymentController extends GetxController {
   Future<void> _complete(String saleMode, Money amount) async {
     if (!cart.isActive || _processing) return;
     _processing = true;
+    final allowNegative = session.store.value?.allowNegativeStock ?? false;
+    final oversold =
+        allowNegative &&
+        cart.cartAsSold.lines.any(
+          (l) => l.qty > (products.byId(l.product.id)?.stockQty ?? Qty.zero),
+        );
     try {
       final result = service.complete(
         cart: cart.cartAsSold,
@@ -273,6 +279,7 @@ class PaymentController extends GetxController {
         mode: saleMode,
         tendered: amount,
         saleId: _uuid.generate(),
+        allowNegativeStock: allowNegative,
       );
       switch (result) {
         case CheckoutStockChanged():
@@ -286,6 +293,9 @@ class PaymentController extends GetxController {
               toasts.show(_s.toastPaymentFailed(), kind: ToastKind.error);
               return;
             }
+          }
+          if (oversold) {
+            toasts.show(_s.toastStockNegative(), kind: ToastKind.warning);
           }
           final receiptWatch = Stopwatch()..start();
           // Memory first (DEC-129): the user-visible effects do not wait for

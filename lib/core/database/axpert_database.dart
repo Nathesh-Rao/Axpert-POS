@@ -9,6 +9,7 @@ import 'tables/current_cart_entries.dart';
 import 'tables/customer_entries.dart';
 import 'tables/device_context_entries.dart';
 import 'tables/held_bill_entries.dart';
+import 'tables/inventory_entries.dart';
 import 'tables/migration_state_entries.dart';
 import 'tables/offer_entries.dart';
 import 'tables/payment_entries.dart';
@@ -26,6 +27,8 @@ part 'axpert_database.g.dart';
 
 /// Drift database: device context metadata and device-local settings.
 ///
+/// Schema v12 adds inventory_balance, inventory_transactions and
+/// stores.allow_negative_stock (DEC-148).
 /// Schema v11 stores every timestamp as integer epoch milliseconds (UTC).
 /// Schema v10 adds store_forex, tax_regimes and tax_slabs.
 /// Schema v3 (settings, migration_state), v4 (customers), v5 (held_bills), v6 (products), v7 (sales, sale_lines, payments)
@@ -55,13 +58,15 @@ part 'axpert_database.g.dart';
     StoreForexEntries,
     TaxRegimeEntries,
     TaxSlabEntries,
+    InventoryBalanceEntries,
+    InventoryTransactionEntries,
   ],
 )
 class AxpertDatabase extends _$AxpertDatabase {
   AxpertDatabase(super.executor);
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -199,6 +204,65 @@ class AxpertDatabase extends _$AxpertDatabase {
       // Rebuilds the tables with INTEGER stamps in one transaction (DEC-147).
       await EpochV11Migration(this).run();
     }
+    if (from < 12 && to >= 12) {
+      // One transaction: v12 is all-or-nothing (DEC-148).
+      await transaction(() async {
+        await migrator.createTable(inventoryBalanceEntries);
+        await migrator.createTable(inventoryTransactionEntries);
+        // Idempotent, like createTable (tests fake old versions on top of
+        // the current schema).
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS inventory_tx_product ON '
+          'inventory_transactions (store_id, product_id, created_at)',
+        );
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS inventory_tx_ref ON '
+          'inventory_transactions (ref_type, ref_id)',
+        );
+        await _addColumnIfMissing(
+          migrator,
+          storeEntries,
+          storeEntries.allowNegativeStock,
+        );
+        await _backfillInventory();
+      });
+    }
+  }
+
+  /// Opening balances from `products.stock` for the products that belong to a
+  /// store (a balance needs a store). Stock 0 gets a balance row and no
+  /// transaction.
+  Future<void> _backfillInventory() async {
+    // Only a products table of the real shape (an older chain step may have
+    // created a stub in tests).
+    final info = await customSelect('PRAGMA table_info(products)').get();
+    final names = {for (final r in info) r.read<String>('name')};
+    if (!names.containsAll(const ['stock', 'store_id', 'deleted_at'])) return;
+    final existing = await customSelect(
+      'SELECT count(*) AS n FROM inventory_balance',
+    ).getSingle();
+    if (existing.read<int>('n') != 0) return;
+    const uuid =
+        "lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || "
+        "'-4' || substr(lower(hex(randomblob(2))), 2) || '-' || "
+        "substr('89ab', abs(random()) % 4 + 1, 1) || "
+        "substr(lower(hex(randomblob(2))), 2) || '-' || "
+        'lower(hex(randomblob(6)))';
+    const now = "CAST(strftime('%s', 'now') AS INTEGER) * 1000";
+    await customStatement(
+      'INSERT INTO inventory_balance '
+      '(store_id, product_id, quantity_milli, updated_at) '
+      'SELECT store_id, id, stock * 1000, $now FROM products '
+      'WHERE store_id IS NOT NULL AND deleted_at IS NULL',
+    );
+    await customStatement(
+      'INSERT INTO inventory_transactions '
+      '(id, store_id, product_id, quantity_delta_milli, reason, ref_type, '
+      'created_at, note) '
+      "SELECT $uuid, store_id, id, stock * 1000, 'opening', 'backfill', $now, "
+      "'backfill from products.stock' FROM products "
+      'WHERE store_id IS NOT NULL AND deleted_at IS NULL AND stock != 0',
+    );
   }
 
   Future<void> _addColumnIfMissing(

@@ -62,6 +62,8 @@ import '../../features/session/domain/repositories/session_repositories.dart';
 import '../../features/session/presentation/controllers/active_session.dart';
 import '../session/store_scope.dart';
 import '../config/app_config.dart';
+import '../../features/inventory/data/drift_inventory_repository.dart';
+import '../../features/inventory/domain/repositories/inventory_repository.dart';
 import '../database/database_provider.dart';
 import '../device/device_context_service.dart';
 import '../identifiers/uuid_generator.dart';
@@ -242,6 +244,11 @@ class InitialBinding extends Bindings {
     if (sales is DriftSaleRepository &&
         products is DriftProductRepository &&
         customers is DriftCustomerRepository) {
+      final inventory = DriftInventoryRepository(
+        provider: infrastructure.databaseProvider,
+        uuid: infrastructure.uuid,
+      );
+      _put<InventoryRepository>(inventory);
       final ledger = DriftLedgerRepository(
         sales: sales,
         products: products,
@@ -249,6 +256,7 @@ class InitialBinding extends Bindings {
         queue: _ledgerQueue,
         uuid: infrastructure.uuid,
         diagnostics: infrastructure.diagnostics,
+        inventory: inventory,
       );
       _put<CheckoutRepository>(ledger);
       _put<ReturnRepository>(ledger);

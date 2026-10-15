@@ -12,6 +12,7 @@ class StoreInfo {
     this.receiptHeader = '',
     this.receiptFooter = '',
     this.region = '',
+    this.allowNegativeStock = false,
   });
 
   final String id;
@@ -23,6 +24,9 @@ class StoreInfo {
   final String receiptHeader;
   final String receiptFooter;
   final String region;
+
+  /// A sale may take stock below zero (with a warning), DEC-148.
+  final bool allowNegativeStock;
 }
 
 class CounterInfo {

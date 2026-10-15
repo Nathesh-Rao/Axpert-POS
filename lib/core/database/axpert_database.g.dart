@@ -2277,6 +2277,20 @@ class $StoreEntriesTable extends StoreEntries
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _allowNegativeStockMeta =
+      const VerificationMeta('allowNegativeStock');
+  @override
+  late final GeneratedColumn<bool> allowNegativeStock = GeneratedColumn<bool>(
+    'allow_negative_stock',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("allow_negative_stock" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -2292,6 +2306,7 @@ class $StoreEntriesTable extends StoreEntries
     createdAt,
     updatedAt,
     deletedAt,
+    allowNegativeStock,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2399,6 +2414,15 @@ class $StoreEntriesTable extends StoreEntries
         deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
       );
     }
+    if (data.containsKey('allow_negative_stock')) {
+      context.handle(
+        _allowNegativeStockMeta,
+        allowNegativeStock.isAcceptableOrUnknown(
+          data['allow_negative_stock']!,
+          _allowNegativeStockMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -2460,6 +2484,10 @@ class $StoreEntriesTable extends StoreEntries
         DriftSqlType.int,
         data['${effectivePrefix}deleted_at'],
       ),
+      allowNegativeStock: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}allow_negative_stock'],
+      )!,
     );
   }
 
@@ -2485,6 +2513,11 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
   final int createdAt;
   final int updatedAt;
   final int? deletedAt;
+
+  /// Per-store stock rule (DEC-148): false = a sale that would take stock
+  /// below zero is refused (today's behavior); true = it is allowed with a
+  /// warning.
+  final bool allowNegativeStock;
   const StoreEntry({
     required this.id,
     required this.name,
@@ -2499,6 +2532,7 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
     required this.createdAt,
     required this.updatedAt,
     this.deletedAt,
+    required this.allowNegativeStock,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2518,6 +2552,7 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<int>(deletedAt);
     }
+    map['allow_negative_stock'] = Variable<bool>(allowNegativeStock);
     return map;
   }
 
@@ -2538,6 +2573,7 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
+      allowNegativeStock: Value(allowNegativeStock),
     );
   }
 
@@ -2560,6 +2596,7 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
       createdAt: serializer.fromJson<int>(json['createdAt']),
       updatedAt: serializer.fromJson<int>(json['updatedAt']),
       deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      allowNegativeStock: serializer.fromJson<bool>(json['allowNegativeStock']),
     );
   }
   @override
@@ -2579,6 +2616,7 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
       'createdAt': serializer.toJson<int>(createdAt),
       'updatedAt': serializer.toJson<int>(updatedAt),
       'deletedAt': serializer.toJson<int?>(deletedAt),
+      'allowNegativeStock': serializer.toJson<bool>(allowNegativeStock),
     };
   }
 
@@ -2596,6 +2634,7 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
     int? createdAt,
     int? updatedAt,
     Value<int?> deletedAt = const Value.absent(),
+    bool? allowNegativeStock,
   }) => StoreEntry(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -2610,6 +2649,7 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    allowNegativeStock: allowNegativeStock ?? this.allowNegativeStock,
   );
   StoreEntry copyWithCompanion(StoreEntriesCompanion data) {
     return StoreEntry(
@@ -2632,6 +2672,9 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      allowNegativeStock: data.allowNegativeStock.present
+          ? data.allowNegativeStock.value
+          : this.allowNegativeStock,
     );
   }
 
@@ -2650,7 +2693,8 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
           ..write('active: $active, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
-          ..write('deletedAt: $deletedAt')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('allowNegativeStock: $allowNegativeStock')
           ..write(')'))
         .toString();
   }
@@ -2670,6 +2714,7 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
     createdAt,
     updatedAt,
     deletedAt,
+    allowNegativeStock,
   );
   @override
   bool operator ==(Object other) =>
@@ -2687,7 +2732,8 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
           other.active == this.active &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
-          other.deletedAt == this.deletedAt);
+          other.deletedAt == this.deletedAt &&
+          other.allowNegativeStock == this.allowNegativeStock);
 }
 
 class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
@@ -2704,6 +2750,7 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
   final Value<int> createdAt;
   final Value<int> updatedAt;
   final Value<int?> deletedAt;
+  final Value<bool> allowNegativeStock;
   final Value<int> rowid;
   const StoreEntriesCompanion({
     this.id = const Value.absent(),
@@ -2719,6 +2766,7 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
+    this.allowNegativeStock = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   StoreEntriesCompanion.insert({
@@ -2735,6 +2783,7 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
     required int createdAt,
     required int updatedAt,
     this.deletedAt = const Value.absent(),
+    this.allowNegativeStock = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        name = Value(name),
@@ -2755,6 +2804,7 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
     Expression<int>? createdAt,
     Expression<int>? updatedAt,
     Expression<int>? deletedAt,
+    Expression<bool>? allowNegativeStock,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -2771,6 +2821,8 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (deletedAt != null) 'deleted_at': deletedAt,
+      if (allowNegativeStock != null)
+        'allow_negative_stock': allowNegativeStock,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -2789,6 +2841,7 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
     Value<int>? createdAt,
     Value<int>? updatedAt,
     Value<int?>? deletedAt,
+    Value<bool>? allowNegativeStock,
     Value<int>? rowid,
   }) {
     return StoreEntriesCompanion(
@@ -2805,6 +2858,7 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
+      allowNegativeStock: allowNegativeStock ?? this.allowNegativeStock,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -2851,6 +2905,9 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
     if (deletedAt.present) {
       map['deleted_at'] = Variable<int>(deletedAt.value);
     }
+    if (allowNegativeStock.present) {
+      map['allow_negative_stock'] = Variable<bool>(allowNegativeStock.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -2873,6 +2930,7 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt, ')
+          ..write('allowNegativeStock: $allowNegativeStock, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -13657,6 +13715,1092 @@ class TaxSlabEntriesCompanion extends UpdateCompanion<TaxSlabEntry> {
   }
 }
 
+class $InventoryBalanceEntriesTable extends InventoryBalanceEntries
+    with TableInfo<$InventoryBalanceEntriesTable, InventoryBalanceEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $InventoryBalanceEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _storeIdMeta = const VerificationMeta(
+    'storeId',
+  );
+  @override
+  late final GeneratedColumn<String> storeId = GeneratedColumn<String>(
+    'store_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES stores (id)',
+    ),
+  );
+  static const VerificationMeta _productIdMeta = const VerificationMeta(
+    'productId',
+  );
+  @override
+  late final GeneratedColumn<String> productId = GeneratedColumn<String>(
+    'product_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES products (id)',
+    ),
+  );
+  static const VerificationMeta _quantityMilliMeta = const VerificationMeta(
+    'quantityMilli',
+  );
+  @override
+  late final GeneratedColumn<int> quantityMilli = GeneratedColumn<int>(
+    'quantity_milli',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _serverVersionMeta = const VerificationMeta(
+    'serverVersion',
+  );
+  @override
+  late final GeneratedColumn<int> serverVersion = GeneratedColumn<int>(
+    'server_version',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    storeId,
+    productId,
+    quantityMilli,
+    updatedAt,
+    serverVersion,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'inventory_balance';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<InventoryBalanceEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('store_id')) {
+      context.handle(
+        _storeIdMeta,
+        storeId.isAcceptableOrUnknown(data['store_id']!, _storeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_storeIdMeta);
+    }
+    if (data.containsKey('product_id')) {
+      context.handle(
+        _productIdMeta,
+        productId.isAcceptableOrUnknown(data['product_id']!, _productIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_productIdMeta);
+    }
+    if (data.containsKey('quantity_milli')) {
+      context.handle(
+        _quantityMilliMeta,
+        quantityMilli.isAcceptableOrUnknown(
+          data['quantity_milli']!,
+          _quantityMilliMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_quantityMilliMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('server_version')) {
+      context.handle(
+        _serverVersionMeta,
+        serverVersion.isAcceptableOrUnknown(
+          data['server_version']!,
+          _serverVersionMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {storeId, productId};
+  @override
+  InventoryBalanceEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return InventoryBalanceEntry(
+      storeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}store_id'],
+      )!,
+      productId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}product_id'],
+      )!,
+      quantityMilli: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}quantity_milli'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      serverVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}server_version'],
+      ),
+    );
+  }
+
+  @override
+  $InventoryBalanceEntriesTable createAlias(String alias) {
+    return $InventoryBalanceEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class InventoryBalanceEntry extends DataClass
+    implements Insertable<InventoryBalanceEntry> {
+  final String storeId;
+  final String productId;
+  final int quantityMilli;
+  final int updatedAt;
+
+  /// Reserved for the sync stage (A8); null today.
+  final int? serverVersion;
+  const InventoryBalanceEntry({
+    required this.storeId,
+    required this.productId,
+    required this.quantityMilli,
+    required this.updatedAt,
+    this.serverVersion,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['store_id'] = Variable<String>(storeId);
+    map['product_id'] = Variable<String>(productId);
+    map['quantity_milli'] = Variable<int>(quantityMilli);
+    map['updated_at'] = Variable<int>(updatedAt);
+    if (!nullToAbsent || serverVersion != null) {
+      map['server_version'] = Variable<int>(serverVersion);
+    }
+    return map;
+  }
+
+  InventoryBalanceEntriesCompanion toCompanion(bool nullToAbsent) {
+    return InventoryBalanceEntriesCompanion(
+      storeId: Value(storeId),
+      productId: Value(productId),
+      quantityMilli: Value(quantityMilli),
+      updatedAt: Value(updatedAt),
+      serverVersion: serverVersion == null && nullToAbsent
+          ? const Value.absent()
+          : Value(serverVersion),
+    );
+  }
+
+  factory InventoryBalanceEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return InventoryBalanceEntry(
+      storeId: serializer.fromJson<String>(json['storeId']),
+      productId: serializer.fromJson<String>(json['productId']),
+      quantityMilli: serializer.fromJson<int>(json['quantityMilli']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      serverVersion: serializer.fromJson<int?>(json['serverVersion']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'storeId': serializer.toJson<String>(storeId),
+      'productId': serializer.toJson<String>(productId),
+      'quantityMilli': serializer.toJson<int>(quantityMilli),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'serverVersion': serializer.toJson<int?>(serverVersion),
+    };
+  }
+
+  InventoryBalanceEntry copyWith({
+    String? storeId,
+    String? productId,
+    int? quantityMilli,
+    int? updatedAt,
+    Value<int?> serverVersion = const Value.absent(),
+  }) => InventoryBalanceEntry(
+    storeId: storeId ?? this.storeId,
+    productId: productId ?? this.productId,
+    quantityMilli: quantityMilli ?? this.quantityMilli,
+    updatedAt: updatedAt ?? this.updatedAt,
+    serverVersion: serverVersion.present
+        ? serverVersion.value
+        : this.serverVersion,
+  );
+  InventoryBalanceEntry copyWithCompanion(
+    InventoryBalanceEntriesCompanion data,
+  ) {
+    return InventoryBalanceEntry(
+      storeId: data.storeId.present ? data.storeId.value : this.storeId,
+      productId: data.productId.present ? data.productId.value : this.productId,
+      quantityMilli: data.quantityMilli.present
+          ? data.quantityMilli.value
+          : this.quantityMilli,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      serverVersion: data.serverVersion.present
+          ? data.serverVersion.value
+          : this.serverVersion,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InventoryBalanceEntry(')
+          ..write('storeId: $storeId, ')
+          ..write('productId: $productId, ')
+          ..write('quantityMilli: $quantityMilli, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('serverVersion: $serverVersion')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(storeId, productId, quantityMilli, updatedAt, serverVersion);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is InventoryBalanceEntry &&
+          other.storeId == this.storeId &&
+          other.productId == this.productId &&
+          other.quantityMilli == this.quantityMilli &&
+          other.updatedAt == this.updatedAt &&
+          other.serverVersion == this.serverVersion);
+}
+
+class InventoryBalanceEntriesCompanion
+    extends UpdateCompanion<InventoryBalanceEntry> {
+  final Value<String> storeId;
+  final Value<String> productId;
+  final Value<int> quantityMilli;
+  final Value<int> updatedAt;
+  final Value<int?> serverVersion;
+  final Value<int> rowid;
+  const InventoryBalanceEntriesCompanion({
+    this.storeId = const Value.absent(),
+    this.productId = const Value.absent(),
+    this.quantityMilli = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.serverVersion = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  InventoryBalanceEntriesCompanion.insert({
+    required String storeId,
+    required String productId,
+    required int quantityMilli,
+    required int updatedAt,
+    this.serverVersion = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : storeId = Value(storeId),
+       productId = Value(productId),
+       quantityMilli = Value(quantityMilli),
+       updatedAt = Value(updatedAt);
+  static Insertable<InventoryBalanceEntry> custom({
+    Expression<String>? storeId,
+    Expression<String>? productId,
+    Expression<int>? quantityMilli,
+    Expression<int>? updatedAt,
+    Expression<int>? serverVersion,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (storeId != null) 'store_id': storeId,
+      if (productId != null) 'product_id': productId,
+      if (quantityMilli != null) 'quantity_milli': quantityMilli,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (serverVersion != null) 'server_version': serverVersion,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  InventoryBalanceEntriesCompanion copyWith({
+    Value<String>? storeId,
+    Value<String>? productId,
+    Value<int>? quantityMilli,
+    Value<int>? updatedAt,
+    Value<int?>? serverVersion,
+    Value<int>? rowid,
+  }) {
+    return InventoryBalanceEntriesCompanion(
+      storeId: storeId ?? this.storeId,
+      productId: productId ?? this.productId,
+      quantityMilli: quantityMilli ?? this.quantityMilli,
+      updatedAt: updatedAt ?? this.updatedAt,
+      serverVersion: serverVersion ?? this.serverVersion,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (storeId.present) {
+      map['store_id'] = Variable<String>(storeId.value);
+    }
+    if (productId.present) {
+      map['product_id'] = Variable<String>(productId.value);
+    }
+    if (quantityMilli.present) {
+      map['quantity_milli'] = Variable<int>(quantityMilli.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (serverVersion.present) {
+      map['server_version'] = Variable<int>(serverVersion.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InventoryBalanceEntriesCompanion(')
+          ..write('storeId: $storeId, ')
+          ..write('productId: $productId, ')
+          ..write('quantityMilli: $quantityMilli, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('serverVersion: $serverVersion, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $InventoryTransactionEntriesTable extends InventoryTransactionEntries
+    with
+        TableInfo<
+          $InventoryTransactionEntriesTable,
+          InventoryTransactionEntry
+        > {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $InventoryTransactionEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _storeIdMeta = const VerificationMeta(
+    'storeId',
+  );
+  @override
+  late final GeneratedColumn<String> storeId = GeneratedColumn<String>(
+    'store_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES stores (id)',
+    ),
+  );
+  static const VerificationMeta _productIdMeta = const VerificationMeta(
+    'productId',
+  );
+  @override
+  late final GeneratedColumn<String> productId = GeneratedColumn<String>(
+    'product_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES products (id)',
+    ),
+  );
+  static const VerificationMeta _quantityDeltaMilliMeta =
+      const VerificationMeta('quantityDeltaMilli');
+  @override
+  late final GeneratedColumn<int> quantityDeltaMilli = GeneratedColumn<int>(
+    'quantity_delta_milli',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _reasonMeta = const VerificationMeta('reason');
+  @override
+  late final GeneratedColumn<String> reason = GeneratedColumn<String>(
+    'reason',
+    aliasedName,
+    false,
+    check: () => reason.isIn(const [
+      'sale',
+      'return',
+      'purchase',
+      'adjustment',
+      'damage',
+      'transfer',
+      'opening',
+    ]),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _refTypeMeta = const VerificationMeta(
+    'refType',
+  );
+  @override
+  late final GeneratedColumn<String> refType = GeneratedColumn<String>(
+    'ref_type',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _refIdMeta = const VerificationMeta('refId');
+  @override
+  late final GeneratedColumn<String> refId = GeneratedColumn<String>(
+    'ref_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES users (id)',
+    ),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    storeId,
+    productId,
+    quantityDeltaMilli,
+    reason,
+    refType,
+    refId,
+    userId,
+    createdAt,
+    note,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'inventory_transactions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<InventoryTransactionEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('store_id')) {
+      context.handle(
+        _storeIdMeta,
+        storeId.isAcceptableOrUnknown(data['store_id']!, _storeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_storeIdMeta);
+    }
+    if (data.containsKey('product_id')) {
+      context.handle(
+        _productIdMeta,
+        productId.isAcceptableOrUnknown(data['product_id']!, _productIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_productIdMeta);
+    }
+    if (data.containsKey('quantity_delta_milli')) {
+      context.handle(
+        _quantityDeltaMilliMeta,
+        quantityDeltaMilli.isAcceptableOrUnknown(
+          data['quantity_delta_milli']!,
+          _quantityDeltaMilliMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_quantityDeltaMilliMeta);
+    }
+    if (data.containsKey('reason')) {
+      context.handle(
+        _reasonMeta,
+        reason.isAcceptableOrUnknown(data['reason']!, _reasonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_reasonMeta);
+    }
+    if (data.containsKey('ref_type')) {
+      context.handle(
+        _refTypeMeta,
+        refType.isAcceptableOrUnknown(data['ref_type']!, _refTypeMeta),
+      );
+    }
+    if (data.containsKey('ref_id')) {
+      context.handle(
+        _refIdMeta,
+        refId.isAcceptableOrUnknown(data['ref_id']!, _refIdMeta),
+      );
+    }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  InventoryTransactionEntry map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return InventoryTransactionEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      storeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}store_id'],
+      )!,
+      productId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}product_id'],
+      )!,
+      quantityDeltaMilli: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}quantity_delta_milli'],
+      )!,
+      reason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reason'],
+      )!,
+      refType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ref_type'],
+      ),
+      refId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ref_id'],
+      ),
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $InventoryTransactionEntriesTable createAlias(String alias) {
+    return $InventoryTransactionEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class InventoryTransactionEntry extends DataClass
+    implements Insertable<InventoryTransactionEntry> {
+  /// UUID v4.
+  final String id;
+  final String storeId;
+  final String productId;
+
+  /// Signed change in milli-units.
+  final int quantityDeltaMilli;
+
+  /// sale, return, purchase, adjustment, damage, transfer or opening.
+  final String reason;
+
+  /// What caused the change (`sale` plus the sale id, for example).
+  final String? refType;
+  final String? refId;
+  final String? userId;
+  final int createdAt;
+  final String note;
+
+  /// Tombstone, never set by the app today.
+  final int? deletedAt;
+  const InventoryTransactionEntry({
+    required this.id,
+    required this.storeId,
+    required this.productId,
+    required this.quantityDeltaMilli,
+    required this.reason,
+    this.refType,
+    this.refId,
+    this.userId,
+    required this.createdAt,
+    required this.note,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['store_id'] = Variable<String>(storeId);
+    map['product_id'] = Variable<String>(productId);
+    map['quantity_delta_milli'] = Variable<int>(quantityDeltaMilli);
+    map['reason'] = Variable<String>(reason);
+    if (!nullToAbsent || refType != null) {
+      map['ref_type'] = Variable<String>(refType);
+    }
+    if (!nullToAbsent || refId != null) {
+      map['ref_id'] = Variable<String>(refId);
+    }
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
+    map['created_at'] = Variable<int>(createdAt);
+    map['note'] = Variable<String>(note);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    return map;
+  }
+
+  InventoryTransactionEntriesCompanion toCompanion(bool nullToAbsent) {
+    return InventoryTransactionEntriesCompanion(
+      id: Value(id),
+      storeId: Value(storeId),
+      productId: Value(productId),
+      quantityDeltaMilli: Value(quantityDeltaMilli),
+      reason: Value(reason),
+      refType: refType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(refType),
+      refId: refId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(refId),
+      userId: userId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userId),
+      createdAt: Value(createdAt),
+      note: Value(note),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory InventoryTransactionEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return InventoryTransactionEntry(
+      id: serializer.fromJson<String>(json['id']),
+      storeId: serializer.fromJson<String>(json['storeId']),
+      productId: serializer.fromJson<String>(json['productId']),
+      quantityDeltaMilli: serializer.fromJson<int>(json['quantityDeltaMilli']),
+      reason: serializer.fromJson<String>(json['reason']),
+      refType: serializer.fromJson<String?>(json['refType']),
+      refId: serializer.fromJson<String?>(json['refId']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      note: serializer.fromJson<String>(json['note']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'storeId': serializer.toJson<String>(storeId),
+      'productId': serializer.toJson<String>(productId),
+      'quantityDeltaMilli': serializer.toJson<int>(quantityDeltaMilli),
+      'reason': serializer.toJson<String>(reason),
+      'refType': serializer.toJson<String?>(refType),
+      'refId': serializer.toJson<String?>(refId),
+      'userId': serializer.toJson<String?>(userId),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'note': serializer.toJson<String>(note),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+    };
+  }
+
+  InventoryTransactionEntry copyWith({
+    String? id,
+    String? storeId,
+    String? productId,
+    int? quantityDeltaMilli,
+    String? reason,
+    Value<String?> refType = const Value.absent(),
+    Value<String?> refId = const Value.absent(),
+    Value<String?> userId = const Value.absent(),
+    int? createdAt,
+    String? note,
+    Value<int?> deletedAt = const Value.absent(),
+  }) => InventoryTransactionEntry(
+    id: id ?? this.id,
+    storeId: storeId ?? this.storeId,
+    productId: productId ?? this.productId,
+    quantityDeltaMilli: quantityDeltaMilli ?? this.quantityDeltaMilli,
+    reason: reason ?? this.reason,
+    refType: refType.present ? refType.value : this.refType,
+    refId: refId.present ? refId.value : this.refId,
+    userId: userId.present ? userId.value : this.userId,
+    createdAt: createdAt ?? this.createdAt,
+    note: note ?? this.note,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  InventoryTransactionEntry copyWithCompanion(
+    InventoryTransactionEntriesCompanion data,
+  ) {
+    return InventoryTransactionEntry(
+      id: data.id.present ? data.id.value : this.id,
+      storeId: data.storeId.present ? data.storeId.value : this.storeId,
+      productId: data.productId.present ? data.productId.value : this.productId,
+      quantityDeltaMilli: data.quantityDeltaMilli.present
+          ? data.quantityDeltaMilli.value
+          : this.quantityDeltaMilli,
+      reason: data.reason.present ? data.reason.value : this.reason,
+      refType: data.refType.present ? data.refType.value : this.refType,
+      refId: data.refId.present ? data.refId.value : this.refId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      note: data.note.present ? data.note.value : this.note,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InventoryTransactionEntry(')
+          ..write('id: $id, ')
+          ..write('storeId: $storeId, ')
+          ..write('productId: $productId, ')
+          ..write('quantityDeltaMilli: $quantityDeltaMilli, ')
+          ..write('reason: $reason, ')
+          ..write('refType: $refType, ')
+          ..write('refId: $refId, ')
+          ..write('userId: $userId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('note: $note, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    storeId,
+    productId,
+    quantityDeltaMilli,
+    reason,
+    refType,
+    refId,
+    userId,
+    createdAt,
+    note,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is InventoryTransactionEntry &&
+          other.id == this.id &&
+          other.storeId == this.storeId &&
+          other.productId == this.productId &&
+          other.quantityDeltaMilli == this.quantityDeltaMilli &&
+          other.reason == this.reason &&
+          other.refType == this.refType &&
+          other.refId == this.refId &&
+          other.userId == this.userId &&
+          other.createdAt == this.createdAt &&
+          other.note == this.note &&
+          other.deletedAt == this.deletedAt);
+}
+
+class InventoryTransactionEntriesCompanion
+    extends UpdateCompanion<InventoryTransactionEntry> {
+  final Value<String> id;
+  final Value<String> storeId;
+  final Value<String> productId;
+  final Value<int> quantityDeltaMilli;
+  final Value<String> reason;
+  final Value<String?> refType;
+  final Value<String?> refId;
+  final Value<String?> userId;
+  final Value<int> createdAt;
+  final Value<String> note;
+  final Value<int?> deletedAt;
+  final Value<int> rowid;
+  const InventoryTransactionEntriesCompanion({
+    this.id = const Value.absent(),
+    this.storeId = const Value.absent(),
+    this.productId = const Value.absent(),
+    this.quantityDeltaMilli = const Value.absent(),
+    this.reason = const Value.absent(),
+    this.refType = const Value.absent(),
+    this.refId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.note = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  InventoryTransactionEntriesCompanion.insert({
+    required String id,
+    required String storeId,
+    required String productId,
+    required int quantityDeltaMilli,
+    required String reason,
+    this.refType = const Value.absent(),
+    this.refId = const Value.absent(),
+    this.userId = const Value.absent(),
+    required int createdAt,
+    this.note = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       storeId = Value(storeId),
+       productId = Value(productId),
+       quantityDeltaMilli = Value(quantityDeltaMilli),
+       reason = Value(reason),
+       createdAt = Value(createdAt);
+  static Insertable<InventoryTransactionEntry> custom({
+    Expression<String>? id,
+    Expression<String>? storeId,
+    Expression<String>? productId,
+    Expression<int>? quantityDeltaMilli,
+    Expression<String>? reason,
+    Expression<String>? refType,
+    Expression<String>? refId,
+    Expression<String>? userId,
+    Expression<int>? createdAt,
+    Expression<String>? note,
+    Expression<int>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (storeId != null) 'store_id': storeId,
+      if (productId != null) 'product_id': productId,
+      if (quantityDeltaMilli != null)
+        'quantity_delta_milli': quantityDeltaMilli,
+      if (reason != null) 'reason': reason,
+      if (refType != null) 'ref_type': refType,
+      if (refId != null) 'ref_id': refId,
+      if (userId != null) 'user_id': userId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (note != null) 'note': note,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  InventoryTransactionEntriesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? storeId,
+    Value<String>? productId,
+    Value<int>? quantityDeltaMilli,
+    Value<String>? reason,
+    Value<String?>? refType,
+    Value<String?>? refId,
+    Value<String?>? userId,
+    Value<int>? createdAt,
+    Value<String>? note,
+    Value<int?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return InventoryTransactionEntriesCompanion(
+      id: id ?? this.id,
+      storeId: storeId ?? this.storeId,
+      productId: productId ?? this.productId,
+      quantityDeltaMilli: quantityDeltaMilli ?? this.quantityDeltaMilli,
+      reason: reason ?? this.reason,
+      refType: refType ?? this.refType,
+      refId: refId ?? this.refId,
+      userId: userId ?? this.userId,
+      createdAt: createdAt ?? this.createdAt,
+      note: note ?? this.note,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (storeId.present) {
+      map['store_id'] = Variable<String>(storeId.value);
+    }
+    if (productId.present) {
+      map['product_id'] = Variable<String>(productId.value);
+    }
+    if (quantityDeltaMilli.present) {
+      map['quantity_delta_milli'] = Variable<int>(quantityDeltaMilli.value);
+    }
+    if (reason.present) {
+      map['reason'] = Variable<String>(reason.value);
+    }
+    if (refType.present) {
+      map['ref_type'] = Variable<String>(refType.value);
+    }
+    if (refId.present) {
+      map['ref_id'] = Variable<String>(refId.value);
+    }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('InventoryTransactionEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('storeId: $storeId, ')
+          ..write('productId: $productId, ')
+          ..write('quantityDeltaMilli: $quantityDeltaMilli, ')
+          ..write('reason: $reason, ')
+          ..write('refType: $refType, ')
+          ..write('refId: $refId, ')
+          ..write('userId: $userId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('note: $note, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AxpertDatabase extends GeneratedDatabase {
   _$AxpertDatabase(QueryExecutor e) : super(e);
   late final $DeviceContextEntriesTable deviceContextEntries =
@@ -13700,6 +14844,10 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
     this,
   );
   late final $TaxSlabEntriesTable taxSlabEntries = $TaxSlabEntriesTable(this);
+  late final $InventoryBalanceEntriesTable inventoryBalanceEntries =
+      $InventoryBalanceEntriesTable(this);
+  late final $InventoryTransactionEntriesTable inventoryTransactionEntries =
+      $InventoryTransactionEntriesTable(this);
   late final Index productsPosition = Index(
     'products_position',
     'CREATE INDEX products_position ON products (position)',
@@ -13707,6 +14855,14 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
   late final Index salesPosition = Index(
     'sales_position',
     'CREATE INDEX sales_position ON sales (position)',
+  );
+  late final Index inventoryTxProduct = Index(
+    'inventory_tx_product',
+    'CREATE INDEX inventory_tx_product ON inventory_transactions (store_id, product_id, created_at)',
+  );
+  late final Index inventoryTxRef = Index(
+    'inventory_tx_ref',
+    'CREATE INDEX inventory_tx_ref ON inventory_transactions (ref_type, ref_id)',
   );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -13734,7 +14890,11 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
     storeForexEntries,
     taxRegimeEntries,
     taxSlabEntries,
+    inventoryBalanceEntries,
+    inventoryTransactionEntries,
     productsPosition,
     salesPosition,
+    inventoryTxProduct,
+    inventoryTxRef,
   ];
 }

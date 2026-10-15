@@ -149,6 +149,42 @@ class DemoSeeder {
 
   int get _stamp => EpochTime.fromDateTime(_now());
 
+  /// Opening stock of a demo product: its balance and one `opening`
+  /// transaction (DEC-148).
+  Future<void> _openingStock(
+    Map<String, dynamic> p,
+    String store,
+    int now,
+  ) async {
+    final id = p['id'] as String;
+    final stock = p['stock'] as int;
+    await db
+        .into(db.inventoryBalanceEntries)
+        .insert(
+          InventoryBalanceEntriesCompanion.insert(
+            storeId: store,
+            productId: id,
+            quantityMilli: stock * 1000,
+            updatedAt: now,
+          ),
+        );
+    if (stock == 0) return;
+    await db
+        .into(db.inventoryTransactionEntries)
+        .insert(
+          InventoryTransactionEntriesCompanion.insert(
+            id: uuid.generate(),
+            storeId: store,
+            productId: id,
+            quantityDeltaMilli: stock * 1000,
+            reason: 'opening',
+            refType: const Value('seed'),
+            createdAt: now,
+            note: const Value('demo opening stock'),
+          ),
+        );
+  }
+
   Future<void> _track(String table, String id) => db
       .into(db.seedManifestEntries)
       .insert(
@@ -279,6 +315,7 @@ class DemoSeeder {
             ),
           );
       await _track('products', p['id'] as String);
+      await _openingStock(p, store, now);
     }
     position = <String, int>{};
     var customerIndex = 0;
@@ -637,6 +674,13 @@ class DemoSeeder {
         .write(const SaleEntriesCompanion(customerId: Value(null)));
     await (db.update(db.heldBillEntries)..where((t) => t.storeId.isIn(stores)))
         .write(const HeldBillEntriesCompanion(storeId: Value(null)));
+    // Stock rows of seeded products go with them.
+    await (db.delete(
+      db.inventoryTransactionEntries,
+    )..where((t) => t.productId.isIn(products))).go();
+    await (db.delete(
+      db.inventoryBalanceEntries,
+    )..where((t) => t.productId.isIn(products))).go();
     // Offers of the user that use a seeded product go with it.
     await (db.delete(db.offerEntries)..where(
           (t) =>

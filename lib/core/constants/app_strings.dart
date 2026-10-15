@@ -220,6 +220,7 @@ abstract class AppStrings {
   String toastMemberNotFound();
   String toastCreditNeedsCustomer();
   String toastStockChanged();
+  String toastStockNegative();
   String toastPaymentCompleted();
   String toastPaymentFailed();
   String toastSaveFailed();

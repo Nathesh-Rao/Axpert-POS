@@ -61,6 +61,7 @@ CheckoutResult run(
   Money? tendered,
   Qty Function(int)? stockOf,
   String? saleId,
+  bool allowNegativeStock = false,
 }) => const CheckoutService().complete(
   cart: cart,
   totals: totalsOf(cart, points: customer.points),
@@ -72,6 +73,7 @@ CheckoutResult run(
   mode: mode,
   tendered: tendered ?? inr(5000),
   saleId: saleId,
+  allowNegativeStock: allowNegativeStock,
 );
 
 void main() {
@@ -106,6 +108,13 @@ void main() {
     final two = cart.setQty(1, Qty.units(3));
     expect(run(two, stockOf: (_) => Qty.units(2)), isA<CheckoutStockChanged>());
     expect(run(two, stockOf: (_) => Qty.units(3)), isA<CheckoutDone>());
+  });
+
+  test('a store that allows negative stock sells past the live stock', () {
+    final two = cart.setQty(1, Qty.units(3));
+    final r = run(two, stockOf: (_) => Qty.units(1), allowNegativeStock: true);
+    expect(r, isA<CheckoutDone>());
+    expect((r as CheckoutDone).stockDeltas[1], 3);
   });
 
   test('redeemed points are deducted (whole points)', () {

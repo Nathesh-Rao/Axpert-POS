@@ -36,6 +36,12 @@ class StoreEntries extends Table {
 
   IntColumn get deletedAt => integer().nullable()();
 
+  /// Per-store stock rule (DEC-148): false = a sale that would take stock
+  /// below zero is refused (today's behavior); true = it is allowed with a
+  /// warning.
+  BoolColumn get allowNegativeStock =>
+      boolean().withDefault(const Constant(false))();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }

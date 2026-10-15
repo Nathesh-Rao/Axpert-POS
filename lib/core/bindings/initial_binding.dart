@@ -63,6 +63,8 @@ import '../../features/session/presentation/controllers/active_session.dart';
 import '../session/store_scope.dart';
 import '../config/app_config.dart';
 import '../../features/inventory/data/drift_inventory_repository.dart';
+import '../../features/payment/data/repositories/drift_payment_method_repository.dart';
+import '../../features/payment/domain/repositories/payment_method_repository.dart';
 import '../../features/inventory/domain/repositories/inventory_repository.dart';
 import '../database/database_provider.dart';
 import '../device/device_context_service.dart';
@@ -107,6 +109,7 @@ class InitialBinding extends Bindings {
     PaymentService? payments,
     PrintService? printer,
     this.checkoutOverride,
+    this.paymentMethodsOverride,
     this.commitBeforeReceipt,
     this.sessionOverride,
     this.offerRepositoryOverride,
@@ -131,6 +134,9 @@ class InitialBinding extends Bindings {
   /// the data backends, and the b1/b2 switch of `CheckoutPolicy`.
   @visibleForTesting
   final CheckoutRepository? checkoutOverride;
+
+  /// Tests: the payment methods the checkout reads (DEC-149).
+  final PaymentMethodRepository? paymentMethodsOverride;
   @visibleForTesting
   final bool? commitBeforeReceipt;
 
@@ -397,9 +403,18 @@ class InitialBinding extends Bindings {
       ),
     );
     _put<PaymentService>(payments);
+    // Payment methods come from the database when sales are on Drift
+    // (DEC-149); otherwise the four defaults.
+    final PaymentMethodRepository paymentMethods =
+        paymentMethodsOverride ??
+        (Get.find<SaleRepository>() is DriftSaleRepository
+            ? DriftPaymentMethodRepository(infrastructure.databaseProvider)
+            : const MockPaymentMethodRepository());
+    _put<PaymentMethodRepository>(paymentMethods);
     _put<PaymentController>(
       PaymentController(
         payments: Get.find(),
+        methods: paymentMethods,
         uuid: Get.find<UuidGenerator>(),
         cart: Get.find(),
         meta: Get.find(),

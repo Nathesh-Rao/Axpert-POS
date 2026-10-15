@@ -560,6 +560,10 @@ class EnAppStrings extends AppStrings {
   String toastStockChanged() => 'Stock changed. Please adjust your quantities.';
 
   @override
+  String toastPaymentMethodOff() =>
+      'This payment method is turned off for this store.';
+
+  @override
   String toastStockNegative() =>
       'Sold more than the recorded stock. Stock is now below zero.';
 

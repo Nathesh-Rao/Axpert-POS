@@ -55,7 +55,7 @@ void main() {
     addTearDown(db.close);
 
     final version = await db.customSelect('PRAGMA user_version').getSingle();
-    expect(version.read<int>('user_version'), 12);
+    expect(version.read<int>('user_version'), 13);
 
     final tables = {
       for (final r
@@ -131,7 +131,7 @@ void main() {
   test('a fresh database is created at v9 with the same tables', () async {
     final db = AxpertDatabase(NativeDatabase.memory());
     addTearDown(db.close);
-    expect(db.schemaVersion, 12);
+    expect(db.schemaVersion, 13);
     expect(await db.select(db.offerEntries).get(), isEmpty);
     expect(await db.select(db.storeEntries).get(), isEmpty);
   });

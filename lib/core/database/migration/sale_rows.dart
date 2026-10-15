@@ -330,6 +330,7 @@ abstract final class SaleRows {
     PaymentResult payment, {
     required int occurredAt,
     required int now,
+    String? methodId,
   }) => db
       .into(db.paymentEntries)
       .insert(
@@ -337,6 +338,7 @@ abstract final class SaleRows {
           id: payment.paymentId,
           saleId: payment.saleId,
           method: payment.method.name,
+          methodId: Value(methodId),
           amountMinor: payment.amount.minor,
           currencyCode: Value(payment.amount.currency.code),
           status: payment.status.name,

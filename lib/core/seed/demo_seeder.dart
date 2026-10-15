@@ -23,6 +23,7 @@ import '../services/pricing/qty.dart';
 import '../services/pricing/tax_config.dart';
 import '../session/store_scope.dart';
 import '../utils/epoch_time.dart';
+import '../../features/payment/data/repositories/drift_payment_method_repository.dart';
 
 /// Compile-time switches (`--dart-define=DEMO_SEED=true`, `RESEED_DEMO=true`).
 abstract final class DemoSeedConfig {
@@ -185,6 +186,27 @@ class DemoSeeder {
         );
   }
 
+  /// Cash, card, bank transfer and mobile money for a demo store (DEC-149).
+  Future<void> _paymentMethods(String storeId, int now) async {
+    for (final (i, m) in MockPaymentMethodRepository.defaults.indexed) {
+      await db
+          .into(db.paymentMethodEntries)
+          .insert(
+            PaymentMethodEntriesCompanion.insert(
+              id: uuid.generate(),
+              storeId: storeId,
+              code: m.$1,
+              name: m.$2,
+              methodType: m.$3,
+              sortOrder: Value(i + 1),
+              requiresReference: Value(m.$4),
+              createdAt: now,
+              updatedAt: now,
+            ),
+          );
+    }
+  }
+
   Future<void> _track(String table, String id) => db
       .into(db.seedManifestEntries)
       .insert(
@@ -218,6 +240,7 @@ class DemoSeeder {
             ),
           );
       await _track('stores', s['id'] as String);
+      await _paymentMethods(s['id'] as String, now);
       for (final c in (s['counters'] as List).cast<Map<String, dynamic>>()) {
         await db
             .into(db.counterEntries)
@@ -705,6 +728,17 @@ class DemoSeeder {
     // Forex rows belong to their store; the regime rows and slabs are ours.
     await (db.delete(
       db.storeForexEntries,
+    )..where((t) => t.storeId.isIn(stores))).go();
+    await (db.update(db.paymentEntries)..where(
+          (t) => t.methodId.isInQuery(
+            db.selectOnly(db.paymentMethodEntries)
+              ..addColumns([db.paymentMethodEntries.id])
+              ..where(db.paymentMethodEntries.storeId.isIn(stores)),
+          ),
+        ))
+        .write(const PaymentEntriesCompanion(methodId: Value(null)));
+    await (db.delete(
+      db.paymentMethodEntries,
     )..where((t) => t.storeId.isIn(stores))).go();
     await (db.delete(db.storeEntries)..where((t) => t.id.isIn(stores))).go();
     await (db.delete(

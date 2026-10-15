@@ -81,7 +81,7 @@ void main() {
 
   void expectSameAsSource(CommonDatabase out, Map<String, List<String>> src) {
     expect(_dump(out), src); // all tables, row counts and every value
-    expect(out.select('PRAGMA user_version').first.values.first, 12);
+    expect(out.select('PRAGMA user_version').first.values.first, 13);
     expect(out.select('PRAGMA integrity_check').first.values.first, 'ok');
   }
 
@@ -93,7 +93,7 @@ void main() {
         tempDirectory: () async => tmp,
       );
       final snapshot = await service.createSnapshot();
-      expect(snapshot.schemaVersion, 12);
+      expect(snapshot.schemaVersion, 13);
       expect(snapshot.tableCount, greaterThan(15));
       expect(tmp.listSync(), isEmpty, reason: 'temp file deleted');
 
@@ -118,7 +118,7 @@ void main() {
       target: target,
       batchSize: 7, // many batches
     );
-    expect(result.schemaVersion, 12);
+    expect(result.schemaVersion, 13);
     final src = await _dumpSource(db);
     expect(result.tables, src.length);
     expectSameAsSource(target, src);

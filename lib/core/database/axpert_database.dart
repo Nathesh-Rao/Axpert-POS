@@ -13,6 +13,7 @@ import 'tables/inventory_entries.dart';
 import 'tables/migration_state_entries.dart';
 import 'tables/offer_entries.dart';
 import 'tables/payment_entries.dart';
+import 'tables/payment_method_entries.dart';
 import 'tables/product_entries.dart';
 import 'tables/sale_entries.dart';
 import 'tables/sale_line_entries.dart';
@@ -27,6 +28,7 @@ part 'axpert_database.g.dart';
 
 /// Drift database: device context metadata and device-local settings.
 ///
+/// Schema v13 adds payment_methods and payments.method_id (DEC-149).
 /// Schema v12 adds inventory_balance, inventory_transactions and
 /// stores.allow_negative_stock (DEC-148).
 /// Schema v11 stores every timestamp as integer epoch milliseconds (UTC).
@@ -60,13 +62,14 @@ part 'axpert_database.g.dart';
     TaxSlabEntries,
     InventoryBalanceEntries,
     InventoryTransactionEntries,
+    PaymentMethodEntries,
   ],
 )
 class AxpertDatabase extends _$AxpertDatabase {
   AxpertDatabase(super.executor);
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -227,7 +230,70 @@ class AxpertDatabase extends _$AxpertDatabase {
         await _backfillInventory();
       });
     }
+    if (from < 13 && to >= 13) {
+      // One transaction: v13 is all-or-nothing (DEC-149).
+      await transaction(() async {
+        await migrator.createTable(paymentMethodEntries);
+        final hasPayments = await customSelect(
+          "SELECT 1 FROM sqlite_master WHERE type = 'table' "
+          "AND name = 'payments'",
+        ).get();
+        if (hasPayments.isNotEmpty) {
+          await _addColumnIfMissing(
+            migrator,
+            paymentEntries,
+            paymentEntries.methodId,
+          );
+        }
+        await _backfillPaymentMethods();
+      });
+    }
   }
+
+  /// The four default methods for every store, and `payments.method_id` for
+  /// the payments that already exist (by the sale's store and the method
+  /// text). Skipped when a table of an older chain step is only a stub.
+  Future<void> _backfillPaymentMethods() async {
+    Future<Set<String>> columns(String table) async => {
+      for (final r in await customSelect('PRAGMA table_info($table)').get())
+        r.read<String>('name'),
+    };
+    final stores = await columns('stores');
+    if (!stores.containsAll(const ['id', 'deleted_at'])) return;
+    const now = "CAST(strftime('%s', 'now') AS INTEGER) * 1000";
+    await customStatement(
+      'INSERT OR IGNORE INTO payment_methods (id, store_id, code, name, type, '
+      'enabled, sort_order, requires_reference, created_at, updated_at) '
+      'SELECT $_sqlUuid, s.id, m.code, m.name, m.type, 1, m.sort_order, '
+      'm.requires_reference, $now, $now FROM stores s CROSS JOIN ('
+      "SELECT 'cash' AS code, 'Cash' AS name, 'cash' AS type, "
+      '1 AS sort_order, 0 AS requires_reference UNION ALL '
+      "SELECT 'card', 'Card', 'card', 2, 0 UNION ALL "
+      "SELECT 'bank_transfer', 'Bank transfer', 'bank_transfer', 3, 1 UNION ALL "
+      "SELECT 'mobile_money', 'Mobile money', 'mobile_money', 4, 1"
+      ') m WHERE s.deleted_at IS NULL',
+    );
+    final payments = await columns('payments');
+    final sales = await columns('sales');
+    if (!payments.containsAll(const ['method', 'method_id', 'sale_id']) ||
+        !sales.contains('store_id')) {
+      return;
+    }
+    await customStatement(
+      'UPDATE payments SET method_id = ('
+      'SELECT pm.id FROM payment_methods pm JOIN sales sa '
+      'ON sa.store_id = pm.store_id WHERE sa.id = payments.sale_id '
+      'AND pm.code = payments.method) WHERE method_id IS NULL',
+    );
+  }
+
+  /// SQL expression for a random UUID v4 text.
+  static const String _sqlUuid =
+      "lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || "
+      "'-4' || substr(lower(hex(randomblob(2))), 2) || '-' || "
+      "substr('89ab', abs(random()) % 4 + 1, 1) || "
+      "substr(lower(hex(randomblob(2))), 2) || '-' || "
+      'lower(hex(randomblob(6)))';
 
   /// Opening balances from `products.stock` for the products that belong to a
   /// store (a balance needs a store). Stock 0 gets a balance row and no
@@ -242,12 +308,6 @@ class AxpertDatabase extends _$AxpertDatabase {
       'SELECT count(*) AS n FROM inventory_balance',
     ).getSingle();
     if (existing.read<int>('n') != 0) return;
-    const uuid =
-        "lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || "
-        "'-4' || substr(lower(hex(randomblob(2))), 2) || '-' || "
-        "substr('89ab', abs(random()) % 4 + 1, 1) || "
-        "substr(lower(hex(randomblob(2))), 2) || '-' || "
-        'lower(hex(randomblob(6)))';
     const now = "CAST(strftime('%s', 'now') AS INTEGER) * 1000";
     await customStatement(
       'INSERT INTO inventory_balance '
@@ -259,7 +319,7 @@ class AxpertDatabase extends _$AxpertDatabase {
       'INSERT INTO inventory_transactions '
       '(id, store_id, product_id, quantity_delta_milli, reason, ref_type, '
       'created_at, note) '
-      "SELECT $uuid, store_id, id, stock * 1000, 'opening', 'backfill', $now, "
+      "SELECT $_sqlUuid, store_id, id, stock * 1000, 'opening', 'backfill', $now, "
       "'backfill from products.stock' FROM products "
       'WHERE store_id IS NOT NULL AND deleted_at IS NULL AND stock != 0',
     );

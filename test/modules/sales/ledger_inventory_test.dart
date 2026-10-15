@@ -9,6 +9,10 @@ import 'package:pos_application/core/database/persist_outcome.dart';
 import 'package:pos_application/core/identifiers/uuid_v4_generator.dart';
 import 'package:pos_application/core/mock/mock_delay.dart';
 import 'package:pos_application/core/services/pricing/currency_registry.dart';
+import 'package:pos_application/core/services/pricing/money.dart';
+import 'package:pos_application/features/payment/domain/entities/payment_method.dart';
+import 'package:pos_application/features/payment/domain/entities/payment_result.dart';
+import 'package:pos_application/features/payment/domain/entities/payment_status.dart';
 import 'package:pos_application/core/services/pricing/qty.dart';
 import 'package:pos_application/core/session/store_scope.dart';
 import 'package:pos_application/core/utils/serial_queue.dart';
@@ -319,5 +323,61 @@ void main() {
 
     final uuid = products.snapshot[prods[0].id]!.uuid;
     expect((await balances())[uuid], 6000);
+  });
+
+  test(
+    'the payment row points at the store payment method (DEC-149)',
+    () async {
+      await db.customStatement(
+        'INSERT INTO payment_methods (id, store_id, code, name, type, '
+        "created_at, updated_at) VALUES ('pm-cash', 's1', 'cash', 'Cash', "
+        "'cash', 1, 1)",
+      );
+      final c = checkout('AX000001', _id1);
+
+      final outcome = await ledger.commit(
+        CheckoutCommit(
+          sale: c.sale,
+          payment: const PaymentResult(
+            paymentId: 'pay-1',
+            saleId: _id1,
+            amount: Money(21420, CurrencyRegistry.inr),
+            method: PaymentMethod.cash,
+            status: PaymentStatus.succeeded,
+          ),
+          salesAfter: c.salesAfter,
+          productsAfter: c.productsAfter,
+          customersAfter: c.customersAfter,
+        ),
+      );
+
+      expect(outcome, PersistOutcome.saved);
+      final pay = await db.select(db.paymentEntries).getSingle();
+      expect((pay.method, pay.methodId), ('cash', 'pm-cash'));
+    },
+  );
+
+  test('without a method row the payment keeps a null method_id', () async {
+    final c = checkout('AX000001', _id1);
+
+    await ledger.commit(
+      CheckoutCommit(
+        sale: c.sale,
+        payment: const PaymentResult(
+          paymentId: 'pay-1',
+          saleId: _id1,
+          amount: Money(21420, CurrencyRegistry.inr),
+          method: PaymentMethod.card,
+          status: PaymentStatus.succeeded,
+        ),
+        salesAfter: c.salesAfter,
+        productsAfter: c.productsAfter,
+        customersAfter: c.customersAfter,
+      ),
+    );
+
+    final pay = await db.select(db.paymentEntries).getSingle();
+    expect(pay.method, 'card');
+    expect(pay.methodId, isNull);
   });
 }

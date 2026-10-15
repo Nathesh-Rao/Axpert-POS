@@ -143,3 +143,11 @@ Run and read: format and analyze clean; full VM suite 994/994; no PNG changed ve
 - Schema v12, DEC-148, KG-242 to KG-246. `inventory_balance`, `inventory_transactions`, `stores.allow_negative_stock`; backfill from `products.stock`; `InventoryService` (plain Dart), `InventoryRepository` + Drift + Mock; checkout and refund write the movement inside the ledger transaction; demo seed opening stock.
 - Stock rule: refuse below zero by default (today's behavior), per-store flag allows it with a warning.
 - Tests: `inventory_service_test`, `schema_v12_test` (backfill, CHECK, rollback), `ledger_inventory_test` (atomic write, injected failure rolls the sale back, blocked, negative allowed, refund, running balance), `checkout_service_test` (flag).
+
+## Database batch X, S3: payment methods (2026-10-15)
+- Schema v13, DEC-149, KG-247 to KG-249. `payment_methods` per store, `payments.method_id`, backfill (four defaults per live store, existing payments linked), demo seed, `PaymentMethodRepository` + Drift + Mock, `PaymentController` reads methods and honours `enabled`, ledger stores `method_id` in the checkout transaction.
+- Tests: `schema_v13_test` (backfill, unique and CHECK, rollback), `drift_payment_method_repository_test`, `payment_methods_flow_test` (controller), `ledger_inventory_test` (method_id on the payment row).
+
+## Database batch X: verification (2026-10-15)
+- Full `flutter test`: 1691 after S0 (run twice, first run found 5 stale-stamp tests, fixed), touched folders after S1 (1414) and S3 (1428), full suite at the end 1727, all passing; pricing vectors and kept goldens unchanged (no UI file changed, no golden regenerated).
+- Debug web (`flutter run -d web-server`, DEMO_SEED, cashier1): `debug_check.mjs` 79/79 normal and 79/79 `--semantics`; new `tool/web_check/inventory_check.mjs` 8/8: a cash sale lowered `products.stock` and `inventory_balance` by one unit, wrote an inventory `sale` row (ref = sale id, user = cashier1) and the payment row's `method_id` is the store's `cash` row of `payment_methods`; each demo store has four methods; console clean.

@@ -18,6 +18,7 @@ import 'package:pos_application/core/services/print_service.dart';
 import 'package:pos_application/features/session/presentation/controllers/active_session.dart';
 import 'test_infrastructure.dart';
 import 'test_session.dart';
+import 'package:pos_application/features/payment/domain/repositories/payment_method_repository.dart';
 
 /// Fresh Get registry, in-memory store, zero mock delay, bundled test fonts.
 Future<InitialBinding> bootTestApp({
@@ -28,6 +29,7 @@ Future<InitialBinding> bootTestApp({
   bool? commitBeforeReceipt,
   List<Offer> offers = const <Offer>[],
   ActiveSession? session,
+  PaymentMethodRepository? paymentMethods,
 }) async {
   AppTypography.useBundledFonts = true;
   MockDelay.provider = () => Duration.zero;
@@ -48,6 +50,7 @@ Future<InitialBinding> bootTestApp({
     printer: RecordingPrintService(),
     payments: payments,
     checkoutOverride: checkout,
+    paymentMethodsOverride: paymentMethods,
     commitBeforeReceipt: commitBeforeReceipt,
   );
   binding.dependencies();

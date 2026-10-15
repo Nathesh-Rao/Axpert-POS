@@ -8,6 +8,7 @@ import '../../../core/identifiers/uuid_generator.dart';
 import '../../../core/services/inventory/inventory_service.dart';
 import '../../../core/utils/serial_queue.dart';
 import '../../../features/inventory/data/drift_inventory_repository.dart';
+import '../../../features/payment/data/repositories/drift_payment_method_repository.dart';
 import '../../../features/products/data/repositories/drift_product_repository.dart';
 import '../../../features/products/domain/entities/product.dart';
 import '../../customers/models/customer.dart';
@@ -119,6 +120,13 @@ class DriftLedgerRepository implements CheckoutRepository, ReturnRepository {
               payment,
               occurredAt: paymentAt ?? now,
               now: now,
+              methodId: sales.scope.storeId == null
+                  ? null
+                  : await DriftPaymentMethodRepository.idForCode(
+                      db,
+                      sales.scope.storeId!,
+                      payment.method.name,
+                    ),
             );
           }
           await ProductRows.write(db, productPlan, now: now);

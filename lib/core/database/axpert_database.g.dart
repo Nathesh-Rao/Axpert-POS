@@ -10063,6 +10063,692 @@ class SaleLineEntriesCompanion extends UpdateCompanion<SaleLineEntry> {
   }
 }
 
+class $PaymentMethodEntriesTable extends PaymentMethodEntries
+    with TableInfo<$PaymentMethodEntriesTable, PaymentMethodEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PaymentMethodEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _storeIdMeta = const VerificationMeta(
+    'storeId',
+  );
+  @override
+  late final GeneratedColumn<String> storeId = GeneratedColumn<String>(
+    'store_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES stores (id)',
+    ),
+  );
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _methodTypeMeta = const VerificationMeta(
+    'methodType',
+  );
+  @override
+  late final GeneratedColumn<String> methodType = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    check: () => methodType.isIn(const [
+      'cash',
+      'card',
+      'bank_transfer',
+      'mobile_money',
+      'other',
+    ]),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _enabledMeta = const VerificationMeta(
+    'enabled',
+  );
+  @override
+  late final GeneratedColumn<bool> enabled = GeneratedColumn<bool>(
+    'enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _requiresReferenceMeta = const VerificationMeta(
+    'requiresReference',
+  );
+  @override
+  late final GeneratedColumn<bool> requiresReference = GeneratedColumn<bool>(
+    'requires_reference',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("requires_reference" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<int> deletedAt = GeneratedColumn<int>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    storeId,
+    code,
+    name,
+    methodType,
+    enabled,
+    sortOrder,
+    requiresReference,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'payment_methods';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PaymentMethodEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('store_id')) {
+      context.handle(
+        _storeIdMeta,
+        storeId.isAcceptableOrUnknown(data['store_id']!, _storeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_storeIdMeta);
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _methodTypeMeta,
+        methodType.isAcceptableOrUnknown(data['type']!, _methodTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_methodTypeMeta);
+    }
+    if (data.containsKey('enabled')) {
+      context.handle(
+        _enabledMeta,
+        enabled.isAcceptableOrUnknown(data['enabled']!, _enabledMeta),
+      );
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    if (data.containsKey('requires_reference')) {
+      context.handle(
+        _requiresReferenceMeta,
+        requiresReference.isAcceptableOrUnknown(
+          data['requires_reference']!,
+          _requiresReferenceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  List<Set<GeneratedColumn>> get uniqueKeys => [
+    {storeId, code},
+  ];
+  @override
+  PaymentMethodEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PaymentMethodEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      storeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}store_id'],
+      )!,
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      methodType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      enabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}enabled'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+      requiresReference: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}requires_reference'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $PaymentMethodEntriesTable createAlias(String alias) {
+    return $PaymentMethodEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class PaymentMethodEntry extends DataClass
+    implements Insertable<PaymentMethodEntry> {
+  /// UUID v4.
+  final String id;
+  final String storeId;
+
+  /// Stable key within the store: `cash`, `card`, `bank_transfer`,
+  /// `mobile_money`. The `payments.method` text uses the same codes.
+  final String code;
+  final String name;
+
+  /// cash, card, bank_transfer, mobile_money or other.
+  final String methodType;
+  final bool enabled;
+  final int sortOrder;
+
+  /// The cashier must enter a reference (transfer id, mobile receipt).
+  final bool requiresReference;
+  final int createdAt;
+  final int updatedAt;
+
+  /// Tombstone.
+  final int? deletedAt;
+  const PaymentMethodEntry({
+    required this.id,
+    required this.storeId,
+    required this.code,
+    required this.name,
+    required this.methodType,
+    required this.enabled,
+    required this.sortOrder,
+    required this.requiresReference,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['store_id'] = Variable<String>(storeId);
+    map['code'] = Variable<String>(code);
+    map['name'] = Variable<String>(name);
+    map['type'] = Variable<String>(methodType);
+    map['enabled'] = Variable<bool>(enabled);
+    map['sort_order'] = Variable<int>(sortOrder);
+    map['requires_reference'] = Variable<bool>(requiresReference);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    return map;
+  }
+
+  PaymentMethodEntriesCompanion toCompanion(bool nullToAbsent) {
+    return PaymentMethodEntriesCompanion(
+      id: Value(id),
+      storeId: Value(storeId),
+      code: Value(code),
+      name: Value(name),
+      methodType: Value(methodType),
+      enabled: Value(enabled),
+      sortOrder: Value(sortOrder),
+      requiresReference: Value(requiresReference),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+    );
+  }
+
+  factory PaymentMethodEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PaymentMethodEntry(
+      id: serializer.fromJson<String>(json['id']),
+      storeId: serializer.fromJson<String>(json['storeId']),
+      code: serializer.fromJson<String>(json['code']),
+      name: serializer.fromJson<String>(json['name']),
+      methodType: serializer.fromJson<String>(json['methodType']),
+      enabled: serializer.fromJson<bool>(json['enabled']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      requiresReference: serializer.fromJson<bool>(json['requiresReference']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+      deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'storeId': serializer.toJson<String>(storeId),
+      'code': serializer.toJson<String>(code),
+      'name': serializer.toJson<String>(name),
+      'methodType': serializer.toJson<String>(methodType),
+      'enabled': serializer.toJson<bool>(enabled),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+      'requiresReference': serializer.toJson<bool>(requiresReference),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+      'deletedAt': serializer.toJson<int?>(deletedAt),
+    };
+  }
+
+  PaymentMethodEntry copyWith({
+    String? id,
+    String? storeId,
+    String? code,
+    String? name,
+    String? methodType,
+    bool? enabled,
+    int? sortOrder,
+    bool? requiresReference,
+    int? createdAt,
+    int? updatedAt,
+    Value<int?> deletedAt = const Value.absent(),
+  }) => PaymentMethodEntry(
+    id: id ?? this.id,
+    storeId: storeId ?? this.storeId,
+    code: code ?? this.code,
+    name: name ?? this.name,
+    methodType: methodType ?? this.methodType,
+    enabled: enabled ?? this.enabled,
+    sortOrder: sortOrder ?? this.sortOrder,
+    requiresReference: requiresReference ?? this.requiresReference,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  PaymentMethodEntry copyWithCompanion(PaymentMethodEntriesCompanion data) {
+    return PaymentMethodEntry(
+      id: data.id.present ? data.id.value : this.id,
+      storeId: data.storeId.present ? data.storeId.value : this.storeId,
+      code: data.code.present ? data.code.value : this.code,
+      name: data.name.present ? data.name.value : this.name,
+      methodType: data.methodType.present
+          ? data.methodType.value
+          : this.methodType,
+      enabled: data.enabled.present ? data.enabled.value : this.enabled,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      requiresReference: data.requiresReference.present
+          ? data.requiresReference.value
+          : this.requiresReference,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PaymentMethodEntry(')
+          ..write('id: $id, ')
+          ..write('storeId: $storeId, ')
+          ..write('code: $code, ')
+          ..write('name: $name, ')
+          ..write('methodType: $methodType, ')
+          ..write('enabled: $enabled, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('requiresReference: $requiresReference, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    storeId,
+    code,
+    name,
+    methodType,
+    enabled,
+    sortOrder,
+    requiresReference,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PaymentMethodEntry &&
+          other.id == this.id &&
+          other.storeId == this.storeId &&
+          other.code == this.code &&
+          other.name == this.name &&
+          other.methodType == this.methodType &&
+          other.enabled == this.enabled &&
+          other.sortOrder == this.sortOrder &&
+          other.requiresReference == this.requiresReference &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt);
+}
+
+class PaymentMethodEntriesCompanion
+    extends UpdateCompanion<PaymentMethodEntry> {
+  final Value<String> id;
+  final Value<String> storeId;
+  final Value<String> code;
+  final Value<String> name;
+  final Value<String> methodType;
+  final Value<bool> enabled;
+  final Value<int> sortOrder;
+  final Value<bool> requiresReference;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int?> deletedAt;
+  final Value<int> rowid;
+  const PaymentMethodEntriesCompanion({
+    this.id = const Value.absent(),
+    this.storeId = const Value.absent(),
+    this.code = const Value.absent(),
+    this.name = const Value.absent(),
+    this.methodType = const Value.absent(),
+    this.enabled = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.requiresReference = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PaymentMethodEntriesCompanion.insert({
+    required String id,
+    required String storeId,
+    required String code,
+    required String name,
+    required String methodType,
+    this.enabled = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.requiresReference = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       storeId = Value(storeId),
+       code = Value(code),
+       name = Value(name),
+       methodType = Value(methodType),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<PaymentMethodEntry> custom({
+    Expression<String>? id,
+    Expression<String>? storeId,
+    Expression<String>? code,
+    Expression<String>? name,
+    Expression<String>? methodType,
+    Expression<bool>? enabled,
+    Expression<int>? sortOrder,
+    Expression<bool>? requiresReference,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (storeId != null) 'store_id': storeId,
+      if (code != null) 'code': code,
+      if (name != null) 'name': name,
+      if (methodType != null) 'type': methodType,
+      if (enabled != null) 'enabled': enabled,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (requiresReference != null) 'requires_reference': requiresReference,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PaymentMethodEntriesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? storeId,
+    Value<String>? code,
+    Value<String>? name,
+    Value<String>? methodType,
+    Value<bool>? enabled,
+    Value<int>? sortOrder,
+    Value<bool>? requiresReference,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int?>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return PaymentMethodEntriesCompanion(
+      id: id ?? this.id,
+      storeId: storeId ?? this.storeId,
+      code: code ?? this.code,
+      name: name ?? this.name,
+      methodType: methodType ?? this.methodType,
+      enabled: enabled ?? this.enabled,
+      sortOrder: sortOrder ?? this.sortOrder,
+      requiresReference: requiresReference ?? this.requiresReference,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (storeId.present) {
+      map['store_id'] = Variable<String>(storeId.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (methodType.present) {
+      map['type'] = Variable<String>(methodType.value);
+    }
+    if (enabled.present) {
+      map['enabled'] = Variable<bool>(enabled.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (requiresReference.present) {
+      map['requires_reference'] = Variable<bool>(requiresReference.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<int>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PaymentMethodEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('storeId: $storeId, ')
+          ..write('code: $code, ')
+          ..write('name: $name, ')
+          ..write('methodType: $methodType, ')
+          ..write('enabled: $enabled, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('requiresReference: $requiresReference, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $PaymentEntriesTable extends PaymentEntries
     with TableInfo<$PaymentEntriesTable, PaymentEntry> {
   @override
@@ -10098,6 +10784,20 @@ class $PaymentEntriesTable extends PaymentEntries
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _methodIdMeta = const VerificationMeta(
+    'methodId',
+  );
+  @override
+  late final GeneratedColumn<String> methodId = GeneratedColumn<String>(
+    'method_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES payment_methods (id)',
+    ),
   );
   static const VerificationMeta _amountMinorMeta = const VerificationMeta(
     'amountMinor',
@@ -10158,6 +10858,7 @@ class $PaymentEntriesTable extends PaymentEntries
     id,
     saleId,
     method,
+    methodId,
     amountMinor,
     currencyCode,
     status,
@@ -10196,6 +10897,12 @@ class $PaymentEntriesTable extends PaymentEntries
       );
     } else if (isInserting) {
       context.missing(_methodMeta);
+    }
+    if (data.containsKey('method_id')) {
+      context.handle(
+        _methodIdMeta,
+        methodId.isAcceptableOrUnknown(data['method_id']!, _methodIdMeta),
+      );
     }
     if (data.containsKey('amount_minor')) {
       context.handle(
@@ -10262,6 +10969,10 @@ class $PaymentEntriesTable extends PaymentEntries
         DriftSqlType.string,
         data['${effectivePrefix}method'],
       )!,
+      methodId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}method_id'],
+      ),
       amountMinor: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}amount_minor'],
@@ -10295,8 +11006,12 @@ class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
   final String id;
   final String saleId;
 
-  /// `cash` or `card`.
+  /// `cash` or `card` (the `code` of the payment method; kept as history).
   final String method;
+
+  /// The store's payment method row (DEC-149); null for payments written
+  /// before v13 or outside a store session.
+  final String? methodId;
   final int amountMinor;
   final String currencyCode;
 
@@ -10308,6 +11023,7 @@ class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
     required this.id,
     required this.saleId,
     required this.method,
+    this.methodId,
     required this.amountMinor,
     required this.currencyCode,
     required this.status,
@@ -10320,6 +11036,9 @@ class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
     map['id'] = Variable<String>(id);
     map['sale_id'] = Variable<String>(saleId);
     map['method'] = Variable<String>(method);
+    if (!nullToAbsent || methodId != null) {
+      map['method_id'] = Variable<String>(methodId);
+    }
     map['amount_minor'] = Variable<int>(amountMinor);
     map['currency_code'] = Variable<String>(currencyCode);
     map['status'] = Variable<String>(status);
@@ -10333,6 +11052,9 @@ class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
       id: Value(id),
       saleId: Value(saleId),
       method: Value(method),
+      methodId: methodId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(methodId),
       amountMinor: Value(amountMinor),
       currencyCode: Value(currencyCode),
       status: Value(status),
@@ -10350,6 +11072,7 @@ class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
       id: serializer.fromJson<String>(json['id']),
       saleId: serializer.fromJson<String>(json['saleId']),
       method: serializer.fromJson<String>(json['method']),
+      methodId: serializer.fromJson<String?>(json['methodId']),
       amountMinor: serializer.fromJson<int>(json['amountMinor']),
       currencyCode: serializer.fromJson<String>(json['currencyCode']),
       status: serializer.fromJson<String>(json['status']),
@@ -10364,6 +11087,7 @@ class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
       'id': serializer.toJson<String>(id),
       'saleId': serializer.toJson<String>(saleId),
       'method': serializer.toJson<String>(method),
+      'methodId': serializer.toJson<String?>(methodId),
       'amountMinor': serializer.toJson<int>(amountMinor),
       'currencyCode': serializer.toJson<String>(currencyCode),
       'status': serializer.toJson<String>(status),
@@ -10376,6 +11100,7 @@ class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
     String? id,
     String? saleId,
     String? method,
+    Value<String?> methodId = const Value.absent(),
     int? amountMinor,
     String? currencyCode,
     String? status,
@@ -10385,6 +11110,7 @@ class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
     id: id ?? this.id,
     saleId: saleId ?? this.saleId,
     method: method ?? this.method,
+    methodId: methodId.present ? methodId.value : this.methodId,
     amountMinor: amountMinor ?? this.amountMinor,
     currencyCode: currencyCode ?? this.currencyCode,
     status: status ?? this.status,
@@ -10396,6 +11122,7 @@ class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
       id: data.id.present ? data.id.value : this.id,
       saleId: data.saleId.present ? data.saleId.value : this.saleId,
       method: data.method.present ? data.method.value : this.method,
+      methodId: data.methodId.present ? data.methodId.value : this.methodId,
       amountMinor: data.amountMinor.present
           ? data.amountMinor.value
           : this.amountMinor,
@@ -10416,6 +11143,7 @@ class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
           ..write('id: $id, ')
           ..write('saleId: $saleId, ')
           ..write('method: $method, ')
+          ..write('methodId: $methodId, ')
           ..write('amountMinor: $amountMinor, ')
           ..write('currencyCode: $currencyCode, ')
           ..write('status: $status, ')
@@ -10430,6 +11158,7 @@ class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
     id,
     saleId,
     method,
+    methodId,
     amountMinor,
     currencyCode,
     status,
@@ -10443,6 +11172,7 @@ class PaymentEntry extends DataClass implements Insertable<PaymentEntry> {
           other.id == this.id &&
           other.saleId == this.saleId &&
           other.method == this.method &&
+          other.methodId == this.methodId &&
           other.amountMinor == this.amountMinor &&
           other.currencyCode == this.currencyCode &&
           other.status == this.status &&
@@ -10454,6 +11184,7 @@ class PaymentEntriesCompanion extends UpdateCompanion<PaymentEntry> {
   final Value<String> id;
   final Value<String> saleId;
   final Value<String> method;
+  final Value<String?> methodId;
   final Value<int> amountMinor;
   final Value<String> currencyCode;
   final Value<String> status;
@@ -10464,6 +11195,7 @@ class PaymentEntriesCompanion extends UpdateCompanion<PaymentEntry> {
     this.id = const Value.absent(),
     this.saleId = const Value.absent(),
     this.method = const Value.absent(),
+    this.methodId = const Value.absent(),
     this.amountMinor = const Value.absent(),
     this.currencyCode = const Value.absent(),
     this.status = const Value.absent(),
@@ -10475,6 +11207,7 @@ class PaymentEntriesCompanion extends UpdateCompanion<PaymentEntry> {
     required String id,
     required String saleId,
     required String method,
+    this.methodId = const Value.absent(),
     required int amountMinor,
     this.currencyCode = const Value.absent(),
     required String status,
@@ -10492,6 +11225,7 @@ class PaymentEntriesCompanion extends UpdateCompanion<PaymentEntry> {
     Expression<String>? id,
     Expression<String>? saleId,
     Expression<String>? method,
+    Expression<String>? methodId,
     Expression<int>? amountMinor,
     Expression<String>? currencyCode,
     Expression<String>? status,
@@ -10503,6 +11237,7 @@ class PaymentEntriesCompanion extends UpdateCompanion<PaymentEntry> {
       if (id != null) 'id': id,
       if (saleId != null) 'sale_id': saleId,
       if (method != null) 'method': method,
+      if (methodId != null) 'method_id': methodId,
       if (amountMinor != null) 'amount_minor': amountMinor,
       if (currencyCode != null) 'currency_code': currencyCode,
       if (status != null) 'status': status,
@@ -10516,6 +11251,7 @@ class PaymentEntriesCompanion extends UpdateCompanion<PaymentEntry> {
     Value<String>? id,
     Value<String>? saleId,
     Value<String>? method,
+    Value<String?>? methodId,
     Value<int>? amountMinor,
     Value<String>? currencyCode,
     Value<String>? status,
@@ -10527,6 +11263,7 @@ class PaymentEntriesCompanion extends UpdateCompanion<PaymentEntry> {
       id: id ?? this.id,
       saleId: saleId ?? this.saleId,
       method: method ?? this.method,
+      methodId: methodId ?? this.methodId,
       amountMinor: amountMinor ?? this.amountMinor,
       currencyCode: currencyCode ?? this.currencyCode,
       status: status ?? this.status,
@@ -10547,6 +11284,9 @@ class PaymentEntriesCompanion extends UpdateCompanion<PaymentEntry> {
     }
     if (method.present) {
       map['method'] = Variable<String>(method.value);
+    }
+    if (methodId.present) {
+      map['method_id'] = Variable<String>(methodId.value);
     }
     if (amountMinor.present) {
       map['amount_minor'] = Variable<int>(amountMinor.value);
@@ -10575,6 +11315,7 @@ class PaymentEntriesCompanion extends UpdateCompanion<PaymentEntry> {
           ..write('id: $id, ')
           ..write('saleId: $saleId, ')
           ..write('method: $method, ')
+          ..write('methodId: $methodId, ')
           ..write('amountMinor: $amountMinor, ')
           ..write('currencyCode: $currencyCode, ')
           ..write('status: $status, ')
@@ -14830,6 +15571,8 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
   late final $SaleLineEntriesTable saleLineEntries = $SaleLineEntriesTable(
     this,
   );
+  late final $PaymentMethodEntriesTable paymentMethodEntries =
+      $PaymentMethodEntriesTable(this);
   late final $PaymentEntriesTable paymentEntries = $PaymentEntriesTable(this);
   late final $CurrentCartEntriesTable currentCartEntries =
       $CurrentCartEntriesTable(this);
@@ -14882,6 +15625,7 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
     userEntries,
     saleEntries,
     saleLineEntries,
+    paymentMethodEntries,
     paymentEntries,
     currentCartEntries,
     userAccessEntries,

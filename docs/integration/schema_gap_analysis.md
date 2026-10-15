@@ -26,8 +26,8 @@ Date 2026-10-13. Analysis only: no schema change. Sources: Axpert_POS_SQLite_Dat
 | sales | no | `sales` (partial) | ours is a flat snapshot with store_name, customer_name, mode, sale_type, bill discount fields, points; missing: invoice_no (ours `number` from list length, KG-008), business_date, shift_id, status (HELD/COMPLETED/VOIDED), currency on header (ours currency_code ok), rounding_minor, paid_minor, sync_status; has tendered/change |
 | sale_items | no | `sale_lines` (partial) | ours snapshots product columns and offer_*; missing: unit_id, gross/net/tax per line, tax_snapshot_json, price_source, voided; qty_milli vs quantity_scaled |
 | payments | no | `payments` (partial) | ours: method (text), amount_minor, currency, status, occurred_at; missing: method_id FK, provider_reference, user_id, sync_status; only cash and card sales write rows |
-| inventory_balance | no | NO (`products.stock` integer) | whole table (per outlet, on_hand/reserved scaled) |
-| inventory_transactions | no | NO | whole table (stock changes are in-place updates today) |
+| inventory_balance | no | DONE v12 `inventory_balance` (`products.stock` kept as cache) | ours: `quantity_milli`; missing `reserved`, sync_status |
+| inventory_transactions | no | DONE v12 `inventory_transactions` | ours: reason enum (7), ref_type/ref_id, user_id, tombstone; missing sync_status |
 | sync_queue | no | NO | whole table |
 | sync_state | no | NO | whole table |
 | sync_errors | no | NO | whole table |
@@ -43,7 +43,7 @@ Date 2026-10-13. Analysis only: no schema change. Sources: Axpert_POS_SQLite_Dat
 | roles, permissions, role_permissions, user_roles | no | no (`users.role`; `user_access` = user to store/counter, close to scoped user_roles) | needed for audit approvers |
 | brands | no | no | A6 |
 | suppliers | no | no | purchases not in scope |
-| payment_methods | no | no (`payments.method` text) | local config, no backend dependency for a first cut |
+| payment_methods | no | DONE v13 `payment_methods` + `payments.method_id` | per store; no `provider_reference`/`user_id` on payments yet |
 | sale_taxes, sale_discounts | no | no (sale has tax_minor, bill discount fields, offer_* on lines) | tax split by component lives only in display |
 | payment_attempts | no | no | A11 (idempotency_key) |
 | returns, return_items | no | no (`sale_lines.returned_qty_milli`, `sales.returned_order`; refunds ignore tax, KG-165) | |
@@ -53,12 +53,13 @@ Date 2026-10-13. Analysis only: no schema change. Sources: Axpert_POS_SQLite_Dat
 | ours only (not in doc) | | `currencies`, `store_forex`, `offers`, `current_cart`, `held_bills`, `seed_manifest`, `migration_state`, `tax_regimes/slabs` | keep; map `offers` to sale_discounts later |
 
 ## 4. Recommended migration stages (to the Phase 1 minimum)
+Status 2026-10-15 (database batch X): S0 epoch timestamps DONE (v11, DEC-147), S1 inventory DONE (v12, DEC-148), S3 payment methods DONE (v13, DEC-149). Open: S2, S4 to S10.
 Each stage = one transactional Drift step plus a migration test (v(n-1) data survives, forced failure rolls back), as in v9/v10. Order follows your priority; sync last.
 | Stage | Adds / changes | Why here | Backend answers it depends on |
 |---|---|---|---|
 | S1 inventory (DONE v12, DEC-148) | `inventory_balance`, `inventory_transactions`; checkout writes a SALE movement and the balance in the existing checkout transaction; backfill balance from `products.stock`; keep `products.stock` as a derived cache until retired | local, high value, fixes in-place stock updates | A6 (quantity semantics, unit); A8 only for the `server_version` column type (keep nullable) |
 | S2 shifts | `shifts` (+ `sales.shift_id`, `cash_movements` optional); shift close from real rows | the shift screen is derived today | none to start (register id from counters); A12 for retention |
-| S3 payment_methods | `payment_methods`; `payments.method_id` FK, `provider_reference`, `user_id` | removes the free-text method | none for local config; A7 only if methods map to backend codes |
+| S3 payment_methods (DONE v13, DEC-149; `provider_reference` and `user_id` still open, KG-248) | `payment_methods`; `payments.method_id` FK, `provider_reference`, `user_id` | removes the free-text method | none for local config; A7 only if methods map to backend codes |
 | S4 audit_events | `audit_events`; write for discount override, void, refund, price override, shift close, stock adjust | enterprise traceability, local only | none to start; approver needs roles (S9) |
 | S5 pricing and tax | `price_lists`, `product_prices`, `taxes`, `product_taxes`; migrate `products.price_minor/gst_bp` and `tax_regimes/slabs` into them; keep PricingService and the 300 vectors untouched | the doc's deterministic offline pricing; biggest change | A7 (money, currency, selection, tax and rounding), A1 to A6 (product shape) |
 | S6 returns | `returns`, `return_items` (+ refund payment rows, inventory RETURN movement, tax on refunds) | needs S1 and S3; fixes KG-165 | A7 (refund rounding/tax), A11 later |

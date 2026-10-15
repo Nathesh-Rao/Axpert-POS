@@ -221,6 +221,7 @@ abstract class AppStrings {
   String toastCreditNeedsCustomer();
   String toastStockChanged();
   String toastStockNegative();
+  String toastPaymentMethodOff();
   String toastPaymentCompleted();
   String toastPaymentFailed();
   String toastSaveFailed();

@@ -20,6 +20,8 @@ import '../../../shared/controllers/toast_controller.dart';
 import '../../customers/controllers/customers_controller.dart';
 import '../../../features/payment/data/services/mock_payment_service.dart';
 import '../../../features/payment/domain/entities/payment_method.dart';
+import '../../../features/payment/domain/entities/payment_method_info.dart';
+import '../../../features/payment/domain/repositories/payment_method_repository.dart';
 import '../../../features/payment/domain/entities/payment_request.dart';
 import '../../../features/payment/domain/entities/payment_result.dart';
 import '../../../features/payment/domain/services/payment_service.dart';
@@ -49,6 +51,7 @@ class PaymentController extends GetxController {
     required this.checkout,
     this.service = const CheckoutService(),
     this.payments = const MockPaymentService(),
+    this.methods,
     UuidGenerator? uuid,
     this.terminalDelay = const Duration(seconds: 2),
     DateTime Function()? now,
@@ -77,6 +80,15 @@ class PaymentController extends GetxController {
   /// The payment boundary (DEC-123): cash and card sales go through it,
   /// credit sales do not.
   final PaymentService payments;
+
+  /// The store's payment methods (DEC-149). Null (tests) keeps every method
+  /// on.
+  final PaymentMethodRepository? methods;
+
+  /// Methods of the session store by code; null until loaded or when the
+  /// store has none configured (every method stays on).
+  final Rx<Map<String, PaymentMethodInfo>?> methodsByCode =
+      Rx<Map<String, PaymentMethodInfo>?>(null);
   final UuidGenerator _uuid;
   final Duration terminalDelay;
   final DateTime Function() _now;
@@ -108,6 +120,34 @@ class PaymentController extends GetxController {
     ever(cart.active, (bool active) {
       if (!active) _reset();
     });
+    if (methods != null) {
+      ever(session.store, (_) => unawaited(_loadMethods()));
+      unawaited(_loadMethods());
+    }
+  }
+
+  Future<void> _loadMethods() async {
+    final repository = methods;
+    final storeId = session.store.value?.id;
+    if (repository == null || storeId == null) {
+      methodsByCode.value = null;
+      return;
+    }
+    try {
+      final list = await repository.methodsFor(storeId);
+      methodsByCode.value = list.isEmpty
+          ? null
+          : <String, PaymentMethodInfo>{for (final m in list) m.code: m};
+    } on Object {
+      methodsByCode.value = null;
+    }
+  }
+
+  /// Whether the store accepts [code] (`cash`, `card`). Credit is not a
+  /// payment method.
+  bool methodEnabled(String code) {
+    final byCode = methodsByCode.value;
+    return byCode == null || (byCode[code]?.enabled ?? false);
   }
 
   void _reset() {
@@ -160,12 +200,15 @@ class PaymentController extends GetxController {
   bool get canCompleteCash {
     if (!canPay) return false;
     if (isCredit) return true;
+    if (!methodEnabled(PaymentMethod.cash.name)) return false;
     final t = tenderedMoney;
     return tenderedValue.value.isNotEmpty && t != null && t >= total;
   }
 
   bool get canCompleteCard =>
-      canPay && terminal.value == TerminalState.approved;
+      canPay &&
+      methodEnabled(PaymentMethod.card.name) &&
+      terminal.value == TerminalState.approved;
 
   // ---- actions ----
 
@@ -213,6 +256,13 @@ class PaymentController extends GetxController {
         ),
         () => _complete(SaleMode.credit, _zero),
       );
+      return;
+    }
+    final code = requested == PaymentMode.cash
+        ? PaymentMethod.cash.name
+        : PaymentMethod.card.name;
+    if (!methodEnabled(code)) {
+      toasts.show(_s.toastPaymentMethodOff(), kind: ToastKind.warning);
       return;
     }
     if (requested == PaymentMode.cash) {

@@ -170,13 +170,24 @@ for (const n of ['Products', 'Customers', 'Sales', 'Returns', 'Reports', 'More']
 for (const n of ['Reports', 'Customers', 'Reports', 'Products', 'Reports', 'Sales', 'Returns', 'More', 'Reports', 'POS']) await page(n);
 for (const n of ['More', 'Returns', 'Sales', 'Reports', 'Customers', 'Products', 'POS']) await page(n);
 
+// Types the demo user and password on the login screen (no splash after a sign-out).
+const signInAgain = async () => {
+  await insert(process.env.ENTRY_USER ?? (entryOn ? 'cashier1' : 'admin'));
+  await key('Tab', 9);
+  await insert(process.env.ENTRY_PASS ?? (entryOn ? 'Demo#Cashier1' : 'Demo#Admin1'));
+  await key('Enter', 13);
+  await sleep(3000);
+};
+
 // dialogs over POS (cart, member) and over Reports
 const MENU = [1248, 27];
 const dialogs = [
   ['profile', async () => { await click(...MENU); await sleep(500); await click(1160, 86); }],
   ['settings', async () => { await click(...MENU); await sleep(500); await click(1164, 128); }],
   ['shortcuts', async () => { await click(...MENU); await sleep(500); await click(1164, 170); }],
-  ['close counter', async () => { await click(...MENU); await sleep(500); await click(1160, 212); }],
+  // Logout signs out (0aea5b6, KG-262): the app is on the login screen afterwards, so sign in again with the
+  // same user as at the start; the saved cart comes back with the sign-in (same store).
+  ['close counter', async () => { await click(...MENU); await sleep(500); await click(1160, 212); await sleep(1500); await signInAgain(); }],
   ['cash F2', async () => { await key('F2', 113); }],
   ['recall F5', async () => { await key('F5', 116); }],
   ['discount F6', async () => { await key('F6', 117); }],

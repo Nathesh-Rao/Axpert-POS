@@ -1330,6 +1330,8 @@ class EnAppStrings extends AppStrings {
 
   @override
   String productErrTax() => 'Choose a rate';
+  @override
+  String productTaxPlaceholder() => 'Select rate';
 
   @override
   String productErrFactor() => 'Enter a quantity above 0';

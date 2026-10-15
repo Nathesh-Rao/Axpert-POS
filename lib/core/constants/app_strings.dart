@@ -484,6 +484,7 @@ abstract class AppStrings {
   String productErrPrice();
   String productErrUnit();
   String productErrTax();
+  String productTaxPlaceholder();
   String productErrFactor();
   String productErrDuplicateUnit();
   String productErrDuplicateBarcode(String barcode);

@@ -65,6 +65,7 @@ void main() {
         final form = Get.find<ProductFormController>();
         form.name.text = 'Coca Cola 500ml';
         form.sku.text = 'BDV001';
+        form.gstBp.value = 1800;
         form.price.text = '40';
         form.barcodes.add('8901234560000');
         form.addPackaging();

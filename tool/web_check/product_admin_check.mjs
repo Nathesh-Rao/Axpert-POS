@@ -101,6 +101,11 @@ if (cashier) {
   await fillBelow('Name', 'Check Cola');
   await fillBelow('SKU', 'CHK001', 0);
   await fillBelow('Base price (INR)', '100');
+  // The tax slab is a required choice (nothing preselected): pick the first slab.
+  await press('Select rate', 0, false);
+  await sleep(500);
+  await press('18%');
+  await sleep(400);
   await fillBelow('Barcodes (base unit)', '9990001112223');
   await key('Enter', 13);
   await press('Add packaging', 0, false);

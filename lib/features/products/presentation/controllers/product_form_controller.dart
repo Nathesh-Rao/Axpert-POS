@@ -191,8 +191,8 @@ class ProductFormController extends GetxController {
     categoryList.assignAll(await admin.repository.categories());
     final piece = unitRows.where((u) => u.code == 'piece');
     baseUnitId.value = piece.isEmpty ? null : piece.first.id;
-    final rates = taxRates;
-    gstBp.value = rates.isEmpty ? null : rates.first;
+    // The tax slab is a required choice: nothing is preselected (no silent 0 %).
+    gstBp.value = null;
     final product = editing;
     if (product != null) {
       final detail = await admin.repository.detail(product.id);

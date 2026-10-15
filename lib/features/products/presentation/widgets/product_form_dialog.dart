@@ -217,7 +217,8 @@ class _TaxField extends StatelessWidget {
         child: rates.isEmpty
             ? const SizedBox.shrink()
             : AppDropdown<int>(
-                value: form.gstBp.value ?? rates.first,
+                value: form.gstBp.value,
+                placeholder: s.productTaxPlaceholder(),
                 items: rates,
                 labelOf: (bp) => s.percentSuffix(DecimalText.scaled(bp, 2)),
                 onChanged: (bp) => form.gstBp.value = bp,

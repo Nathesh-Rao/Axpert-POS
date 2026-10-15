@@ -110,6 +110,7 @@ void main() {
       final form = Get.find<ProductFormController>();
       form.name.text = 'Test Cola';
       form.sku.text = 'TST001';
+      form.gstBp.value = form.taxRates.first;
       form.price.text = '100';
       form.addPackaging();
       final row = form.packagings.single;
@@ -154,6 +155,27 @@ void main() {
       expect(Get.find<OverlayController>().isOpen, isTrue);
     });
 
+    testWidgets('the tax slab is a required choice with nothing preselected', (
+      tester,
+    ) async {
+      await _open(tester, 'admin');
+      await tester.tap(find.text('Add product'));
+      await _settle(tester);
+      final form = Get.find<ProductFormController>();
+      expect(form.gstBp.value, isNull);
+      expect(find.text('Select rate'), findsOneWidget);
+      form.name.text = 'Slabless';
+      form.sku.text = 'SL1';
+      form.price.text = '10';
+      expect(await tester.runAsync(form.submit), isFalse);
+      await _settle(tester);
+      expect(find.text('Choose a rate'), findsOneWidget);
+      form.gstBp.value = form.taxRates.first;
+      await _settle(tester);
+      expect(find.text('Select rate'), findsNothing);
+      expect(await tester.runAsync(form.submit), isTrue);
+    });
+
     testWidgets('the same unit twice and a repeated barcode are refused', (
       tester,
     ) async {
@@ -163,6 +185,7 @@ void main() {
       final form = Get.find<ProductFormController>();
       form.name.text = 'X';
       form.sku.text = 'X1';
+      form.gstBp.value = form.taxRates.first;
       form.price.text = '10';
       form.addPackaging();
       form.addPackaging();
@@ -189,6 +212,7 @@ void main() {
       final form = Get.find<ProductFormController>();
       form.name.text = 'Enter Product';
       form.sku.text = 'ENT1';
+      form.gstBp.value = form.taxRates.first;
       form.price.text = '5';
       await tester.tap(
         find.byWidgetPredicate(
@@ -217,6 +241,7 @@ void main() {
       final form = Get.find<ProductFormController>();
       form.name.text = 'Edit Me';
       form.sku.text = 'ED1';
+      form.gstBp.value = form.taxRates.first;
       form.price.text = '20';
       form.stockBase.text = '9';
       await tester.runAsync(form.submit);
@@ -248,6 +273,7 @@ void main() {
       final form = Get.find<ProductFormController>();
       form.name.text = 'Counted';
       form.sku.text = 'CNT1';
+      form.gstBp.value = form.taxRates.first;
       form.price.text = '10';
       form.stockBase.text = '10';
       await tester.runAsync(form.submit);

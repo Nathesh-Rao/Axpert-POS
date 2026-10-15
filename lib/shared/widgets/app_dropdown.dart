@@ -18,15 +18,18 @@ class AppDropdown<T> extends StatefulWidget {
     required this.onChanged,
     required this.style,
     this.semanticLabel,
+    this.placeholder,
     super.key,
   });
 
-  final T value;
+  /// Null shows [placeholder] (nothing chosen yet).
+  final T? value;
   final List<T> items;
   final String Function(T item) labelOf;
   final ValueChanged<T> onChanged;
   final TextStyle style;
   final String? semanticLabel;
+  final String? placeholder;
 
   @override
   State<AppDropdown<T>> createState() => _AppDropdownState<T>();
@@ -144,11 +147,15 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
               children: <Widget>[
                 Expanded(
                   child: Text(
-                    widget.labelOf(widget.value),
+                    widget.value == null
+                        ? (widget.placeholder ?? '')
+                        : widget.labelOf(widget.value as T),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     softWrap: false,
-                    style: widget.style.copyWith(color: c.text),
+                    style: widget.style.copyWith(
+                      color: widget.value == null ? c.muted : c.text,
+                    ),
                   ),
                 ),
                 Icon(

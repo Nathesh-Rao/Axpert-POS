@@ -31,7 +31,8 @@ class TotalsCard extends StatelessWidget {
       child: Obx(() {
         final t = cart.totals.value;
         final regime = session.regime.value;
-        final taxLabel = regime?.label ?? '';
+        final taxLabel = regime?.taxName ?? '';
+        final taxParts = cart.taxPartsOf(t);
         Widget row(String label, String value) => SizedBox(
           height: sm.rowHeight,
           child: Padding(
@@ -116,8 +117,11 @@ class TotalsCard extends StatelessWidget {
             row(s.summaryRewardPoints(), MoneyFormatter.format(t.points)),
             if (regime != null) ...<Widget>[
               row(s.summaryTaxAmount(taxLabel), MoneyFormatter.format(t.tax)),
-              if (regime.splitParts.isNotEmpty)
-                splitRow(TaxSplit.parts(t.tax, regime.splitParts)),
+              if (taxParts.length == 2)
+                splitRow(taxParts)
+              else
+                for (final part in taxParts)
+                  row(part.label, MoneyFormatter.format(part.amount)),
             ],
             const SizedBox(height: AppCheckoutSizes.invoiceMarginTop),
             Container(

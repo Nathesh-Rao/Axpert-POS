@@ -2277,6 +2277,17 @@ class $StoreEntriesTable extends StoreEntries
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _stateCodeMeta = const VerificationMeta(
+    'stateCode',
+  );
+  @override
+  late final GeneratedColumn<String> stateCode = GeneratedColumn<String>(
+    'state_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _allowNegativeStockMeta =
       const VerificationMeta('allowNegativeStock');
   @override
@@ -2306,6 +2317,7 @@ class $StoreEntriesTable extends StoreEntries
     createdAt,
     updatedAt,
     deletedAt,
+    stateCode,
     allowNegativeStock,
   ];
   @override
@@ -2414,6 +2426,12 @@ class $StoreEntriesTable extends StoreEntries
         deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
       );
     }
+    if (data.containsKey('state_code')) {
+      context.handle(
+        _stateCodeMeta,
+        stateCode.isAcceptableOrUnknown(data['state_code']!, _stateCodeMeta),
+      );
+    }
     if (data.containsKey('allow_negative_stock')) {
       context.handle(
         _allowNegativeStockMeta,
@@ -2484,6 +2502,10 @@ class $StoreEntriesTable extends StoreEntries
         DriftSqlType.int,
         data['${effectivePrefix}deleted_at'],
       ),
+      stateCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}state_code'],
+      ),
       allowNegativeStock: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}allow_negative_stock'],
@@ -2517,6 +2539,8 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
   /// Per-store stock rule (DEC-148): false = a sale that would take stock
   /// below zero is refused (today's behavior); true = it is allowed with a
   /// warning.
+  /// State or region inside the country (v15); null = not set.
+  final String? stateCode;
   final bool allowNegativeStock;
   const StoreEntry({
     required this.id,
@@ -2532,6 +2556,7 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
     required this.createdAt,
     required this.updatedAt,
     this.deletedAt,
+    this.stateCode,
     required this.allowNegativeStock,
   });
   @override
@@ -2551,6 +2576,9 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
     map['updated_at'] = Variable<int>(updatedAt);
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<int>(deletedAt);
+    }
+    if (!nullToAbsent || stateCode != null) {
+      map['state_code'] = Variable<String>(stateCode);
     }
     map['allow_negative_stock'] = Variable<bool>(allowNegativeStock);
     return map;
@@ -2573,6 +2601,9 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
       deletedAt: deletedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(deletedAt),
+      stateCode: stateCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(stateCode),
       allowNegativeStock: Value(allowNegativeStock),
     );
   }
@@ -2596,6 +2627,7 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
       createdAt: serializer.fromJson<int>(json['createdAt']),
       updatedAt: serializer.fromJson<int>(json['updatedAt']),
       deletedAt: serializer.fromJson<int?>(json['deletedAt']),
+      stateCode: serializer.fromJson<String?>(json['stateCode']),
       allowNegativeStock: serializer.fromJson<bool>(json['allowNegativeStock']),
     );
   }
@@ -2616,6 +2648,7 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
       'createdAt': serializer.toJson<int>(createdAt),
       'updatedAt': serializer.toJson<int>(updatedAt),
       'deletedAt': serializer.toJson<int?>(deletedAt),
+      'stateCode': serializer.toJson<String?>(stateCode),
       'allowNegativeStock': serializer.toJson<bool>(allowNegativeStock),
     };
   }
@@ -2634,6 +2667,7 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
     int? createdAt,
     int? updatedAt,
     Value<int?> deletedAt = const Value.absent(),
+    Value<String?> stateCode = const Value.absent(),
     bool? allowNegativeStock,
   }) => StoreEntry(
     id: id ?? this.id,
@@ -2649,6 +2683,7 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    stateCode: stateCode.present ? stateCode.value : this.stateCode,
     allowNegativeStock: allowNegativeStock ?? this.allowNegativeStock,
   );
   StoreEntry copyWithCompanion(StoreEntriesCompanion data) {
@@ -2672,6 +2707,7 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      stateCode: data.stateCode.present ? data.stateCode.value : this.stateCode,
       allowNegativeStock: data.allowNegativeStock.present
           ? data.allowNegativeStock.value
           : this.allowNegativeStock,
@@ -2694,6 +2730,7 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt, ')
+          ..write('stateCode: $stateCode, ')
           ..write('allowNegativeStock: $allowNegativeStock')
           ..write(')'))
         .toString();
@@ -2714,6 +2751,7 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
     createdAt,
     updatedAt,
     deletedAt,
+    stateCode,
     allowNegativeStock,
   );
   @override
@@ -2733,6 +2771,7 @@ class StoreEntry extends DataClass implements Insertable<StoreEntry> {
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.deletedAt == this.deletedAt &&
+          other.stateCode == this.stateCode &&
           other.allowNegativeStock == this.allowNegativeStock);
 }
 
@@ -2750,6 +2789,7 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
   final Value<int> createdAt;
   final Value<int> updatedAt;
   final Value<int?> deletedAt;
+  final Value<String?> stateCode;
   final Value<bool> allowNegativeStock;
   final Value<int> rowid;
   const StoreEntriesCompanion({
@@ -2766,6 +2806,7 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
+    this.stateCode = const Value.absent(),
     this.allowNegativeStock = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -2783,6 +2824,7 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
     required int createdAt,
     required int updatedAt,
     this.deletedAt = const Value.absent(),
+    this.stateCode = const Value.absent(),
     this.allowNegativeStock = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -2804,6 +2846,7 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
     Expression<int>? createdAt,
     Expression<int>? updatedAt,
     Expression<int>? deletedAt,
+    Expression<String>? stateCode,
     Expression<bool>? allowNegativeStock,
     Expression<int>? rowid,
   }) {
@@ -2821,6 +2864,7 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (deletedAt != null) 'deleted_at': deletedAt,
+      if (stateCode != null) 'state_code': stateCode,
       if (allowNegativeStock != null)
         'allow_negative_stock': allowNegativeStock,
       if (rowid != null) 'rowid': rowid,
@@ -2841,6 +2885,7 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
     Value<int>? createdAt,
     Value<int>? updatedAt,
     Value<int?>? deletedAt,
+    Value<String?>? stateCode,
     Value<bool>? allowNegativeStock,
     Value<int>? rowid,
   }) {
@@ -2858,6 +2903,7 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
+      stateCode: stateCode ?? this.stateCode,
       allowNegativeStock: allowNegativeStock ?? this.allowNegativeStock,
       rowid: rowid ?? this.rowid,
     );
@@ -2905,6 +2951,9 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
     if (deletedAt.present) {
       map['deleted_at'] = Variable<int>(deletedAt.value);
     }
+    if (stateCode.present) {
+      map['state_code'] = Variable<String>(stateCode.value);
+    }
     if (allowNegativeStock.present) {
       map['allow_negative_stock'] = Variable<bool>(allowNegativeStock.value);
     }
@@ -2930,6 +2979,7 @@ class StoreEntriesCompanion extends UpdateCompanion<StoreEntry> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt, ')
+          ..write('stateCode: $stateCode, ')
           ..write('allowNegativeStock: $allowNegativeStock, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -7775,6 +7825,17 @@ class $SaleEntriesTable extends SaleEntries
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _taxPartsJsonMeta = const VerificationMeta(
+    'taxPartsJson',
+  );
+  @override
+  late final GeneratedColumn<String> taxPartsJson = GeneratedColumn<String>(
+    'tax_parts_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _pointsMinorMeta = const VerificationMeta(
     'pointsMinor',
   );
@@ -7927,6 +7988,7 @@ class $SaleEntriesTable extends SaleEntries
     subtotalMinor,
     discountMinor,
     taxMinor,
+    taxPartsJson,
     pointsMinor,
     totalMinor,
     tenderedMinor,
@@ -8190,6 +8252,15 @@ class $SaleEntriesTable extends SaleEntries
     } else if (isInserting) {
       context.missing(_taxMinorMeta);
     }
+    if (data.containsKey('tax_parts_json')) {
+      context.handle(
+        _taxPartsJsonMeta,
+        taxPartsJson.isAcceptableOrUnknown(
+          data['tax_parts_json']!,
+          _taxPartsJsonMeta,
+        ),
+      );
+    }
     if (data.containsKey('points_minor')) {
       context.handle(
         _pointsMinorMeta,
@@ -8404,6 +8475,10 @@ class $SaleEntriesTable extends SaleEntries
         DriftSqlType.int,
         data['${effectivePrefix}tax_minor'],
       )!,
+      taxPartsJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tax_parts_json'],
+      ),
       pointsMinor: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}points_minor'],
@@ -8508,6 +8583,10 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
   final int subtotalMinor;
   final int discountMinor;
   final int taxMinor;
+
+  /// Tax lines at the time of the sale as JSON `[{"label":..,"minor":..}]`
+  /// (v15); null on older sales (labels then come from the current setup).
+  final String? taxPartsJson;
   final int pointsMinor;
   final int totalMinor;
   final int tenderedMinor;
@@ -8552,6 +8631,7 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
     required this.subtotalMinor,
     required this.discountMinor,
     required this.taxMinor,
+    this.taxPartsJson,
     required this.pointsMinor,
     required this.totalMinor,
     required this.tenderedMinor,
@@ -8605,6 +8685,9 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
     map['subtotal_minor'] = Variable<int>(subtotalMinor);
     map['discount_minor'] = Variable<int>(discountMinor);
     map['tax_minor'] = Variable<int>(taxMinor);
+    if (!nullToAbsent || taxPartsJson != null) {
+      map['tax_parts_json'] = Variable<String>(taxPartsJson);
+    }
     map['points_minor'] = Variable<int>(pointsMinor);
     map['total_minor'] = Variable<int>(totalMinor);
     map['tendered_minor'] = Variable<int>(tenderedMinor);
@@ -8667,6 +8750,9 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
       subtotalMinor: Value(subtotalMinor),
       discountMinor: Value(discountMinor),
       taxMinor: Value(taxMinor),
+      taxPartsJson: taxPartsJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(taxPartsJson),
       pointsMinor: Value(pointsMinor),
       totalMinor: Value(totalMinor),
       tenderedMinor: Value(tenderedMinor),
@@ -8723,6 +8809,7 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
       subtotalMinor: serializer.fromJson<int>(json['subtotalMinor']),
       discountMinor: serializer.fromJson<int>(json['discountMinor']),
       taxMinor: serializer.fromJson<int>(json['taxMinor']),
+      taxPartsJson: serializer.fromJson<String?>(json['taxPartsJson']),
       pointsMinor: serializer.fromJson<int>(json['pointsMinor']),
       totalMinor: serializer.fromJson<int>(json['totalMinor']),
       tenderedMinor: serializer.fromJson<int>(json['tenderedMinor']),
@@ -8768,6 +8855,7 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
       'subtotalMinor': serializer.toJson<int>(subtotalMinor),
       'discountMinor': serializer.toJson<int>(discountMinor),
       'taxMinor': serializer.toJson<int>(taxMinor),
+      'taxPartsJson': serializer.toJson<String?>(taxPartsJson),
       'pointsMinor': serializer.toJson<int>(pointsMinor),
       'totalMinor': serializer.toJson<int>(totalMinor),
       'tenderedMinor': serializer.toJson<int>(tenderedMinor),
@@ -8811,6 +8899,7 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
     int? subtotalMinor,
     int? discountMinor,
     int? taxMinor,
+    Value<String?> taxPartsJson = const Value.absent(),
     int? pointsMinor,
     int? totalMinor,
     int? tenderedMinor,
@@ -8851,6 +8940,7 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
     subtotalMinor: subtotalMinor ?? this.subtotalMinor,
     discountMinor: discountMinor ?? this.discountMinor,
     taxMinor: taxMinor ?? this.taxMinor,
+    taxPartsJson: taxPartsJson.present ? taxPartsJson.value : this.taxPartsJson,
     pointsMinor: pointsMinor ?? this.pointsMinor,
     totalMinor: totalMinor ?? this.totalMinor,
     tenderedMinor: tenderedMinor ?? this.tenderedMinor,
@@ -8921,6 +9011,9 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
           ? data.discountMinor.value
           : this.discountMinor,
       taxMinor: data.taxMinor.present ? data.taxMinor.value : this.taxMinor,
+      taxPartsJson: data.taxPartsJson.present
+          ? data.taxPartsJson.value
+          : this.taxPartsJson,
       pointsMinor: data.pointsMinor.present
           ? data.pointsMinor.value
           : this.pointsMinor,
@@ -8978,6 +9071,7 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
           ..write('subtotalMinor: $subtotalMinor, ')
           ..write('discountMinor: $discountMinor, ')
           ..write('taxMinor: $taxMinor, ')
+          ..write('taxPartsJson: $taxPartsJson, ')
           ..write('pointsMinor: $pointsMinor, ')
           ..write('totalMinor: $totalMinor, ')
           ..write('tenderedMinor: $tenderedMinor, ')
@@ -9023,6 +9117,7 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
     subtotalMinor,
     discountMinor,
     taxMinor,
+    taxPartsJson,
     pointsMinor,
     totalMinor,
     tenderedMinor,
@@ -9067,6 +9162,7 @@ class SaleEntry extends DataClass implements Insertable<SaleEntry> {
           other.subtotalMinor == this.subtotalMinor &&
           other.discountMinor == this.discountMinor &&
           other.taxMinor == this.taxMinor &&
+          other.taxPartsJson == this.taxPartsJson &&
           other.pointsMinor == this.pointsMinor &&
           other.totalMinor == this.totalMinor &&
           other.tenderedMinor == this.tenderedMinor &&
@@ -9109,6 +9205,7 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
   final Value<int> subtotalMinor;
   final Value<int> discountMinor;
   final Value<int> taxMinor;
+  final Value<String?> taxPartsJson;
   final Value<int> pointsMinor;
   final Value<int> totalMinor;
   final Value<int> tenderedMinor;
@@ -9150,6 +9247,7 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
     this.subtotalMinor = const Value.absent(),
     this.discountMinor = const Value.absent(),
     this.taxMinor = const Value.absent(),
+    this.taxPartsJson = const Value.absent(),
     this.pointsMinor = const Value.absent(),
     this.totalMinor = const Value.absent(),
     this.tenderedMinor = const Value.absent(),
@@ -9192,6 +9290,7 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
     required int subtotalMinor,
     required int discountMinor,
     required int taxMinor,
+    this.taxPartsJson = const Value.absent(),
     required int pointsMinor,
     required int totalMinor,
     required int tenderedMinor,
@@ -9261,6 +9360,7 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
     Expression<int>? subtotalMinor,
     Expression<int>? discountMinor,
     Expression<int>? taxMinor,
+    Expression<String>? taxPartsJson,
     Expression<int>? pointsMinor,
     Expression<int>? totalMinor,
     Expression<int>? tenderedMinor,
@@ -9303,6 +9403,7 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
       if (subtotalMinor != null) 'subtotal_minor': subtotalMinor,
       if (discountMinor != null) 'discount_minor': discountMinor,
       if (taxMinor != null) 'tax_minor': taxMinor,
+      if (taxPartsJson != null) 'tax_parts_json': taxPartsJson,
       if (pointsMinor != null) 'points_minor': pointsMinor,
       if (totalMinor != null) 'total_minor': totalMinor,
       if (tenderedMinor != null) 'tendered_minor': tenderedMinor,
@@ -9347,6 +9448,7 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
     Value<int>? subtotalMinor,
     Value<int>? discountMinor,
     Value<int>? taxMinor,
+    Value<String?>? taxPartsJson,
     Value<int>? pointsMinor,
     Value<int>? totalMinor,
     Value<int>? tenderedMinor,
@@ -9389,6 +9491,7 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
       subtotalMinor: subtotalMinor ?? this.subtotalMinor,
       discountMinor: discountMinor ?? this.discountMinor,
       taxMinor: taxMinor ?? this.taxMinor,
+      taxPartsJson: taxPartsJson ?? this.taxPartsJson,
       pointsMinor: pointsMinor ?? this.pointsMinor,
       totalMinor: totalMinor ?? this.totalMinor,
       tenderedMinor: tenderedMinor ?? this.tenderedMinor,
@@ -9491,6 +9594,9 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
     if (taxMinor.present) {
       map['tax_minor'] = Variable<int>(taxMinor.value);
     }
+    if (taxPartsJson.present) {
+      map['tax_parts_json'] = Variable<String>(taxPartsJson.value);
+    }
     if (pointsMinor.present) {
       map['points_minor'] = Variable<int>(pointsMinor.value);
     }
@@ -9561,6 +9667,7 @@ class SaleEntriesCompanion extends UpdateCompanion<SaleEntry> {
           ..write('subtotalMinor: $subtotalMinor, ')
           ..write('discountMinor: $discountMinor, ')
           ..write('taxMinor: $taxMinor, ')
+          ..write('taxPartsJson: $taxPartsJson, ')
           ..write('pointsMinor: $pointsMinor, ')
           ..write('totalMinor: $totalMinor, ')
           ..write('tenderedMinor: $tenderedMinor, ')
@@ -17949,6 +18056,1078 @@ class BarcodeEntriesCompanion extends UpdateCompanion<BarcodeEntry> {
   }
 }
 
+class $StoreTaxSlabEntriesTable extends StoreTaxSlabEntries
+    with TableInfo<$StoreTaxSlabEntriesTable, StoreTaxSlabEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StoreTaxSlabEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _storeIdMeta = const VerificationMeta(
+    'storeId',
+  );
+  @override
+  late final GeneratedColumn<String> storeId = GeneratedColumn<String>(
+    'store_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES stores (id)',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _schemeMeta = const VerificationMeta('scheme');
+  @override
+  late final GeneratedColumn<String> scheme = GeneratedColumn<String>(
+    'scheme',
+    aliasedName,
+    false,
+    check: () => scheme.isIn(const ['standard', 'inter_state']),
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('standard'),
+  );
+  static const VerificationMeta _enabledMeta = const VerificationMeta(
+    'enabled',
+  );
+  @override
+  late final GeneratedColumn<bool> enabled = GeneratedColumn<bool>(
+    'enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _isDefaultMeta = const VerificationMeta(
+    'isDefault',
+  );
+  @override
+  late final GeneratedColumn<bool> isDefault = GeneratedColumn<bool>(
+    'is_default',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_default" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    storeId,
+    name,
+    scheme,
+    enabled,
+    isDefault,
+    position,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'store_tax_slabs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<StoreTaxSlabEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('store_id')) {
+      context.handle(
+        _storeIdMeta,
+        storeId.isAcceptableOrUnknown(data['store_id']!, _storeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_storeIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('scheme')) {
+      context.handle(
+        _schemeMeta,
+        scheme.isAcceptableOrUnknown(data['scheme']!, _schemeMeta),
+      );
+    }
+    if (data.containsKey('enabled')) {
+      context.handle(
+        _enabledMeta,
+        enabled.isAcceptableOrUnknown(data['enabled']!, _enabledMeta),
+      );
+    }
+    if (data.containsKey('is_default')) {
+      context.handle(
+        _isDefaultMeta,
+        isDefault.isAcceptableOrUnknown(data['is_default']!, _isDefaultMeta),
+      );
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  StoreTaxSlabEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return StoreTaxSlabEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      storeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}store_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      scheme: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}scheme'],
+      )!,
+      enabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}enabled'],
+      )!,
+      isDefault: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_default'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $StoreTaxSlabEntriesTable createAlias(String alias) {
+    return $StoreTaxSlabEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class StoreTaxSlabEntry extends DataClass
+    implements Insertable<StoreTaxSlabEntry> {
+  final String id;
+  final String storeId;
+  final String name;
+  final String scheme;
+  final bool enabled;
+  final bool isDefault;
+  final int position;
+  final int createdAt;
+  final int updatedAt;
+  const StoreTaxSlabEntry({
+    required this.id,
+    required this.storeId,
+    required this.name,
+    required this.scheme,
+    required this.enabled,
+    required this.isDefault,
+    required this.position,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['store_id'] = Variable<String>(storeId);
+    map['name'] = Variable<String>(name);
+    map['scheme'] = Variable<String>(scheme);
+    map['enabled'] = Variable<bool>(enabled);
+    map['is_default'] = Variable<bool>(isDefault);
+    map['position'] = Variable<int>(position);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  StoreTaxSlabEntriesCompanion toCompanion(bool nullToAbsent) {
+    return StoreTaxSlabEntriesCompanion(
+      id: Value(id),
+      storeId: Value(storeId),
+      name: Value(name),
+      scheme: Value(scheme),
+      enabled: Value(enabled),
+      isDefault: Value(isDefault),
+      position: Value(position),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory StoreTaxSlabEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return StoreTaxSlabEntry(
+      id: serializer.fromJson<String>(json['id']),
+      storeId: serializer.fromJson<String>(json['storeId']),
+      name: serializer.fromJson<String>(json['name']),
+      scheme: serializer.fromJson<String>(json['scheme']),
+      enabled: serializer.fromJson<bool>(json['enabled']),
+      isDefault: serializer.fromJson<bool>(json['isDefault']),
+      position: serializer.fromJson<int>(json['position']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'storeId': serializer.toJson<String>(storeId),
+      'name': serializer.toJson<String>(name),
+      'scheme': serializer.toJson<String>(scheme),
+      'enabled': serializer.toJson<bool>(enabled),
+      'isDefault': serializer.toJson<bool>(isDefault),
+      'position': serializer.toJson<int>(position),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  StoreTaxSlabEntry copyWith({
+    String? id,
+    String? storeId,
+    String? name,
+    String? scheme,
+    bool? enabled,
+    bool? isDefault,
+    int? position,
+    int? createdAt,
+    int? updatedAt,
+  }) => StoreTaxSlabEntry(
+    id: id ?? this.id,
+    storeId: storeId ?? this.storeId,
+    name: name ?? this.name,
+    scheme: scheme ?? this.scheme,
+    enabled: enabled ?? this.enabled,
+    isDefault: isDefault ?? this.isDefault,
+    position: position ?? this.position,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  StoreTaxSlabEntry copyWithCompanion(StoreTaxSlabEntriesCompanion data) {
+    return StoreTaxSlabEntry(
+      id: data.id.present ? data.id.value : this.id,
+      storeId: data.storeId.present ? data.storeId.value : this.storeId,
+      name: data.name.present ? data.name.value : this.name,
+      scheme: data.scheme.present ? data.scheme.value : this.scheme,
+      enabled: data.enabled.present ? data.enabled.value : this.enabled,
+      isDefault: data.isDefault.present ? data.isDefault.value : this.isDefault,
+      position: data.position.present ? data.position.value : this.position,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StoreTaxSlabEntry(')
+          ..write('id: $id, ')
+          ..write('storeId: $storeId, ')
+          ..write('name: $name, ')
+          ..write('scheme: $scheme, ')
+          ..write('enabled: $enabled, ')
+          ..write('isDefault: $isDefault, ')
+          ..write('position: $position, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    storeId,
+    name,
+    scheme,
+    enabled,
+    isDefault,
+    position,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is StoreTaxSlabEntry &&
+          other.id == this.id &&
+          other.storeId == this.storeId &&
+          other.name == this.name &&
+          other.scheme == this.scheme &&
+          other.enabled == this.enabled &&
+          other.isDefault == this.isDefault &&
+          other.position == this.position &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class StoreTaxSlabEntriesCompanion extends UpdateCompanion<StoreTaxSlabEntry> {
+  final Value<String> id;
+  final Value<String> storeId;
+  final Value<String> name;
+  final Value<String> scheme;
+  final Value<bool> enabled;
+  final Value<bool> isDefault;
+  final Value<int> position;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const StoreTaxSlabEntriesCompanion({
+    this.id = const Value.absent(),
+    this.storeId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.scheme = const Value.absent(),
+    this.enabled = const Value.absent(),
+    this.isDefault = const Value.absent(),
+    this.position = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  StoreTaxSlabEntriesCompanion.insert({
+    required String id,
+    required String storeId,
+    required String name,
+    this.scheme = const Value.absent(),
+    this.enabled = const Value.absent(),
+    this.isDefault = const Value.absent(),
+    this.position = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       storeId = Value(storeId),
+       name = Value(name),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<StoreTaxSlabEntry> custom({
+    Expression<String>? id,
+    Expression<String>? storeId,
+    Expression<String>? name,
+    Expression<String>? scheme,
+    Expression<bool>? enabled,
+    Expression<bool>? isDefault,
+    Expression<int>? position,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (storeId != null) 'store_id': storeId,
+      if (name != null) 'name': name,
+      if (scheme != null) 'scheme': scheme,
+      if (enabled != null) 'enabled': enabled,
+      if (isDefault != null) 'is_default': isDefault,
+      if (position != null) 'position': position,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  StoreTaxSlabEntriesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? storeId,
+    Value<String>? name,
+    Value<String>? scheme,
+    Value<bool>? enabled,
+    Value<bool>? isDefault,
+    Value<int>? position,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return StoreTaxSlabEntriesCompanion(
+      id: id ?? this.id,
+      storeId: storeId ?? this.storeId,
+      name: name ?? this.name,
+      scheme: scheme ?? this.scheme,
+      enabled: enabled ?? this.enabled,
+      isDefault: isDefault ?? this.isDefault,
+      position: position ?? this.position,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (storeId.present) {
+      map['store_id'] = Variable<String>(storeId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (scheme.present) {
+      map['scheme'] = Variable<String>(scheme.value);
+    }
+    if (enabled.present) {
+      map['enabled'] = Variable<bool>(enabled.value);
+    }
+    if (isDefault.present) {
+      map['is_default'] = Variable<bool>(isDefault.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StoreTaxSlabEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('storeId: $storeId, ')
+          ..write('name: $name, ')
+          ..write('scheme: $scheme, ')
+          ..write('enabled: $enabled, ')
+          ..write('isDefault: $isDefault, ')
+          ..write('position: $position, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $StoreTaxComponentEntriesTable extends StoreTaxComponentEntries
+    with TableInfo<$StoreTaxComponentEntriesTable, StoreTaxComponentEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StoreTaxComponentEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _slabIdMeta = const VerificationMeta('slabId');
+  @override
+  late final GeneratedColumn<String> slabId = GeneratedColumn<String>(
+    'slab_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES store_tax_slabs (id)',
+    ),
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rateBpMeta = const VerificationMeta('rateBp');
+  @override
+  late final GeneratedColumn<int> rateBp = GeneratedColumn<int>(
+    'rate_bp',
+    aliasedName,
+    false,
+    check: () => ComparableExpr(rateBp).isBetweenValues(0, 10000),
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _enabledMeta = const VerificationMeta(
+    'enabled',
+  );
+  @override
+  late final GeneratedColumn<bool> enabled = GeneratedColumn<bool>(
+    'enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta(
+    'position',
+  );
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    slabId,
+    label,
+    rateBp,
+    enabled,
+    position,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'store_tax_components';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<StoreTaxComponentEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('slab_id')) {
+      context.handle(
+        _slabIdMeta,
+        slabId.isAcceptableOrUnknown(data['slab_id']!, _slabIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_slabIdMeta);
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_labelMeta);
+    }
+    if (data.containsKey('rate_bp')) {
+      context.handle(
+        _rateBpMeta,
+        rateBp.isAcceptableOrUnknown(data['rate_bp']!, _rateBpMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_rateBpMeta);
+    }
+    if (data.containsKey('enabled')) {
+      context.handle(
+        _enabledMeta,
+        enabled.isAcceptableOrUnknown(data['enabled']!, _enabledMeta),
+      );
+    }
+    if (data.containsKey('position')) {
+      context.handle(
+        _positionMeta,
+        position.isAcceptableOrUnknown(data['position']!, _positionMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  StoreTaxComponentEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return StoreTaxComponentEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      slabId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}slab_id'],
+      )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      )!,
+      rateBp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rate_bp'],
+      )!,
+      enabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}enabled'],
+      )!,
+      position: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}position'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $StoreTaxComponentEntriesTable createAlias(String alias) {
+    return $StoreTaxComponentEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class StoreTaxComponentEntry extends DataClass
+    implements Insertable<StoreTaxComponentEntry> {
+  final String id;
+  final String slabId;
+  final String label;
+  final int rateBp;
+  final bool enabled;
+  final int position;
+  final int createdAt;
+  final int updatedAt;
+  const StoreTaxComponentEntry({
+    required this.id,
+    required this.slabId,
+    required this.label,
+    required this.rateBp,
+    required this.enabled,
+    required this.position,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['slab_id'] = Variable<String>(slabId);
+    map['label'] = Variable<String>(label);
+    map['rate_bp'] = Variable<int>(rateBp);
+    map['enabled'] = Variable<bool>(enabled);
+    map['position'] = Variable<int>(position);
+    map['created_at'] = Variable<int>(createdAt);
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  StoreTaxComponentEntriesCompanion toCompanion(bool nullToAbsent) {
+    return StoreTaxComponentEntriesCompanion(
+      id: Value(id),
+      slabId: Value(slabId),
+      label: Value(label),
+      rateBp: Value(rateBp),
+      enabled: Value(enabled),
+      position: Value(position),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory StoreTaxComponentEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return StoreTaxComponentEntry(
+      id: serializer.fromJson<String>(json['id']),
+      slabId: serializer.fromJson<String>(json['slabId']),
+      label: serializer.fromJson<String>(json['label']),
+      rateBp: serializer.fromJson<int>(json['rateBp']),
+      enabled: serializer.fromJson<bool>(json['enabled']),
+      position: serializer.fromJson<int>(json['position']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'slabId': serializer.toJson<String>(slabId),
+      'label': serializer.toJson<String>(label),
+      'rateBp': serializer.toJson<int>(rateBp),
+      'enabled': serializer.toJson<bool>(enabled),
+      'position': serializer.toJson<int>(position),
+      'createdAt': serializer.toJson<int>(createdAt),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  StoreTaxComponentEntry copyWith({
+    String? id,
+    String? slabId,
+    String? label,
+    int? rateBp,
+    bool? enabled,
+    int? position,
+    int? createdAt,
+    int? updatedAt,
+  }) => StoreTaxComponentEntry(
+    id: id ?? this.id,
+    slabId: slabId ?? this.slabId,
+    label: label ?? this.label,
+    rateBp: rateBp ?? this.rateBp,
+    enabled: enabled ?? this.enabled,
+    position: position ?? this.position,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  StoreTaxComponentEntry copyWithCompanion(
+    StoreTaxComponentEntriesCompanion data,
+  ) {
+    return StoreTaxComponentEntry(
+      id: data.id.present ? data.id.value : this.id,
+      slabId: data.slabId.present ? data.slabId.value : this.slabId,
+      label: data.label.present ? data.label.value : this.label,
+      rateBp: data.rateBp.present ? data.rateBp.value : this.rateBp,
+      enabled: data.enabled.present ? data.enabled.value : this.enabled,
+      position: data.position.present ? data.position.value : this.position,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StoreTaxComponentEntry(')
+          ..write('id: $id, ')
+          ..write('slabId: $slabId, ')
+          ..write('label: $label, ')
+          ..write('rateBp: $rateBp, ')
+          ..write('enabled: $enabled, ')
+          ..write('position: $position, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    slabId,
+    label,
+    rateBp,
+    enabled,
+    position,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is StoreTaxComponentEntry &&
+          other.id == this.id &&
+          other.slabId == this.slabId &&
+          other.label == this.label &&
+          other.rateBp == this.rateBp &&
+          other.enabled == this.enabled &&
+          other.position == this.position &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class StoreTaxComponentEntriesCompanion
+    extends UpdateCompanion<StoreTaxComponentEntry> {
+  final Value<String> id;
+  final Value<String> slabId;
+  final Value<String> label;
+  final Value<int> rateBp;
+  final Value<bool> enabled;
+  final Value<int> position;
+  final Value<int> createdAt;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const StoreTaxComponentEntriesCompanion({
+    this.id = const Value.absent(),
+    this.slabId = const Value.absent(),
+    this.label = const Value.absent(),
+    this.rateBp = const Value.absent(),
+    this.enabled = const Value.absent(),
+    this.position = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  StoreTaxComponentEntriesCompanion.insert({
+    required String id,
+    required String slabId,
+    required String label,
+    required int rateBp,
+    this.enabled = const Value.absent(),
+    this.position = const Value.absent(),
+    required int createdAt,
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       slabId = Value(slabId),
+       label = Value(label),
+       rateBp = Value(rateBp),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<StoreTaxComponentEntry> custom({
+    Expression<String>? id,
+    Expression<String>? slabId,
+    Expression<String>? label,
+    Expression<int>? rateBp,
+    Expression<bool>? enabled,
+    Expression<int>? position,
+    Expression<int>? createdAt,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (slabId != null) 'slab_id': slabId,
+      if (label != null) 'label': label,
+      if (rateBp != null) 'rate_bp': rateBp,
+      if (enabled != null) 'enabled': enabled,
+      if (position != null) 'position': position,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  StoreTaxComponentEntriesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? slabId,
+    Value<String>? label,
+    Value<int>? rateBp,
+    Value<bool>? enabled,
+    Value<int>? position,
+    Value<int>? createdAt,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return StoreTaxComponentEntriesCompanion(
+      id: id ?? this.id,
+      slabId: slabId ?? this.slabId,
+      label: label ?? this.label,
+      rateBp: rateBp ?? this.rateBp,
+      enabled: enabled ?? this.enabled,
+      position: position ?? this.position,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (slabId.present) {
+      map['slab_id'] = Variable<String>(slabId.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
+    if (rateBp.present) {
+      map['rate_bp'] = Variable<int>(rateBp.value);
+    }
+    if (enabled.present) {
+      map['enabled'] = Variable<bool>(enabled.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StoreTaxComponentEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('slabId: $slabId, ')
+          ..write('label: $label, ')
+          ..write('rateBp: $rateBp, ')
+          ..write('enabled: $enabled, ')
+          ..write('position: $position, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AxpertDatabase extends GeneratedDatabase {
   _$AxpertDatabase(QueryExecutor e) : super(e);
   late final $DeviceContextEntriesTable deviceContextEntries =
@@ -18004,6 +19183,10 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
   late final $InventoryTransactionEntriesTable inventoryTransactionEntries =
       $InventoryTransactionEntriesTable(this);
   late final $BarcodeEntriesTable barcodeEntries = $BarcodeEntriesTable(this);
+  late final $StoreTaxSlabEntriesTable storeTaxSlabEntries =
+      $StoreTaxSlabEntriesTable(this);
+  late final $StoreTaxComponentEntriesTable storeTaxComponentEntries =
+      $StoreTaxComponentEntriesTable(this);
   late final Index productsPosition = Index(
     'products_position',
     'CREATE INDEX products_position ON products (position)',
@@ -18019,6 +19202,10 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
   late final Index inventoryTxRef = Index(
     'inventory_tx_ref',
     'CREATE INDEX inventory_tx_ref ON inventory_transactions (ref_type, ref_id)',
+  );
+  late final Index storeTaxSlabsStore = Index(
+    'store_tax_slabs_store',
+    'CREATE INDEX store_tax_slabs_store ON store_tax_slabs (store_id)',
   );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
@@ -18053,9 +19240,12 @@ abstract class _$AxpertDatabase extends GeneratedDatabase {
     inventoryBalanceEntries,
     inventoryTransactionEntries,
     barcodeEntries,
+    storeTaxSlabEntries,
+    storeTaxComponentEntries,
     productsPosition,
     salesPosition,
     inventoryTxProduct,
     inventoryTxRef,
+    storeTaxSlabsStore,
   ];
 }

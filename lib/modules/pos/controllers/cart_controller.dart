@@ -9,6 +9,8 @@ import '../../../core/services/pricing/pricing_models.dart';
 import '../../../core/services/pricing/pricing_service.dart';
 import '../../../core/services/pricing/tax_config.dart';
 import '../../../core/services/pricing/qty.dart';
+import '../../../core/services/pricing/tax_components.dart';
+import '../../../core/services/pricing/tax_split.dart';
 import '../../customers/controllers/customers_controller.dart';
 import '../../../features/offers/domain/services/offer_engine.dart';
 import '../../../features/offers/presentation/controllers/offers_controller.dart';
@@ -259,6 +261,24 @@ class CartController extends GetxController implements SessionScoped {
       currency: currency,
       storeId: _session?.store.value?.id,
     );
+  }
+
+  /// Tax lines (one per component) of [t], the totals of the current cart;
+  /// empty when the tax is a single line. They add up to `t.tax` exactly.
+  List<TaxPart> taxPartsOf(CartTotals t) {
+    final regime = _session?.regime.value;
+    if (regime == null) return const <TaxPart>[];
+    final lines = cart.value.lines;
+    final exact = t.exact.lines;
+    final shares = <TaxLineShare>[
+      for (var i = 0; i < exact.length && i < lines.length; i++)
+        TaxLineShare(
+          tax: exact[i].tax,
+          rateBp: _service.config.rateFor(lines[i].product.gst).value,
+        ),
+    ];
+    final parts = regime.partsOf(t.tax, shares);
+    return parts.length >= 2 ? parts : const <TaxPart>[];
   }
 
   /// The totals of any cart (held bills use their customer's points).

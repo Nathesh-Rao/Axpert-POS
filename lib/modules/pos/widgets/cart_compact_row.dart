@@ -16,7 +16,6 @@ import '../../../core/theme/tokens/app_radii.dart';
 import '../../../core/theme/tokens/app_sizes.dart';
 import '../../../core/theme/tokens/app_spacing.dart';
 import '../../../core/theme/tokens/app_typography.dart';
-import '../../../core/utils/decimal_text.dart';
 import '../../../core/utils/money_formatter.dart';
 import '../../../features/offers/domain/entities/offer.dart';
 import '../../../features/offers/domain/services/offer_engine.dart';
@@ -375,11 +374,8 @@ class _Names extends StatelessWidget {
         MoneyFormatter.format(line.price)
       else
         product.barcode,
-      if (session.taxLabel.isNotEmpty)
-        s.taxRateLabel(
-          session.taxLabel,
-          DecimalText.scaled(product.gst.value, 2),
-        ),
+      if (session.taxCaption(product.gst).isNotEmpty)
+        session.taxCaption(product.gst),
     ].join(s.cartInfoSeparator());
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,

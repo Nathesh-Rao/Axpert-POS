@@ -323,6 +323,10 @@ abstract class AppStrings {
   String receiptSubtotal();
   String receiptDiscount();
   String receiptPoints();
+
+  /// Heading of the tax rows when the tax has several components and no
+  /// single name.
+  String receiptTaxGeneric();
   String receiptTotal();
   String receiptPayment();
   String receiptChange();

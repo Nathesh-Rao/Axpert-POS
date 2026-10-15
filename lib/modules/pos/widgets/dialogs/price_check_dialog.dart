@@ -7,7 +7,6 @@ import '../../../../features/session/presentation/controllers/active_session.dar
 import '../../../../core/theme/tokens/app_checkout_sizes.dart';
 import '../../../../core/theme/tokens/app_radii.dart';
 import '../../../../core/theme/tokens/app_typography.dart';
-import '../../../../core/utils/decimal_text.dart';
 import '../../../../core/utils/money_formatter.dart';
 import '../../../../shared/widgets/app_modal.dart';
 import '../../../../shared/widgets/modal_input.dart';
@@ -77,10 +76,7 @@ class PriceCheckDialog extends StatelessWidget {
                     s.priceCheckDetails(
                       product.code,
                       product.stock,
-                      s.taxRateLabel(
-                        Get.find<ActiveSession>().taxLabel,
-                        DecimalText.scaled(product.gst.value, 2),
-                      ),
+                      Get.find<ActiveSession>().taxCaption(product.gst),
                     ),
                     style: context.text
                         .of(AppFontSize.s14, height: AppLineHeight.base)

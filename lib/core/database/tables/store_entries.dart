@@ -39,6 +39,9 @@ class StoreEntries extends Table {
   /// Per-store stock rule (DEC-148): false = a sale that would take stock
   /// below zero is refused (today's behavior); true = it is allowed with a
   /// warning.
+  /// State or region inside the country (v15); null = not set.
+  TextColumn get stateCode => text().nullable()();
+
   BoolColumn get allowNegativeStock =>
       boolean().withDefault(const Constant(false))();
 

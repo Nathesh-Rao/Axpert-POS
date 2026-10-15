@@ -2,6 +2,7 @@ import '../../../core/services/pricing/currency.dart';
 import '../../../core/services/pricing/currency_registry.dart';
 import '../../../core/services/pricing/money.dart';
 import '../../../core/services/pricing/qty.dart';
+import '../../../core/services/pricing/tax_split.dart';
 import '../../pos/models/cart.dart';
 import '../../pos/models/line_key.dart';
 
@@ -72,6 +73,7 @@ class Sale {
     required this.returned,
     this.saleId,
     this.cashier,
+    this.taxParts = const <TaxPart>[],
   });
 
   factory Sale.fromJson(
@@ -99,6 +101,13 @@ class Sale {
       for (final e in (json['returned'] as Map<String, dynamic>).entries)
         LineKey.parse(e.key): Qty(e.value as int),
     },
+    taxParts: <TaxPart>[
+      for (final p in (json['taxParts'] as List<dynamic>? ?? const []))
+        TaxPart(
+          (p as Map<String, dynamic>)['label'] as String,
+          Money(p['minor'] as int, currency),
+        ),
+    ],
   );
 
   final String number;
@@ -120,7 +129,16 @@ class Sale {
   final Money change;
   final Map<LineKey, Qty> returned;
 
-  Sale copyWith({Map<LineKey, Qty>? returned, String? date}) => Sale(
+  /// Tax lines (label and amount) as printed when the sale was made; empty on
+  /// older sales and for one-line tax (labels then come from the current
+  /// setup, KG-216).
+  final List<TaxPart> taxParts;
+
+  Sale copyWith({
+    Map<LineKey, Qty>? returned,
+    String? date,
+    List<TaxPart>? taxParts,
+  }) => Sale(
     number: number,
     saleId: saleId,
     cashier: cashier,
@@ -133,6 +151,7 @@ class Sale {
     tendered: tendered,
     change: change,
     returned: returned ?? this.returned,
+    taxParts: taxParts ?? this.taxParts,
   );
 
   Map<String, dynamic> toJson() => <String, dynamic>{
@@ -150,5 +169,10 @@ class Sale {
     'returned': <String, int>{
       for (final e in returned.entries) e.key.text: e.value.milli,
     },
+    if (taxParts.isNotEmpty)
+      'taxParts': <Map<String, dynamic>>[
+        for (final p in taxParts)
+          <String, dynamic>{'label': p.label, 'minor': p.amount.minor},
+      ],
   };
 }

@@ -867,6 +867,9 @@ class EnAppStrings extends AppStrings {
   String receiptPoints() => 'Reward Points';
 
   @override
+  String receiptTaxGeneric() => 'Tax';
+
+  @override
   String receiptTotal() => 'Total';
 
   @override

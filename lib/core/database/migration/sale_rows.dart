@@ -14,6 +14,7 @@ import '../../services/pricing/currency_registry.dart';
 import '../../services/pricing/money.dart';
 import '../../services/pricing/pricing_models.dart';
 import '../../services/pricing/qty.dart';
+import '../../services/pricing/tax_split.dart';
 import '../../session/store_scope.dart';
 import '../../utils/epoch_time.dart';
 import '../axpert_database.dart';
@@ -463,6 +464,24 @@ abstract final class SaleRows {
 
   /// Base-unit lines are stored as the plain product id (what the prototype
   /// wrote), packaged lines as `"id|packaging"` (DEC-154).
+  static String? _taxPartsJson(Sale sale) => sale.taxParts.isEmpty
+      ? null
+      : jsonEncode(<Map<String, Object>>[
+          for (final p in sale.taxParts)
+            <String, Object>{'label': p.label, 'minor': p.amount.minor},
+        ]);
+
+  static List<TaxPart> _taxParts(String? json, Money Function(int) m) =>
+      json == null
+      ? const <TaxPart>[]
+      : <TaxPart>[
+          for (final p in jsonDecode(json) as List<dynamic>)
+            TaxPart(
+              (p as Map<String, dynamic>)['label'] as String,
+              m(p['minor'] as int),
+            ),
+        ];
+
   static String _orderJson(Sale sale) => jsonEncode(<Object>[
     for (final key in sale.returned.keys) key.isBase ? key.productId : key.text,
   ]);
@@ -568,6 +587,7 @@ abstract final class SaleRows {
       subtotalMinor: s.totals.subtotal.minor,
       discountMinor: s.totals.discount.minor,
       taxMinor: s.totals.tax.minor,
+      taxPartsJson: Value(_taxPartsJson(s)),
       pointsMinor: s.totals.points.minor,
       totalMinor: s.totals.total.minor,
       tenderedMinor: s.tendered.minor,
@@ -715,6 +735,7 @@ abstract final class SaleRows {
       returned: <LineKey, Qty>{
         for (final key in order) key: firstQty[key] ?? Qty.zero,
       },
+      taxParts: _taxParts(r.taxPartsJson, m),
     );
   }
 }

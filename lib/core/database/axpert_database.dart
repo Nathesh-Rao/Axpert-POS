@@ -25,6 +25,7 @@ import 'tables/seed_manifest_entries.dart';
 import 'tables/settings_entries.dart';
 import 'tables/store_entries.dart';
 import 'tables/store_forex_entries.dart';
+import 'tables/store_tax_entries.dart';
 import 'tables/tax_regime_entries.dart';
 import 'tables/unit_entries.dart';
 import 'tables/user_entries.dart';
@@ -37,6 +38,8 @@ part 'axpert_database.g.dart';
 /// the packaging snapshot columns of sale_lines (DEC-151).
 /// Schema v13 adds payment_methods and payments.method_id (DEC-149).
 /// Schema v12 adds inventory_balance, inventory_transactions and
+/// Schema v15 adds stores.state_code, store_tax_slabs, store_tax_components
+/// and sales.tax_parts_json (store configuration).
 /// stores.allow_negative_stock (DEC-148).
 /// Schema v11 stores every timestamp as integer epoch milliseconds (UTC).
 /// Schema v10 adds store_forex, tax_regimes and tax_slabs.
@@ -74,13 +77,15 @@ part 'axpert_database.g.dart';
     BrandEntries,
     PackagingEntries,
     BarcodeEntries,
+    StoreTaxSlabEntries,
+    StoreTaxComponentEntries,
   ],
 )
 class AxpertDatabase extends _$AxpertDatabase {
   AxpertDatabase(super.executor);
 
   @override
-  int get schemaVersion => 14;
+  int get schemaVersion => 15;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -265,6 +270,23 @@ class AxpertDatabase extends _$AxpertDatabase {
     if (from < 14 && to >= 14) {
       // One transaction: v14 is all-or-nothing (DEC-151).
       await transaction(() => CatalogV14Migration(this).run(migrator));
+    }
+    if (from < 15 && to >= 15) {
+      // One transaction: v15 is all-or-nothing (store configuration).
+      await transaction(() async {
+        await migrator.createTable(storeTaxSlabEntries);
+        await migrator.createTable(storeTaxComponentEntries);
+        await _addColumnIfMissing(
+          migrator,
+          storeEntries,
+          storeEntries.stateCode,
+        );
+        await _addColumnIfMissing(
+          migrator,
+          saleEntries,
+          saleEntries.taxPartsJson,
+        );
+      });
     }
   }
 

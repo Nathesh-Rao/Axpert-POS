@@ -4,6 +4,7 @@ import '../../../core/utils/qty_formatter.dart';
 import '../../../core/services/packaging/packaging_label.dart';
 import '../../../core/services/pricing/qty.dart';
 import '../../../core/services/pricing/money.dart';
+import '../../../core/services/pricing/tax_components.dart';
 import '../../../core/services/pricing/tax_split.dart';
 import '../../../features/session/domain/entities/session_entities.dart';
 import '../../pos/models/cart_line.dart';
@@ -46,12 +47,25 @@ abstract final class ReceiptBuilder {
     discount: sale.totals.discount,
     points: sale.totals.points,
     tax: sale.totals.tax,
-    taxLabel: regime?.label ?? '',
-    taxParts: TaxSplit.parts(sale.totals.tax, regime?.splitParts ?? const []),
+    taxLabel: regime == null
+        ? ''
+        : (regime.taxName.isEmpty
+              ? AppStrings.current.receiptTaxGeneric()
+              : regime.taxName),
+    taxParts: _taxParts(sale, regime),
     total: sale.totals.total,
     mode: sale.mode,
     change: sale.change,
   );
+
+  /// The lines saved with the sale; for an older sale the split of the current
+  /// setup (KG-216). One line is shown as the tax row alone.
+  static List<TaxPart> _taxParts(Sale sale, TaxRegimeInfo? regime) {
+    if (sale.taxParts.isNotEmpty) return sale.taxParts;
+    if (regime == null) return const <TaxPart>[];
+    final parts = regime.partsOf(sale.totals.tax, const <TaxLineShare>[]);
+    return parts.length >= 2 ? parts : const <TaxPart>[];
+  }
 
   /// Under the item: for a packaged line "1 Carton of 24 @ 240.00" (the unit,
   /// its size and the package price), then the offer text, one per line.

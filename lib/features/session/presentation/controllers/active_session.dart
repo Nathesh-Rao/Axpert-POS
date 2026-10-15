@@ -1,11 +1,13 @@
 import 'package:get/get.dart';
 
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/security/password_hasher.dart';
 import '../../../../core/services/pricing/basis_points.dart';
 import '../../../../core/services/pricing/currency.dart';
 import '../../../../core/services/pricing/currency_registry.dart';
 import '../../../../core/services/pricing/pricing_service.dart';
 import '../../../../core/services/pricing/tax_config.dart';
+import '../../../../core/utils/decimal_text.dart';
 import '../../../../core/session/store_scope.dart';
 import '../../domain/entities/session_entities.dart';
 import '../../domain/repositories/session_repositories.dart';
@@ -130,7 +132,25 @@ class ActiveSession extends GetxController {
   }
 
   /// Tax name of the active store's regime (`GST`, `VAT`); empty without one.
-  String get taxLabel => regime.value?.label ?? '';
+  String get taxLabel => regime.value?.taxName ?? '';
+
+  /// Caption of a product's tax (`GST 18%`, or the slab name of a store slab);
+  /// empty when the store has no tax name.
+  String taxCaption(Bp rate) {
+    final r = regime.value;
+    if (r == null) return '';
+    final slab = r.slabFor(rate.value);
+    if (slab != null && slab.components.isNotEmpty && slab.label.isNotEmpty) {
+      return slab.label;
+    }
+    final name = r.taxName;
+    return name.isEmpty
+        ? ''
+        : AppStrings.current.taxRateLabel(
+            name,
+            DecimalText.scaled(rate.value, 2),
+          );
+  }
 
   /// Components the total tax is split into (`CGST`, `SGST`); empty = one line.
   List<String> get taxSplitParts =>
@@ -144,9 +164,13 @@ class ActiveSession extends GetxController {
         : TaxConfig(
             country: r.region,
             currency: TaxConfig.none.currency,
-            label: r.label,
+            // Never shown: only "has a regime" (the heading uses taxName).
+            label: r.taxName.isEmpty ? 'tax' : r.taxName,
             mode: r.inclusive ? TaxMode.inclusive : TaxMode.exclusive,
-            slabsBp: <Bp>[for (final s in r.slabs) Bp(s.rateBp)],
+            slabsBp: <Bp>[
+              for (final s in r.slabs)
+                if (s.enabled && s.scheme == TaxScheme.standard) Bp(s.rateBp),
+            ],
             splitParts: r.splitParts,
           );
     final c = currency;
@@ -221,7 +245,7 @@ class ActiveSession extends GetxController {
     this.store.value = store;
     this.counter.value = counter;
     // Tax regime and forex rows follow the store before its data loads.
-    regime.value = await _stores.loadTaxRegime(store.region);
+    regime.value = await _stores.loadTaxRegime(store.region, storeId: store.id);
     forex.assignAll(await _stores.loadForex(store.id));
     await onActivate?.call(store);
   }
@@ -282,7 +306,10 @@ class _EmptyStores implements StoreRepository {
   Future<List<ForexRate>> loadForex(String storeId) async =>
       const <ForexRate>[];
   @override
-  Future<TaxRegimeInfo?> loadTaxRegime(String region) async => null;
+  Future<TaxRegimeInfo?> loadTaxRegime(
+    String region, {
+    String storeId = '',
+  }) async => null;
   @override
   Future<void> renameCounter(String counterId, String name) async {}
 }

@@ -16,7 +16,6 @@ import '../../../core/theme/tokens/app_shadows.dart';
 import '../../../core/theme/tokens/app_sizes.dart';
 import '../../../core/theme/tokens/app_spacing.dart';
 import '../../../core/theme/tokens/app_typography.dart';
-import '../../../core/utils/decimal_text.dart';
 import '../../../core/utils/money_formatter.dart';
 import '../../../shared/widgets/app_pressable.dart';
 import '../../../shared/widgets/hold_to_repeat_button.dart';
@@ -511,14 +510,8 @@ class _Names extends StatelessWidget {
         const SizedBox(height: AppSpacing.s4),
         if (context.metrics.showLineBarcode)
           Text(product.barcode, style: small),
-        if (Get.find<ActiveSession>().taxLabel.isNotEmpty)
-          Text(
-            s.taxRateLabel(
-              Get.find<ActiveSession>().taxLabel,
-              DecimalText.scaled(product.gst.value, 2),
-            ),
-            style: small,
-          ),
+        if (Get.find<ActiveSession>().taxCaption(product.gst).isNotEmpty)
+          Text(Get.find<ActiveSession>().taxCaption(product.gst), style: small),
         LineUnitChip(line: line),
         ValueListenableBuilder<AppliedOffer?>(
           valueListenable: Get.find<CartController>().offerListenable(line.key),

@@ -57,6 +57,19 @@ class ReceiptPdfBuilder {
           ),
         ),
       ),
+      PrintColumns(wrapLabel: true) => pw.Padding(
+        padding: const pw.EdgeInsets.symmetric(vertical: 1),
+        child: pw.Row(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: <pw.Widget>[
+            pw.Expanded(
+              child: pw.Text(row.label, style: style(row.bold, row.size)),
+            ),
+            pw.SizedBox(width: 6),
+            pw.Text(row.value, style: style(row.bold, row.size)),
+          ],
+        ),
+      ),
       PrintColumns() => pw.Padding(
         padding: const pw.EdgeInsets.symmetric(vertical: 1),
         child: pw.Row(

@@ -331,6 +331,7 @@ class PaymentController extends GetxController {
         tendered: amount,
         saleId: _uuid.generate(),
         allowNegativeStock: allowNegative,
+        taxParts: cart.taxPartsOf(cart.totals.value),
       );
       switch (result) {
         case CheckoutStockChanged():

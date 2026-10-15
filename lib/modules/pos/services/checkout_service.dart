@@ -2,6 +2,7 @@ import '../../../core/services/pricing/money.dart';
 import '../models/line_key.dart';
 import '../../../core/services/pricing/pricing_models.dart';
 import '../../../core/services/pricing/qty.dart';
+import '../../../core/services/pricing/tax_split.dart';
 import '../../customers/models/customer.dart';
 import '../../sales/models/sale.dart';
 import '../models/cart.dart';
@@ -60,6 +61,7 @@ class CheckoutService {
     required Money tendered,
     String? saleId,
     bool allowNegativeStock = false,
+    List<TaxPart> taxParts = const <TaxPart>[],
   }) {
     // A store that allows negative stock sells past the recorded stock
     // (the controller warns); otherwise today's rule holds.
@@ -97,6 +99,7 @@ class CheckoutService {
       tendered: tendered,
       change: change,
       returned: const <LineKey, Qty>{},
+      taxParts: taxParts,
     );
     return CheckoutDone(
       sale: sale,

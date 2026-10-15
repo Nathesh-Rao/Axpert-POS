@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 import '../../../core/database/axpert_database.dart';
 import '../../../core/database/database_provider.dart';
+import '../../../core/database/store_tax_rows.dart';
 import '../../../core/services/pricing/currency.dart';
 import '../domain/entities/session_entities.dart';
 import '../domain/repositories/session_repositories.dart';
@@ -118,6 +119,7 @@ class DriftUserRepository implements UserRepository {
     receiptFooter: r.receiptFooter,
     region: r.region,
     allowNegativeStock: r.allowNegativeStock,
+    stateCode: r.stateCode ?? '',
   );
 }
 
@@ -177,12 +179,27 @@ class DriftStoreRepository implements StoreRepository {
   }
 
   @override
-  Future<TaxRegimeInfo?> loadTaxRegime(String region) async {
-    if (region.isEmpty) return null;
+  Future<TaxRegimeInfo?> loadTaxRegime(
+    String region, {
+    String storeId = '',
+  }) async {
     final db = await _provider.open();
-    final regime = await (db.select(
-      db.taxRegimeEntries,
-    )..where((t) => t.region.equals(region))).getSingleOrNull();
+    final regime = region.isEmpty
+        ? null
+        : await (db.select(
+            db.taxRegimeEntries,
+          )..where((t) => t.region.equals(region))).getSingleOrNull();
+    final own = storeId.isEmpty
+        ? const <TaxSlabInfo>[]
+        : await StoreTaxRows.load(db, storeId);
+    if (own.isNotEmpty) {
+      return TaxRegimeInfo(
+        region: region,
+        label: regime?.label ?? '',
+        inclusive: regime?.priceMode == 'inclusive',
+        slabs: own,
+      );
+    }
     if (regime == null) return null;
     final slabs =
         await (db.select(db.taxSlabEntries)

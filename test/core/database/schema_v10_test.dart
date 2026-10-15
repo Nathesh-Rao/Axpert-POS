@@ -12,7 +12,7 @@ void main() {
   test('a fresh database has the v10 tables', () async {
     final db = AxpertDatabase(NativeDatabase.memory());
     addTearDown(db.close);
-    expect(db.schemaVersion, 14);
+    expect(db.schemaVersion, 15);
     expect(await db.select(db.storeForexEntries).get(), isEmpty);
     expect(await db.select(db.taxRegimeEntries).get(), isEmpty);
     expect(await db.select(db.taxSlabEntries).get(), isEmpty);
@@ -43,7 +43,7 @@ void main() {
     final db = AxpertDatabase(NativeDatabase(file));
     addTearDown(db.close);
     final v = await db.customSelect('PRAGMA user_version').getSingle();
-    expect(v.read<int>('user_version'), 14);
+    expect(v.read<int>('user_version'), 15);
     final names = {
       for (final r
           in await db

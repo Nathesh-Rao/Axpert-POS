@@ -29,18 +29,26 @@ class PrintText extends PrintRow {
 }
 
 /// Label on the left, value on the right (totals, tax rows).
+/// Tax labels longer than this wrap on a receipt (about 70 to 80 mm paper).
+const int longTaxLabel = 24;
+
 class PrintColumns extends PrintRow {
   const PrintColumns(
     this.label,
     this.value, {
     this.bold = false,
     this.size = PrintSize.normal,
+    this.wrapLabel = false,
   });
 
   final String label;
   final String value;
   final bool bold;
   final PrintSize size;
+
+  /// A long label wraps in its own cell and the value stays at the right edge
+  /// (tax component labels are free text).
+  final bool wrapLabel;
 }
 
 /// An item: name, optional offer note, then quantity and line total.
@@ -105,9 +113,17 @@ class ReceiptPrintModel {
       PrintColumns(s.receiptDiscount(), MoneyFormatter.format(doc.discount)),
       PrintColumns(s.receiptPoints(), MoneyFormatter.format(doc.points)),
       if (doc.taxLabel.isNotEmpty) ...<PrintRow>[
-        PrintColumns(doc.taxLabel, MoneyFormatter.format(doc.tax)),
+        PrintColumns(
+          doc.taxLabel,
+          MoneyFormatter.format(doc.tax),
+          wrapLabel: doc.taxLabel.length > longTaxLabel,
+        ),
         for (final part in doc.taxParts)
-          PrintColumns(part.label, MoneyFormatter.format(part.amount)),
+          PrintColumns(
+            part.label,
+            MoneyFormatter.format(part.amount),
+            wrapLabel: part.label.length > longTaxLabel,
+          ),
       ],
       const PrintDivider(),
       PrintColumns(

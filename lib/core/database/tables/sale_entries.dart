@@ -92,6 +92,10 @@ class SaleEntries extends Table {
 
   IntColumn get taxMinor => integer()();
 
+  /// Tax lines at the time of the sale as JSON `[{"label":..,"minor":..}]`
+  /// (v15); null on older sales (labels then come from the current setup).
+  TextColumn get taxPartsJson => text().nullable()();
+
   IntColumn get pointsMinor => integer()();
 
   IntColumn get totalMinor => integer()();

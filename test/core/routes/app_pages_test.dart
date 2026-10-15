@@ -16,7 +16,7 @@ void main() {
   useTestApp();
 
   test(
-    'seven named routes plus splash, login and the store picker, without transition',
+    'seven named routes plus splash, login, store configuration and the store picker, without transition',
     () {
       expect(AppPages.pages.map((p) => p.name), <String>[
         '/',
@@ -28,6 +28,7 @@ void main() {
         '/more',
         '/splash',
         '/login',
+        '/store-config',
         '/select-session',
       ]);
       for (final page in AppPages.pages) {

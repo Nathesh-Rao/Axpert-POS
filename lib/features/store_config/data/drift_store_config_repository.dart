@@ -85,7 +85,7 @@ class DriftStoreConfigRepository implements StoreConfigRepository {
     final db = await _provider.open();
     final now = _now();
     final stamp = EpochTime.fromDateTime(now);
-    await db.transaction(() async {
+    await db.durableTransaction(() async {
       await _ensureCurrency(db, config.currencyCode, stamp);
       for (final f in config.forex) {
         await _ensureCurrency(db, f.code, stamp);

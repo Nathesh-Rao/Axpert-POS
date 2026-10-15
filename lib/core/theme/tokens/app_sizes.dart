@@ -39,6 +39,9 @@ abstract final class AppSizes {
   /// .primary, .secondary
   static const double controlMinHeight = 43.0;
 
+  /// Icon of the small buttons of the Store configuration page.
+  static const double configIcon = 18.0;
+
   /// .modal-input
   static const double modalInputHeight = 46.0;
 

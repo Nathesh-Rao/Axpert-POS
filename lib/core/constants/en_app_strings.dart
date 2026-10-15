@@ -1578,4 +1578,222 @@ class EnAppStrings extends AppStrings {
 
   @override
   String offerErrPriority() => 'Enter a whole number, 0 or more';
+
+  @override
+  String scTitle() => 'Store configuration';
+
+  @override
+  String scSettingsHint() =>
+      'Country, currency, exchange rates and tax of this store';
+
+  @override
+  String scOpen() => 'Open';
+
+  @override
+  String scSectionStore() => 'Store';
+
+  @override
+  String scSectionCurrency() => 'Currency';
+
+  @override
+  String scSectionTax() => 'Tax';
+
+  @override
+  String scSectionPreview() => 'Sample bill';
+
+  @override
+  String scFieldName() => 'Store name';
+
+  @override
+  String scFieldCountry() => 'Country';
+
+  @override
+  String scFieldState() => 'State / region';
+
+  @override
+  String scFieldCurrency() => 'Store currency';
+
+  @override
+  String scCurrencyMismatch(String country, String code) =>
+      'The usual currency of $country is $code.';
+
+  @override
+  String scCurrencyLocked() =>
+      'This store has sales: its currency can no longer be changed.';
+
+  @override
+  String scCurrencyCartOpen() =>
+      'Clear the cart before changing the store currency.';
+
+  @override
+  String scForexTitle() => 'Exchange rates';
+
+  @override
+  String scForexHint(String base) =>
+      'How many $base one unit of the foreign currency is worth. The Bill Summary uses these rates.';
+
+  @override
+  String scForexColCurrency() => 'Currency';
+
+  @override
+  String scForexColRate(String base) => 'Rate ($base)';
+
+  @override
+  String scForexColEffective() => 'Effective since';
+
+  @override
+  String scForexAdd() => 'Add rate';
+
+  @override
+  String scForexRemove() => 'Remove rate';
+
+  @override
+  String scForexEmpty() => 'No exchange rates: the forex card stays hidden.';
+
+  @override
+  String scPriceExclusive() => 'Prices exclude tax (tax is added on top).';
+
+  @override
+  String scPriceInclusive() => 'Prices include tax.';
+
+  @override
+  String scSlabAdd() => 'Add slab';
+
+  @override
+  String scSlabAddInterState() => 'Add inter-state slab';
+
+  @override
+  String scSlabName() => 'Slab name';
+
+  @override
+  String scSlabDefault() => 'Default';
+
+  @override
+  String scSlabMakeDefault() => 'Make default';
+
+  @override
+  String scSlabEnabled() => 'Enabled';
+
+  @override
+  String scSlabInterState() => 'Inter-state';
+
+  @override
+  String scSlabTotal(String percent) => 'Total $percent%';
+
+  @override
+  String scSlabRemove() => 'Remove slab';
+
+  @override
+  String scSlabProducts(int count) => '$count products use this rate';
+
+  @override
+  String scSlabEmptyHint() =>
+      'Products whose rate matches no enabled slab are taxed on one line.';
+
+  @override
+  String scCompAdd() => 'Add component';
+
+  @override
+  String scCompLabel() => 'Label';
+
+  @override
+  String scCompRate() => 'Rate %';
+
+  @override
+  String scCompRemove() => 'Remove component';
+
+  @override
+  String scCompCustom() => 'Custom';
+
+  @override
+  String scCompEnabled() => 'On';
+
+  @override
+  String scPreviewSlab() => 'Slab';
+
+  @override
+  String scPreviewPrice(String amount) => 'Sample price $amount';
+
+  @override
+  String scPreviewOne() => 'one tax line';
+
+  @override
+  String scSave() => 'Save';
+
+  @override
+  String scSaving() => 'Saving…';
+
+  @override
+  String scCancel() => 'Cancel';
+
+  @override
+  String scHintCancel() => 'Cancel';
+
+  @override
+  String scHintSave() => 'Save';
+
+  @override
+  String scReadOnly() =>
+      'View only. Ask an admin to change the store configuration.';
+
+  @override
+  String scNoAccess() => 'You do not have access to the store configuration.';
+
+  @override
+  String scLoading() => 'Loading…';
+
+  @override
+  String scConfirmSave() =>
+      'Save the store configuration? It applies to new sales only. Past sales keep their amounts and tax lines.';
+
+  @override
+  String scConfirmIndian(String label) => '$label is used in India. Continue?';
+
+  @override
+  String scSaved() => 'Store configuration saved';
+
+  @override
+  String scSaveFailed() => 'Could not save the store configuration';
+
+  @override
+  String scNoPermission() => 'Only an admin can change the store configuration';
+
+  @override
+  String scFixIssues() => 'Fix the highlighted problems first';
+
+  @override
+  String scIssueName() => 'Enter a store name';
+
+  @override
+  String scIssueSlabName() => 'Every slab needs a name';
+
+  @override
+  String scIssueNeedsComponent(String slab) =>
+      '$slab needs at least one component';
+
+  @override
+  String scIssueLabel(String slab) => 'Every component of $slab needs a label';
+
+  @override
+  String scIssueDuplicateLabel(String label) =>
+      '$label is used twice in one slab';
+
+  @override
+  String scIssueRate(String label) => '$label: enter a rate from 0 to 100';
+
+  @override
+  String scIssueTotalHigh(String slab) => '$slab adds up to more than 100%';
+
+  @override
+  String scIssueDuplicateTotal(String slab) =>
+      '$slab has the same total as another enabled slab';
+
+  @override
+  String scIssueNoDefault() => 'Choose one default slab';
+
+  @override
+  String scIssueForexRate(String code) => '$code: enter a rate above 0';
+
+  @override
+  String scIssueForexDuplicate(String code) => '$code is listed twice';
 }

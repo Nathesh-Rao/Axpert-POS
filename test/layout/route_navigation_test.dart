@@ -12,6 +12,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/constants/storage_keys.dart';
+import 'package:pos_application/core/routes/app_routes.dart';
+import 'package:pos_application/features/store_config/presentation/controllers/store_config_controller.dart';
 import 'package:pos_application/features/session/data/in_memory_session_repositories.dart';
 import 'package:pos_application/features/session/domain/entities/session_entities.dart';
 import 'package:pos_application/features/session/presentation/controllers/active_session.dart';
@@ -251,6 +253,60 @@ void main() {
       }
     });
   }
+
+  testWidgets('the store configuration page raises no error', (tester) async {
+    useLogicalViewport(tester, const Size(1280, 720));
+    final binding = await bootInWidgetTest(
+      tester,
+      session: roleSession('admin'),
+    );
+    await tester.pumpWidget(testApp(binding));
+    await tester.pumpAndSettle();
+    final errors = <String>[];
+    final previous = FlutterError.onError;
+    FlutterError.onError = (details) {
+      errors.add(
+        '${details.exceptionAsString().split('\n').first}\n'
+        '${details.stack}',
+      );
+    };
+    try {
+      void check(String step) {
+        expect(errors, isEmpty, reason: 'errors after "$step":\n$errors');
+        expect(find.byType(ErrorWidget), findsNothing, reason: step);
+        expect(RxInterface.proxy, isNull, reason: step);
+      }
+
+      Get.offAllNamed<void>(AppRoutes.storeConfig);
+      await tester.pumpAndSettle();
+      check('open store configuration');
+      final controller = Get.find<StoreConfigController>();
+      controller.addSlab();
+      controller.addComponent(1);
+      controller.addForex();
+      await tester.pumpAndSettle();
+      check('add slab, component and rate');
+      controller.removeSlab(controller.slabs.length - 1);
+      controller.removeComponent(1, 2);
+      controller.removeForex(controller.forex.length - 1);
+      await tester.pumpAndSettle();
+      check('remove them again');
+      controller.requestSave();
+      await tester.pumpAndSettle();
+      check('save confirmation open');
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pumpAndSettle();
+      check('save confirmation closed');
+      Get.find<ToastController>().toasts.clear();
+      Get.offAllNamed<void>(AppRoutes.more);
+      await tester.pumpAndSettle();
+      check('back to settings');
+      expect(find.text('Store configuration'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 6));
+    } finally {
+      FlutterError.onError = previous;
+    }
+  });
 
   testWidgets('store and counter picker raises no error', (tester) async {
     useLogicalViewport(tester, const Size(1280, 720));

@@ -30,4 +30,5 @@ abstract final class AppRoutes {
   static const String returns = '/returns';
   static const String reports = '/reports';
   static const String more = '/more';
+  static const String storeConfig = '/store-config';
 }

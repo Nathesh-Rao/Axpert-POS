@@ -67,6 +67,8 @@ import '../../features/session/data/in_memory_session_repositories.dart';
 import '../../features/session/domain/repositories/session_repositories.dart';
 import '../../features/session/presentation/controllers/active_session.dart';
 import '../session/store_scope.dart';
+import '../../features/store_config/data/drift_store_config_repository.dart';
+import '../../features/store_config/domain/repositories/store_config_repository.dart';
 import '../config/app_config.dart';
 import '../../features/inventory/data/drift_inventory_repository.dart';
 import '../../features/payment/data/repositories/drift_payment_method_repository.dart';
@@ -436,6 +438,14 @@ class InitialBinding extends Bindings {
     );
     _put<ProductsController>(ProductsController(Get.find()));
     _putProductAdmin();
+    if (_databaseSession) {
+      _put<StoreConfigRepository>(
+        DriftStoreConfigRepository(
+          infrastructure.databaseProvider,
+          infrastructure.uuid,
+        ),
+      );
+    }
     _put<CustomersController>(CustomersController(Get.find()));
     _put<CartController>(
       CartController(

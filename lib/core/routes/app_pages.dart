@@ -19,6 +19,8 @@ import '../../modules/sales/views/sales_view.dart';
 import '../../modules/returns/bindings/returns_binding.dart';
 import '../../modules/returns/views/returns_view.dart';
 import '../../modules/settings/views/settings_view.dart';
+import '../../features/store_config/presentation/bindings/store_config_binding.dart';
+import '../../features/store_config/presentation/pages/store_config_view.dart';
 import 'app_routes.dart';
 
 /// Seven named routes plus splash and login, no transition. Unknown paths fall through to POS.
@@ -40,6 +42,13 @@ abstract final class AppPages {
       name: AppRoutes.login,
       page: LoginView.new,
       binding: LoginBinding(),
+      transition: Transition.noTransition,
+    ),
+    // Settings sub-page (admin and manager): not one of the seven nav pages.
+    GetPage<dynamic>(
+      name: AppRoutes.storeConfig,
+      page: StoreConfigView.new,
+      binding: StoreConfigBinding(),
       transition: Transition.noTransition,
     ),
     GetPage<dynamic>(

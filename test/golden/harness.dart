@@ -116,6 +116,8 @@ const Set<String> keptGoldens = <String>{
   'shell_signed_out_light',
   'product_form_light',
   'product_form_dark',
+  'store_config_light',
+  'store_config_dark',
 };
 
 /// Compares [finder] with `goldens/<file>.png` when [file] is in

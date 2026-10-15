@@ -34,6 +34,25 @@ class StoreInfo {
 
   /// State or region inside the country (empty = not set).
   final String stateCode;
+
+  StoreInfo copyWith({
+    String? name,
+    String? currencyCode,
+    String? region,
+    String? stateCode,
+  }) => StoreInfo(
+    id: id,
+    name: name ?? this.name,
+    currencyCode: currencyCode ?? this.currencyCode,
+    address: address,
+    phone: phone,
+    taxId: taxId,
+    receiptHeader: receiptHeader,
+    receiptFooter: receiptFooter,
+    region: region ?? this.region,
+    allowNegativeStock: allowNegativeStock,
+    stateCode: stateCode ?? this.stateCode,
+  );
 }
 
 class CounterInfo {

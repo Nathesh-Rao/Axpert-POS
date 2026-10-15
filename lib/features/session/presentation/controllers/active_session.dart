@@ -250,6 +250,18 @@ class ActiveSession extends GetxController {
     await onActivate?.call(store);
   }
 
+  /// Takes the saved store configuration (name, country, currency, state) and
+  /// reloads the tax setup and forex of the open store. Applies to new sales;
+  /// nothing already sold is touched.
+  Future<void> applyConfiguration(StoreInfo next) async {
+    final current = store.value;
+    if (current == null || current.id != next.id) return;
+    _scope.currency = CurrencyRegistry.byCode(next.currencyCode);
+    store.value = next;
+    regime.value = await _stores.loadTaxRegime(next.region, storeId: next.id);
+    forex.assignAll(await _stores.loadForex(next.id));
+  }
+
   /// Switches the store from the top bar (the caller checks the cart).
   Future<void> switchStore(StoreInfo next) async {
     final entry = access.firstWhereOrNull((a) => a.store.id == next.id);

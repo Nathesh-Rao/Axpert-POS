@@ -2,6 +2,13 @@
 /// Settings) and the shift screens (`css_metrics.md`, `.management`,
 /// `.data-table`, `.report-stats`, `.bar-chart`, `.sign-card`).
 abstract final class AppManagementSizes {
+  /// Store configuration page (no React original): content width, the width
+  /// of a rate field and of the "effective since" column.
+  static const double configMaxWidth = 880.0;
+  static const double configRateWidth = 104.0;
+  static const double configEffectiveWidth = 150.0;
+  static const double configSectionGap = 16.0;
+
   /// `.management-heading` margin-bottom
   static const double headingMarginBottom = 28.0;
 

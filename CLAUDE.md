@@ -1,5 +1,7 @@
 # CLAUDE.md: pos_application
 
+> **integration is frozen for demo; all new work goes to integration_v2**
+
 ## Project
 
 POS (point of sale) application: `pos_application`.

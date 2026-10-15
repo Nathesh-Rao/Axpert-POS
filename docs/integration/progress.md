@@ -1,5 +1,7 @@
 # Integration progress
 
+> **integration is frozen for demo; all new work goes to integration_v2**
+
 Branch `integration` (from `main` d5b2975). axpert_pos is read-only and untouched.
 
 ## Batch 1 (docs and pure Dart)

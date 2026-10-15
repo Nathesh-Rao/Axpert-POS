@@ -7,6 +7,7 @@ import '../../../core/theme/tokens/app_management_sizes.dart';
 import '../../../core/theme/tokens/app_spacing.dart';
 import '../../../core/theme/tokens/app_typography.dart';
 import '../../shell/controllers/settings_controller.dart';
+import 'database_export_row.dart';
 import '../../../core/theme/tokens/app_icons.dart';
 
 /// `SettingsContent`: the prototype's two Settings rows (dark mode, scan
@@ -39,6 +40,7 @@ class SettingsContent extends StatelessWidget {
               value: settings.settings.value.beep,
               onChanged: settings.setBeep,
             ),
+            const DatabaseExportRow(),
           ],
         ),
       ),

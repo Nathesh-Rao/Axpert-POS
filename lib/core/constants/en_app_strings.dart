@@ -206,6 +206,38 @@ class EnAppStrings extends AppStrings {
   String beepHint() => 'Play a sound after a successful scan';
 
   @override
+  String exportDbTitle() => 'Export database';
+
+  @override
+  String exportDbHint() => 'Save the whole database as one .db file';
+
+  @override
+  String exportDbButton() => 'Export';
+
+  @override
+  String exportDbExporting() => 'Exporting...';
+
+  @override
+  String exportDbConfirm() =>
+      'The file contains all data, including users, password hashes and '
+      'customer details. Keep it safe and do not share it. Export now?';
+
+  @override
+  String exportDbSavedFile(String path) => 'Database saved to $path';
+
+  @override
+  String exportDbDownloaded(String fileName) => 'Downloading $fileName';
+
+  @override
+  String exportDbFailed() => 'Could not export the database';
+
+  @override
+  String exportDbCopy() => 'Copy';
+
+  @override
+  String exportDbPathCopied() => 'Path copied';
+
+  @override
   String toastProductAdded(String name) => '$name added';
 
   @override

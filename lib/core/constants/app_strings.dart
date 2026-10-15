@@ -151,6 +151,16 @@ abstract class AppStrings {
   String darkModeHint();
   String beepTitle();
   String beepHint();
+  String exportDbTitle();
+  String exportDbHint();
+  String exportDbButton();
+  String exportDbExporting();
+  String exportDbConfirm();
+  String exportDbSavedFile(String path);
+  String exportDbDownloaded(String fileName);
+  String exportDbFailed();
+  String exportDbCopy();
+  String exportDbPathCopied();
 
   // S4.a checkout
   String summarySubtotal();

@@ -78,7 +78,10 @@ import '../services/audio/audio_service.dart';
 import '../services/audio/audio_service_platform.dart';
 import '../services/beep_service.dart';
 
+import '../../modules/settings/controllers/database_export_controller.dart';
 import '../../modules/shell/controllers/settings_controller.dart';
+import '../database/export/database_export_saver_factory.dart';
+import '../database/export/database_export_service_factory.dart';
 import '../../modules/shell/repository/drift_settings_repository.dart';
 import '../../modules/shell/repository/mock_settings_repository.dart';
 import '../../modules/shell/repository/settings_repository.dart';
@@ -304,6 +307,15 @@ class InitialBinding extends Bindings {
     _put<ActiveSession>(
       sessionOverride ??
           ActiveSession(users: Get.find(), stores: Get.find(), scope: _scope),
+    );
+    _put<DatabaseExportController>(
+      DatabaseExportController(
+        service: createDatabaseExportService(infrastructure.databaseProvider),
+        saver: createDatabaseExportSaver(),
+        session: Get.find<ActiveSession>(),
+        toasts: Get.find<ToastController>(),
+        overlay: Get.find<OverlayController>(),
+      ),
     );
     _put<OfferRepository>(
       offerRepositoryOverride ??

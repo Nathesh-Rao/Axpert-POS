@@ -142,6 +142,11 @@ abstract final class AppIcons {
     fontFamily: _family,
     fontPackage: _package,
   );
+  static const IconData download = IconData(
+    57522,
+    fontFamily: _family,
+    fontPackage: _package,
+  );
   static const IconData volume2 = IconData(
     57771,
     fontFamily: _family,
@@ -318,6 +323,7 @@ abstract final class AppIcons {
     'undo2': undo2,
     'userRound': userRound,
     'users': users,
+    'download': download,
     'volume2': volume2,
     'x': x,
     'star': star,

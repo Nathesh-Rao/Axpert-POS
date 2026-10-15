@@ -164,7 +164,7 @@ class _ToastCard extends StatelessWidget {
                               Get.find<SearchFieldController>().refocus();
                             },
                             builder: (context, hovered) => Text(
-                              s.toastUndo(),
+                              item.actionLabel ?? s.toastUndo(),
                               style: context.text
                                   .of(
                                     AppFontSize.s14,

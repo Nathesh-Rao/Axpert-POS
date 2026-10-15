@@ -28,6 +28,7 @@ void main() {
     'undo2': LucideIcons.undo2,
     'userRound': LucideIcons.userRound,
     'users': LucideIcons.users,
+    'download': LucideIcons.download,
     'volume2': LucideIcons.volume2,
     'x': LucideIcons.x,
     'star': LucideIcons.star,

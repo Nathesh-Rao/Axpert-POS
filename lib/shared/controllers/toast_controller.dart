@@ -10,12 +10,16 @@ class ToastItem {
     required this.text,
     required this.kind,
     this.onUndo,
+    this.actionLabel,
   });
 
   final int id;
   final String text;
   final ToastKind kind;
   final void Function()? onUndo;
+
+  /// Label of the action button; null keeps "Undo".
+  final String? actionLabel;
 }
 
 /// Toast queue: the last four are kept, each disappears after 5 s.
@@ -32,6 +36,7 @@ class ToastController extends GetxController {
     String text, {
     ToastKind kind = ToastKind.success,
     void Function()? onUndo,
+    String? actionLabel,
   }) {
     final id = _nextId++;
     final kept = toasts.length >= maxVisible
@@ -42,7 +47,13 @@ class ToastController extends GetxController {
     }
     toasts.assignAll(<ToastItem>[
       ...kept,
-      ToastItem(id: id, text: text, kind: kind, onUndo: onUndo),
+      ToastItem(
+        id: id,
+        text: text,
+        kind: kind,
+        onUndo: onUndo,
+        actionLabel: actionLabel,
+      ),
     ]);
     _timers[id] = Timer(lifetime, () => dismiss(id));
     return id;

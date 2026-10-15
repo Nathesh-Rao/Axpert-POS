@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/shared/widgets/search_text_field.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/modules/pos/controllers/cart_controller.dart';
@@ -79,12 +80,12 @@ void main() {
     final cart = Get.find<CartController>();
     await tester.tap(find.text('Pepsi 500ml'));
     await tester.pump();
-    expect(cart.lineOf(1)?.qty.milli, 1000, reason: 'tap');
+    expect(cart.lineOf(const LineKey(1))?.qty.milli, 1000, reason: 'tap');
     Focus.of(tester.element(find.text('Sprite 500ml'))).requestFocus();
     await tester.pump();
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pump();
-    expect(cart.lineOf(2)?.qty.milli, 1000, reason: 'enter');
+    expect(cart.lineOf(const LineKey(2))?.qty.milli, 1000, reason: 'enter');
     await _finish(tester);
   });
 

@@ -17,6 +17,8 @@ import '../../../features/products/domain/entities/product.dart';
 import '../models/cart.dart';
 import '../services/offer_cart_builder.dart';
 import '../models/cart_line.dart';
+import '../models/line_key.dart';
+import '../../../core/services/packaging/packaging_ref.dart';
 import '../repository/cart_repository.dart';
 import '../../../core/session/session_scoped.dart';
 
@@ -52,9 +54,9 @@ class CartController extends GetxController implements SessionScoped {
 
   final Rx<Cart> cart = Cart.empty.obs;
 
-  /// Product ids of the lines in order; changes only when lines are added,
-  /// removed or reordered (the cart table listens to this, not to quantities).
-  final RxList<int> lineIds = <int>[].obs;
+  /// Keys of the lines in order; changes only when lines are added, removed
+  /// or reordered (the cart table listens to this, not to quantities).
+  final RxList<LineKey> lineIds = <LineKey>[].obs;
 
   /// True while the cart has lines (changes only when that flips).
   final RxBool active = false.obs;
@@ -71,11 +73,11 @@ class CartController extends GetxController implements SessionScoped {
   /// so the cart list does not rebuild with every quantity.
   final RxList<GiftRow> gifts = <GiftRow>[].obs;
 
-  final Map<int, ValueNotifier<AppliedOffer?>> _offerNotifiers =
-      <int, ValueNotifier<AppliedOffer?>>{};
+  final Map<LineKey, ValueNotifier<AppliedOffer?>> _offerNotifiers =
+      <LineKey, ValueNotifier<AppliedOffer?>>{};
 
-  final Map<int, ValueNotifier<CartLine?>> _lineNotifiers =
-      <int, ValueNotifier<CartLine?>>{};
+  final Map<LineKey, ValueNotifier<CartLine?>> _lineNotifiers =
+      <LineKey, ValueNotifier<CartLine?>>{};
   Future<void>? _saving;
   bool _dirty = false;
 
@@ -114,18 +116,15 @@ class CartController extends GetxController implements SessionScoped {
     if (offers != null) ever(offers.revision, (_) => _recomputeTotals());
   }
 
-  /// Notifies only when the offer of the line of [productId] changes.
-  ValueListenable<AppliedOffer?> offerListenable(int productId) =>
-      _offerNotifiers.putIfAbsent(
-        productId,
-        () => ValueNotifier<AppliedOffer?>(_offerOf(productId)),
-      );
+  /// Notifies only when the offer of the line [key] changes.
+  ValueListenable<AppliedOffer?> offerListenable(LineKey key) => _offerNotifiers
+      .putIfAbsent(key, () => ValueNotifier<AppliedOffer?>(_offerOf(key)));
 
-  AppliedOffer? _offerOf(int productId) {
+  AppliedOffer? _offerOf(LineKey key) {
     final lines = cart.value.lines;
     final applied = offerResolution.value.lines;
     for (var i = 0; i < lines.length && i < applied.length; i++) {
-      if (lines[i].product.id == productId) return applied[i];
+      if (lines[i].key == key) return applied[i];
     }
     return null;
   }
@@ -137,28 +136,31 @@ class CartController extends GetxController implements SessionScoped {
     _service.config.currency,
   );
 
-  /// Notifies only when the line of [productId] changes (scoped rebuilds for
-  /// product cards and cart rows).
-  ValueListenable<CartLine?> lineListenable(int productId) =>
-      _lineNotifiers.putIfAbsent(
-        productId,
-        () => ValueNotifier<CartLine?>(cart.value.lineOf(productId)),
-      );
+  /// Notifies only when the line [key] changes (scoped rebuilds for product
+  /// cards and cart rows).
+  ValueListenable<CartLine?> lineListenable(LineKey key) => _lineNotifiers
+      .putIfAbsent(key, () => ValueNotifier<CartLine?>(cart.value.lineOf(key)));
 
-  CartLine? lineOf(int productId) => cart.value.lineOf(productId);
+  CartLine? lineOf(LineKey key) => cart.value.lineOf(key);
 
   // ---- reducer rules (no side effects; see CartActionsController) ----
 
-  void addItem(Product product) => _set(cart.value.addItem(product));
+  void addItem(Product product, {PackagingRef? packaging, Money? price}) =>
+      _set(cart.value.addItem(product, packaging: packaging, price: price));
 
-  void setQty(int id, Qty qty) => _set(cart.value.setQty(id, qty));
+  void setQty(LineKey key, Qty qty) => _set(cart.value.setQty(key, qty));
 
-  void setPrice(int id, Money price) => _set(cart.value.setPrice(id, price));
+  void setPrice(LineKey key, Money price) =>
+      _set(cart.value.setPrice(key, price));
 
-  void setLineDiscount(int id, Bp discount) =>
-      _set(cart.value.setLineDiscount(id, discount));
+  void setLineDiscount(LineKey key, Bp discount) =>
+      _set(cart.value.setLineDiscount(key, discount));
 
-  void removeLine(int id) => _set(cart.value.removeLine(id));
+  void removeLine(LineKey key) => _set(cart.value.removeLine(key));
+
+  /// Sells the line in another unit (see [Cart.changeUnit]).
+  void changeUnit(LineKey key, PackagingRef? packaging, Money price) =>
+      _set(cart.value.changeUnit(key, packaging, price));
 
   void restoreLine(CartLine line) => _set(cart.value.restoreLine(line));
 
@@ -192,7 +194,7 @@ class CartController extends GetxController implements SessionScoped {
     }
     cart.value = next;
     active.value = next.isActive;
-    final ids = <int>[for (final l in next.lines) l.product.id];
+    final ids = <LineKey>[for (final l in next.lines) l.key];
     if (!listEquals(ids, lineIds)) lineIds.assignAll(ids);
     _recomputeTotals();
     _notifyLines(previous, next);
@@ -233,6 +235,7 @@ class CartController extends GetxController implements SessionScoped {
         for (final line in value.lines)
           OfferLine(
             productId: line.product.id,
+            packagingId: line.packaging?.id,
             qty: line.qty,
             price: line.price,
             manualDiscount: line.discount,
@@ -273,12 +276,12 @@ class CartController extends GetxController implements SessionScoped {
 
   void _notifyLines(Cart before, Cart after) {
     if (_lineNotifiers.isEmpty) return;
-    final ids = <int>{
-      for (final l in before.lines) l.product.id,
-      for (final l in after.lines) l.product.id,
+    final keys = <LineKey>{
+      for (final l in before.lines) l.key,
+      for (final l in after.lines) l.key,
     };
-    for (final id in ids) {
-      _lineNotifiers[id]?.value = after.lineOf(id);
+    for (final key in keys) {
+      _lineNotifiers[key]?.value = after.lineOf(key);
     }
   }
 

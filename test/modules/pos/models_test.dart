@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../support/seed/seed_customers.dart';
 import '../../support/seed/seed_products.dart';
 import 'package:pos_application/core/services/pricing/basis_points.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/services/pricing/currency_registry.dart';
 import 'package:pos_application/core/services/pricing/money.dart';
 import 'package:pos_application/core/services/pricing/pricing_models.dart';
@@ -121,13 +122,13 @@ void main() {
         mode: 'Cash',
         tendered: money(5000),
         change: money(520),
-        returned: <int, Qty>{1: const Qty(1000)},
+        returned: <LineKey, Qty>{const LineKey(1): const Qty(1000)},
       );
       final again = Sale.fromJson(_roundTrip(sale.toJson()));
       expect(again.number, 'S-1');
       expect(again.totals.total, money(4480));
       expect(again.tendered, money(5000));
-      expect(again.returned, <int, Qty>{1: const Qty(1000)});
+      expect(again.returned, <LineKey, Qty>{const LineKey(1): const Qty(1000)});
       expect(again.cart.lines, cart.lines);
     });
   });

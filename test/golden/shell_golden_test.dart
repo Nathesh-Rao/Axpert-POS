@@ -8,6 +8,7 @@ library;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/routes/app_routes.dart';
 import 'package:pos_application/core/theme/tokens/app_typography.dart';
@@ -211,8 +212,8 @@ void main() {
       final page = Get.find<ReturnsController>();
       page.billNumber.text = 'AX000007';
       page.onBillChanged('AX000007');
-      page.fieldFor(0).text = '1';
-      page.onQtyChanged(0, '1');
+      page.fieldFor(const LineKey(0)).text = '1';
+      page.onQtyChanged(const LineKey(0), '1');
       await tester.pumpAndSettle();
     },
   );

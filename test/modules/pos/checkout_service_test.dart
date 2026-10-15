@@ -1,5 +1,6 @@
 // CheckoutService: the prototype's complete() as a plain Dart function.
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/services/pricing/basis_points.dart';
 import 'package:pos_application/core/services/pricing/currency_registry.dart';
 import 'package:pos_application/core/services/pricing/money.dart';
@@ -105,13 +106,13 @@ void main() {
   });
 
   test('stock re-validation blocks a line above the live stock', () {
-    final two = cart.setQty(1, Qty.units(3));
+    final two = cart.setQty(const LineKey(1), Qty.units(3));
     expect(run(two, stockOf: (_) => Qty.units(2)), isA<CheckoutStockChanged>());
     expect(run(two, stockOf: (_) => Qty.units(3)), isA<CheckoutDone>());
   });
 
   test('a store that allows negative stock sells past the live stock', () {
-    final two = cart.setQty(1, Qty.units(3));
+    final two = cart.setQty(const LineKey(1), Qty.units(3));
     final r = run(two, stockOf: (_) => Qty.units(1), allowNegativeStock: true);
     expect(r, isA<CheckoutDone>());
     expect((r as CheckoutDone).stockDeltas[1], 3);
@@ -134,7 +135,7 @@ void main() {
   });
 
   test('fractional quantity rounds the stock delta up', () {
-    final frac = cart.setQty(1, const Qty(1500));
+    final frac = cart.setQty(const LineKey(1), const Qty(1500));
     final r = run(frac) as CheckoutDone;
     expect(r.stockDeltas, <int, int>{1: 2});
   });

@@ -46,6 +46,20 @@ class PackagingService {
     );
   }
 
+  /// Most packages (milli) that fit in [leftBaseMilli] base units. A whole
+  /// number of packages ([whole]) is floored to whole packages (no 1.041
+  /// cartons); a fractional quantity keeps the milli precision.
+  int maxPackagesMilli(
+    int leftBaseMilli,
+    int factorMilli, {
+    required bool whole,
+  }) {
+    _checkFactor(factorMilli);
+    if (leftBaseMilli <= 0) return 0;
+    final milli = leftBaseMilli * 1000 ~/ factorMilli;
+    return whole ? milli ~/ 1000 * 1000 : milli;
+  }
+
   int _round(Rational numeratorTimesFactor) =>
       (numeratorTimesFactor / _thousand).roundHalfUp().toInt();
 

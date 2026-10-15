@@ -307,15 +307,16 @@ class PaymentController extends GetxController {
     unawaited(_complete(SaleMode.card, total));
   }
 
+  /// True when any product's base quantity (all its lines) is over its stock.
+  bool _oversold(Cart sold) => <int>{
+    for (final l in sold.lines) l.product.id,
+  }.any((id) => sold.baseQtyOf(id) > (products.byId(id)?.stockQty ?? Qty.zero));
+
   Future<void> _complete(String saleMode, Money amount) async {
     if (!cart.isActive || _processing) return;
     _processing = true;
     final allowNegative = session.store.value?.allowNegativeStock ?? false;
-    final oversold =
-        allowNegative &&
-        cart.cartAsSold.lines.any(
-          (l) => l.qty > (products.byId(l.product.id)?.stockQty ?? Qty.zero),
-        );
+    final oversold = allowNegative && _oversold(cart.cartAsSold);
     try {
       final result = service.complete(
         cart: cart.cartAsSold,

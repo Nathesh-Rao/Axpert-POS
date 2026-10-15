@@ -2,6 +2,7 @@
 // the same mirror; plus the interactions with held bills and with checkout clearing the cart.
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/bindings/startup_diagnostics.dart';
 import 'package:pos_application/core/config/app_config.dart';
@@ -90,7 +91,7 @@ void main() {
       db.select(db.currentCartEntries).get();
 
   Cart cartOf(int id, {int qty = 1}) =>
-      Cart.empty.addItem(prod(id)).setQty(id, Qty.units(qty));
+      Cart.empty.addItem(prod(id)).setQty(LineKey(id), Qty.units(qty));
 
   test('first load is the empty cart and writes a marker, no row', () async {
     final cart = await repo(db).load();
@@ -151,7 +152,7 @@ void main() {
 
     cart.addItem(prod(1));
     for (var i = 0; i < 30; i++) {
-      cart.setQty(1, Qty(1000 + i));
+      cart.setQty(const LineKey(1), Qty(1000 + i));
     }
     await cart.flush();
 

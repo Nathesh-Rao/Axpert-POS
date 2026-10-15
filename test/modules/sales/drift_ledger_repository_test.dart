@@ -4,6 +4,7 @@
 import 'package:drift/drift.dart' show OrderingTerm;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/bindings/startup_diagnostics.dart';
 import 'package:pos_application/core/constants/storage_keys.dart';
 import 'package:pos_application/core/database/axpert_database.dart';
@@ -411,10 +412,10 @@ void main() {
       return RefundCommit(
         request: RefundRequest(
           saleNumber: sale.number,
-          entries: {id0: const Qty(1000)},
+          entries: {LineKey(id0): const Qty(1000)},
         ),
         sales: [
-          sale.copyWith(returned: {id0: const Qty(1000)}),
+          sale.copyWith(returned: {LineKey(id0): const Qty(1000)}),
         ],
         products: [
           for (final p in done.productsAfter)

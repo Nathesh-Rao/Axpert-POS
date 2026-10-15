@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../models/line_key.dart';
 
 import '../../../core/services/pricing/money.dart';
 import '../../../core/services/pricing/qty.dart';
@@ -59,7 +60,7 @@ class OrderMenuController extends GetxController {
       mode: SaleMode.unpaid,
       tendered: zero,
       change: zero,
-      returned: const <int, Qty>{},
+      returned: const <LineKey, Qty>{},
     );
   }
 }

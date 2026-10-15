@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/line_key.dart';
 import 'package:get/get.dart';
 
 import '../../../core/responsive/cart_compact_columns.dart';
@@ -83,8 +84,8 @@ class _CartCompactTableState extends State<CartCompactTable> {
                     //   itemCount: ids.length + gifts.length,
                     //   itemBuilder: (context, index) => index < ids.length
                     //       ? CartCompactRow(
-                    //           key: ValueKey<int>(ids[index]),
-                    //           productId: ids[index],
+                    //           key: ValueKey<LineKey>(ids[index]),
+                    //           lineKey: ids[index],
                     //           index: index,
                     //           columns: columns,
                     //         )
@@ -96,7 +97,7 @@ class _CartCompactTableState extends State<CartCompactTable> {
                     //           columns: columns,
                     //         ),
                     //   findChildIndexCallback: (key) {
-                    //     if (key is! ValueKey<int>) return null;
+                    //     if (key is! ValueKey<LineKey>) return null;
                     //     final i = ids.indexOf(key.value);
                     //     return i < 0 ? null : i;
                     //   },
@@ -115,14 +116,14 @@ class _CartCompactTableState extends State<CartCompactTable> {
                         return Padding(
                           // The key must sit on the outermost widget for findChildIndexCallback.
                           key: isLine
-                              ? ValueKey<int>(ids[index])
+                              ? ValueKey<LineKey>(ids[index])
                               : ValueKey<String>('gift-${gift!.offer.id}'),
                           padding: const EdgeInsets.only(
                             bottom: AppDensitySizes.cartRowGap,
                           ),
                           child: isLine
                               ? CartCompactRow(
-                                  productId: ids[index],
+                                  lineKey: ids[index],
                                   index: index,
                                   columns: columns,
                                 )
@@ -133,7 +134,7 @@ class _CartCompactTableState extends State<CartCompactTable> {
                         );
                       },
                       findChildIndexCallback: (key) {
-                        if (key is! ValueKey<int>) return null;
+                        if (key is! ValueKey<LineKey>) return null;
                         final i = ids.indexOf(key.value);
                         return i < 0 ? null : i;
                       },

@@ -2,6 +2,7 @@
 // service, locked and unlocked free items, the sale snapshot, stock and the
 // refund of a free item.
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/services/pricing/basis_points.dart';
 import 'package:pos_application/core/services/pricing/currency_registry.dart';
@@ -78,7 +79,7 @@ void main() {
       final cola = Get.find<ProductsController>().byId(0)!; // 40.00, GST 18%
       Get.find<CartActionsController>().add(cola);
       expect(cart.totals.value.discount.minor, 800);
-      cart.setLineDiscount(0, const Bp(1000));
+      cart.setLineDiscount(const LineKey(0), const Bp(1000));
       expect(cart.totals.value.discount.minor, 400);
       expect(cart.offerResolution.value.lines.single, isNull);
     }();
@@ -98,7 +99,7 @@ void main() {
     gift = cart.gifts.single;
     expect(gift.unlocked, isTrue);
     expect(gift.remaining.minor, 0);
-    cart.setQty(1, Qty.units(1));
+    cart.setQty(const LineKey(1), Qty.units(1));
     expect(cart.gifts.single.unlocked, isFalse);
   });
 

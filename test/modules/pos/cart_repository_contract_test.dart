@@ -2,6 +2,7 @@
 // as saved, and ANY read problem resets silently to the empty cart (no throw, no UI).
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/bindings/startup_diagnostics.dart';
 import 'package:pos_application/core/database/axpert_database.dart';
 import 'package:pos_application/core/database/database_provider.dart';
@@ -57,7 +58,7 @@ _Backend _drift() {
 Cart _full() => Cart.empty
     .addItem(prod(1))
     .addItem(prod(2))
-    .setQty(2, const Qty(2500))
+    .setQty(const LineKey(2), const Qty(2500))
     .copyWith(
       customer: '2',
       points: 7,

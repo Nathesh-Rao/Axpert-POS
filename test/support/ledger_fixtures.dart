@@ -1,4 +1,5 @@
 import 'package:pos_application/core/services/pricing/basis_points.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/services/pricing/currency_registry.dart';
 import 'package:pos_application/core/services/pricing/money.dart';
 import 'package:pos_application/core/services/pricing/pricing_models.dart';
@@ -17,7 +18,7 @@ Sale ledgerSale(
   String number, {
   String? saleId,
   List<int> productIds = const <int>[1, 2],
-  Map<int, Qty> returned = const <int, Qty>{},
+  Map<LineKey, Qty> returned = const {},
   String customerId = 'walk',
   String customerName = 'Walk-in Customer',
   String mode = 'Cash',

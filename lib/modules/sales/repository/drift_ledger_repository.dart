@@ -191,9 +191,9 @@ class DriftLedgerRepository implements CheckoutRepository, ReturnRepository {
     final sale = commit.sales.where((s) => s.number == number).firstOrNull;
     return [
       for (final e in commit.request.entries.entries)
-        if (ids[e.key] != null && e.value.milli > 0)
+        if (ids[e.key.productId] != null && e.value.milli > 0)
           StockMovement(
-            productId: ids[e.key]!,
+            productId: ids[e.key.productId]!,
             deltaMilli: RefundService.baseQty(sale, e.key, e.value).milli,
             reason: StockReason.returned,
             refType: 'sale',

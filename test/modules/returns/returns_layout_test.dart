@@ -2,6 +2,7 @@
 // 550 column, quantity boxes aligned and clear of long names, paddings. VM.
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/responsive/app_metrics.dart';
 import 'package:pos_application/core/routes/app_routes.dart';
@@ -143,7 +144,9 @@ void main() {
               tester,
               find.ancestor(
                 of: find.byWidgetPredicate(
-                  (w) => w is TextField && w.controller == page.fieldFor(id),
+                  (w) =>
+                      w is TextField &&
+                      w.controller == page.fieldFor(LineKey(id)),
                 ),
                 matching: find.byType(AppInputBox),
               ),

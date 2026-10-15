@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/line_key.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/app_strings_x.dart';
@@ -74,8 +75,8 @@ class _CartTableState extends State<CartTable> {
                 itemCount: ids.length + gifts.length,
                 itemBuilder: (context, index) => index < ids.length
                     ? CartLineRow(
-                        key: ValueKey<int>(ids[index]),
-                        productId: ids[index],
+                        key: ValueKey<LineKey>(ids[index]),
+                        lineKey: ids[index],
                         index: index,
                       )
                     : CartGiftRow(
@@ -85,7 +86,7 @@ class _CartTableState extends State<CartTable> {
                         gift: gifts[index - ids.length],
                       ),
                 findChildIndexCallback: (key) {
-                  if (key is! ValueKey<int>) return null;
+                  if (key is! ValueKey<LineKey>) return null;
                   final i = ids.indexOf(key.value);
                   return i < 0 ? null : i;
                 },

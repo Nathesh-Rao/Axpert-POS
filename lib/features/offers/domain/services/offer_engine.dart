@@ -15,9 +15,13 @@ class OfferLine {
     required this.price,
     required this.manualDiscount,
     this.packageFactorMilli = 1000,
+    this.packagingId,
   });
 
   final int productId;
+
+  /// The packaging the line is sold in; null = base unit.
+  final String? packagingId;
   final Qty qty;
   final Money price;
   final Bp manualDiscount;
@@ -245,12 +249,17 @@ class OfferEngine {
   }
 
   /// A gift is offered only when it is in stock and is not already a paid
-  /// line (a sale keeps one line per product).
+  /// BASE-UNIT line (its row would merge with the gift row, DEC-154). A
+  /// packaged line of the same product does not block it, but its base units
+  /// are taken from the stock the gift can use.
   bool _giftInStock(Product gift, List<OfferLine> lines) {
+    var taken = 0;
     for (final l in lines) {
-      if (l.productId == gift.id) return false;
+      if (l.productId != gift.id) continue;
+      if (l.packagingId == null) return false;
+      taken += (l.qty.milli * l.packageFactorMilli + 500) ~/ 1000;
     }
-    return gift.stock >= 1;
+    return gift.stock * 1000 - taken >= 1000;
   }
 
   Rational _bp(Bp b) => Rational(BigInt.from(b.value)) / _tenThousand;

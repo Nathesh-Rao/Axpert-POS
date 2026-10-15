@@ -6,7 +6,10 @@ import '../../../core/services/pricing/pricing_models.dart';
 import '../../../core/services/pricing/qty.dart';
 import '../../customers/models/customer.dart';
 import '../../../features/products/domain/entities/product.dart';
+import '../../../core/services/packaging/packaging_ref.dart';
+import '../../../core/services/packaging/packaging_service.dart';
 import 'cart_line.dart';
+import 'line_key.dart';
 
 enum SaleType {
   cash('Cash'),
@@ -74,11 +77,22 @@ class Cart {
 
   bool get isActive => lines.isNotEmpty;
 
-  CartLine? lineOf(int productId) {
+  CartLine? lineOf(LineKey key) {
     for (final line in lines) {
-      if (line.product.id == productId) return line;
+      if (line.key == key) return line;
     }
     return null;
+  }
+
+  /// Base units of [productId] across all its lines (stock checks), without
+  /// the line [except].
+  Qty baseQtyOf(int productId, {LineKey? except}) {
+    var milli = 0;
+    for (final line in lines) {
+      if (line.product.id != productId || line.key == except) continue;
+      milli += line.baseQty.milli;
+    }
+    return Qty(milli);
   }
 
   Cart copyWith({
@@ -117,63 +131,125 @@ class Cart {
 
   // ---- cartReducer rules ----
 
-  /// `addItem`: blocked when quantity + 1 would exceed the product's stock.
-  Cart addItem(Product product) {
-    final existing = lineOf(product.id);
-    final next = (existing?.qty ?? Qty.zero) + Qty.units(1);
-    if (next > product.stockQty) return this;
+  static int _factor(PackagingRef? packaging) =>
+      packaging?.quantityBaseMilli ?? 1000;
+
+  /// Most packages of the line [key] the stock allows next to the other
+  /// lines of the same product (base units summed across lines, DEC-154).
+  Qty _maxQty(CartLine line, Qty wanted) {
+    final left =
+        line.product.stockQty.milli -
+        baseQtyOf(line.product.id, except: line.key).milli;
+    return Qty(
+      const PackagingService().maxPackagesMilli(
+        left,
+        _factor(line.packaging),
+        whole: wanted.milli % 1000 == 0,
+      ),
+    );
+  }
+
+  /// `addItem`: blocked when one more unit (one package) would take the base
+  /// quantity of the product over its stock. [packaging] and its package
+  /// [price] make a packaged line; without them the base-unit line.
+  Cart addItem(Product product, {PackagingRef? packaging, Money? price}) {
+    final key = LineKey(product.id, packaging?.id);
+    final existing = lineOf(key);
+    final used = baseQtyOf(product.id).milli;
+    if (used + _factor(packaging) > product.stockQty.milli) return this;
     if (existing == null) {
-      return copyWith(lines: <CartLine>[...lines, CartLine.of(product)]);
+      return copyWith(
+        lines: <CartLine>[
+          ...lines,
+          CartLine.of(product, packaging: packaging, price: price),
+        ],
+      );
     }
-    return _mapLine(product.id, (line) => line.copyWith(qty: next));
+    return _mapLine(key, (line) => line.copyWith(qty: line.qty + Qty.units(1)));
   }
 
   /// `setQty` (also increase/decrease): clamped to 0..stock of the line's
   /// snapshot, lines at 0 are dropped.
-  Cart setQty(int productId, Qty qty) {
+  Cart setQty(LineKey key, Qty qty) {
     final mapped = <CartLine>[];
     for (final line in lines) {
-      if (line.product.id != productId) {
+      if (line.key != key) {
         mapped.add(line);
         continue;
       }
       var clamped = qty < Qty.zero ? Qty.zero : qty;
-      if (clamped > line.product.stockQty) clamped = line.product.stockQty;
+      final max = _maxQty(line, clamped);
+      if (clamped > max) clamped = max;
       if (clamped > Qty.zero) mapped.add(line.copyWith(qty: clamped));
     }
     return copyWith(lines: mapped);
   }
 
   /// `setPrice`: minimum 0.
-  Cart setPrice(int productId, Money price) => _mapLine(
-    productId,
+  Cart setPrice(LineKey key, Money price) => _mapLine(
+    key,
     (line) => line.copyWith(
       price: price.isNegative ? Money.zero(price.currency) : price,
     ),
   );
 
   /// `setLineDiscount`: clamped to 0..100 %.
-  Cart setLineDiscount(int productId, Bp discount) => _mapLine(
-    productId,
+  Cart setLineDiscount(LineKey key, Bp discount) => _mapLine(
+    key,
     (line) => line.copyWith(discount: discount.clamp(Bp.zero, Bp.full)),
   );
 
-  Cart removeLine(int productId) => copyWith(
+  Cart removeLine(LineKey key) => copyWith(
     lines: <CartLine>[
       for (final line in lines)
-        if (line.product.id != productId) line,
+        if (line.key != key) line,
     ],
   );
 
-  /// `restoreLine`: only when the product is not in the cart again.
-  Cart restoreLine(CartLine line) => lineOf(line.product.id) != null
+  /// `restoreLine`: only when the line (product and packaging) is not in the
+  /// cart again.
+  Cart restoreLine(CartLine line) => lineOf(line.key) != null
       ? this
       : copyWith(lines: <CartLine>[...lines, line]);
 
-  Cart _mapLine(int productId, CartLine Function(CartLine) change) => copyWith(
+  /// Sells the line [key] in another unit ([packaging] null = base unit) at
+  /// [price] (that unit's price): same quantity number, manual price and
+  /// line discount reset to the new unit's (DEC-154). Merges into the
+  /// existing line of that unit; blocked (returns `this`) when the stock does
+  /// not allow it.
+  Cart changeUnit(LineKey key, PackagingRef? packaging, Money price) {
+    final line = lineOf(key);
+    if (line == null || line.packaging?.id == packaging?.id) return this;
+    final target = LineKey(key.productId, packaging?.id);
+    final existing = lineOf(target);
+    final qty = line.qty + (existing?.qty ?? Qty.zero);
+    final moved = CartLine(
+      product: line.product,
+      qty: qty,
+      price: existing?.price ?? price,
+      discount: existing?.discount ?? Bp.zero,
+      packaging: packaging,
+    );
+    final others =
+        baseQtyOf(key.productId, except: key).milli -
+        (existing?.baseQty.milli ?? 0);
+    if (others + moved.baseQty.milli > line.product.stockQty.milli) return this;
+    final next = <CartLine>[];
+    for (final l in lines) {
+      if (l.key == key) {
+        if (existing == null) next.add(moved);
+      } else if (l.key == target) {
+        next.add(moved);
+      } else {
+        next.add(l);
+      }
+    }
+    return copyWith(lines: next);
+  }
+
+  Cart _mapLine(LineKey key, CartLine Function(CartLine) change) => copyWith(
     lines: <CartLine>[
-      for (final line in lines)
-        line.product.id == productId ? change(line) : line,
+      for (final line in lines) line.key == key ? change(line) : line,
     ],
   );
 

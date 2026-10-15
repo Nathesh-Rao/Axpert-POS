@@ -1,4 +1,5 @@
 import 'package:pos_application/core/services/pricing/currency_registry.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/services/pricing/money.dart';
 import 'package:pos_application/core/services/pricing/qty.dart';
 import 'package:pos_application/modules/pos/models/cart.dart';
@@ -13,7 +14,7 @@ Sale testSale({
   int totalMinor = 10000,
   Cart cart = const Cart(),
   int? valueMinor,
-  Map<int, Qty> returned = const <int, Qty>{},
+  Map<LineKey, Qty> returned = const {},
   String? saleId,
   String? cashier = 'MGTCASH3',
 }) {

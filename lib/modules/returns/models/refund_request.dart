@@ -1,25 +1,26 @@
 import '../../../core/services/pricing/qty.dart';
+import '../../pos/models/line_key.dart';
 
-/// What the cashier typed on the Returns page for one bill: product id to the
+/// What the cashier typed on the Returns page for one bill: line (product and packaging) to the
 /// quantity to return (only entries above zero count, as `refund()` filters).
 class RefundRequest {
   const RefundRequest({required this.saleNumber, required this.entries});
 
   factory RefundRequest.fromJson(Map<String, dynamic> json) => RefundRequest(
     saleNumber: json['saleNumber'] as String,
-    entries: <int, Qty>{
+    entries: <LineKey, Qty>{
       for (final e in (json['entries'] as Map<String, dynamic>).entries)
-        int.parse(e.key): Qty(e.value as int),
+        LineKey.parse(e.key): Qty(e.value as int),
     },
   );
 
   final String saleNumber;
-  final Map<int, Qty> entries;
+  final Map<LineKey, Qty> entries;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
     'saleNumber': saleNumber,
     'entries': <String, int>{
-      for (final e in entries.entries) '${e.key}': e.value.milli,
+      for (final e in entries.entries) e.key.text: e.value.milli,
     },
   };
 }

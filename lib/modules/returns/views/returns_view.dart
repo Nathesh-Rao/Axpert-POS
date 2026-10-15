@@ -114,14 +114,13 @@ class _Result extends StatelessWidget {
           ),
           for (final line in sale.cart.lines)
             ReturnLine(
-              key: ValueKey<String>('${sale.number}/${line.product.id}'),
+              key: ValueKey<String>('${sale.number}/${line.key.text}'),
               name: line.product.name,
               available: QtyFormatter.compact(
                 RefundService.available(sale, line),
               ),
-              controller: controller.fieldFor(line.product.id),
-              onChanged: (value) =>
-                  controller.onQtyChanged(line.product.id, value),
+              controller: controller.fieldFor(line.key),
+              onChanged: (value) => controller.onQtyChanged(line.key, value),
             ),
           ModalPrimaryButton(
             label: s.returnsRefundButton(),

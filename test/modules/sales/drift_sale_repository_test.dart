@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' show OrderingTerm;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/bindings/startup_diagnostics.dart';
 import 'package:pos_application/core/constants/storage_keys.dart';
 import 'package:pos_application/core/database/axpert_database.dart';
@@ -121,14 +122,14 @@ void main() {
     final y = repository.save([a, b]);
     final z = repository.save([
       a,
-      b.copyWith(returned: {1: const Qty(1000)}),
+      b.copyWith(returned: {const LineKey(1): const Qty(1000)}),
     ]);
     await Future.wait([x, y, z]);
 
     expect(await activeNumbers(), ['AX000001', 'AX000002']);
     expect(await storeNumbers(), ['AX000001', 'AX000002']);
     final loaded = await repo(db).load();
-    expect(loaded[1].returned, {1: const Qty(1000)});
+    expect(loaded[1].returned, {const LineKey(1): const Qty(1000)});
   });
 
   test('fallback session marks stale; restart re-copies', () async {
@@ -263,13 +264,13 @@ void main() {
         ledgerSale(
           'AX000001',
           saleId: _id1,
-          returned: {99: const Qty(1000)},
+          returned: {const LineKey(99): const Qty(1000)},
         ).toJson(),
       ]);
 
       final loaded = await repo(db).load();
 
-      expect(loaded.single.returned, {99: const Qty(1000)});
+      expect(loaded.single.returned, {const LineKey(99): const Qty(1000)});
       expect(await db.select(db.saleEntries).get(), isEmpty);
       expect(diagnostics.failures.single.stage, 'sales orphan returned');
     },

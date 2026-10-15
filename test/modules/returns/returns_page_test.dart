@@ -1,6 +1,7 @@
 // The Returns page: lookup, checks, confirm, refund effects. VM tests.
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/routes/app_routes.dart';
 import 'package:pos_application/core/services/pricing/basis_points.dart';
@@ -80,7 +81,7 @@ Future<void> _qty(
   int id,
   String text,
 ) async {
-  await tester.enterText(_field(page.fieldFor(id)), text);
+  await tester.enterText(_field(page.fieldFor(LineKey(id))), text);
   await tester.pump();
 }
 
@@ -127,7 +128,7 @@ void main() {
     expect(find.text('Pepsi 500ml'), findsOneWidget);
     expect(find.text('Available to return: 1.5'), findsOneWidget);
     expect(find.text('Refund & restock'), findsOneWidget);
-    expect(page.fieldFor(0).text, '0');
+    expect(page.fieldFor(const LineKey(0)).text, '0');
   });
 
   testWidgets('both checks toast with the prototype texts', (tester) async {
@@ -154,19 +155,19 @@ void main() {
     final page = await _open(tester);
     await _bill(tester, page, 'AX000007');
     await _qty(tester, page, 0, '3');
-    expect(page.qty[0], const Qty(3000));
+    expect(page.qty[const LineKey(0)], const Qty(3000));
     await _qty(tester, page, 0, '');
-    expect(page.qty[0], Qty.zero);
-    expect(page.fieldFor(0).text, '0');
+    expect(page.qty[const LineKey(0)], Qty.zero);
+    expect(page.fieldFor(const LineKey(0)).text, '0');
     await _qty(tester, page, 0, '1.5');
-    expect(page.qty[0], const Qty(1500));
-    expect(page.fieldFor(0).text, '1.5');
+    expect(page.qty[const LineKey(0)], const Qty(1500));
+    expect(page.fieldFor(const LineKey(0)).text, '1.5');
     // typing after the initial "0" gives "01", which is the number 1
     await _qty(tester, page, 0, '01');
-    expect(page.qty[0], const Qty(1000));
-    expect(page.fieldFor(0).text, '1');
+    expect(page.qty[const LineKey(0)], const Qty(1000));
+    expect(page.fieldFor(const LineKey(0)).text, '1');
     await _qty(tester, page, 0, '0.5');
-    expect(page.fieldFor(0).text, '0.5');
+    expect(page.fieldFor(const LineKey(0)).text, '0.5');
   });
 
   testWidgets('confirm text, refund effects and cleared quantities', (
@@ -191,11 +192,11 @@ void main() {
     overlay.accept();
     await tester.pumpAndSettle();
     expect(products.byId(0)!.stock, cola + 1);
-    expect(Get.find<SalesController>().sales.single.returned, const <int, Qty>{
-      0: Qty(1000),
+    expect(Get.find<SalesController>().sales.single.returned, <LineKey, Qty>{
+      const LineKey(0): const Qty(1000),
     });
     expect(page.qty, isEmpty);
-    expect(page.fieldFor(0).text, '0');
+    expect(page.fieldFor(const LineKey(0)).text, '0');
     expect(page.billNumber.text, 'AX000007', reason: 'the number stays');
     expect(toasts.toasts.last.text, 'Refund completed: ₹47.20');
     expect(find.text('Available to return: 1'), findsOneWidget);
@@ -240,7 +241,7 @@ void main() {
     await _bill(tester, page, 'AX00000');
     expect(page.qty, isEmpty);
     await _bill(tester, page, 'AX000007');
-    expect(page.fieldFor(0).text, '0');
+    expect(page.fieldFor(const LineKey(0)).text, '0');
   });
 
   testWidgets('a refund does not change the sale totals or the ledger size', (

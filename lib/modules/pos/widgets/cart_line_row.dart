@@ -28,6 +28,7 @@ import '../controllers/cart_controller.dart';
 import '../controllers/cart_selection_controller.dart';
 import '../../../features/offers/domain/entities/offer.dart';
 import '../../../features/offers/domain/services/offer_engine.dart';
+import '../models/line_key.dart';
 import '../models/cart_line.dart';
 import '../services/offer_cart_builder.dart';
 import '../models/line_math.dart';
@@ -44,9 +45,9 @@ abstract final class CartColumns {
 /// One cart line (`.cart-line`), single-row layout. Listens only to its own
 /// line and to the selection state.
 class CartLineRow extends StatelessWidget {
-  const CartLineRow({required this.productId, required this.index, super.key});
+  const CartLineRow({required this.lineKey, required this.index, super.key});
 
-  final int productId;
+  final LineKey lineKey;
   final int index;
 
   @override
@@ -54,16 +55,16 @@ class CartLineRow extends StatelessWidget {
     final cart = Get.find<CartController>();
     final selection = Get.find<CartSelectionController>();
     return ValueListenableBuilder<CartLine?>(
-      valueListenable: cart.lineListenable(productId),
+      valueListenable: cart.lineListenable(lineKey),
       builder: (context, line, _) {
         if (line == null) return const SizedBox.shrink();
         return Obx(() {
-          final selected = selection.selected.value == productId;
-          final flashing = selection.highlight.value == productId;
+          final selected = selection.selected.value == lineKey;
+          final flashing = selection.highlight.value == lineKey;
           return _LineBox(
             selected: selected,
             flash: flashing ? selection.scrollRequest.value : null,
-            onTap: () => selection.select(productId),
+            onTap: () => selection.select(lineKey),
             child: _LineContent(line: line, index: index),
           );
         });
@@ -224,8 +225,7 @@ mixin _LineParts {
       value: line.price.minor,
       scale: line.price.currency.exponent,
       label: context.strings.priceInputLabel(line.product.name),
-      onValue: (v) =>
-          cart.setPrice(line.product.id, Money(v, line.price.currency)),
+      onValue: (v) => cart.setPrice(line.key, Money(v, line.price.currency)),
     );
   }
 
@@ -236,7 +236,7 @@ mixin _LineParts {
       value: line.discount.value,
       scale: 2,
       label: context.strings.discountInputLabel(line.product.name),
-      onValue: (v) => cart.setLineDiscount(line.product.id, Bp(v)),
+      onValue: (v) => cart.setLineDiscount(line.key, Bp(v)),
     );
   }
 
@@ -273,9 +273,7 @@ mixin _LineParts {
         )
         .copyWith(color: context.colors.text);
     return ValueListenableBuilder<AppliedOffer?>(
-      valueListenable: Get.find<CartController>().offerListenable(
-        line.product.id,
-      ),
+      valueListenable: Get.find<CartController>().offerListenable(line.key),
       builder: (context, applied, _) => Text(
         MoneyFormatter.format(
           LineMath.lineTotal(
@@ -520,9 +518,7 @@ class _Names extends StatelessWidget {
             style: small,
           ),
         ValueListenableBuilder<AppliedOffer?>(
-          valueListenable: Get.find<CartController>().offerListenable(
-            product.id,
-          ),
+          valueListenable: Get.find<CartController>().offerListenable(line.key),
           builder: (context, applied, _) => applied == null
               ? const SizedBox.shrink()
               : Text(
@@ -552,7 +548,7 @@ class _QtyControl extends StatelessWidget {
   /// Hold-to-repeat fires long after the build: always act on the live line.
   void _step(int milli) {
     final cart = Get.find<CartController>();
-    final current = cart.lineOf(line.product.id) ?? line;
+    final current = cart.lineOf(line.key) ?? line;
     Get.find<CartActionsController>().changeQty(
       current,
       Qty(current.qty.milli + milli),
@@ -606,8 +602,7 @@ class _QtyControl extends StatelessWidget {
                         .copyWith(color: c.text),
                     onValue: (qty) =>
                         Get.find<CartActionsController>().changeQty(
-                          Get.find<CartController>().lineOf(line.product.id) ??
-                              line,
+                          Get.find<CartController>().lineOf(line.key) ?? line,
                           qty,
                         ),
                   ),

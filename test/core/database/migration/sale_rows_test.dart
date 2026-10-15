@@ -1,6 +1,7 @@
 import 'package:pos_application/core/utils/epoch_time.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/database/axpert_database.dart';
 import 'package:pos_application/core/database/migration/sale_rows.dart';
 import 'package:pos_application/core/identifiers/uuid_v4_generator.dart';
@@ -61,7 +62,10 @@ void main() {
     final a = ledgerSale('AX000001', saleId: _id1);
     await save([a]);
     final returned = a.copyWith(
-      returned: {2: const Qty(1000), 1: const Qty(500)},
+      returned: {
+        const LineKey(2): const Qty(1000),
+        const LineKey(1): const Qty(500),
+      },
     );
 
     final plan = await save([returned], now: 2000);
@@ -73,16 +77,16 @@ void main() {
     expect(row.createdAt, 1000);
     expect(row.returnedOrder, '[2,1]');
     final back = (await SaleRows.read(db)).list.single;
-    expect(back.returned.keys.toList(), [2, 1]);
-    expect(back.returned[1], const Qty(500));
+    expect(back.returned.keys.toList(), [const LineKey(2), const LineKey(1)]);
+    expect(back.returned[const LineKey(1)], const Qty(500));
     // A second return adds on top and keeps the order.
     final again = back.copyWith(
-      returned: {...back.returned, 1: const Qty(1500)},
+      returned: {...back.returned, const LineKey(1): const Qty(1500)},
     );
     await save([again], now: 3000);
     final last = (await SaleRows.read(db)).list.single;
-    expect(last.returned.keys.toList(), [2, 1]);
-    expect(last.returned[1], const Qty(1500));
+    expect(last.returned.keys.toList(), [const LineKey(2), const LineKey(1)]);
+    expect(last.returned[const LineKey(1)], const Qty(1500));
   });
 
   test('changing anything but returned is rejected before any write', () async {

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/responsive/app_metrics.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/responsive/summary_metrics.dart';
 import 'package:pos_application/core/services/pricing/basis_points.dart';
 import 'package:pos_application/core/services/pricing/currency.dart';
@@ -96,7 +97,7 @@ Sale _sale({
     mode: 'Cash',
     tendered: m(priceMinor * lines),
     change: m(0),
-    returned: const <int, Qty>{},
+    returned: <LineKey, Qty>{},
   );
 }
 

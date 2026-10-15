@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/services/pricing/money.dart';
 import 'package:pos_application/core/services/pricing/currency_registry.dart';
 import 'package:pos_application/core/services/pricing/qty.dart';
@@ -92,9 +93,9 @@ void main() {
     expect(repo.saved, hasLength(1), reason: 'the first save started at once');
 
     for (var i = 0; i < 20; i++) {
-      cart.setQty(1, Qty(1000 + i));
+      cart.setQty(const LineKey(1), Qty(1000 + i));
     }
-    cart.setPrice(1, const Money(3333, CurrencyRegistry.inr));
+    cart.setPrice(const LineKey(1), const Money(3333, CurrencyRegistry.inr));
     await _tick();
     expect(repo.saved, hasLength(1), reason: 'nothing else starts meanwhile');
 
@@ -152,7 +153,7 @@ void main() {
 
     cart.patch((c) => c);
     cart.setQty(
-      99,
+      const LineKey(99),
       Qty.units(1),
     ); // unknown product: the reducer rebuilds the same lines
     await cart.flush();

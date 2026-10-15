@@ -3,6 +3,7 @@ import '../../../core/services/pricing/currency_registry.dart';
 import '../../../core/services/pricing/money.dart';
 import '../../../core/services/pricing/qty.dart';
 import '../../pos/models/cart.dart';
+import '../../pos/models/line_key.dart';
 
 /// Rounded totals stored with a sale (prototype `Totals`).
 class SaleTotals {
@@ -55,8 +56,8 @@ class SaleTotals {
   };
 }
 
-/// A completed sale (prototype `Sale`); `returned` maps product id to
-/// returned milli-units.
+/// A completed sale (prototype `Sale`); `returned` maps a line key (product
+/// and packaging, DEC-154) to returned milli-units of that line's unit.
 class Sale {
   const Sale({
     required this.number,
@@ -94,9 +95,9 @@ class Sale {
     mode: json['mode'] as String,
     tendered: Money(json['tenderedMinor'] as int, currency),
     change: Money(json['changeMinor'] as int, currency),
-    returned: <int, Qty>{
+    returned: <LineKey, Qty>{
       for (final e in (json['returned'] as Map<String, dynamic>).entries)
-        int.parse(e.key): Qty(e.value as int),
+        LineKey.parse(e.key): Qty(e.value as int),
     },
   );
 
@@ -117,9 +118,9 @@ class Sale {
   final String mode;
   final Money tendered;
   final Money change;
-  final Map<int, Qty> returned;
+  final Map<LineKey, Qty> returned;
 
-  Sale copyWith({Map<int, Qty>? returned, String? date}) => Sale(
+  Sale copyWith({Map<LineKey, Qty>? returned, String? date}) => Sale(
     number: number,
     saleId: saleId,
     cashier: cashier,
@@ -147,7 +148,7 @@ class Sale {
     'tenderedMinor': tendered.minor,
     'changeMinor': change.minor,
     'returned': <String, int>{
-      for (final e in returned.entries) '${e.key}': e.value.milli,
+      for (final e in returned.entries) e.key.text: e.value.milli,
     },
   };
 }

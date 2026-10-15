@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:drift/drift.dart' show OrderingTerm;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/constants/storage_keys.dart';
 import 'package:pos_application/core/database/axpert_database.dart';
 import 'package:pos_application/core/database/migration/sale_rows.dart';
@@ -70,7 +71,10 @@ void main() {
       ledgerSale(
         'AX000003',
         saleId: _id2,
-        returned: {2: const Qty(1000), 1: const Qty(500)},
+        returned: {
+          const LineKey(2): const Qty(1000),
+          const LineKey(1): const Qty(500),
+        },
       ),
     ];
     await writeSales(list);
@@ -90,7 +94,10 @@ void main() {
       jsonEncode([for (final s in list) s.toJson()]),
     );
     expect(back[1].saleId, isNull, reason: 'legacy ids never reach the JSON');
-    expect(back[2].returned.keys.toList(), [2, 1], reason: 'refund order');
+    expect(back[2].returned.keys.toList(), [
+      const LineKey(2),
+      const LineKey(1),
+    ], reason: 'refund order');
     expect(await store.read(StorageKeys.sales), before);
     final report = (await markerJson())['report'] as Map<String, dynamic>;
     expect(report['legacy_without_sale_id'], 1);
@@ -98,7 +105,11 @@ void main() {
 
   test('lines keep the full snapshot and the returned quantity', () async {
     await writeSales([
-      ledgerSale('AX000001', saleId: _id1, returned: {2: const Qty(1000)}),
+      ledgerSale(
+        'AX000001',
+        saleId: _id1,
+        returned: {const LineKey(2): const Qty(1000)},
+      ),
     ]);
     await migrator.ensureCopied(db, store);
 
@@ -191,7 +202,11 @@ void main() {
 
   test('a returned product that is not a line stops the copy', () async {
     await writeSales([
-      ledgerSale('AX000001', saleId: _id1, returned: {99: const Qty(1000)}),
+      ledgerSale(
+        'AX000001',
+        saleId: _id1,
+        returned: {const LineKey(99): const Qty(1000)},
+      ),
     ]);
 
     await expectLater(
@@ -229,7 +244,7 @@ void main() {
     await writeSales([
       ledgerSale('AX000001'),
       ledgerSale('AX000002', saleId: _id1),
-      ledgerSale('AX000003', returned: {1: const Qty(1000)}),
+      ledgerSale('AX000003', returned: {const LineKey(1): const Qty(1000)}),
       ledgerSale('AX000004', saleId: _id2),
     ]);
     await store.write(StorageKeys.salesDriftStale, true);

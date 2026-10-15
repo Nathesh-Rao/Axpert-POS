@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../../modules/pos/models/line_key.dart';
 
 import 'package:drift/drift.dart';
 
@@ -688,7 +689,7 @@ class DemoSeeder {
             mode: mode,
             tendered: tendered,
             change: tendered - total,
-            returned: const <int, Qty>{},
+            returned: const <LineKey, Qty>{},
           ),
         );
       }

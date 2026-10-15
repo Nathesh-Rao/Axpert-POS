@@ -239,6 +239,9 @@ class EnAppStrings extends AppStrings {
 
   @override
   String toastProductAdded(String name) => '$name added';
+  @override
+  String toastProductAddedUnit(String name, String unit) =>
+      '$name ($unit) added';
 
   @override
   String toastProductRemoved(String name) => '$name removed';

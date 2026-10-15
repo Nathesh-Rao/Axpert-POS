@@ -136,6 +136,7 @@ abstract class AppStrings {
 
   // Cart and catalog toasts
   String toastProductAdded(String name);
+  String toastProductAddedUnit(String name, String unit);
   String toastProductRemoved(String name);
   String toastStockAvailable(int stock);
   String toastStockOnly(int stock);

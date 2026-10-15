@@ -18,6 +18,7 @@ import '../../session/store_scope.dart';
 import '../../utils/epoch_time.dart';
 import '../axpert_database.dart';
 import 'fnv1a.dart';
+import '../../../modules/pos/models/line_key.dart';
 
 /// What the repository remembers about one `sales` row (the diff snapshot).
 class KnownSale {
@@ -50,16 +51,16 @@ class DuplicateSaleIdsException implements Exception {
   String toString() => 'DuplicateSaleIdsException($counts)';
 }
 
-/// A sale's `returned` map names a product that is not a line of the sale: the
+/// A sale's `returned` map names a line that is not a line of the sale: the
 /// copy stops (DEC-129); the app can never produce this.
 class OrphanReturnedException implements Exception {
-  const OrphanReturnedException(this.number, this.productIds);
+  const OrphanReturnedException(this.number, this.lineKeys);
 
   final String number;
-  final List<int> productIds;
+  final List<LineKey> lineKeys;
 
   @override
-  String toString() => 'OrphanReturnedException($number, $productIds)';
+  String toString() => 'OrphanReturnedException($number, $lineKeys)';
 }
 
 /// A completed sale may change only `returned`; anything else is rejected
@@ -160,10 +161,10 @@ abstract final class SaleRows {
     final dups = duplicateSaleIds(list);
     if (dups.isNotEmpty) throw DuplicateSaleIdsException(dups);
     for (final s in list) {
-      final lineIds = <int>{for (final l in s.cart.lines) l.product.id};
-      final orphans = <int>[
-        for (final id in s.returned.keys)
-          if (!lineIds.contains(id)) id,
+      final lineKeys = <LineKey>{for (final l in s.cart.lines) l.key};
+      final orphans = <LineKey>[
+        for (final key in s.returned.keys)
+          if (!lineKeys.contains(key)) key,
       ];
       if (orphans.isNotEmpty) throw OrphanReturnedException(s.number, orphans);
     }
@@ -428,7 +429,7 @@ abstract final class SaleRows {
 
   // ---- helpers ----
 
-  static bool _sameReturned(Map<int, Qty> a, Map<int, Qty> b) {
+  static bool _sameReturned(Map<LineKey, Qty> a, Map<LineKey, Qty> b) {
     if (a.length != b.length) return false;
     final ai = a.entries.iterator;
     final bi = b.entries.iterator;
@@ -460,14 +461,17 @@ abstract final class SaleRows {
         jsonEncode(a.cart.toJson()) == jsonEncode(b.cart.toJson());
   }
 
-  static String _orderJson(Sale sale) =>
-      jsonEncode(<int>[...sale.returned.keys]);
+  /// Base-unit lines are stored as the plain product id (what the prototype
+  /// wrote), packaged lines as `"id|packaging"` (DEC-154).
+  static String _orderJson(Sale sale) => jsonEncode(<Object>[
+    for (final key in sale.returned.keys) key.isBase ? key.productId : key.text,
+  ]);
 
-  /// The quantity of a returned product sits on the FIRST line with that id.
-  static Map<int, int> _firstLineNo(Sale sale) {
-    final first = <int, int>{};
+  /// The quantity of a returned line sits on the FIRST line with that key.
+  static Map<LineKey, int> _firstLineNo(Sale sale) {
+    final first = <LineKey, int>{};
     for (var n = 0; n < sale.cart.lines.length; n++) {
-      first.putIfAbsent(sale.cart.lines[n].product.id, () => n);
+      first.putIfAbsent(sale.cart.lines[n].key, () => n);
     }
     return first;
   }
@@ -584,8 +588,8 @@ abstract final class SaleRows {
     final line = p.sale.cart.lines[n];
     final product = line.product;
     final first = _firstLineNo(p.sale);
-    final returned = first[product.id] == n
-        ? (p.sale.returned[product.id]?.milli ?? 0)
+    final returned = first[line.key] == n
+        ? (p.sale.returned[line.key]?.milli ?? 0)
         : 0;
     return SaleLineEntriesCompanion.insert(
       id: uuid.generate(),
@@ -666,11 +670,17 @@ abstract final class SaleRows {
                 ),
         ),
     ];
-    final firstQty = <int, Qty>{};
+    final firstQty = <LineKey, Qty>{};
     for (final l in lines) {
-      firstQty.putIfAbsent(l.productLegacyId, () => Qty(l.returnedQtyMilli));
+      firstQty.putIfAbsent(
+        LineKey(l.productLegacyId, l.packagingId),
+        () => Qty(l.returnedQtyMilli),
+      );
     }
-    final order = (jsonDecode(r.returnedOrder) as List<dynamic>).cast<int>();
+    final order = <LineKey>[
+      for (final e in jsonDecode(r.returnedOrder) as List<dynamic>)
+        e is int ? LineKey(e) : LineKey.parse(e as String),
+    ];
     return Sale(
       number: r.number,
       saleId: r.hasSaleId ? r.id : null,
@@ -702,8 +712,8 @@ abstract final class SaleRows {
       mode: r.mode,
       tendered: m(r.tenderedMinor),
       change: m(r.changeMinor),
-      returned: <int, Qty>{
-        for (final id in order) id: firstQty[id] ?? Qty.zero,
+      returned: <LineKey, Qty>{
+        for (final key in order) key: firstQty[key] ?? Qty.zero,
       },
     );
   }

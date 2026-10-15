@@ -237,14 +237,15 @@ void main() {
     final sale = cartonSale('AX000001', _id1, const Qty(2000));
     await ledger.commit(checkoutOf(sale, 52));
 
+    final key = sale.cart.lines.first.key;
     final outcome = await ledger.applyRefund(
       RefundCommit(
         request: RefundRequest(
           saleNumber: sale.number,
-          entries: {prods[0].id: const Qty(1000)},
+          entries: {key: const Qty(1000)},
         ),
         sales: [
-          sale.copyWith(returned: {prods[0].id: const Qty(1000)}),
+          sale.copyWith(returned: {key: const Qty(1000)}),
         ],
         products: [prods[0].copyWith(stock: 76), prods[1], prods[2]],
       ),
@@ -257,6 +258,11 @@ void main() {
       's1',
     )).where((t) => t.reason.code == 'return').single;
     expect(ret.deltaMilli, 24000);
+    // The packaged key is stored in the refund order and read back (DEC-154).
+    final order = (await db.select(db.saleEntries).getSingle()).returnedOrder;
+    expect(order, '["${key.text}"]');
+    final back = (await sales.load()).single;
+    expect(back.returned, {key: const Qty(1000)});
   });
 
   test('a failure rolls the whole packaged sale back', () async {

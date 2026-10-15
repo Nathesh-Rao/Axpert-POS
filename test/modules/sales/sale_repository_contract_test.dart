@@ -1,5 +1,6 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/bindings/startup_diagnostics.dart';
 import 'package:pos_application/core/constants/storage_keys.dart';
 import 'package:pos_application/core/database/axpert_database.dart';
@@ -93,7 +94,10 @@ void main() {
             saleId: _id2,
             mode: 'Credit',
             flatDiscount: true,
-            returned: {2: const Qty(1000), 1: const Qty(500)},
+            returned: {
+              const LineKey(2): const Qty(1000),
+              const LineKey(1): const Qty(500),
+            },
           ),
         ];
         final repo = backend.create(store);
@@ -105,7 +109,10 @@ void main() {
         expect(_numbers(loaded), ['AX000001', 'AX000002', 'AX000003']);
         expect(_json(loaded), _json(list));
         expect(loaded[1].saleId, isNull, reason: 'legacy sale keeps no id');
-        expect(loaded[2].returned.keys.toList(), [2, 1]);
+        expect(loaded[2].returned.keys.toList(), [
+          const LineKey(2),
+          const LineKey(1),
+        ]);
       });
 
       test('the LocalStore key holds the same JSON as before', () async {
@@ -135,14 +142,14 @@ void main() {
         ]);
 
         list = [
-          list[0].copyWith(returned: {1: const Qty(1000)}),
+          list[0].copyWith(returned: {const LineKey(1): const Qty(1000)}),
           list[1],
         ];
         await repo.save(list);
 
         final loaded = await backend.create(store).load();
         expect(_json(loaded), _json(list));
-        expect(loaded[0].returned, {1: const Qty(1000)});
+        expect(loaded[0].returned, {const LineKey(1): const Qty(1000)});
       });
 
       test('a reordered or shortened list reloads exactly as saved', () async {

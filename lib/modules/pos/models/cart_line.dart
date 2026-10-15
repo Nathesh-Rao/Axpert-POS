@@ -6,6 +6,7 @@ import '../../../core/services/pricing/currency_registry.dart';
 import '../../../core/services/pricing/money.dart';
 import '../../../core/services/pricing/qty.dart';
 import '../../../features/products/domain/entities/product.dart';
+import 'line_key.dart';
 
 /// One cart line. Keeps a snapshot of the product like the prototype (the
 /// reducer clamps quantity to `product.stock` of the snapshot).
@@ -38,11 +39,18 @@ class CartLine {
         : PackagingRef.fromJson(json['packaging'] as Map<String, dynamic>),
   );
 
-  factory CartLine.of(Product product) => CartLine(
+  /// One unit of [product]: a base unit, or one [packaging] at [price] (the
+  /// package price).
+  factory CartLine.of(
+    Product product, {
+    PackagingRef? packaging,
+    Money? price,
+  }) => CartLine(
     product: product,
     qty: Qty.units(1),
-    price: product.price,
+    price: price ?? product.price,
     discount: Bp.zero,
+    packaging: packaging,
   );
 
   final Product product;
@@ -59,6 +67,9 @@ class CartLine {
   /// The packaging the line is sold in (DEC-151); null = base unit. Then
   /// [qty] counts packages and [price] is the package price.
   final PackagingRef? packaging;
+
+  /// The line identity: product and packaging (null = base unit).
+  LineKey get key => LineKey(product.id, packaging?.id);
 
   /// Quantity in base units, what stock moves by (equal to [qty] without a
   /// packaging).

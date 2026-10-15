@@ -1,4 +1,5 @@
 import '../../../core/services/pricing/money.dart';
+import '../models/line_key.dart';
 import '../../../core/services/pricing/pricing_models.dart';
 import '../../../core/services/pricing/qty.dart';
 import '../../customers/models/customer.dart';
@@ -63,8 +64,9 @@ class CheckoutService {
     // A store that allows negative stock sells past the recorded stock
     // (the controller warns); otherwise today's rule holds.
     if (!allowNegativeStock) {
-      for (final line in cart.lines) {
-        if (line.qty > stockOf(line.product.id)) {
+      // Base units summed across all lines of a product (DEC-154).
+      for (final id in <int>{for (final l in cart.lines) l.product.id}) {
+        if (cart.baseQtyOf(id) > stockOf(id)) {
           return const CheckoutStockChanged();
         }
       }
@@ -94,16 +96,27 @@ class CheckoutService {
       mode: mode,
       tendered: tendered,
       change: change,
-      returned: const <int, Qty>{},
+      returned: const <LineKey, Qty>{},
     );
     return CheckoutDone(
       sale: sale,
-      stockDeltas: <int, int>{
-        for (final line in cart.lines)
-          line.product.id: (line.baseQty.milli + 999) ~/ 1000,
-      },
+      stockDeltas: _stockDeltas(cart),
       pointsDeducted: _wholePoints(totals.points),
     );
+  }
+
+  /// Whole base units to take off the shelf per product: the base quantity of
+  /// all its lines together, rounded up (a packaged line counts its base
+  /// units, DEC-154).
+  static Map<int, int> _stockDeltas(Cart cart) {
+    final milli = <int, int>{};
+    for (final line in cart.lines) {
+      milli[line.product.id] =
+          (milli[line.product.id] ?? 0) + line.baseQty.milli;
+    }
+    return <int, int>{
+      for (final e in milli.entries) e.key: (e.value + 999) ~/ 1000,
+    };
   }
 
   /// Points are whole numbers here (KG-004): a fractional redeemed amount

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/constants/storage_keys.dart';
 import 'package:pos_application/core/mock/mock_delay.dart';
@@ -132,7 +133,7 @@ void main() {
     final p = h.products.byId(5)!;
     h.cart.addItem(p);
     h.cart.addItem(p);
-    h.cart.setPrice(5, const Money(3000, _inr));
+    h.cart.setPrice(const LineKey(5), const Money(3000, _inr));
     await h.cart.flush();
     final json = await h.store.read(StorageKeys.cart) as Map<String, dynamic>;
     final saved = Cart.fromJson(json);
@@ -157,15 +158,15 @@ void main() {
     h.cart.addItem(a);
     var aCount = 0;
     var bCount = 0;
-    h.cart.lineListenable(0).addListener(() => aCount++);
-    h.cart.lineListenable(1).addListener(() => bCount++);
+    h.cart.lineListenable(const LineKey(0)).addListener(() => aCount++);
+    h.cart.lineListenable(const LineKey(1)).addListener(() => bCount++);
     h.cart.addItem(b);
     expect((aCount, bCount), (0, 1));
-    h.cart.setQty(0, Qty.units(3));
+    h.cart.setQty(const LineKey(0), Qty.units(3));
     expect((aCount, bCount), (1, 1));
-    h.cart.removeLine(1);
+    h.cart.removeLine(const LineKey(1));
     expect((aCount, bCount), (1, 2));
-    expect(h.cart.lineListenable(1).value, isNull);
+    expect(h.cart.lineListenable(const LineKey(1)).value, isNull);
   });
 
   test('products controller index maps', () async {

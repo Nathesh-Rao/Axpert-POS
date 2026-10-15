@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pos_application/core/services/pricing/qty.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/modules/returns/services/refund_service.dart';
 import 'package:pos_application/modules/sales/models/sale.dart';
 
@@ -53,11 +54,13 @@ void main() {
   test('copyWith and a refund keep the saleId', () {
     final sale = testSale(number: 'AX000003', at: at, saleId: 'id-3');
     expect(
-      sale.copyWith(returned: <int, Qty>{1: const Qty(1000)}).saleId,
+      sale
+          .copyWith(returned: <LineKey, Qty>{const LineKey(1): const Qty(1000)})
+          .saleId,
       'id-3',
     );
-    final refunded = RefundService.applyReturned(sale, <int, Qty>{
-      1: const Qty(1000),
+    final refunded = RefundService.applyReturned(sale, <LineKey, Qty>{
+      const LineKey(1): const Qty(1000),
     });
     expect(refunded.saleId, 'id-3');
   });

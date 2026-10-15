@@ -3,6 +3,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pos_application/core/constants/en_app_strings.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/services/print_service.dart';
 import 'package:pos_application/core/services/pricing/basis_points.dart';
 import 'package:pos_application/core/services/pricing/currency_registry.dart';
@@ -64,7 +65,7 @@ Sale _sale({String mode = 'Cash'}) => Sale(
   mode: mode,
   tendered: _inr(5000),
   change: _inr(380),
-  returned: const <int, Qty>{},
+  returned: <LineKey, Qty>{},
 );
 
 void main() {

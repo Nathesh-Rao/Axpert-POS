@@ -2,6 +2,7 @@
 // (plain Dart; VM).
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pos_application/core/services/pricing/basis_points.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/services/pricing/currency_registry.dart';
 import 'package:pos_application/core/services/pricing/money.dart';
 import 'package:pos_application/core/services/pricing/qty.dart';
@@ -31,7 +32,7 @@ Product _product(int id, String name) => Product(
 );
 
 /// 2 x 40.00 and 1.5 x 20.00: value 110.00, total 129.80 (18 % tax).
-Sale _sale({Map<int, Qty> returned = const <int, Qty>{}}) => testSale(
+Sale _sale({Map<LineKey, Qty> returned = const {}}) => testSale(
   number: 'AX000007',
   at: DateTime(2026, 10, 8),
   customer: 'Ananya Sharma',
@@ -70,38 +71,49 @@ void main() {
   });
 
   test('available is sold minus returned', () {
-    final sale = _sale(returned: const <int, Qty>{2: Qty(500)});
+    final sale = _sale(
+      returned: <LineKey, Qty>{const LineKey(2): const Qty(500)},
+    );
     expect(RefundService.available(sale, sale.cart.lines[0]), const Qty(2000));
     expect(RefundService.available(sale, sale.cart.lines[1]), const Qty(1000));
   });
 
   test('checks run in the prototype order', () {
-    final sale = _sale(returned: const <int, Qty>{1: Qty(1500)});
+    final sale = _sale(
+      returned: <LineKey, Qty>{const LineKey(1): const Qty(1500)},
+    );
     expect(
-      RefundService.check(sale, const <int, Qty>{}),
+      RefundService.check(sale, <LineKey, Qty>{}),
       RefundCheck.noSelection,
     );
     expect(
-      RefundService.check(sale, const <int, Qty>{1: Qty.zero}),
+      RefundService.check(sale, <LineKey, Qty>{const LineKey(1): Qty.zero}),
       RefundCheck.noSelection,
     );
     // 0.5 left of the first line: 0.501 exceeds, 0.5 does not.
     expect(
-      RefundService.check(sale, const <int, Qty>{1: Qty(501)}),
+      RefundService.check(sale, <LineKey, Qty>{
+        const LineKey(1): const Qty(501),
+      }),
       RefundCheck.exceeds,
     );
     expect(
-      RefundService.check(sale, const <int, Qty>{1: Qty(500)}),
+      RefundService.check(sale, <LineKey, Qty>{
+        const LineKey(1): const Qty(500),
+      }),
       RefundCheck.ok,
     );
     // an exceeding entry fails even next to a valid one
     expect(
-      RefundService.check(sale, const <int, Qty>{1: Qty(500), 2: Qty(1501)}),
+      RefundService.check(sale, <LineKey, Qty>{
+        const LineKey(1): const Qty(500),
+        const LineKey(2): const Qty(1501),
+      }),
       RefundCheck.exceeds,
     );
     // a product that is not on the bill has nothing left
     expect(
-      RefundService.check(sale, const <int, Qty>{9: Qty(1)}),
+      RefundService.check(sale, <LineKey, Qty>{const LineKey(9): const Qty(1)}),
       RefundCheck.exceeds,
     );
   });
@@ -112,22 +124,29 @@ void main() {
       final sale = _sale();
       // 1 x 40.00 of 110.00 value: 129.80 * 40 / 110 = 47.2
       expect(
-        RefundService.quote(sale, const <int, Qty>{1: Qty(1000)}),
+        RefundService.quote(sale, <LineKey, Qty>{
+          const LineKey(1): const Qty(1000),
+        }),
         _inr(4720),
       );
       // 1.5 x 20.00 = 30.00 (its 10 % line discount is not in the share):
       // 129.80 * 30 / 110 = 35.4 - only the share, not what the line cost.
       expect(
-        RefundService.quote(sale, const <int, Qty>{2: Qty(1500)}),
+        RefundService.quote(sale, <LineKey, Qty>{
+          const LineKey(2): const Qty(1500),
+        }),
         _inr(3540),
       );
       // both lines in full return the whole total
       expect(
-        RefundService.quote(sale, const <int, Qty>{1: Qty(2000), 2: Qty(1500)}),
+        RefundService.quote(sale, <LineKey, Qty>{
+          const LineKey(1): const Qty(2000),
+          const LineKey(2): const Qty(1500),
+        }),
         _inr(12980),
       );
       // zero entries and zero-value sales
-      expect(RefundService.quote(sale, const <int, Qty>{}), _inr(0));
+      expect(RefundService.quote(sale, <LineKey, Qty>{}), _inr(0));
       final free = testSale(
         number: 'AX1',
         at: DateTime(2026, 10, 8),
@@ -136,41 +155,53 @@ void main() {
         cart: _sale().cart,
       );
       expect(
-        RefundService.quote(free, const <int, Qty>{1: Qty(1000)}),
+        RefundService.quote(free, <LineKey, Qty>{
+          const LineKey(1): const Qty(1000),
+        }),
         _inr(0),
       );
     },
   );
 
   test('applyReturned adds the typed quantities to returned', () {
-    final sale = _sale(returned: const <int, Qty>{1: Qty(1000)});
-    final next = RefundService.applyReturned(sale, const <int, Qty>{
-      1: Qty(500),
-      2: Qty(250),
-      3: Qty.zero,
+    final sale = _sale(
+      returned: <LineKey, Qty>{const LineKey(1): const Qty(1000)},
+    );
+    final next = RefundService.applyReturned(sale, <LineKey, Qty>{
+      const LineKey(1): const Qty(500),
+      const LineKey(2): const Qty(250),
+      const LineKey(3): Qty.zero,
     });
-    expect(next.returned, const <int, Qty>{1: Qty(1500), 2: Qty(250)});
-    expect(sale.returned, const <int, Qty>{1: Qty(1000)}, reason: 'immutable');
+    expect(next.returned, <LineKey, Qty>{
+      const LineKey(1): const Qty(1500),
+      const LineKey(2): const Qty(250),
+    });
+    expect(sale.returned, <LineKey, Qty>{
+      const LineKey(1): const Qty(1000),
+    }, reason: 'immutable');
     expect(next.number, sale.number);
     expect(next.totals.total, sale.totals.total);
   });
 
   test('restock rounds a fractional quantity up to whole units', () {
     expect(
-      RefundService.restockUnits(const <int, Qty>{
-        1: Qty(1000),
-        2: Qty(1500),
-        3: Qty(1),
-        4: Qty.zero,
+      RefundService.restockUnits(<LineKey, Qty>{
+        const LineKey(1): const Qty(1000),
+        const LineKey(2): const Qty(1500),
+        const LineKey(3): const Qty(1),
+        const LineKey(4): Qty.zero,
       }),
       const <int, int>{1: 1, 2: 2, 3: 1},
     );
   });
 
   test('refund request round-trips through JSON', () {
-    const request = RefundRequest(
+    final request = RefundRequest(
       saleNumber: 'AX000007',
-      entries: <int, Qty>{1: Qty(1500), 2: Qty(250)},
+      entries: <LineKey, Qty>{
+        const LineKey(1): const Qty(1500),
+        const LineKey(2): const Qty(250),
+      },
     );
     final again = RefundRequest.fromJson(request.toJson());
     expect(again.saleNumber, 'AX000007');

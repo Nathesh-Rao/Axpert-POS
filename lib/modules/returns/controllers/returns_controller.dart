@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import '../../pos/models/line_key.dart';
 import 'package:get/get.dart';
 
 import '../../../core/constants/app_strings.dart';
@@ -44,11 +45,11 @@ class ReturnsController extends GetxController {
   /// The sale that matches the text, if any.
   final Rxn<Sale> sale = Rxn<Sale>();
 
-  /// Typed return quantities (`returnQty`), product id to quantity.
-  final RxMap<int, Qty> qty = <int, Qty>{}.obs;
+  /// Typed return quantities (`returnQty`), line key to quantity.
+  final RxMap<LineKey, Qty> qty = <LineKey, Qty>{}.obs;
 
-  final Map<int, TextEditingController> _fields =
-      <int, TextEditingController>{};
+  final Map<LineKey, TextEditingController> _fields =
+      <LineKey, TextEditingController>{};
   Map<String, Sale> _index = <String, Sale>{};
   Worker? _worker;
 
@@ -81,11 +82,11 @@ class ReturnsController extends GetxController {
   }
 
   /// The text controller of a quantity box, created on first use.
-  TextEditingController fieldFor(int productId) =>
-      _fields.putIfAbsent(productId, () => TextEditingController(text: '0'));
+  TextEditingController fieldFor(LineKey key) =>
+      _fields.putIfAbsent(key, () => TextEditingController(text: '0'));
 
   /// A quantity box `onChange`: `Math.max(0, Number(value))`.
-  void onQtyChanged(int productId, String value) {
+  void onQtyChanged(LineKey key, String value) {
     Qty parsed;
     try {
       parsed = value.trim().isEmpty
@@ -95,19 +96,19 @@ class ReturnsController extends GetxController {
       parsed = Qty.zero;
     }
     if (parsed < Qty.zero) parsed = Qty.zero;
-    final next = Map<int, Qty>.of(qty)..[productId] = parsed;
+    final next = Map<LineKey, Qty>.of(qty)..[key] = parsed;
     qty.assignAll(next);
     // A controlled input shows the stored value: "0" again for an empty or
     // invalid box.
     if (parsed == Qty.zero && value != '0') {
-      fieldFor(productId).value = const TextEditingValue(
+      fieldFor(key).value = const TextEditingValue(
         text: '0',
         selection: TextSelection.collapsed(offset: 1),
       );
     } else if (RegExp(r'^0+\d').hasMatch(value)) {
       // "01" is the number 1: the box shows it as the prototype's does.
       final shown = value.replaceFirst(RegExp(r'^0+(?=\d)'), '');
-      fieldFor(productId).value = TextEditingValue(
+      fieldFor(key).value = TextEditingValue(
         text: shown,
         selection: TextSelection.collapsed(offset: shown.length),
       );
@@ -131,7 +132,7 @@ class ReturnsController extends GetxController {
       case RefundCheck.exceeds:
         toasts.show(_s.toastRefundExceeds(), kind: ToastKind.error);
       case RefundCheck.ok:
-        final typed = Map<int, Qty>.of(qty);
+        final typed = Map<LineKey, Qty>.of(qty);
         final amount = MoneyFormatter.format(RefundService.quote(found, typed));
         overlay.openConfirm(_s.refundConfirm(amount), () {
           _commit(found, typed, amount);
@@ -139,7 +140,11 @@ class ReturnsController extends GetxController {
     }
   }
 
-  Future<void> _commit(Sale found, Map<int, Qty> typed, String amount) async {
+  Future<void> _commit(
+    Sale found,
+    Map<LineKey, Qty> typed,
+    String amount,
+  ) async {
     products.restock(RefundService.restockUnits(typed, sale: found));
     sales.replace(RefundService.applyReturned(found, typed));
     _clearQty();
@@ -150,7 +155,7 @@ class ReturnsController extends GetxController {
         RefundCommit(
           request: RefundRequest(
             saleNumber: found.number,
-            entries: Map<int, Qty>.of(typed),
+            entries: Map<LineKey, Qty>.of(typed),
           ),
           sales: sales.sales.toList(),
           products: products.products.toList(),

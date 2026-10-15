@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/bindings/startup_diagnostics.dart';
 import 'package:pos_application/core/constants/storage_keys.dart';
 import 'package:pos_application/core/database/axpert_database.dart';
@@ -426,7 +427,9 @@ void main() {
       'editing the product leaves the stored sale and refund quote intact',
       () async {
         final saleJson = jsonEncode(sale.toJson());
-        final quote = RefundService.quote(sale, {2: Qty.units(1)});
+        final quote = RefundService.quote(sale, {
+          const LineKey(2): Qty.units(1),
+        });
 
         await repository.save([
           for (final p in list)
@@ -434,12 +437,18 @@ void main() {
         ]);
 
         expect(jsonEncode(sale.toJson()), saleJson);
-        expect(RefundService.quote(sale, {2: Qty.units(1)}), quote);
+        expect(
+          RefundService.quote(sale, {const LineKey(2): Qty.units(1)}),
+          quote,
+        );
         final reread = Sale.fromJson(
           jsonDecode(saleJson) as Map<String, dynamic>,
         );
         expect(reread.cart.lines.single.product, list[2]);
-        expect(RefundService.check(sale, {2: Qty.units(2)}), RefundCheck.ok);
+        expect(
+          RefundService.check(sale, {const LineKey(2): Qty.units(2)}),
+          RefundCheck.ok,
+        );
       },
     );
 
@@ -458,9 +467,14 @@ void main() {
 
         expect(() => controller.restock({2: 1}), returnsNormally);
         expect(controller.products.length, 19);
-        final refunded = RefundService.applyReturned(sale, {2: Qty.units(1)});
-        expect(refunded.returned[2], Qty.units(1));
-        expect(RefundService.quote(sale, {2: Qty.units(1)}), isNotNull);
+        final refunded = RefundService.applyReturned(sale, {
+          const LineKey(2): Qty.units(1),
+        });
+        expect(refunded.returned[const LineKey(2)], Qty.units(1));
+        expect(
+          RefundService.quote(sale, {const LineKey(2): Qty.units(1)}),
+          isNotNull,
+        );
 
         await repository.save(list);
         final row = (await allRows()).firstWhere((r) => r.legacyId == 2);

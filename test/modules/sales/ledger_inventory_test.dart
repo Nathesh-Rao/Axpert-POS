@@ -2,6 +2,7 @@
 // transaction (scoped session), and rolls back with it.
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/bindings/startup_diagnostics.dart';
 import 'package:pos_application/core/database/axpert_database.dart';
 import 'package:pos_application/core/database/database_provider.dart';
@@ -275,14 +276,14 @@ void main() {
     await ledger.commit(c);
     final sale = c.sale;
     final after = [
-      sale.copyWith(returned: {prods[0].id: const Qty(1000)}),
+      sale.copyWith(returned: {LineKey(prods[0].id): const Qty(1000)}),
     ];
 
     final outcome = await ledger.applyRefund(
       RefundCommit(
         request: RefundRequest(
           saleNumber: sale.number,
-          entries: {prods[0].id: const Qty(1000)},
+          entries: {LineKey(prods[0].id): const Qty(1000)},
         ),
         sales: after,
         products: [prods[0].copyWith(stock: 9), sold(prods[1], 2), prods[2]],

@@ -1,6 +1,7 @@
 // DEC-129: a refund is memory-first (toast at once) and then persisted as one
 // unit; only a fully failed save shows `toastSaveFailed`.
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/database/persist_outcome.dart';
 import 'package:pos_application/core/services/pricing/qty.dart';
@@ -47,7 +48,7 @@ Future<(ReturnsController, _FakeReturns)> _boot() async {
   );
   final page = Get.find<ReturnsController>();
   page.onBillChanged('AX000001');
-  page.onQtyChanged(1, '1');
+  page.onQtyChanged(const LineKey(1), '1');
   return (page, fake);
 }
 
@@ -64,11 +65,11 @@ void main() {
 
     expect(Get.find<ProductsController>().byId(1)!.stock, stock + 1);
     expect(Get.find<SalesController>().sales.single.returned, {
-      1: const Qty(1000),
+      const LineKey(1): const Qty(1000),
     });
     final commit = fake.commits.single;
     expect(commit.request.saleNumber, 'AX000001');
-    expect(commit.sales.single.returned, {1: const Qty(1000)});
+    expect(commit.sales.single.returned, {const LineKey(1): const Qty(1000)});
     expect(commit.products.firstWhere((p) => p.id == 1).stock, stock + 1);
     expect(_toasts, isNot(contains(_saveFailed)));
   });

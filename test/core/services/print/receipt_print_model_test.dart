@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pos_application/core/services/pricing/basis_points.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/services/pricing/currency_registry.dart';
 import 'package:pos_application/core/services/pricing/money.dart';
 import 'package:pos_application/core/services/pricing/qty.dart';
@@ -60,7 +61,7 @@ Sale _sale({
   mode: 'Cash',
   tendered: m(total),
   change: m(0),
-  returned: const <int, Qty>{},
+  returned: <LineKey, Qty>{},
 );
 
 const _store = StoreInfo(
@@ -241,7 +242,7 @@ void main() {
       mode: 'Cash',
       tendered: inr(5900),
       change: inr(0),
-      returned: const <int, Qty>{},
+      returned: <LineKey, Qty>{},
     );
     final items = ReceiptPrintModel.fromDocument(
       ReceiptBuilder.fromSale(sale, regime: testIndiaRegime),

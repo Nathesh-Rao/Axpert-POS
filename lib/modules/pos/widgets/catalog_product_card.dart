@@ -15,6 +15,7 @@ import '../../../features/products/domain/entities/product.dart';
 import '../controllers/cart_actions_controller.dart';
 import '../controllers/pos_work_view_controller.dart';
 import '../controllers/cart_controller.dart';
+import '../models/line_key.dart';
 import '../models/cart_line.dart';
 
 /// A catalog card wired to the cart. It listens only to its own cart line; the
@@ -43,7 +44,7 @@ class CatalogProductCard extends StatelessWidget {
     final actions = Get.find<CartActionsController>();
     final offers = Get.find<OffersController>();
     return ValueListenableBuilder<CartLine?>(
-      valueListenable: cart.lineListenable(product.id),
+      valueListenable: cart.lineListenable(LineKey.base(product.id)),
       builder: (context, line, _) {
         builds++;
         // Reads `revision` so the badge follows a reload of the offers.

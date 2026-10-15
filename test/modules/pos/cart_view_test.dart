@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:get/get.dart';
 import 'package:pos_application/core/services/pricing/qty.dart';
 import 'package:pos_application/modules/pos/controllers/cart_actions_controller.dart';
@@ -90,22 +91,22 @@ void main() {
     final field = _field<QuantityField>(0);
     await tester.enterText(field, '3');
     await tester.pump();
-    expect(cart.lineOf(5)!.qty, Qty.units(3));
+    expect(cart.lineOf(const LineKey(5))!.qty, Qty.units(3));
     await tester.enterText(field, '2.5');
     await tester.pump();
-    expect(cart.lineOf(5)!.qty, const Qty(2500));
+    expect(cart.lineOf(const LineKey(5))!.qty, const Qty(2500));
     // Over stock (60): toast, cart unchanged.
     await tester.enterText(field, '99');
     await tester.pump();
     expect(find.text('Only 60 available in stock'), findsOneWidget);
-    expect(cart.lineOf(5)!.qty, const Qty(2500));
+    expect(cart.lineOf(const LineKey(5))!.qty, const Qty(2500));
     // Leaving the field shows the current value again.
     await _done(tester);
     expect(find.text('2.500'), findsWidgets);
     // 0 on leaving the field removes the line.
     await tester.enterText(field, '0');
     await _done(tester);
-    expect(cart.lineOf(5), isNull);
+    expect(cart.lineOf(const LineKey(5)), isNull);
     expect(find.text('Lays Classic 52g removed'), findsOneWidget);
     await _finish(tester);
   });
@@ -119,19 +120,19 @@ void main() {
     final discount = _field<NumberField>(1);
     await tester.enterText(price, '25.5');
     await tester.pump();
-    expect(cart.lineOf(5)!.price.minor, 2550);
+    expect(cart.lineOf(const LineKey(5))!.price.minor, 2550);
     expect(tester.widget<TextField>(price).controller!.text, '25.5');
     await tester.enterText(price, '-3');
     await tester.pump();
-    expect(cart.lineOf(5)!.price.minor, 0);
+    expect(cart.lineOf(const LineKey(5))!.price.minor, 0);
     expect(tester.widget<TextField>(price).controller!.text, '0');
     await tester.enterText(discount, '150');
     await tester.pump();
-    expect(cart.lineOf(5)!.discount.value, 10000);
+    expect(cart.lineOf(const LineKey(5))!.discount.value, 10000);
     expect(tester.widget<TextField>(discount).controller!.text, '100');
     await tester.enterText(discount, '12.5');
     await tester.pump();
-    expect(cart.lineOf(5)!.discount.value, 1250);
+    expect(cart.lineOf(const LineKey(5))!.discount.value, 1250);
     await _finish(tester);
   });
 
@@ -142,13 +143,13 @@ void main() {
     final cart = Get.find<CartController>();
     await tester.tap(find.byTooltip('Increase quantity'));
     await tester.pump();
-    expect(cart.lineOf(1)!.qty, Qty.units(2));
+    expect(cart.lineOf(const LineKey(1))!.qty, Qty.units(2));
     await tester.tap(find.byTooltip('Decrease quantity'));
     await tester.pump();
-    expect(cart.lineOf(1)!.qty, Qty.units(1));
+    expect(cart.lineOf(const LineKey(1))!.qty, Qty.units(1));
     await tester.tap(find.byTooltip('Decrease quantity'));
     await tester.pump();
-    expect(cart.lineOf(1), isNull);
+    expect(cart.lineOf(const LineKey(1)), isNull);
     await _finish(tester);
   });
 
@@ -200,10 +201,10 @@ void main() {
     await _boot(tester, add: const <int>[1, 2]);
     final cart = Get.find<CartController>();
     final selection = Get.find<CartSelectionController>();
-    expect(selection.selected.value, 2); // the last add selects
+    expect(selection.selected.value, const LineKey(2)); // the last add selects
     await tester.tap(find.byType(CartLineRow).first, warnIfMissed: false);
     await tester.pump();
-    expect(selection.selected.value, 1);
+    expect(selection.selected.value, const LineKey(1));
     // Focus is not in a text input: Delete removes the selected line.
     FocusManager.instance.primaryFocus?.unfocus();
     await tester.pump();
@@ -218,7 +219,7 @@ void main() {
   ) async {
     await _boot(tester, add: const <int>[1, 2, 3, 4, 5, 6, 7, 8, 9]);
     final selection = Get.find<CartSelectionController>();
-    expect(selection.highlight.value, 9);
+    expect(selection.highlight.value, const LineKey(9));
     await tester.pump(const Duration(milliseconds: 1700));
     expect(selection.highlight.value, isNull);
     expect(

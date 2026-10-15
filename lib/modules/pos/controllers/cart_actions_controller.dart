@@ -7,7 +7,10 @@ import '../../../shared/controllers/search_field_controller.dart';
 import '../../../shared/controllers/toast_controller.dart';
 import '../../../features/products/presentation/controllers/products_controller.dart';
 import '../../../features/products/domain/entities/product.dart';
+import '../../../core/services/packaging/packaging_ref.dart';
+import '../../../core/services/pricing/money.dart';
 import '../models/cart_line.dart';
+import '../models/line_key.dart';
 import 'cart_controller.dart';
 import 'cart_selection_controller.dart';
 
@@ -32,20 +35,28 @@ class CartActionsController extends GetxController {
 
   AppStrings get _s => AppStrings.current;
 
-  /// Returns false when the add was blocked by stock.
-  bool add(Product product) {
-    final current = cart.lineOf(product.id)?.qty ?? Qty.zero;
-    if (current + Qty.units(1) > product.stockQty) {
+  /// Returns false when the add was blocked by stock. [packaging] and its
+  /// package [price] add one package instead of one base unit (DEC-154); the
+  /// stock check counts base units across all lines of the product.
+  bool add(Product product, {PackagingRef? packaging, Money? price}) {
+    final key = LineKey(product.id, packaging?.id);
+    final factor = packaging?.quantityBaseMilli ?? 1000;
+    final used = cart.cart.value.baseQtyOf(product.id).milli;
+    if (used + factor > product.stockQty.milli) {
       toasts.show(
         _s.toastStockAvailable(product.stock),
         kind: ToastKind.warning,
       );
       return false;
     }
-    cart.addItem(product);
-    selection.flash(product.id);
-    selection.select(product.id);
-    toasts.show(_s.toastProductAdded(product.name));
+    cart.addItem(product, packaging: packaging, price: price);
+    selection.flash(key);
+    selection.select(key);
+    toasts.show(
+      packaging == null
+          ? _s.toastProductAdded(product.name)
+          : _s.toastProductAddedUnit(product.name, packaging.unitName),
+    );
     beep.play();
     search.text.clear();
     search.refocus();
@@ -53,7 +64,7 @@ class CartActionsController extends GetxController {
   }
 
   void remove(CartLine line) {
-    cart.removeLine(line.product.id);
+    cart.removeLine(line.key);
     toasts.show(
       _s.toastProductRemoved(line.product.name),
       kind: ToastKind.info,
@@ -62,12 +73,19 @@ class CartActionsController extends GetxController {
     search.refocus();
   }
 
-  /// [qty] is the wanted quantity; the live product stock is the limit.
+  /// [qty] is the wanted quantity of the line; the live product stock (base
+  /// units, summed across the lines of the product) is the limit.
   void changeQty(CartLine line, Qty qty) {
     final stock = products.byId(line.product.id)?.stockQty ?? Qty.zero;
-    if (qty > stock) {
+    final others = cart.cart.value
+        .baseQtyOf(line.product.id, except: line.key)
+        .milli;
+    final factor = line.packaging?.quantityBaseMilli ?? 1000;
+    final wantedBase = qty.milli * factor ~/ 1000;
+    if (others + wantedBase > stock.milli) {
+      final left = (stock.milli - others) * 1000 ~/ factor;
       toasts.show(
-        _s.toastStockOnly(stock.milli ~/ 1000),
+        _s.toastStockOnly((left < 0 ? 0 : left) ~/ 1000),
         kind: ToastKind.warning,
       );
       return;
@@ -75,7 +93,7 @@ class CartActionsController extends GetxController {
     if (qty <= Qty.zero) {
       remove(line);
     } else {
-      cart.setQty(line.product.id, qty);
+      cart.setQty(line.key, qty);
     }
   }
 
@@ -86,9 +104,9 @@ class CartActionsController extends GetxController {
 
   /// Delete key: removes the selected line, if any.
   void removeSelected() {
-    final id = selection.selected.value;
-    if (id == null) return;
-    final line = cart.lineOf(id);
+    final key = selection.selected.value;
+    if (key == null) return;
+    final line = cart.lineOf(key);
     if (line != null) remove(line);
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pos_application/modules/pos/models/line_key.dart';
 import 'package:pos_application/core/services/pricing/qty.dart';
 import 'package:pos_application/modules/shell/controllers/settings_controller.dart';
 import 'package:pos_application/shared/controllers/search_field_controller.dart';
@@ -19,8 +20,8 @@ void main() {
     expect(h.toasts.toasts.last.text, 'Coca Cola 500ml added');
     expect(h.toasts.toasts.last.kind, ToastKind.success);
     expect(h.audio.beeps, 1);
-    expect(h.selection.selected.value, 0);
-    expect(h.selection.highlight.value, 0);
+    expect(h.selection.selected.value, const LineKey(0));
+    expect(h.selection.highlight.value, const LineKey(0));
     expect(search.text.text, '');
     expect(h.cart.cart.value.lines.single.qty, Qty.units(1));
     h.selection.onClose();
@@ -56,7 +57,7 @@ void main() {
     final h = await PosHarness.boot();
     h.actions.add(h.products.byId(0)!);
     h.actions.add(h.products.byId(1)!);
-    final line = h.cart.lineOf(0)!;
+    final line = h.cart.lineOf(const LineKey(0))!;
     h.actions.remove(line);
     expect(h.cart.cart.value.lines.length, 1);
     final toast = h.toasts.toasts.last;
@@ -70,14 +71,14 @@ void main() {
   test('changeQty: over stock warns, zero removes, else sets', () async {
     final h = await PosHarness.boot();
     h.actions.add(h.products.byId(14)!);
-    final line = h.cart.lineOf(14)!;
+    final line = h.cart.lineOf(const LineKey(14))!;
     h.actions.changeQty(line, Qty.units(9));
     expect(h.toasts.toasts.last.text, 'Only 8 available in stock');
-    expect(h.cart.lineOf(14)!.qty, Qty.units(1));
+    expect(h.cart.lineOf(const LineKey(14))!.qty, Qty.units(1));
     h.actions.changeQty(line, Qty.units(5));
-    expect(h.cart.lineOf(14)!.qty, Qty.units(5));
-    h.actions.changeQty(h.cart.lineOf(14)!, Qty.zero);
-    expect(h.cart.lineOf(14), isNull);
+    expect(h.cart.lineOf(const LineKey(14))!.qty, Qty.units(5));
+    h.actions.changeQty(h.cart.lineOf(const LineKey(14))!, Qty.zero);
+    expect(h.cart.lineOf(const LineKey(14)), isNull);
     expect(h.toasts.toasts.last.text, 'Paper Boat Aam 200ml removed');
     h.selection.onClose();
   });
@@ -86,7 +87,7 @@ void main() {
     final h = await PosHarness.boot();
     h.actions.add(h.products.byId(0)!);
     h.actions.add(h.products.byId(1)!);
-    h.selection.select(0);
+    h.selection.select(const LineKey(0));
     h.actions.removeSelected();
     expect(h.cart.cart.value.lines.map((l) => l.product.id), [1]);
     h.selection.select(null);

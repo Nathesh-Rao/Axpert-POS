@@ -1,6 +1,7 @@
 // Shell goldens. Light at the reference viewport is compared (by eye) with
 // reference_screenshots/; other sizes and dark are regression only.
 
+@Tags(<String>['golden'])
 @TestOn('vm')
 library;
 
@@ -124,10 +125,7 @@ void main() {
           logicalSize: size,
           after: after,
         );
-        await expectLater(
-          find.byType(PosApp),
-          matchesGoldenFile('goldens/$file.png'),
-        );
+        await expectGolden(find.byType(PosApp), file);
       } finally {
         if (Get.isRegistered<ToastController>()) {
           Get.find<ToastController>().onClose(); // cancel pending timers

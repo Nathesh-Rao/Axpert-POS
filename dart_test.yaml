@@ -1,0 +1,3 @@
+tags:
+  golden:
+    # Pixel comparisons of the key screens. Skip with: flutter test --exclude-tags golden

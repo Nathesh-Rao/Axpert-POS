@@ -1,6 +1,7 @@
 // Splash and login goldens. Light at the reference viewport is compared (by
 // eye) with reference_screenshots/splash.png and login.png; other sizes and
 // dark are regression only.
+@Tags(<String>['golden'])
 @TestOn('vm')
 library;
 
@@ -80,10 +81,7 @@ void main() {
       useRealShadows();
       try {
         await _pump(tester, screen: screen, dark: dark, size: size);
-        await expectLater(
-          find.byType(PosApp),
-          matchesGoldenFile('goldens/$file.png'),
-        );
+        await expectGolden(find.byType(PosApp), file);
       } finally {
         if (Get.isRegistered<ToastController>()) {
           Get.find<ToastController>().onClose();

@@ -3,6 +3,7 @@
 // reads Cart (n)) and the catalog view of an empty cart. Regression only: the
 // layout is an approved deviation from the prototype, no reference screenshot.
 
+@Tags(<String>['golden'])
 @TestOn('vm')
 library;
 
@@ -142,10 +143,7 @@ void main() {
         Get.find<ToastController>().toasts.clear();
         await tester.pumpAndSettle();
         await settleImages(tester);
-        await expectLater(
-          find.byType(PosApp),
-          matchesGoldenFile('goldens/$file.png'),
-        );
+        await expectGolden(find.byType(PosApp), file);
       } finally {
         if (Get.isRegistered<ToastController>()) {
           Get.find<ToastController>().onClose();

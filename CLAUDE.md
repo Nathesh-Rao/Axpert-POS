@@ -78,6 +78,7 @@ pos_application/lib/
 - All spacing, padding, sizes, radii, colors, text styles and shadows come from tokens (AppSpacing, AppSizes, AppCheckoutSizes, AppManagementSizes, `context.colors`, `context.text`). No literals in widgets.
 - Layout rules: inside every card at least 8 px padding, at least 4 px between a label and its input, at least 8 px between cards (user-approved S4.a deviations, DEC-099 and DEC-100; every value comes from a token). Paired buttons use `ModalActions`: equal height, the same top and bottom edges and a shared label baseline (DEC-112); do not add per-button margins.
 - Goldens (reference viewport, light mode; other sizes and dark mode) are regression tests. A golden is regenerated only for an intended visual change, and the new image is looked at before it is committed. Areas without a golden or a check stay listed as "unverified visually" in `docs/known_gaps.md`; the user is the visual judge.
+- Golden budget: about 15 full-screen images (`keptGoldens` in `test/golden/harness.dart`) plus the rail and the 80 mm receipt, about 5 MB. Golden tests are tagged `golden`: plain `flutter test` runs them, `flutter test --exclude-tags golden` skips them for fast loops. Regenerate goldens only when UI files changed, only for kept screens, once per feature (one commit), after looking at the image and reporting the measured size/diff. Never regenerate just to refresh. Adding a golden means replacing one or justifying it. `test/golden/failures/` is never committed.
 
 ## Data, mock and storage (no backend yet)
 

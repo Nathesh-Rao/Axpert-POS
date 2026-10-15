@@ -94,3 +94,33 @@ void useTolerantGoldens({double tolerance = 0.005}) {
     );
   }
 }
+
+/// Goldens that still compare pixels (the key screens). Every other golden
+/// test only checks that the screen renders; see KG-GOLDEN-TRIM. Budget: about
+/// 15 full-screen images. Add one only by replacing another.
+const Set<String> keptGoldens = <String>{
+  'shell_pos_light',
+  'shell_pos_dark',
+  'three_panel_1868_p25_light',
+  'three_panel_1280_p25_light',
+  'cart_density_1280_cart_light',
+  'cart_density_1280_cart_dark',
+  'cart_density_1280_catalog_light',
+  'summary_no_forex_light',
+  'summary_vat_forex_light',
+  'receipt_light',
+  'offers_cart_unlocked_light',
+  'entry_login_light_1280',
+  'customer_picker_light',
+  'shell_signed_out_light',
+};
+
+/// Compares [finder] with `goldens/<file>.png` when [file] is in
+/// [keptGoldens]; otherwise only asserts that it rendered.
+Future<void> expectGolden(Finder finder, String file) async {
+  if (!keptGoldens.contains(file)) {
+    expect(finder, findsOneWidget);
+    return;
+  }
+  await expectLater(finder, matchesGoldenFile('goldens/$file.png'));
+}

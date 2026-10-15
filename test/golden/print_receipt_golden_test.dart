@@ -2,6 +2,7 @@
 // way the PDF lays it out. Not compared with React; a regression test of the
 // printed content and row structure (the PDF itself cannot be rasterised in a
 // VM test).
+@Tags(<String>['golden'])
 @TestOn('vm')
 library;
 

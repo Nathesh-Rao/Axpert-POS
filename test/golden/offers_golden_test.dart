@@ -3,6 +3,7 @@
 // prototype has no offers, so there is no reference screenshot (unverified
 // visually, KG list).
 
+@Tags(<String>['golden'])
 @TestOn('vm')
 library;
 
@@ -112,10 +113,7 @@ void main() {
       debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
       try {
         await _pump(tester, dark: dark, after: after);
-        await expectLater(
-          find.byType(PosApp),
-          matchesGoldenFile('goldens/$file.png'),
-        );
+        await expectGolden(find.byType(PosApp), file);
       } finally {
         if (Get.isRegistered<ToastController>()) {
           Get.find<ToastController>().onClose();

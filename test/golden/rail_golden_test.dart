@@ -1,5 +1,8 @@
 // The side rail card alone (default states, one item selected in turn), light
 // and dark, at 1280x720 and 1868x1035. Regression goldens (no React reference).
+@Tags(<String>['golden'])
+library;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pos_application/core/responsive/app_metrics.dart';

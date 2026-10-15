@@ -3,6 +3,7 @@
 // no forex rows (the forex card is hidden). Regression only, not compared with
 // React (the prototype has one GST line and a fixed forex card).
 
+@Tags(<String>['golden'])
 @TestOn('vm')
 library;
 
@@ -76,10 +77,7 @@ void main() {
         Get.find<ToastController>().toasts.clear();
         await tester.pumpAndSettle();
         await settleImages(tester);
-        await expectLater(
-          find.byType(PosApp),
-          matchesGoldenFile('goldens/$file.png'),
-        );
+        await expectGolden(find.byType(PosApp), file);
       } finally {
         if (Get.isRegistered<ToastController>()) {
           Get.find<ToastController>().onClose();

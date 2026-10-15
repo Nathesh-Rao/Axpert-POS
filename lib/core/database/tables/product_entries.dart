@@ -55,7 +55,7 @@ class ProductEntries extends Table {
   TextColumn get categoryId =>
       text().nullable().references(CategoryEntries, #id)();
 
-  /// Base unit (v14, DEC-150). Nullable because SQLite cannot add a
+  /// Base unit (v14, DEC-151). Nullable because SQLite cannot add a
   /// non-null FK column; the migration backfills `piece` and a null reads as
   /// piece.
   TextColumn get baseUnitId => text().nullable().references(UnitEntries, #id)();

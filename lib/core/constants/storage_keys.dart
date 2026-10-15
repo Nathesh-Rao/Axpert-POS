@@ -12,6 +12,11 @@ abstract final class StorageKeys {
   static const String beep = '${_prefix}beep';
   static const String counter = '${_prefix}counter';
 
+  /// Mock catalog extras (DEC-151): brands, packagings and barcodes.
+  static const String brands = '${_prefix}brands';
+  static const String packagings = '${_prefix}packagings';
+  static const String barcodes = '${_prefix}barcodes';
+
   /// Receipt paper width in millimetres (a settings row, not a prototype key).
   static const String printPaperMm = 'print_paper_mm';
 

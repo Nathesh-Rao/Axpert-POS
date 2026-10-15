@@ -236,6 +236,7 @@ class CartController extends GetxController implements SessionScoped {
             qty: line.qty,
             price: line.price,
             manualDiscount: line.discount,
+            packageFactorMilli: line.packaging?.quantityBaseMilli ?? 1000,
           ),
       ],
       offers: offers,

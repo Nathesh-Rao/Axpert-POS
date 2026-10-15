@@ -11,6 +11,7 @@ import '../../modules/pos/services/offer_cart_builder.dart';
 import '../../modules/sales/models/sale.dart';
 import '../database/axpert_database.dart';
 import '../database/migration/sale_rows.dart';
+import '../database/tables/unit_entries.dart';
 import '../identifiers/uuid_generator.dart';
 import '../security/password_hasher.dart';
 import '../services/pricing/basis_points.dart';
@@ -186,6 +187,68 @@ class DemoSeeder {
         );
   }
 
+  Future<void> _barcode({
+    required String id,
+    required String productId,
+    required String? storeId,
+    required String barcode,
+    String? packagingId,
+    required int now,
+  }) async {
+    await db
+        .into(db.barcodeEntries)
+        .insert(
+          BarcodeEntriesCompanion.insert(
+            id: id,
+            productId: productId,
+            packagingId: Value(packagingId),
+            storeId: Value(storeId),
+            barcode: barcode,
+            createdAt: now,
+            updatedAt: now,
+          ),
+        );
+    await _track('product_barcodes', id);
+  }
+
+  /// Packs, cartons and boxes of some demo products with their own barcodes
+  /// (DEC-151). Prices are derived unless the seed sets one.
+  Future<void> _packagings(_SeedData d, int now) async {
+    final storeOf = {
+      for (final p in d.products) p['id'] as String: p['store'] as String,
+    };
+    final unitIds = {for (final u in SeedUnits.all) u.code: u.id};
+    for (final k in d.packagings) {
+      await db
+          .into(db.packagingEntries)
+          .insert(
+            PackagingEntriesCompanion.insert(
+              id: k['id'] as String,
+              productId: k['product'] as String,
+              unitId: unitIds[k['unit'] as String]!,
+              name: k['name'] as String,
+              quantityBaseMilli: k['quantityBaseMilli'] as int,
+              sku: Value(k['sku'] as String?),
+              priceMinor: Value(k['priceMinor'] as int?),
+              sortOrder: Value(k['sortOrder'] as int? ?? 0),
+              createdAt: now,
+              updatedAt: now,
+            ),
+          );
+      await _track('product_packagings', k['id'] as String);
+    }
+    for (final b in d.extraBarcodes) {
+      await _barcode(
+        id: b['id'] as String,
+        productId: b['product'] as String,
+        storeId: storeOf[b['product'] as String],
+        barcode: b['barcode'] as String,
+        packagingId: b['packaging'] as String?,
+        now: now,
+      );
+    }
+  }
+
   /// Cash, card, bank transfer and mobile money for a demo store (DEC-149).
   Future<void> _paymentMethods(String storeId, int now) async {
     for (final (i, m) in MockPaymentMethodRepository.defaults.indexed) {
@@ -331,6 +394,7 @@ class DemoSeeder {
               favourite: p['favourite'] as bool,
               storeId: Value(store),
               categoryId: Value(p['categoryId'] as String?),
+              baseUnitId: Value(SeedUnits.piece.id),
               variantGroup: Value(p['variantGroup'] as String?),
               variantLabel: Value(p['variantLabel'] as String?),
               createdAt: now,
@@ -339,7 +403,15 @@ class DemoSeeder {
           );
       await _track('products', p['id'] as String);
       await _openingStock(p, store, now);
+      await _barcode(
+        id: uuid.generate(),
+        productId: p['id'] as String,
+        storeId: store,
+        barcode: p['barcode'] as String,
+        now: now,
+      );
     }
+    await _packagings(d, now);
     position = <String, int>{};
     var customerIndex = 0;
     for (final c in d.customers) {
@@ -704,6 +776,20 @@ class DemoSeeder {
     await (db.delete(
       db.inventoryBalanceEntries,
     )..where((t) => t.productId.isIn(products))).go();
+    // Packagings and barcodes of seeded products (children first). Sale
+    // lines of the user lose the packaging link, not the row.
+    final seededPackagings = db.selectOnly(db.packagingEntries)
+      ..addColumns([db.packagingEntries.id])
+      ..where(db.packagingEntries.productId.isIn(products));
+    await (db.update(db.saleLineEntries)
+          ..where((t) => t.packagingId.isInQuery(seededPackagings)))
+        .write(const SaleLineEntriesCompanion(packagingId: Value(null)));
+    await (db.delete(
+      db.barcodeEntries,
+    )..where((t) => t.productId.isIn(products))).go();
+    await (db.delete(
+      db.packagingEntries,
+    )..where((t) => t.productId.isIn(products))).go();
     // Offers of the user that use a seeded product go with it.
     await (db.delete(db.offerEntries)..where(
           (t) =>
@@ -787,13 +873,29 @@ class _SeedData {
     required this.customers,
     required this.offerRows,
     required this.sales,
+    this.packagings = const <Map<String, dynamic>>[],
+    this.extraBarcodes = const <Map<String, dynamic>>[],
   });
 
   static Future<_SeedData> load(SeedAssetLoader load) async {
     Future<List<Map<String, dynamic>>> list(String name) async =>
         (jsonDecode(await load('$name.json')) as List)
             .cast<Map<String, dynamic>>();
+    // Packagings and extra barcodes (DEC-151); a loader without the file
+    // seeds none.
+    var packagings = const <Map<String, dynamic>>[];
+    var barcodes = const <Map<String, dynamic>>[];
+    try {
+      final extra =
+          jsonDecode(await load('packagings.json')) as Map<String, dynamic>;
+      packagings = (extra['packagings'] as List).cast<Map<String, dynamic>>();
+      barcodes = (extra['barcodes'] as List).cast<Map<String, dynamic>>();
+    } on Object {
+      // No packaging seed in this asset set.
+    }
     return _SeedData(
+      packagings: packagings,
+      extraBarcodes: barcodes,
       currencies: await list('currencies'),
       regimes: await list('tax_regimes'),
       forex: await list('store_forex'),
@@ -817,6 +919,8 @@ class _SeedData {
   final List<Map<String, dynamic>> customers;
   final List<Map<String, dynamic>> offerRows;
   final List<Map<String, dynamic>> sales;
+  final List<Map<String, dynamic>> packagings;
+  final List<Map<String, dynamic>> extraBarcodes;
 
   /// Currency-less tax setup of the seed regime of [region] (zero tax when
   /// the seed has none).

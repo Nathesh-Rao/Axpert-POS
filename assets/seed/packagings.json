@@ -1,0 +1,154 @@
+{
+  "packagings": [
+    {
+      "id": "demo-pack-oz-1-p6",
+      "product": "demo-prod-oz-1",
+      "unit": "pack",
+      "name": "Pack of 6",
+      "quantityBaseMilli": 6000,
+      "sku": "BDV001-P6",
+      "priceMinor": null,
+      "sortOrder": 1
+    },
+    {
+      "id": "demo-pack-oz-1-c24",
+      "product": "demo-prod-oz-1",
+      "unit": "carton",
+      "name": "Carton of 24",
+      "quantityBaseMilli": 24000,
+      "sku": "BDV001-C24",
+      "priceMinor": 90000,
+      "sortOrder": 2
+    },
+    {
+      "id": "demo-pack-oz-2-p6",
+      "product": "demo-prod-oz-2",
+      "unit": "pack",
+      "name": "Pack of 6",
+      "quantityBaseMilli": 6000,
+      "sku": "BDV011-P6",
+      "priceMinor": null,
+      "sortOrder": 1
+    },
+    {
+      "id": "demo-pack-oz-2-c12",
+      "product": "demo-prod-oz-2",
+      "unit": "carton",
+      "name": "Carton of 12",
+      "quantityBaseMilli": 12000,
+      "sku": "BDV011-C12",
+      "priceMinor": null,
+      "sortOrder": 2
+    },
+    {
+      "id": "demo-pack-oz-7-c24",
+      "product": "demo-prod-oz-7",
+      "unit": "carton",
+      "name": "Carton of 24",
+      "quantityBaseMilli": 24000,
+      "sku": null,
+      "priceMinor": null,
+      "sortOrder": 1
+    },
+    {
+      "id": "demo-pack-oz-16-b12",
+      "product": "demo-prod-oz-16",
+      "unit": "box",
+      "name": "Box of 12",
+      "quantityBaseMilli": 12000,
+      "sku": null,
+      "priceMinor": null,
+      "sortOrder": 1
+    },
+    {
+      "id": "demo-pack-oz-21-p4",
+      "product": "demo-prod-oz-21",
+      "unit": "pack",
+      "name": "Pack of 4",
+      "quantityBaseMilli": 4000,
+      "sku": null,
+      "priceMinor": null,
+      "sortOrder": 1
+    },
+    {
+      "id": "demo-pack-oz-21-c48",
+      "product": "demo-prod-oz-21",
+      "unit": "carton",
+      "name": "Carton of 48",
+      "quantityBaseMilli": 48000,
+      "sku": null,
+      "priceMinor": null,
+      "sortOrder": 2
+    },
+    {
+      "id": "demo-pack-ka-1-p6",
+      "product": "demo-prod-ka-1",
+      "unit": "pack",
+      "name": "Pack of 6",
+      "quantityBaseMilli": 6000,
+      "sku": null,
+      "priceMinor": null,
+      "sortOrder": 1
+    },
+    {
+      "id": "demo-pack-ka-1-c24",
+      "product": "demo-prod-ka-1",
+      "unit": "carton",
+      "name": "Carton of 24",
+      "quantityBaseMilli": 24000,
+      "sku": null,
+      "priceMinor": null,
+      "sortOrder": 2
+    }
+  ],
+  "barcodes": [
+    {
+      "id": "demo-bc-oz-1-p6",
+      "product": "demo-prod-oz-1",
+      "packaging": "demo-pack-oz-1-p6",
+      "barcode": "8901234569006"
+    },
+    {
+      "id": "demo-bc-oz-1-c24",
+      "product": "demo-prod-oz-1",
+      "packaging": "demo-pack-oz-1-c24",
+      "barcode": "18901234560007"
+    },
+    {
+      "id": "demo-bc-oz-2-c12",
+      "product": "demo-prod-oz-2",
+      "packaging": "demo-pack-oz-2-c12",
+      "barcode": "18901234560014"
+    },
+    {
+      "id": "demo-bc-oz-7-c24",
+      "product": "demo-prod-oz-7",
+      "packaging": "demo-pack-oz-7-c24",
+      "barcode": "18901234560069"
+    },
+    {
+      "id": "demo-bc-oz-16-b12",
+      "product": "demo-prod-oz-16",
+      "packaging": "demo-pack-oz-16-b12",
+      "barcode": "18901234560153"
+    },
+    {
+      "id": "demo-bc-oz-21-c48",
+      "product": "demo-prod-oz-21",
+      "packaging": "demo-pack-oz-21-c48",
+      "barcode": "18901234560207"
+    },
+    {
+      "id": "demo-bc-oz-3-alt",
+      "product": "demo-prod-oz-3",
+      "packaging": null,
+      "barcode": "5449000000996"
+    },
+    {
+      "id": "demo-bc-ka-1-c24",
+      "product": "demo-prod-ka-1",
+      "packaging": "demo-pack-ka-1-c24",
+      "barcode": "16001234560007"
+    }
+  ]
+}

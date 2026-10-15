@@ -46,6 +46,23 @@ class DuplicateProductIdsException implements Exception {
       '${counts.entries.map((e) => '${e.key} x${e.value}').join(', ')})';
 }
 
+/// The base-unit barcode of a product after a write (DEC-151). [storeId] is
+/// only known for inserted products ([hasStore]); otherwise it is read.
+class BarcodeChange {
+  const BarcodeChange(
+    this.id,
+    this.barcode, {
+    this.storeId,
+    this.hasStore = false,
+  });
+
+  /// `products.id`.
+  final String id;
+  final String barcode;
+  final String? storeId;
+  final bool hasStore;
+}
+
 /// What a save will write: computed in memory, applied in one transaction,
 /// and only then committed to the repository's snapshot (a failed write
 /// leaves the snapshot unchanged, so the next save re-sends the changes).
@@ -55,6 +72,7 @@ class ProductWrite {
     required this.updates,
     required this.tombstones,
     required this.next,
+    this.barcodeChanges = const [],
   });
 
   final List<ProductEntriesCompanion> inserts;
@@ -65,6 +83,11 @@ class ProductWrite {
 
   /// The snapshot after this write succeeds.
   final Map<int, KnownProduct> next;
+
+  /// `products.barcode` after the write, for the products whose
+  /// base-unit barcode row in `product_barcodes` must follow the cache column
+  /// (new, changed, reactivated; an empty barcode for a removed product).
+  final List<BarcodeChange> barcodeChanges;
 
   int get rowCount => inserts.length + updates.length + tombstones.length;
 
@@ -126,6 +149,7 @@ abstract final class ProductRows {
     final inserts = <ProductEntriesCompanion>[];
     final updates = <(String, ProductEntriesCompanion)>[];
     final tombstones = <String>[];
+    final barcodeChanges = <BarcodeChange>[];
     final next = Map<int, KnownProduct>.of(known);
     final inList = <int>{};
 
@@ -136,6 +160,9 @@ abstract final class ProductRows {
       if (row == null) {
         final id = uuid.generate();
         inserts.add(_insert(id, p, i, now, storeId));
+        barcodeChanges.add(
+          BarcodeChange(id, p.barcode, storeId: storeId, hasStore: true),
+        );
         next[p.id] = KnownProduct(
           uuid: id,
           createdAt: now,
@@ -147,6 +174,9 @@ abstract final class ProductRows {
       }
       if (row.active && row.position == i && row.product == p) continue;
       updates.add((row.uuid, _update(p, i, now)));
+      if (!row.active || row.product.barcode != p.barcode) {
+        barcodeChanges.add(BarcodeChange(row.uuid, p.barcode));
+      }
       next[p.id] = KnownProduct(
         uuid: row.uuid,
         createdAt: row.createdAt,
@@ -159,6 +189,7 @@ abstract final class ProductRows {
       final row = entry.value;
       if (!row.active || inList.contains(entry.key)) continue;
       tombstones.add(row.uuid);
+      barcodeChanges.add(BarcodeChange(row.uuid, ''));
       next[entry.key] = KnownProduct(
         uuid: row.uuid,
         createdAt: row.createdAt,
@@ -172,6 +203,7 @@ abstract final class ProductRows {
       updates: updates,
       tombstones: tombstones,
       next: next,
+      barcodeChanges: barcodeChanges,
     );
   }
 
@@ -208,7 +240,162 @@ abstract final class ProductRows {
         }
       });
     }
+    await _syncBaseBarcodes(db, plan.barcodeChanges, now);
   }
+
+  /// Makes the live base-unit barcode row of each product equal its
+  /// `products.barcode` cache (DEC-151), in batches: one read of the live
+  /// rows that matter, then batched tombstones and inserts. A barcode another
+  /// live row already uses in the same store scope is not written
+  /// (duplicates stay in the cache column, A3); the first product wins.
+  static Future<void> _syncBaseBarcodes(
+    AxpertDatabase db,
+    List<BarcodeChange> changes,
+    int now,
+  ) async {
+    if (changes.isEmpty) return;
+    if (changes.length > _syncChunk) {
+      await _reconcileAllBarcodes(db, now);
+      return;
+    }
+    final wanted = <String, BarcodeChange>{for (final c in changes) c.id: c};
+    final ids = wanted.keys.toList();
+
+    // The store of products the plan did not insert (edits, removals).
+    final stores = <String, String?>{
+      for (final c in changes)
+        if (c.hasStore) c.id: c.storeId,
+    };
+    final unknown = [
+      for (final id in ids)
+        if (!stores.containsKey(id)) id,
+    ];
+    for (var i = 0; i < unknown.length; i += _syncChunk) {
+      final part = unknown.skip(i).take(_syncChunk).toList();
+      final marks = List.filled(part.length, '?').join(',');
+      for (final r
+          in await db
+              .customSelect(
+                'SELECT id, store_id FROM products WHERE id IN ($marks)',
+                variables: [for (final id in part) Variable<String>(id)],
+              )
+              .get()) {
+        stores[r.read<String>('id')] = r.read<String?>('store_id');
+      }
+    }
+
+    // The live rows that matter: all of them for a big batch (one scan), the
+    // rows of these products and of these barcodes for a small one.
+    final codes = {
+      for (final c in changes)
+        if (c.barcode.isNotEmpty) c.barcode,
+    }.toList();
+    final List<QueryRow> rows;
+    {
+      final idMarks = List.filled(ids.length, '?').join(',');
+      final codeMarks = List.filled(
+        codes.isEmpty ? 1 : codes.length,
+        '?',
+      ).join(',');
+      rows = await db
+          .customSelect(
+            'SELECT id, product_id, packaging_id, store_id, barcode FROM '
+            'product_barcodes WHERE deleted_at IS NULL AND (product_id IN '
+            '($idMarks) OR barcode IN ($codeMarks))',
+            variables: [
+              for (final id in ids) Variable<String>(id),
+              for (final c in codes.isEmpty ? const [''] : codes)
+                Variable<String>(c),
+            ],
+          )
+          .get();
+    }
+    final live = <String, ({String row, String code})>{};
+    final taken = <String>{};
+    for (final r in rows) {
+      final product = r.read<String>('product_id');
+      final code = r.read<String>('barcode');
+      final isBase = r.read<String?>('packaging_id') == null;
+      if (isBase && wanted.containsKey(product)) {
+        live[product] = (row: r.read<String>('id'), code: code);
+      }
+      taken.add('${r.read<String?>('store_id') ?? ''}\u0000$code');
+    }
+    final tombstones = <String>{};
+    for (final id in ids) {
+      final current = live[id];
+      if (current != null && current.code != wanted[id]!.barcode) {
+        tombstones.add(current.row);
+        // Its scope frees up (the same row is not its own duplicate).
+        taken.remove('${stores[id] ?? ''}\u0000${current.code}');
+      }
+    }
+    final inserts = <(String, String, String?)>[];
+    for (final id in ids) {
+      final code = wanted[id]!.barcode;
+      if (code.isEmpty || live[id]?.code == code) continue;
+      final store = stores[id];
+      if (!taken.add('${store ?? ''}\u0000$code')) continue;
+      inserts.add((id, code, store));
+    }
+    if (tombstones.isNotEmpty) {
+      await db.batch((b) {
+        for (final row in tombstones) {
+          b.update(
+            db.barcodeEntries,
+            BarcodeEntriesCompanion(
+              deletedAt: Value(now),
+              updatedAt: Value(now),
+            ),
+            where: (t) => t.id.equals(row),
+          );
+        }
+      });
+    }
+    // Multi-row VALUES with a SQL-side UUID: much cheaper than one Dart UUID
+    // and one bound statement per row (10,000 products copy).
+    const rowsPerStatement = 150;
+    for (var i = 0; i < inserts.length; i += rowsPerStatement) {
+      final part = inserts.skip(i).take(rowsPerStatement).toList();
+      await db.customStatement(
+        'INSERT INTO product_barcodes (id, product_id, packaging_id, '
+        'store_id, barcode, created_at, updated_at) VALUES '
+        '${List.filled(part.length, '(${AxpertDatabase.sqlUuid}, ?, NULL, ?, ?, ?, ?)').join(',')}',
+        [
+          for (final (id, code, store) in part) ...[id, store, code, now, now],
+        ],
+      );
+    }
+  }
+
+  /// The big-batch form of the sync (a copy of thousands of products): two
+  /// set-based statements instead of per-product work. The live base-unit
+  /// barcode rows are made equal to the live products' `barcode`: stale ones
+  /// are tombstoned, missing ones inserted (first product by position wins a
+  /// shared barcode in its scope).
+  static Future<void> _reconcileAllBarcodes(AxpertDatabase db, int now) async {
+    await db.customStatement(
+      'UPDATE product_barcodes SET deleted_at = ?, updated_at = ? '
+      'WHERE packaging_id IS NULL AND deleted_at IS NULL AND NOT EXISTS ('
+      'SELECT 1 FROM products p WHERE p.id = product_barcodes.product_id '
+      'AND p.deleted_at IS NULL AND p.barcode = product_barcodes.barcode)',
+      [now, now],
+    );
+    await db.customStatement(
+      'INSERT INTO product_barcodes (id, product_id, packaging_id, store_id, '
+      'barcode, created_at, updated_at) '
+      'SELECT ${AxpertDatabase.sqlUuid}, id, NULL, store_id, barcode, ?, ? '
+      'FROM (SELECT id, store_id, barcode, ROW_NUMBER() OVER (PARTITION BY '
+      "COALESCE(store_id, ''), barcode ORDER BY position, id) AS rn "
+      "FROM products WHERE deleted_at IS NULL AND barcode != '') t "
+      'WHERE rn = 1 AND NOT EXISTS (SELECT 1 FROM product_barcodes b WHERE '
+      'b.deleted_at IS NULL AND b.barcode = t.barcode AND '
+      "COALESCE(b.store_id, '') = COALESCE(t.store_id, ''))",
+      [now, now],
+    );
+  }
+
+  static const int _syncChunk = 500;
 
   /// Every row (tombstones too) by legacy id, for the diff snapshot, plus the
   /// active products in list order.

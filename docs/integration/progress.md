@@ -156,3 +156,7 @@ Run and read: format and analyze clean; full VM suite 994/994; no PNG changed ve
 - DEC-150, KG-250, KG-251. Root cause: the "Logout" menu item opened the shift-close dialog; the real sign-out code had no callers. `ActiveSession.signOut()` is now the one async logout (flush cart, clear session, reset `SessionScoped` controllers in memory, `Get.offAll` to login); the menu item calls it. Saved data (held bills, `current_cart`, sales) is untouched.
 - Tests: `signout_test` (seeded database: state cleared, hook order, auth seam, saved data stays, cashier then admin, in-progress cart same store kept / other store dropped), `logout_flow_test` (menu Logout lands on login, stack cleared, system Back stays, shift close unchanged, in-memory state emptied).
 - Debug web (`flutter run -d web-server`, DEMO_SEED, real entry flow): `logout_check.mjs` 10/10 (cashier1 in, no export row, Logout, login screen, admin picker "Asha Admin (Administrator)", POS, Database export row present, console clean) and `--back` 8/8 (Back leaves the app, never returns to POS).
+
+## Step 2a: units, packaging and barcodes, schema v14 (2026-10-15)
+- DEC-151, KG-252 to KG-257. Branch `integration_v2`. Commits: "Add units, packaging and barcodes tables" (tables, v14 step, `schema_v14_test`, older version asserts 13 to 14), "Add packaging service and inventory by base unit" (services, entities, repositories, cart/ledger/offer wiring, seed, tests).
+- Pricing vectors, offer goldens and kept goldens unchanged. No UI change. Proposals for 2b are in KG-253, KG-254, KG-257.

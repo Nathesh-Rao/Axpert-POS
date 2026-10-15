@@ -5,7 +5,7 @@ import 'package:drift/drift.dart';
 import '../axpert_database.dart';
 import '../tables/unit_entries.dart';
 
-/// Schema v14: units, brands, product packagings and barcodes (DEC-150).
+/// Schema v14: units, brands, product packagings and barcodes (DEC-151).
 /// Runs inside ONE transaction opened by the caller.
 ///
 /// New tables only, plus nullable columns on `products` and `sale_lines`
@@ -106,6 +106,7 @@ class CatalogV14Migration {
         .get();
     final kept = <String, Map<String, Object?>>{};
     final skipped = <String, List<Map<String, Object?>>>{};
+    final inserts = <(String, String?, String)>[];
     for (final r in rows) {
       final store = r.read<String?>('store_id');
       final barcode = r.read<String>('barcode');
@@ -120,11 +121,19 @@ class CatalogV14Migration {
         continue;
       }
       kept[key] = {...who, 'store_id': store, 'barcode': barcode};
+      inserts.add((who['id']! as String, store, barcode));
+    }
+    // Multi-row VALUES: a 10,000-product catalog is a few dozen statements.
+    const perStatement = 150;
+    for (var i = 0; i < inserts.length; i += perStatement) {
+      final part = inserts.skip(i).take(perStatement).toList();
       await db.customStatement(
         'INSERT INTO product_barcodes (id, product_id, packaging_id, '
-        'store_id, barcode, created_at, updated_at) '
-        'VALUES (${AxpertDatabase.sqlUuid}, ?, NULL, ?, ?, $_now, $_now)',
-        [who['id'], store, barcode],
+        'store_id, barcode, created_at, updated_at) VALUES '
+        '${List.filled(part.length, '(${AxpertDatabase.sqlUuid}, ?, NULL, ?, ?, $_now, $_now)').join(',')}',
+        [
+          for (final (id, store, code) in part) ...[id, store, code],
+        ],
       );
     }
     if (skipped.isEmpty) return;

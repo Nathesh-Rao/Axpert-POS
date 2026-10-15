@@ -5579,7 +5579,7 @@ class ProductEntry extends DataClass implements Insertable<ProductEntry> {
   final String? storeId;
   final String? categoryId;
 
-  /// Base unit (v14, DEC-150). Nullable because SQLite cannot add a
+  /// Base unit (v14, DEC-151). Nullable because SQLite cannot add a
   /// non-null FK column; the migration backfills `piece` and a null reads as
   /// piece.
   final String? baseUnitId;
@@ -11095,7 +11095,7 @@ class SaleLineEntry extends DataClass implements Insertable<SaleLineEntry> {
   /// A free-item row (price 0).
   final bool isGift;
 
-  /// Packaging the line was sold in (v14, DEC-150); null = base unit.
+  /// Packaging the line was sold in (v14, DEC-151); null = base unit.
   /// `qty_milli` is then the package count, `price_minor` the package price.
   final String? packagingId;
 

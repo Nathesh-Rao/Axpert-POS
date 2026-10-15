@@ -1,3 +1,4 @@
+import '../../../core/services/packaging/packaging_service.dart';
 import '../../../core/services/pricing/money.dart';
 import '../../../core/services/pricing/pricing_helpers.dart';
 import '../../../core/services/pricing/qty.dart';
@@ -77,10 +78,27 @@ abstract final class RefundService {
 
   /// Whole units to put back on the shelf: stock is whole units, so a
   /// fractional quantity rounds up as it does when it is sold (KG-106).
-  static Map<int, int> restockUnits(Map<int, Qty> typed) => <int, int>{
-    for (final e in _positive(typed).entries)
-      e.key: (e.value.milli + 999) ~/ 1000,
-  };
+  ///
+  /// [sale] gives the packaging of each line (DEC-151): a returned carton
+  /// puts back its base units. Without it every entry counts base units.
+  static Map<int, int> restockUnits(Map<int, Qty> typed, {Sale? sale}) =>
+      <int, int>{
+        for (final e in _positive(typed).entries)
+          e.key: (baseQty(sale, e.key, e.value).milli + 999) ~/ 1000,
+      };
+
+  /// [qty] of [productId] in base units: `qty x quantity_base` when the sale
+  /// line was sold in a packaging, else [qty].
+  static Qty baseQty(Sale? sale, int productId, Qty qty) {
+    final packaging = sale == null ? null : _line(sale, productId)?.packaging;
+    if (packaging == null) return qty;
+    return Qty(
+      const PackagingService().baseQtyMilli(
+        qty.milli,
+        packaging.quantityBaseMilli,
+      ),
+    );
+  }
 
   static CartLine? _line(Sale sale, int productId) {
     for (final line in sale.cart.lines) {

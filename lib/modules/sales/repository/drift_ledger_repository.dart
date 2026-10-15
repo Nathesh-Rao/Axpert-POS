@@ -16,6 +16,7 @@ import '../../customers/repository/drift_customer_repository.dart';
 import '../../pos/repository/checkout_repository.dart';
 import '../../returns/repository/return_repository.dart';
 import '../../../features/payment/domain/entities/payment_result.dart';
+import '../../returns/services/refund_service.dart';
 import '../models/sale.dart';
 import 'drift_sale_repository.dart';
 import '../../../core/utils/epoch_time.dart';
@@ -175,7 +176,7 @@ class DriftLedgerRepository implements CheckoutRepository, ReturnRepository {
       if (ids[line.product.id] != null)
         StockMovement(
           productId: ids[line.product.id]!,
-          deltaMilli: -line.qty.milli,
+          deltaMilli: -line.baseQty.milli,
           reason: StockReason.sale,
           refType: 'sale',
           refId: sale.saleId ?? sale.number,
@@ -193,7 +194,7 @@ class DriftLedgerRepository implements CheckoutRepository, ReturnRepository {
         if (ids[e.key] != null && e.value.milli > 0)
           StockMovement(
             productId: ids[e.key]!,
-            deltaMilli: e.value.milli,
+            deltaMilli: RefundService.baseQty(sale, e.key, e.value).milli,
             reason: StockReason.returned,
             refType: 'sale',
             refId: sale?.saleId ?? number,

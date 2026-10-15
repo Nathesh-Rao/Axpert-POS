@@ -34,7 +34,7 @@ part 'axpert_database.g.dart';
 /// Drift database: device context metadata and device-local settings.
 ///
 /// Schema v14 adds units, brands, product_packagings, product_barcodes and
-/// the packaging snapshot columns of sale_lines (DEC-150).
+/// the packaging snapshot columns of sale_lines (DEC-151).
 /// Schema v13 adds payment_methods and payments.method_id (DEC-149).
 /// Schema v12 adds inventory_balance, inventory_transactions and
 /// stores.allow_negative_stock (DEC-148).
@@ -263,7 +263,7 @@ class AxpertDatabase extends _$AxpertDatabase {
       });
     }
     if (from < 14 && to >= 14) {
-      // One transaction: v14 is all-or-nothing (DEC-150).
+      // One transaction: v14 is all-or-nothing (DEC-151).
       await transaction(() => CatalogV14Migration(this).run(migrator));
     }
   }

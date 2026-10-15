@@ -100,7 +100,7 @@ class CheckoutService {
       sale: sale,
       stockDeltas: <int, int>{
         for (final line in cart.lines)
-          line.product.id: (line.qty.milli + 999) ~/ 1000,
+          line.product.id: (line.baseQty.milli + 999) ~/ 1000,
       },
       pointsDeducted: _wholePoints(totals.points),
     );

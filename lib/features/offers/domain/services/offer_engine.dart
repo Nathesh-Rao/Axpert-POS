@@ -1,3 +1,4 @@
+import '../../../../core/services/packaging/packaging_service.dart';
 import '../../../../core/services/pricing/basis_points.dart';
 import '../../../../core/services/pricing/currency.dart';
 import '../../../../core/services/pricing/money.dart';
@@ -13,12 +14,18 @@ class OfferLine {
     required this.qty,
     required this.price,
     required this.manualDiscount,
+    this.packageFactorMilli = 1000,
   });
 
   final int productId;
   final Qty qty;
   final Money price;
   final Bp manualDiscount;
+
+  /// Base units per package (milli) when the line is sold in a packaging
+  /// (DEC-151), 1000 for the base unit. `qty` and `price` are then per
+  /// package; a fixed-amount offer (per base unit) is scaled by this factor.
+  final int packageFactorMilli;
 }
 
 /// The automatic offer applied to one line.
@@ -207,12 +214,18 @@ class OfferEngine {
     Bp bp = Bp.zero;
     Money? unitOff;
     if (offer.fixedOff != null && offer.percent == null) {
-      unitOff = offer.fixedOff;
+      unitOff = Money(
+        const PackagingService().unitOffForPackaging(
+          offer.fixedOff!.minor,
+          line.packageFactorMilli,
+        ),
+        currency,
+      );
       net =
           qty *
           Rational.max(
             Rational.zero,
-            Rational.fromInt(line.price.minor - unitOff!.minor),
+            Rational.fromInt(line.price.minor - unitOff.minor),
           );
     } else {
       bp = (offer.percent ?? Bp.zero).clamp(Bp.zero, Bp.full);

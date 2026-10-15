@@ -1,3 +1,5 @@
+import '../../../core/services/packaging/packaging_ref.dart';
+import '../../../core/services/packaging/packaging_service.dart';
 import '../../../core/services/pricing/basis_points.dart';
 import '../../../core/services/pricing/currency.dart';
 import '../../../core/services/pricing/currency_registry.dart';
@@ -14,6 +16,7 @@ class CartLine {
     required this.price,
     required this.discount,
     this.offer,
+    this.packaging,
   });
 
   factory CartLine.fromJson(
@@ -30,6 +33,9 @@ class CartLine {
     offer: json['offer'] == null
         ? null
         : LineOffer.fromJson(json['offer'] as Map<String, dynamic>),
+    packaging: json['packaging'] == null
+        ? null
+        : PackagingRef.fromJson(json['packaging'] as Map<String, dynamic>),
   );
 
   factory CartLine.of(Product product) => CartLine(
@@ -50,6 +56,21 @@ class CartLine {
   /// a sale (and on its gift rows); a live cart line carries none (DEC-134).
   final LineOffer? offer;
 
+  /// The packaging the line is sold in (DEC-151); null = base unit. Then
+  /// [qty] counts packages and [price] is the package price.
+  final PackagingRef? packaging;
+
+  /// Quantity in base units, what stock moves by (equal to [qty] without a
+  /// packaging).
+  Qty get baseQty => packaging == null
+      ? qty
+      : Qty(
+          const PackagingService().baseQtyMilli(
+            qty.milli,
+            packaging!.quantityBaseMilli,
+          ),
+        );
+
   CartLine copyWith({Product? product, Qty? qty, Money? price, Bp? discount}) =>
       CartLine(
         product: product ?? this.product,
@@ -57,6 +78,7 @@ class CartLine {
         price: price ?? this.price,
         discount: discount ?? this.discount,
         offer: offer,
+        packaging: packaging,
       );
 
   /// The line as sold: [offer] applied (its percent becomes the line discount).
@@ -66,6 +88,7 @@ class CartLine {
     price: price,
     discount: offer.discountBp > 0 ? Bp(offer.discountBp) : discount,
     offer: offer,
+    packaging: packaging,
   );
 
   CartLine inCurrency(Currency currency) => CartLine(
@@ -74,6 +97,7 @@ class CartLine {
     price: Money(price.minor, currency),
     discount: discount,
     offer: offer,
+    packaging: packaging,
   );
 
   Map<String, dynamic> toJson() => <String, dynamic>{
@@ -82,6 +106,7 @@ class CartLine {
     'priceMinor': price.minor,
     'discountBp': discount.value,
     if (offer != null) 'offer': offer!.toJson(),
+    if (packaging != null) 'packaging': packaging!.toJson(),
   };
 
   @override
@@ -91,10 +116,12 @@ class CartLine {
       other.qty == qty &&
       other.price == price &&
       other.discount == discount &&
-      other.offer == offer;
+      other.offer == offer &&
+      other.packaging == packaging;
 
   @override
-  int get hashCode => Object.hash(product, qty, price, discount, offer);
+  int get hashCode =>
+      Object.hash(product, qty, price, discount, offer, packaging);
 }
 
 /// An automatic offer as sold on a line (snapshot).

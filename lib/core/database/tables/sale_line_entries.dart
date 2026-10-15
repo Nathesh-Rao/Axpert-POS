@@ -66,7 +66,7 @@ class SaleLineEntries extends Table {
   /// A free-item row (price 0).
   BoolColumn get isGift => boolean().withDefault(const Constant(false))();
 
-  /// Packaging the line was sold in (v14, DEC-150); null = base unit.
+  /// Packaging the line was sold in (v14, DEC-151); null = base unit.
   /// `qty_milli` is then the package count, `price_minor` the package price.
   TextColumn get packagingId =>
       text().nullable().references(PackagingEntries, #id)();

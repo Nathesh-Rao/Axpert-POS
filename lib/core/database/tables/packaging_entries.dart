@@ -4,7 +4,7 @@ import 'product_entries.dart';
 import 'unit_entries.dart';
 
 /// Packaging levels of a product above its base unit (provisional,
-/// local-only, DEC-150): a pack of 6, a carton of 24. `quantity_base_milli`
+/// local-only, DEC-151): a pack of 6, a carton of 24. `quantity_base_milli`
 /// is how many BASE units one package holds, in milli-units (24000 = 24).
 /// `price_minor` null means derived (base price x quantity). Uniqueness of
 /// (product_id, unit_id) among live rows is the partial index

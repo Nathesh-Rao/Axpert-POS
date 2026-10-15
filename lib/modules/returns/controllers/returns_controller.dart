@@ -140,7 +140,7 @@ class ReturnsController extends GetxController {
   }
 
   Future<void> _commit(Sale found, Map<int, Qty> typed, String amount) async {
-    products.restock(RefundService.restockUnits(typed));
+    products.restock(RefundService.restockUnits(typed, sale: found));
     sales.replace(RefundService.applyReturned(found, typed));
     _clearQty();
     toasts.show(_s.toastRefundDone(amount));

@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-/// Product brands (provisional, local-only, DEC-150). Minimal: a name and a
+/// Product brands (provisional, local-only, DEC-151). Minimal: a name and a
 /// tombstone.
 @DataClassName('BrandEntry')
 class BrandEntries extends Table {

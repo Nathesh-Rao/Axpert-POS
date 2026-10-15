@@ -8,6 +8,7 @@ import '../../../modules/pos/models/cart.dart';
 import '../../../modules/pos/models/cart_line.dart';
 import '../../../modules/sales/models/sale.dart';
 import '../../identifiers/uuid_generator.dart';
+import '../../services/packaging/packaging_ref.dart';
 import '../../services/pricing/basis_points.dart';
 import '../../services/pricing/currency_registry.dart';
 import '../../services/pricing/money.dart';
@@ -610,6 +611,10 @@ abstract final class SaleRows {
       offerSavingMinor: Value(line.offer?.savingMinor),
       offerUnitOffMinor: Value(line.offer?.unitOffMinor),
       isGift: Value(line.offer?.isGift ?? false),
+      packagingId: Value(line.packaging?.id),
+      unitName: Value(line.packaging?.unitName),
+      quantityBaseMilli: Value(line.packaging?.quantityBaseMilli),
+      baseQtyMilli: Value(line.packaging == null ? null : line.baseQty.milli),
       returnedQtyMilli: Value(returned),
       createdAt: now,
     );
@@ -637,6 +642,16 @@ abstract final class SaleRows {
           qty: Qty(l.qtyMilli),
           price: m(l.priceMinor),
           discount: Bp(l.discountBp),
+          packaging:
+              l.packagingId == null ||
+                  l.unitName == null ||
+                  l.quantityBaseMilli == null
+              ? null
+              : PackagingRef(
+                  id: l.packagingId!,
+                  unitName: l.unitName!,
+                  quantityBaseMilli: l.quantityBaseMilli!,
+                ),
           offer: l.offerKind == null
               ? null
               : LineOffer(

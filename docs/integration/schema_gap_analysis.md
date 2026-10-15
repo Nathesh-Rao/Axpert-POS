@@ -53,7 +53,7 @@ Date 2026-10-13. Analysis only: no schema change. Sources: Axpert_POS_SQLite_Dat
 | ours only (not in doc) | | `currencies`, `store_forex`, `offers`, `current_cart`, `held_bills`, `seed_manifest`, `migration_state`, `tax_regimes/slabs` | keep; map `offers` to sale_discounts later |
 
 ## 4. Recommended migration stages (to the Phase 1 minimum)
-Status 2026-10-15 (database batch X): S0 epoch timestamps DONE (v11, DEC-147), S1 inventory DONE (v12, DEC-148), S3 payment methods DONE (v13, DEC-149). Open: S2, S4 to S10.
+Status 2026-10-15 (database batch X): S0 epoch timestamps DONE (v11, DEC-147), S1 inventory DONE (v12, DEC-148), S3 payment methods DONE (v13, DEC-149). S7 catalog shape PARTLY DONE in v14 (DEC-151: `units`, `brands`, `product_barcodes`, `product_packagings`, `products.base_unit_id/brand_id`; still open: `search_name`, `is_weighted`, `track_inventory`, `active`, category `code/active`). Open: S2, S4 to S10.
 Each stage = one transactional Drift step plus a migration test (v(n-1) data survives, forced failure rolls back), as in v9/v10. Order follows your priority; sync last.
 | Stage | Adds / changes | Why here | Backend answers it depends on |
 |---|---|---|---|

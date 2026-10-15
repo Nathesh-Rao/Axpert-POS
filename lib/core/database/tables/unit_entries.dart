@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-/// Units of measure (provisional, local-only, DEC-150). Global rows, not
+/// Units of measure (provisional, local-only, DEC-151). Global rows, not
 /// store-scoped. The eight seeded units carry FIXED ids ([SeedUnits]) so the
 /// same unit has the same id on every device.
 @DataClassName('UnitEntry')

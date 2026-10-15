@@ -1,12 +1,26 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pos_application/core/database/axpert_database.dart';
+import 'package:pos_application/core/database/database_provider.dart';
 import 'package:pos_application/core/security/password_hasher.dart';
 import 'package:pos_application/core/seed/demo_seeder.dart';
 import 'package:pos_application/features/offers/data/drift_offer_repository.dart';
 import 'package:pos_application/features/offers/domain/entities/offer.dart';
+import 'package:pos_application/features/products/data/repositories/drift_packaging_repositories.dart';
 import 'package:pos_application/features/session/data/drift_session_repositories.dart';
 
 import '../../support/seeded_database.dart';
+
+class _Provider implements DatabaseProvider {
+  _Provider(this.db);
+
+  final AxpertDatabase db;
+
+  @override
+  Future<AxpertDatabase> open() async => db;
+
+  @override
+  Future<void> close() async {}
+}
 
 void main() {
   late AxpertDatabase db;
@@ -130,6 +144,69 @@ void main() {
     );
     expect(await db.customSelect('PRAGMA foreign_key_check').get(), isEmpty);
   });
+
+  test(
+    'packagings and barcodes: packs and cartons with their own codes',
+    () async {
+      // Every seeded product has its base barcode; 8 extra codes.
+      expect(await count('product_packagings'), 10);
+      expect(await count('product_barcodes'), 68);
+      final base = await db
+          .customSelect(
+            'SELECT COUNT(*) AS n FROM products WHERE base_unit_id IS NOT NULL',
+          )
+          .getSingle();
+      expect(base.read<int>('n'), 60);
+
+      final provider = _Provider(db);
+      final barcodes = DriftBarcodeRepository(provider);
+      final carton = await barcodes.findByBarcode(
+        'demo-store-ozone',
+        '18901234560007',
+      );
+      expect(carton!.productId, 'demo-prod-oz-1');
+      expect(carton.packaging!.quantityBaseMilli, 24000);
+      expect(carton.packaging!.priceMinor, 90000);
+      final pack = await DriftPackagingRepository(
+        provider,
+      ).forProduct('demo-prod-oz-1');
+      expect(pack.map((p) => p.quantityBaseMilli), [6000, 24000]);
+      expect(pack.first.priceMinor, isNull); // derived
+      // The base code still finds the base unit, in its own store only.
+      final base1 = await barcodes.findByBarcode(
+        'demo-store-ozone',
+        '8901234560000',
+      );
+      expect(base1!.packaging, isNull);
+      expect(
+        await barcodes.findByBarcode('demo-store-kampala', '18901234560007'),
+        isNull,
+      );
+      expect(await db.customSelect('PRAGMA foreign_key_check').get(), isEmpty);
+    },
+  );
+
+  test(
+    'reseed removes the seeded packagings and barcodes, then seeds again',
+    () async {
+      await db.customStatement(
+        "INSERT INTO sale_lines (id, sale_id, line_no, product_id, "
+        "product_legacy_id, product_name, product_code, product_barcode, "
+        "product_price_minor, product_category, product_sub, product_stock, "
+        "product_gst_bp, product_image, product_favourite, price_minor, "
+        "qty_milli, discount_bp, created_at, packaging_id, unit_name, "
+        "quantity_base_milli, base_qty_milli) SELECT 'ml', id, 99, NULL, 1, 'n', "
+        "'c', 'b', 1, 'c', 's', 1, 0, -1, 0, 1, 1000, 0, 1, 'demo-pack-oz-1-c24', "
+        "'Carton', 24000, 24000 FROM sales LIMIT 1",
+      );
+      expect(await seederFor(db).run(reseed: true), SeedOutcome.reseeded);
+      expect(await count('product_packagings'), 10);
+      expect(await count('product_barcodes'), 68);
+      // The kept sale line of a seeded sale was wiped with its sale; nothing
+      // dangles.
+      expect(await db.customSelect('PRAGMA foreign_key_check').get(), isEmpty);
+    },
+  );
 
   test('demo users sign in with their salted hash, never plaintext', () async {
     final rows = await db.select(db.userEntries).get();

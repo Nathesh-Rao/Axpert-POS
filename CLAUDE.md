@@ -45,6 +45,20 @@ POS (point of sale) application: `pos_application`.
 6. Look at screenshots and describe them honestly; I am the final visual judge.
 7. Plan mode first for any task. No cleanup, tagging or deletion (including `reference_react/` and `reference_screenshots/`) without my explicit OK.
 
+## Fast mode (default)
+
+Follow this unless I say "full verification". It overrides the per-checkpoint verification, git-approval and report rules below where they conflict.
+
+- Per change: `dart format`, `flutter analyze`, `flutter test` on touched folders only.
+- Full `flutter test` only at the end of a step or milestone, and before any push.
+- Debug web click-through and release web build only at the end of a step when UI changed, or when I ask.
+- Goldens only when a UI file changed (existing rule).
+- Docs: one DEC/KG/progress update per step at the end, not per commit.
+- Commits: commit locally as soon as the checks pass; do not ask first; report the hashes in the final summary.
+- Plan mode: still required for migrations, schema changes, money/pricing logic and anything touching more than ~10 files. For smaller tasks, give a 10-line plan and proceed unless it hits a stop rule.
+- Reports: max 15 lines: what changed, commits, test results, anything unverified.
+- Unchanged: stop rules, migration upgrade/rollback tests, money/pricing tests.
+
 ## Change rule (Phase B)
 
 - The port-as-is rule of Phase A is dropped: known gaps are fixed on request, one task at a time. Each fix removes or updates its `KG-` entry, records a `DEC-` entry, updates the tests, fixtures and goldens it changes and says so in the report.

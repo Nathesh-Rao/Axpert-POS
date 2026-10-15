@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import 'packaging_entries.dart';
 import 'product_entries.dart';
 import 'sale_entries.dart';
 
@@ -64,6 +65,20 @@ class SaleLineEntries extends Table {
 
   /// A free-item row (price 0).
   BoolColumn get isGift => boolean().withDefault(const Constant(false))();
+
+  /// Packaging the line was sold in (v14, DEC-150); null = base unit.
+  /// `qty_milli` is then the package count, `price_minor` the package price.
+  TextColumn get packagingId =>
+      text().nullable().references(PackagingEntries, #id)();
+
+  /// Unit name at the time of the sale (history survives packaging edits).
+  TextColumn get unitName => text().nullable()();
+
+  /// Base units per package at the time of the sale (milli).
+  IntColumn get quantityBaseMilli => integer().nullable()();
+
+  /// Base quantity sold (milli): qty x quantity_base_milli, rounded once.
+  IntColumn get baseQtyMilli => integer().nullable()();
 
   IntColumn get returnedQtyMilli => integer().withDefault(const Constant(0))();
 

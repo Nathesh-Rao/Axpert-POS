@@ -1,7 +1,10 @@
 import 'package:drift/drift.dart';
 
 import '../bindings/startup_timeline.dart';
+import 'migration/catalog_v14_migration.dart';
 import 'migration/epoch_v11_migration.dart';
+import 'tables/barcode_entries.dart';
+import 'tables/brand_entries.dart';
 import 'tables/category_entries.dart';
 import 'tables/counter_entries.dart';
 import 'tables/currency_entries.dart';
@@ -12,6 +15,7 @@ import 'tables/held_bill_entries.dart';
 import 'tables/inventory_entries.dart';
 import 'tables/migration_state_entries.dart';
 import 'tables/offer_entries.dart';
+import 'tables/packaging_entries.dart';
 import 'tables/payment_entries.dart';
 import 'tables/payment_method_entries.dart';
 import 'tables/product_entries.dart';
@@ -22,12 +26,15 @@ import 'tables/settings_entries.dart';
 import 'tables/store_entries.dart';
 import 'tables/store_forex_entries.dart';
 import 'tables/tax_regime_entries.dart';
+import 'tables/unit_entries.dart';
 import 'tables/user_entries.dart';
 
 part 'axpert_database.g.dart';
 
 /// Drift database: device context metadata and device-local settings.
 ///
+/// Schema v14 adds units, brands, product_packagings, product_barcodes and
+/// the packaging snapshot columns of sale_lines (DEC-150).
 /// Schema v13 adds payment_methods and payments.method_id (DEC-149).
 /// Schema v12 adds inventory_balance, inventory_transactions and
 /// stores.allow_negative_stock (DEC-148).
@@ -63,18 +70,25 @@ part 'axpert_database.g.dart';
     InventoryBalanceEntries,
     InventoryTransactionEntries,
     PaymentMethodEntries,
+    UnitEntries,
+    BrandEntries,
+    PackagingEntries,
+    BarcodeEntries,
   ],
 )
 class AxpertDatabase extends _$AxpertDatabase {
   AxpertDatabase(super.executor);
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (migrator) =>
-        StartupTimeline.measure('schema create', () => migrator.createAll()),
+    onCreate: (migrator) => StartupTimeline.measure('schema create', () async {
+      await migrator.createAll();
+      await CatalogV14Migration.createIndexes(this);
+      await CatalogV14Migration.seedUnits(this);
+    }),
     onUpgrade: (migrator, from, to) => StartupTimeline.measure(
       'schema upgrade v$from to v$to',
       () => _upgrade(migrator, from, to),
@@ -248,6 +262,10 @@ class AxpertDatabase extends _$AxpertDatabase {
         await _backfillPaymentMethods();
       });
     }
+    if (from < 14 && to >= 14) {
+      // One transaction: v14 is all-or-nothing (DEC-150).
+      await transaction(() => CatalogV14Migration(this).run(migrator));
+    }
   }
 
   /// The four default methods for every store, and `payments.method_id` for
@@ -264,7 +282,7 @@ class AxpertDatabase extends _$AxpertDatabase {
     await customStatement(
       'INSERT OR IGNORE INTO payment_methods (id, store_id, code, name, type, '
       'enabled, sort_order, requires_reference, created_at, updated_at) '
-      'SELECT $_sqlUuid, s.id, m.code, m.name, m.type, 1, m.sort_order, '
+      'SELECT $sqlUuid, s.id, m.code, m.name, m.type, 1, m.sort_order, '
       'm.requires_reference, $now, $now FROM stores s CROSS JOIN ('
       "SELECT 'cash' AS code, 'Cash' AS name, 'cash' AS type, "
       '1 AS sort_order, 0 AS requires_reference UNION ALL '
@@ -288,7 +306,7 @@ class AxpertDatabase extends _$AxpertDatabase {
   }
 
   /// SQL expression for a random UUID v4 text.
-  static const String _sqlUuid =
+  static const String sqlUuid =
       "lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || "
       "'-4' || substr(lower(hex(randomblob(2))), 2) || '-' || "
       "substr('89ab', abs(random()) % 4 + 1, 1) || "
@@ -319,7 +337,7 @@ class AxpertDatabase extends _$AxpertDatabase {
       'INSERT INTO inventory_transactions '
       '(id, store_id, product_id, quantity_delta_milli, reason, ref_type, '
       'created_at, note) '
-      "SELECT $_sqlUuid, store_id, id, stock * 1000, 'opening', 'backfill', $now, "
+      "SELECT $sqlUuid, store_id, id, stock * 1000, 'opening', 'backfill', $now, "
       "'backfill from products.stock' FROM products "
       'WHERE store_id IS NOT NULL AND deleted_at IS NULL AND stock != 0',
     );

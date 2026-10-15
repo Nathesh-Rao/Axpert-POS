@@ -352,6 +352,9 @@ void main() {
       'migration_state': countsBefore['migration_state']! + 1,
       // v13 (same upgrade chain) seeds four methods for the live store.
       'payment_methods': 4,
+      // v14 seeds the eight units and the barcode of the one product.
+      'units': 8,
+      'product_barcodes': 1,
     });
     expect(countsBefore['sale_lines'], 4);
     expect(countsBefore['payments'], 4);

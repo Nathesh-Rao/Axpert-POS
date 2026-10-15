@@ -1,7 +1,9 @@
 import 'package:drift/drift.dart';
 
+import 'brand_entries.dart';
 import 'category_entries.dart';
 import 'store_entries.dart';
+import 'unit_entries.dart';
 
 /// Products (provisional, local-only, DEC-124/128). `legacy_id` is the app's
 /// integer `Product.id` (a list index, referenced by sale snapshots and the
@@ -52,6 +54,13 @@ class ProductEntries extends Table {
 
   TextColumn get categoryId =>
       text().nullable().references(CategoryEntries, #id)();
+
+  /// Base unit (v14, DEC-150). Nullable because SQLite cannot add a
+  /// non-null FK column; the migration backfills `piece` and a null reads as
+  /// piece.
+  TextColumn get baseUnitId => text().nullable().references(UnitEntries, #id)();
+
+  TextColumn get brandId => text().nullable().references(BrandEntries, #id)();
 
   /// Sibling SKUs of one product share a group; the label tells them apart.
   TextColumn get variantGroup => text().nullable()();

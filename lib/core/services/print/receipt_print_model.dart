@@ -96,7 +96,7 @@ class ReceiptPrintModel {
       for (final line in doc.lines)
         PrintItem(
           name: line.name,
-          qty: QtyFormatter.fixed3(line.qty),
+          qty: QtyFormatter.fixed3WithUnit(line.qty, line.unitName),
           total: MoneyFormatter.format(line.total),
           note: line.note,
         ),

@@ -16,7 +16,9 @@ import '../../modules/customers/controllers/customer_picker_controller.dart';
 import '../../modules/pos/controllers/discount_form_controller.dart';
 import '../../modules/pos/controllers/global_search_controller.dart';
 import '../../modules/pos/controllers/price_check_controller.dart';
+import '../../modules/pos/controllers/packaging_catalog_controller.dart';
 import '../../modules/pos/controllers/scan_controller.dart';
+import '../../modules/pos/controllers/unit_switch_controller.dart';
 import '../../modules/pos/controllers/hold_recall_controller.dart';
 
 import '../../modules/customers/controllers/customers_controller.dart';
@@ -287,6 +289,19 @@ class InitialBinding extends Bindings {
           ? DriftBrandRepository(infrastructure.databaseProvider)
           : MockBrandRepository(store),
     );
+    _put<PackagingRepository>(
+      _databaseSession
+          ? DriftPackagingRepository(infrastructure.databaseProvider)
+          : MockPackagingRepository(store),
+    );
+    if (_databaseSession) {
+      _put<BarcodeRepository>(
+        DriftBarcodeRepository(infrastructure.databaseProvider),
+      );
+    }
+    _put<PackagingCatalogController>(
+      PackagingCatalogController(Get.find<PackagingRepository>()),
+    );
     _put<ProductAdminController>(
       ProductAdminController(
         repository: repository,
@@ -298,6 +313,7 @@ class InitialBinding extends Bindings {
         session: Get.find<ActiveSession>(),
         overlay: Get.find<OverlayController>(),
         toasts: Get.find<ToastController>(),
+        packagings: Get.find<PackagingCatalogController>(),
       ),
     );
   }
@@ -520,6 +536,17 @@ class InitialBinding extends Bindings {
     _put<DiscountFormController>(
       DiscountFormController(cart: Get.find(), overlay: Get.find()),
     );
+    _put<UnitSwitchController>(
+      UnitSwitchController(
+        catalog: Get.find(),
+        cart: Get.find(),
+        actions: Get.find(),
+        selection: Get.find(),
+        products: Get.find(),
+        toasts: Get.find(),
+        search: Get.find(),
+      ),
+    );
     _put<ScanController>(
       ScanController(
         products: Get.find(),
@@ -527,6 +554,11 @@ class InitialBinding extends Bindings {
         toasts: Get.find(),
         search: Get.find(),
         overlay: Get.find(),
+        barcodes: Get.isRegistered<BarcodeRepository>()
+            ? Get.find<BarcodeRepository>()
+            : null,
+        catalog: Get.find<PackagingCatalogController>(),
+        storeId: () => Get.find<ActiveSession>().store.value?.id,
       ),
     );
     _put<GlobalSearchController>(
@@ -585,6 +617,8 @@ class InitialBinding extends Bindings {
       ),
     );
     final shortcuts = Get.find<ShortcutController>();
+    shortcuts.handlers[ShortcutAction.cycleUnit] =
+        Get.find<UnitSwitchController>().cycleSelected;
     shortcuts.handlers[ShortcutAction.deleteSelected] =
         Get.find<CartActionsController>().removeSelected;
     final payment = Get.find<PaymentController>();
@@ -643,6 +677,7 @@ class InitialBinding extends Bindings {
         'load products',
         Get.find<ProductsController>().load,
       ),
+      Get.find<PackagingCatalogController>().load(),
       StartupTimeline.measure(
         'load customers',
         Get.find<CustomersController>().load,
@@ -684,6 +719,7 @@ class InitialBinding extends Bindings {
     for (final scoped in <SessionScoped>[
       Get.find<CartController>(),
       Get.find<ProductsController>(),
+      Get.find<PackagingCatalogController>(),
       Get.find<SalesController>(),
       Get.find<HeldBillsController>(),
       Get.find<OffersController>(),
@@ -713,6 +749,7 @@ class InitialBinding extends Bindings {
   Future<void> _activate(StoreInfo store) async {
     await Future.wait(<Future<void>>[
       Get.find<ProductsController>().load(),
+      Get.find<PackagingCatalogController>().load(),
       Get.find<SalesController>().load(),
       Get.find<HeldBillsController>().load(),
       Get.find<OffersController>().load(store.id),

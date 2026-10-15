@@ -242,6 +242,26 @@ class EnAppStrings extends AppStrings {
   @override
   String toastProductAddedUnit(String name, String unit) =>
       '$name ($unit) added';
+  @override
+  String unitOptionLabel(String name, String factor) => '$name of $factor';
+  @override
+  String unitChipTooltip(String product) => 'Change the unit of $product';
+  @override
+  String packChipTooltip(String product, int units) =>
+      'Sell $product by pack or carton ($units units)';
+  @override
+  String unitPriceLine(String label, String price) => '$label  $price';
+  @override
+  String receiptPackLine(String sizedUnit, String price) =>
+      '1 $sizedUnit @ $price';
+  @override
+  String returnsLineUnit(String name, String unit) => '$name ($unit)';
+  @override
+  String helpNextUnit() => 'Next unit of the selected cart row';
+  @override
+  String nextUnitShortcutMac() => '⇧⌘U';
+  @override
+  String nextUnitShortcutOther() => 'Ctrl+Shift+U';
 
   @override
   String toastProductRemoved(String name) => '$name removed';

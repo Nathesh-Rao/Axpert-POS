@@ -110,7 +110,7 @@ class ReceiptTable extends StatelessWidget {
                           ),
                         ),
                   cell(
-                    QtyFormatter.fixed3(line.qty),
+                    QtyFormatter.fixed3WithUnit(line.qty, line.unitName),
                     padY: AppCheckoutSizes.receiptTdPadY,
                     wrap: false,
                   ),

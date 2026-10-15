@@ -91,6 +91,10 @@ class MockPackagingRepository implements PackagingRepository {
   }
 
   @override
+  Future<Map<int, SellableUnits>> sellableByLegacyId() async =>
+      const <int, SellableUnits>{};
+
+  @override
   Future<void> save(ProductPackaging p) async {
     await MockDelay.wait();
     final rows = await _read(_store, StorageKeys.packagings);

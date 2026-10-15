@@ -179,3 +179,12 @@ class DuplicatePackagingException implements Exception {
   @override
   String toString() => 'DuplicatePackagingException($productId, $unitId)';
 }
+
+/// What the sales screen can sell of one product besides the base unit: the
+/// base unit's name and its ENABLED packagings (DEC-154).
+class SellableUnits {
+  const SellableUnits({required this.baseUnitName, required this.packagings});
+
+  final String baseUnitName;
+  final List<ProductPackaging> packagings;
+}

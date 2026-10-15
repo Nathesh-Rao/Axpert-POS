@@ -20,6 +20,11 @@ abstract interface class PackagingRepository {
   /// Live packagings of a product (disabled ones included), by sort order.
   Future<List<ProductPackaging>> forProduct(String productId);
 
+  /// The enabled packagings of every live product, by product legacy id (the
+  /// sales screen's lookup). Products without any are absent. A store without
+  /// a product table (mock) returns an empty map.
+  Future<Map<int, SellableUnits>> sellableByLegacyId();
+
   /// Insert or update by id. Throws [DuplicatePackagingException] when the
   /// product already has another live packaging of the same unit.
   Future<void> save(ProductPackaging packaging);

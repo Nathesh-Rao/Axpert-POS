@@ -114,7 +114,7 @@ void main() {
       );
     }
 
-    expect(ShortcutHelp.entries, hasLength(12));
+    expect(ShortcutHelp.entries, hasLength(13));
     for (final entry in ShortcutHelp.entries) {
       for (final key in entry.keys) {
         expect(
@@ -136,7 +136,7 @@ void main() {
     expect(label(0, TargetPlatform.windows), 'Ctrl+K');
     expect(label(0, TargetPlatform.android), 'Ctrl+K');
     expect(
-      <String>[for (var i = 1; i < 12; i++) label(i, TargetPlatform.windows)],
+      <String>[for (var i = 1; i < 13; i++) label(i, TargetPlatform.windows)],
       <String>[
         'Enter',
         'F2',
@@ -147,6 +147,7 @@ void main() {
         'Ctrl+B',
         'Ctrl+.',
         'Ctrl+I',
+        'Ctrl+Shift+U',
         'Delete',
         'Esc',
       ],
@@ -166,6 +167,7 @@ void main() {
         'Resize Products (hidden, 25%, 75%)',
         'Show or hide Billing',
         'New product (Products page)',
+        'Next unit of the selected cart row',
         'Remove selected line',
         'Close dialog',
       ],

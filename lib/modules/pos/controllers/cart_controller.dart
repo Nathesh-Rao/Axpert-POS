@@ -78,6 +78,8 @@ class CartController extends GetxController implements SessionScoped {
 
   final Map<LineKey, ValueNotifier<CartLine?>> _lineNotifiers =
       <LineKey, ValueNotifier<CartLine?>>{};
+  final Map<int, ValueNotifier<ProductInCart?>> _productNotifiers =
+      <int, ValueNotifier<ProductInCart?>>{};
   Future<void>? _saving;
   bool _dirty = false;
 
@@ -142,6 +144,16 @@ class CartController extends GetxController implements SessionScoped {
       .putIfAbsent(key, () => ValueNotifier<CartLine?>(cart.value.lineOf(key)));
 
   CartLine? lineOf(LineKey key) => cart.value.lineOf(key);
+
+  /// Notifies only when what the cart holds of [productId] changes (the
+  /// product tile: base-unit line, total base units, packaged lines).
+  ValueListenable<ProductInCart?> productListenable(int productId) =>
+      _productNotifiers.putIfAbsent(
+        productId,
+        () => ValueNotifier<ProductInCart?>(
+          ProductInCart.of(cart.value, productId),
+        ),
+      );
 
   // ---- reducer rules (no side effects; see CartActionsController) ----
 
@@ -275,13 +287,16 @@ class CartController extends GetxController implements SessionScoped {
   }
 
   void _notifyLines(Cart before, Cart after) {
-    if (_lineNotifiers.isEmpty) return;
+    if (_lineNotifiers.isEmpty && _productNotifiers.isEmpty) return;
     final keys = <LineKey>{
       for (final l in before.lines) l.key,
       for (final l in after.lines) l.key,
     };
     for (final key in keys) {
       _lineNotifiers[key]?.value = after.lineOf(key);
+    }
+    for (final id in <int>{for (final k in keys) k.productId}) {
+      _productNotifiers[id]?.value = ProductInCart.of(after, id);
     }
   }
 
@@ -307,6 +322,10 @@ class CartController extends GetxController implements SessionScoped {
       n.dispose();
     }
     _lineNotifiers.clear();
+    for (final n in _productNotifiers.values) {
+      n.dispose();
+    }
+    _productNotifiers.clear();
     for (final n in _offerNotifiers.values) {
       n.dispose();
     }
@@ -320,4 +339,50 @@ class CartController extends GetxController implements SessionScoped {
     // is reloaded by the next sign-in (same store) or dropped (other store).
     _apply(Cart.empty, persist: false);
   }
+}
+
+/// What the cart holds of one product, for its tile (DEC-154): the base-unit
+/// line (if any), all lines in base units, and whether any line is packaged.
+class ProductInCart {
+  const ProductInCart({
+    required this.baseLine,
+    required this.totalBase,
+    required this.packaged,
+  });
+
+  /// Null when the cart holds the product only in packagings.
+  final CartLine? baseLine;
+  final Qty totalBase;
+  final bool packaged;
+
+  static ProductInCart? of(Cart cart, int productId) {
+    CartLine? base;
+    var packaged = false;
+    var found = false;
+    for (final line in cart.lines) {
+      if (line.product.id != productId) continue;
+      found = true;
+      if (line.packaging == null) {
+        base = line;
+      } else {
+        packaged = true;
+      }
+    }
+    if (!found) return null;
+    return ProductInCart(
+      baseLine: base,
+      totalBase: cart.baseQtyOf(productId),
+      packaged: packaged,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is ProductInCart &&
+      other.baseLine == baseLine &&
+      other.totalBase == totalBase &&
+      other.packaged == packaged;
+
+  @override
+  int get hashCode => Object.hash(baseLine, totalBase, packaged);
 }

@@ -133,6 +133,45 @@ class DriftPackagingRepository implements PackagingRepository {
   }
 
   @override
+  Future<Map<int, SellableUnits>> sellableByLegacyId() async {
+    final db = await _provider.open();
+    final packs =
+        await (db.select(db.packagingEntries)
+              ..where((t) => t.enabled.equals(true) & t.deletedAt.isNull())
+              ..orderBy([
+                (t) => OrderingTerm.asc(t.sortOrder),
+                (t) => OrderingTerm.asc(t.quantityBaseMilli),
+              ]))
+            .get();
+    if (packs.isEmpty) return const <int, SellableUnits>{};
+    final ids = <String>{for (final p in packs) p.productId};
+    final products = await (db.select(
+      db.productEntries,
+    )..where((t) => t.id.isIn(ids) & t.deletedAt.isNull())).get();
+    final units = {
+      for (final u in await db.select(db.unitEntries).get()) u.id: u.name,
+    };
+    final byUuid = {for (final p in products) p.id: p};
+    final grouped = <int, List<ProductPackaging>>{};
+    for (final p in packs) {
+      final product = byUuid[p.productId];
+      if (product == null) continue;
+      grouped.putIfAbsent(product.legacyId, () => []).add(toEntity(p));
+    }
+    return <int, SellableUnits>{
+      for (final e in grouped.entries)
+        e.key: SellableUnits(
+          baseUnitName:
+              units[products
+                  .firstWhere((p) => p.legacyId == e.key)
+                  .baseUnitId] ??
+              '',
+          packagings: e.value,
+        ),
+    };
+  }
+
+  @override
   Future<void> save(ProductPackaging p) async {
     final db = await _provider.open();
     final now = _now();

@@ -52,6 +52,17 @@ class AppShortcuts extends StatelessWidget {
             const RunShortcutIntent(ShortcutAction.newProduct),
         const SingleActivator(LogicalKeyboardKey.keyI, meta: true):
             const RunShortcutIntent(ShortcutAction.newProduct),
+        // Ctrl/Cmd+Shift+U: next unit of the selected cart row (DEC-154;
+        // Ctrl+U alone is the browser's view-source).
+        const SingleActivator(
+          LogicalKeyboardKey.keyU,
+          control: true,
+          shift: true,
+        ): const RunShortcutIntent(
+          ShortcutAction.cycleUnit,
+        ),
+        const SingleActivator(LogicalKeyboardKey.keyU, meta: true, shift: true):
+            const RunShortcutIntent(ShortcutAction.cycleUnit),
         const SingleActivator(LogicalKeyboardKey.f2): const RunShortcutIntent(
           ShortcutAction.cash,
         ),

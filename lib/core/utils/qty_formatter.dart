@@ -13,6 +13,11 @@ abstract final class QtyFormatter {
     return '${negative ? '-' : ''}${digits.substring(0, cut)}.${digits.substring(cut)}';
   }
 
+  /// `2.000 Carton` for a packaged line, plain `2.000` without a unit
+  /// (receipts, DEC-154).
+  static String fixed3WithUnit(Qty qty, String? unit) =>
+      unit == null ? fixed3(qty) : '${fixed3(qty)} $unit';
+
   /// JavaScript number-to-string for a 3-decimal value: `1`, `1.5`, `0.001`
   /// (what the prototype's `"x" + line.qty` shows).
   static String compact(Qty qty) {

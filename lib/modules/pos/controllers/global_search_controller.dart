@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
@@ -137,7 +139,7 @@ class GlobalSearchController extends GetxController {
       final index = highlight.value < now.length ? highlight.value : 0;
       pick(now[index]);
     } else {
-      scan.scanProduct(search.text.text);
+      unawaited(scan.scanProduct(search.text.text));
     }
   }
 }

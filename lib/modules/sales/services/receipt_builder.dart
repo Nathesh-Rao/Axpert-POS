@@ -1,5 +1,8 @@
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/money_formatter.dart';
+import '../../../core/utils/qty_formatter.dart';
+import '../../../core/services/packaging/packaging_label.dart';
+import '../../../core/services/pricing/qty.dart';
 import '../../../core/services/pricing/money.dart';
 import '../../../core/services/pricing/tax_split.dart';
 import '../../../features/session/domain/entities/session_entities.dart';
@@ -35,6 +38,7 @@ abstract final class ReceiptBuilder {
           name: line.product.name,
           qty: line.qty,
           total: LineMath.lineTotal(line),
+          unitName: line.packaging?.unitName,
           note: _note(line),
         ),
     ],
@@ -49,14 +53,31 @@ abstract final class ReceiptBuilder {
     change: sale.change,
   );
 
+  /// Under the item: for a packaged line "1 Carton of 24 @ 240.00" (the unit,
+  /// its size and the package price), then the offer text, one per line.
   static String? _note(CartLine line) {
-    final offer = line.offer;
-    if (offer == null) return null;
     final s = AppStrings.current;
-    if (offer.isGift) return s.giftFreeLabel(offer.name);
-    return s.offerSaved(
-      offer.name,
-      MoneyFormatter.format(Money(offer.savingMinor, line.price.currency)),
-    );
+    final pack = line.packaging;
+    final offer = line.offer;
+    final lines = <String>[
+      if (pack != null)
+        s.receiptPackLine(
+          PackagingLabel.sized(
+            pack.unitName,
+            QtyFormatter.compact(Qty(pack.quantityBaseMilli)),
+          ),
+          MoneyFormatter.format(line.price),
+        ),
+      if (offer != null)
+        offer.isGift
+            ? s.giftFreeLabel(offer.name)
+            : s.offerSaved(
+                offer.name,
+                MoneyFormatter.format(
+                  Money(offer.savingMinor, line.price.currency),
+                ),
+              ),
+    ];
+    return lines.isEmpty ? null : lines.join('\n');
   }
 }

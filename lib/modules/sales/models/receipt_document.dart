@@ -8,6 +8,7 @@ class ReceiptLine {
     required this.name,
     required this.qty,
     required this.total,
+    this.unitName,
     this.note,
   });
 
@@ -15,7 +16,12 @@ class ReceiptLine {
   final Qty qty;
   final Money total;
 
-  /// Offer text printed under the item (name and saving, or the free item).
+  /// The packaging the line was sold in ("Carton"); null = base unit. [qty]
+  /// then counts packages (DEC-154).
+  final String? unitName;
+
+  /// Text printed under the item: the pack detail of a packaged line, then the
+  /// offer (name and saving, or the free item).
   final String? note;
 }
 

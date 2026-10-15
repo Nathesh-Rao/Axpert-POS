@@ -29,6 +29,8 @@ import '../controllers/cart_selection_controller.dart';
 import '../../../features/offers/domain/entities/offer.dart';
 import '../../../features/offers/domain/services/offer_engine.dart';
 import '../models/line_key.dart';
+import 'units/unit_chips.dart';
+
 import '../models/cart_line.dart';
 import '../services/offer_cart_builder.dart';
 import '../models/line_math.dart';
@@ -517,6 +519,7 @@ class _Names extends StatelessWidget {
             ),
             style: small,
           ),
+        LineUnitChip(line: line),
         ValueListenableBuilder<AppliedOffer?>(
           valueListenable: Get.find<CartController>().offerListenable(line.key),
           builder: (context, applied, _) => applied == null

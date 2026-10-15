@@ -137,6 +137,15 @@ abstract class AppStrings {
   // Cart and catalog toasts
   String toastProductAdded(String name);
   String toastProductAddedUnit(String name, String unit);
+  String unitOptionLabel(String name, String factor);
+  String unitChipTooltip(String product);
+  String packChipTooltip(String product, int units);
+  String unitPriceLine(String label, String price);
+  String receiptPackLine(String sizedUnit, String price);
+  String returnsLineUnit(String name, String unit);
+  String helpNextUnit();
+  String nextUnitShortcutMac();
+  String nextUnitShortcutOther();
   String toastProductRemoved(String name);
   String toastStockAvailable(int stock);
   String toastStockOnly(int stock);

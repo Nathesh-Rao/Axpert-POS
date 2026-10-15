@@ -31,6 +31,7 @@ class ProductCard extends StatelessWidget {
     required this.onToggleFavourite,
     this.qtyBadge,
     this.onRemoveOne,
+    this.packs,
     this.offerLabel,
     this.offerStyle,
     this.strikePrice,
@@ -52,6 +53,10 @@ class ProductCard extends StatelessWidget {
 
   /// Shown only when the product is in the cart.
   final VoidCallback? onRemoveOne;
+
+  /// The unit chooser of a product with packagings (DEC-154), left of the
+  /// stepper; null for every other product.
+  final Widget? packs;
 
   /// The one offer badge (`-20%`, `Buy 1 Get 1`, `Free gift`); null = none.
   final String? offerLabel;
@@ -303,6 +308,7 @@ class ProductCard extends StatelessWidget {
     final stepper = Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
+        ?packs,
         if (onRemoveOne != null) ...<Widget>[
           _StepButton(
             size: m.productStepperFirst,

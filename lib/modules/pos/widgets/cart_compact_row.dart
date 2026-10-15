@@ -30,6 +30,9 @@ import '../controllers/cart_actions_controller.dart';
 import '../controllers/cart_controller.dart';
 import '../controllers/cart_selection_controller.dart';
 import '../models/line_key.dart';
+import '../controllers/packaging_catalog_controller.dart';
+import 'units/unit_chips.dart';
+
 import '../models/cart_line.dart';
 import '../models/line_math.dart';
 import '../services/offer_cart_builder.dart';
@@ -346,6 +349,10 @@ class _Total extends StatelessWidget {
   }
 }
 
+bool _hasUnit(CartLine line) =>
+    line.packaging != null ||
+    Get.find<PackagingCatalogController>().hasPackagings(line.product.id);
+
 /// Name on the first line; barcode, tax rate and the offer on the second.
 class _Names extends StatelessWidget {
   const _Names({required this.line, required this.columns});
@@ -400,6 +407,8 @@ class _Names extends StatelessWidget {
             ),
             builder: (context, applied, _) => Row(
               children: <Widget>[
+                LineUnitChip(line: line, compact: true),
+                if (_hasUnit(line)) const SizedBox(width: AppSpacing.s6),
                 Flexible(
                   child: Text(
                     info,

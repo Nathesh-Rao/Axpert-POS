@@ -18,6 +18,7 @@ enum ShortcutAction {
   switchWorkView,
   toggleBilling,
   newProduct,
+  cycleUnit,
 }
 
 class ShortcutController extends GetxController {
@@ -37,6 +38,8 @@ class ShortcutController extends GetxController {
         ShortcutAction.toggleBilling: () {},
         // Set by the Products page (admins and managers only, DEC-152).
         ShortcutAction.newProduct: () {},
+        // Set by the POS bindings: next unit of the selected cart row.
+        ShortcutAction.cycleUnit: () {},
       };
 
   void _demo(String action) => Get.find<ToastController>().show(

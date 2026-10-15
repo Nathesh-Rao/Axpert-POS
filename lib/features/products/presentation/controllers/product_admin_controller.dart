@@ -10,6 +10,7 @@ import '../../../offers/presentation/controllers/offers_controller.dart';
 import '../../../session/presentation/controllers/active_session.dart';
 import '../../domain/entities/packaging_entities.dart';
 import '../../domain/entities/product.dart';
+import '../../../../modules/pos/controllers/packaging_catalog_controller.dart';
 import '../../domain/entities/product_admin_entities.dart';
 import '../../domain/repositories/packaging_repositories.dart';
 import '../../domain/repositories/product_admin_repository.dart';
@@ -32,6 +33,7 @@ class ProductAdminController extends GetxController implements SessionScoped {
     required this.session,
     required this.overlay,
     required this.toasts,
+    this.packagings,
   });
 
   final ProductAdminRepository repository;
@@ -43,6 +45,9 @@ class ProductAdminController extends GetxController implements SessionScoped {
   final ActiveSession session;
   final OverlayController overlay;
   final ToastController toasts;
+
+  /// The units the sales screen sells in; reloaded after every catalog change.
+  final PackagingCatalogController? packagings;
 
   /// The "Show inactive" switch of the Products page.
   final RxBool showInactive = false.obs;
@@ -74,6 +79,7 @@ class ProductAdminController extends GetxController implements SessionScoped {
   /// Reloads what the sales screen reads (catalog and tile badges).
   Future<void> _reloadCatalog() async {
     await products.load();
+    await packagings?.load();
     await offers.load(session.store.value?.id);
     await reloadLists();
   }

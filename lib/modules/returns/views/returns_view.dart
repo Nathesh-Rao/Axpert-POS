@@ -115,7 +115,12 @@ class _Result extends StatelessWidget {
           for (final line in sale.cart.lines)
             ReturnLine(
               key: ValueKey<String>('${sale.number}/${line.key.text}'),
-              name: line.product.name,
+              name: line.packaging == null
+                  ? line.product.name
+                  : s.returnsLineUnit(
+                      line.product.name,
+                      line.packaging!.unitName,
+                    ),
               available: QtyFormatter.compact(
                 RefundService.available(sale, line),
               ),

@@ -104,9 +104,9 @@ class ProductsView extends GetView<ProductsPageController> {
                   if (off)
                     TableText(s.productInactiveBadge(), color: c.muted)
                   else
-                    StockChip(
+                    _StockCell(
                       stock: p.stock,
-                      label: view == null
+                      breakdown: view == null || view.levels.isEmpty
                           ? null
                           : stockText(
                               s,
@@ -194,6 +194,39 @@ class _RowActions extends StatelessWidget {
             onTap: () => admin.confirmDeactivate(product),
           ),
         ],
+      ],
+    );
+  }
+}
+
+/// The stock chip (whole units, as before) with the packaging breakdown under
+/// it ("3 Carton + 5 Piece") on one line when the product has packagings.
+class _StockCell extends StatelessWidget {
+  const _StockCell({required this.stock, required this.breakdown});
+
+  final int stock;
+  final String? breakdown;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = breakdown;
+    if (text == null) return StockChip(stock: stock);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        StockChip(stock: stock),
+        const SizedBox(height: AppSpacing.s4),
+        Tooltip(
+          message: text,
+          child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: context.text
+                .of(AppFontSize.s12, height: AppLineHeight.base)
+                .copyWith(color: context.colors.muted),
+          ),
+        ),
       ],
     );
   }

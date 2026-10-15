@@ -232,9 +232,13 @@ class TableText extends StatelessWidget {
 
 /// `.stock-ok` / `.stock-low`: a coloured chip with the stock number.
 class StockChip extends StatelessWidget {
-  const StockChip({required this.stock, super.key});
+  const StockChip({required this.stock, this.label, super.key});
 
   final int stock;
+
+  /// Text instead of the number ("3 Carton + 5 Piece"); the low-stock colour
+  /// still follows [stock].
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
@@ -251,7 +255,7 @@ class StockChip extends StatelessWidget {
           horizontal: AppManagementSizes.chipPadX,
         ),
         child: Text(
-          context.strings.countBadge(stock),
+          label ?? context.strings.countBadge(stock),
           style: context.text
               .fluid(AppManagementSizes.tdFont, height: AppLineHeight.base)
               .copyWith(color: low ? c.stockLowFg : c.stockOkFg),

@@ -424,4 +424,95 @@ abstract class AppStrings {
   String toastRefundExceeds();
   String toastRefundDone(String amount);
   String refundConfirm(String amount);
+
+  // Product management (DEC-152)
+  String productAddButton();
+  String productShowInactive();
+  String productEditAction();
+  String productDeactivateAction();
+  String productReactivateAction();
+  String productInactiveBadge();
+  String colProductActions();
+  String stockPart(String qty, String unit);
+  String stockPartsJoin();
+  String stockNegativeMark();
+  String productFormAddTitle();
+  String productFormEditTitle();
+  String productFieldName();
+  String productFieldSku();
+  String productFieldCategory();
+  String productFieldSubCategory();
+  String productFieldBrand();
+  String productFieldBaseUnit();
+  String productFieldPrice(String currency);
+  String productFieldTax(String label);
+  String productFieldBarcodes();
+  String productBarcodeAddHint();
+  String productFieldActive();
+  String productNone();
+  String productNewInline();
+  String productNewCategoryHint();
+  String productNewBrandHint();
+  String productSectionPackaging();
+  String productPackagingAdd();
+  String productPackagingRemove();
+  String productPackagingUnit();
+  String productPackagingContains(String base);
+  String productPackagingSku();
+  String productPackagingBarcode();
+  String productPackagingPrice();
+  String productPackagingEnabled();
+  String productPackagingPreview(
+    String unit,
+    String qty,
+    String base,
+    String price,
+  );
+  String productPackagingDerived();
+  String productSectionStock();
+  String productOpeningStock();
+  String productStockInBase(String unit);
+  String productStockTotal(String text);
+  String productCurrentStock();
+  String productAdjustStock();
+  String productSave();
+  String productCreate();
+  String productCancel();
+  String productSaving();
+  String productErrNameRequired();
+  String productErrSkuRequired();
+  String productErrPrice();
+  String productErrUnit();
+  String productErrTax();
+  String productErrFactor();
+  String productErrDuplicateUnit();
+  String productErrDuplicateBarcode(String barcode);
+  String productErrBarcodeTaken(String barcode);
+  String productErrOpening();
+  String toastProductSaved(String name);
+  String toastProductDeactivated(String name);
+  String toastProductReactivated(String name);
+  String toastProductNoPermission();
+  String confirmDeactivateProduct(String name);
+  String adjustStockTitle(String name);
+  String adjustStockNew();
+  String adjustStockChange(String text);
+  String adjustReason();
+  String adjustReasonCount();
+  String adjustReasonDamage();
+  String adjustReasonReceived();
+  String adjustReasonOther();
+  String adjustNote();
+  String adjustErrReason();
+  String adjustErrNoChange();
+  String adjustErrBlocked(String available);
+  String adjustConfirm();
+  String toastStockAdjusted();
+  String helpNewProduct();
+  String newProductShortcutMac();
+  String newProductShortcutOther();
+  String productHintCancel();
+  String productHintSave();
+  String productStockEntryHint();
+  String productAdjustHint();
 }

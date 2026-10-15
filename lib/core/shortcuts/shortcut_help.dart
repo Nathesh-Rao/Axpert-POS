@@ -87,6 +87,16 @@ abstract final class ShortcutHelp {
       ],
     ),
     ShortcutHelpEntry(
+      text: (s) => s.helpNewProduct(),
+      label: (s, platform) => platform == TargetPlatform.macOS
+          ? s.newProductShortcutMac()
+          : s.newProductShortcutOther(),
+      keys: const <ShortcutActivator>[
+        SingleActivator(LogicalKeyboardKey.keyI, control: true),
+        SingleActivator(LogicalKeyboardKey.keyI, meta: true),
+      ],
+    ),
+    ShortcutHelpEntry(
       text: (s) => s.helpRemoveLine(),
       label: (s, _) => s.keyDelete(),
       keys: const <ShortcutActivator>[

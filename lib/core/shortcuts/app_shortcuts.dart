@@ -47,6 +47,11 @@ class AppShortcuts extends StatelessWidget {
             const RunShortcutIntent(ShortcutAction.toggleBilling),
         const SingleActivator(LogicalKeyboardKey.period, meta: true):
             const RunShortcutIntent(ShortcutAction.toggleBilling),
+        // Ctrl/Cmd+I: new product (Ctrl/Cmd+N is the browser's new window).
+        const SingleActivator(LogicalKeyboardKey.keyI, control: true):
+            const RunShortcutIntent(ShortcutAction.newProduct),
+        const SingleActivator(LogicalKeyboardKey.keyI, meta: true):
+            const RunShortcutIntent(ShortcutAction.newProduct),
         const SingleActivator(LogicalKeyboardKey.f2): const RunShortcutIntent(
           ShortcutAction.cash,
         ),

@@ -135,3 +135,36 @@ ActiveSession storeSession({
     },
   ),
 );
+
+/// [testSession] for a signed-in user with another [role] (admin, manager).
+ActiveSession roleSession(String role) {
+  final user = AppUser(
+    id: 'test-$role',
+    username: role,
+    displayName: role.toUpperCase(),
+    role: role,
+  );
+  return ActiveSession.fixed(
+    user: user,
+    store: testAccess.first.store,
+    counter: testAccess.first.counters.first,
+    access: testAccess,
+    quickCash: const <String, List<int>>{
+      'INR': <int>[100, 500, 2000],
+    },
+    regime: testIndiaRegime,
+    forex: testForex,
+    stores: InMemoryStoreRepository(
+      regimes: const <String, TaxRegimeInfo>{'IN': testIndiaRegime},
+      forex: <String, List<ForexRate>>{
+        for (final a in testAccess) a.store.id: testForex,
+      },
+    ),
+    users: InMemoryUserRepository(
+      users: <UserCredential>[testCredential],
+      access: <String, List<StoreAccess>>{
+        user.id: <StoreAccess>[testAccess.first],
+      },
+    ),
+  );
+}

@@ -75,6 +75,14 @@ import '../database/database_provider.dart';
 import '../session/session_scoped.dart';
 import '../device/device_context_service.dart';
 import '../identifiers/uuid_generator.dart';
+import '../../features/products/data/repositories/drift_packaging_repositories.dart';
+import '../../features/products/data/repositories/drift_product_admin_repository.dart';
+import '../../features/products/data/repositories/mock_packaging_repositories.dart';
+import '../../features/products/data/repositories/mock_product_admin_repository.dart';
+import '../../features/products/domain/repositories/packaging_repositories.dart';
+import '../../features/products/domain/repositories/product_admin_repository.dart';
+import '../../features/products/presentation/controllers/product_admin_controller.dart';
+import '../services/pricing/currency_registry.dart';
 import '../lifecycle/app_lifecycle_service.dart';
 import '../network/api_client.dart';
 import '../security/authentication_service.dart';
@@ -241,6 +249,59 @@ class InitialBinding extends Bindings {
         SalesBackend.mock => MockSaleRepository(store),
       };
 
+  /// Product management (DEC-152): Drift when products are on Drift and a
+  /// store is open, otherwise the in-memory twin (tests, rollback backends).
+  void _putProductAdmin() {
+    final products = Get.find<ProductRepository>();
+    final ProductAdminRepository repository;
+    if (products is DriftProductRepository && _databaseSession) {
+      final registered = Get.isRegistered<InventoryRepository>()
+          ? Get.find<InventoryRepository>()
+          : null;
+      repository = DriftProductAdminRepository(
+        provider: infrastructure.databaseProvider,
+        uuid: infrastructure.uuid,
+        scope: _scope,
+        queue: _ledgerQueue,
+        inventory: registered is DriftInventoryRepository
+            ? registered
+            : DriftInventoryRepository(
+                provider: infrastructure.databaseProvider,
+                uuid: infrastructure.uuid,
+              ),
+      );
+    } else {
+      repository = MockProductAdminRepository(
+        products: products,
+        currency: Get.find<ActiveSession>().currency ?? CurrencyRegistry.inr,
+      );
+    }
+    _put<ProductAdminRepository>(repository);
+    _put<UnitRepository>(
+      _databaseSession
+          ? DriftUnitRepository(infrastructure.databaseProvider)
+          : const MockUnitRepository(),
+    );
+    _put<BrandRepository>(
+      _databaseSession
+          ? DriftBrandRepository(infrastructure.databaseProvider)
+          : MockBrandRepository(store),
+    );
+    _put<ProductAdminController>(
+      ProductAdminController(
+        repository: repository,
+        units: Get.find<UnitRepository>(),
+        brands: Get.find<BrandRepository>(),
+        uuid: infrastructure.uuid,
+        products: Get.find<ProductsController>(),
+        offers: Get.find<OffersController>(),
+        session: Get.find<ActiveSession>(),
+        overlay: Get.find<OverlayController>(),
+        toasts: Get.find<ToastController>(),
+      ),
+    );
+  }
+
   /// The checkout (and refund) as one Drift transaction when sales, products
   /// and customers are all on Drift; otherwise the independent saves exactly
   /// as before (rollback flags, tests, the debug large dataset).
@@ -358,6 +419,7 @@ class InitialBinding extends Bindings {
       ),
     );
     _put<ProductsController>(ProductsController(Get.find()));
+    _putProductAdmin();
     _put<CustomersController>(CustomersController(Get.find()));
     _put<CartController>(
       CartController(
@@ -625,6 +687,7 @@ class InitialBinding extends Bindings {
       Get.find<SalesController>(),
       Get.find<HeldBillsController>(),
       Get.find<OffersController>(),
+      Get.find<ProductAdminController>(),
       Get.find<ShiftController>(),
       Get.find<DatabaseExportController>(),
       Get.find<PageFilterController>(),

@@ -1165,4 +1165,267 @@ class EnAppStrings extends AppStrings {
   @override
   String refundConfirm(String amount) =>
       'Refund $amount and restock selected items?';
+
+  // Product management (DEC-152)
+  @override
+  String productAddButton() => 'Add product';
+
+  @override
+  String productShowInactive() => 'Show inactive';
+
+  @override
+  String productEditAction() => 'Edit';
+
+  @override
+  String productDeactivateAction() => 'Deactivate';
+
+  @override
+  String productReactivateAction() => 'Reactivate';
+
+  @override
+  String productInactiveBadge() => 'Inactive';
+
+  @override
+  String colProductActions() => 'Actions';
+
+  @override
+  String stockPart(String qty, String unit) => '$qty $unit';
+
+  @override
+  String stockPartsJoin() => ' + ';
+
+  @override
+  String stockNegativeMark() => '-';
+
+  @override
+  String productFormAddTitle() => 'Add product';
+
+  @override
+  String productFormEditTitle() => 'Edit product';
+
+  @override
+  String productFieldName() => 'Name';
+
+  @override
+  String productFieldSku() => 'SKU';
+
+  @override
+  String productFieldCategory() => 'Category';
+
+  @override
+  String productFieldSubCategory() => 'Sub-category';
+
+  @override
+  String productFieldBrand() => 'Brand';
+
+  @override
+  String productFieldBaseUnit() => 'Base unit';
+
+  @override
+  String productFieldPrice(String currency) => 'Base price ($currency)';
+
+  @override
+  String productFieldTax(String label) => '$label rate';
+
+  @override
+  String productFieldBarcodes() => 'Barcodes (base unit)';
+
+  @override
+  String productBarcodeAddHint() => 'Scan or type, press Enter';
+
+  @override
+  String productFieldActive() => 'Active';
+
+  @override
+  String productNone() => 'None';
+
+  @override
+  String productNewInline() => '+ New';
+
+  @override
+  String productNewCategoryHint() => 'New category name';
+
+  @override
+  String productNewBrandHint() => 'New brand name';
+
+  @override
+  String productSectionPackaging() => 'Packaging';
+
+  @override
+  String productPackagingAdd() => 'Add packaging';
+
+  @override
+  String productPackagingRemove() => 'Remove packaging';
+
+  @override
+  String productPackagingUnit() => 'Unit';
+
+  @override
+  String productPackagingContains(String base) => 'Contains ($base)';
+
+  @override
+  String productPackagingSku() => 'SKU';
+
+  @override
+  String productPackagingBarcode() => 'Barcode';
+
+  @override
+  String productPackagingPrice() => 'Price (blank = derived)';
+
+  @override
+  String productPackagingEnabled() => 'On';
+
+  @override
+  String productPackagingPreview(
+    String unit,
+    String qty,
+    String base,
+    String price,
+  ) => '1 $unit = $qty $base = $price';
+
+  @override
+  String productPackagingDerived() => 'derived';
+
+  @override
+  String productSectionStock() => 'Stock';
+
+  @override
+  String productOpeningStock() => 'Opening stock';
+
+  @override
+  String productStockInBase(String unit) => 'In $unit';
+
+  @override
+  String productStockTotal(String text) => '= $text';
+
+  @override
+  String productCurrentStock() => 'Current stock';
+
+  @override
+  String productAdjustStock() => 'Adjust stock';
+
+  @override
+  String productSave() => 'Save';
+
+  @override
+  String productCreate() => 'Create product';
+
+  @override
+  String productCancel() => 'Cancel';
+
+  @override
+  String productSaving() => 'Saving...';
+
+  @override
+  String productErrNameRequired() => 'Enter a name';
+
+  @override
+  String productErrSkuRequired() => 'Enter a SKU';
+
+  @override
+  String productErrPrice() => 'Enter a price of 0 or more';
+
+  @override
+  String productErrUnit() => 'Choose a base unit';
+
+  @override
+  String productErrTax() => 'Choose a rate';
+
+  @override
+  String productErrFactor() => 'Enter a quantity above 0';
+
+  @override
+  String productErrDuplicateUnit() => 'This unit is already used';
+
+  @override
+  String productErrDuplicateBarcode(String barcode) =>
+      'Barcode $barcode is entered twice';
+
+  @override
+  String productErrBarcodeTaken(String barcode) =>
+      'Barcode $barcode is already used by another product';
+
+  @override
+  String productErrOpening() => 'Enter a stock of 0 or more';
+
+  @override
+  String toastProductSaved(String name) => '$name saved';
+
+  @override
+  String toastProductDeactivated(String name) => '$name deactivated';
+
+  @override
+  String toastProductReactivated(String name) => '$name reactivated';
+
+  @override
+  String toastProductNoPermission() =>
+      'Only an admin or manager can change products';
+
+  @override
+  String confirmDeactivateProduct(String name) =>
+      'Deactivate $name? It leaves the sales catalog.';
+
+  @override
+  String adjustStockTitle(String name) => 'Adjust stock: $name';
+
+  @override
+  String adjustStockNew() => 'Counted quantity';
+
+  @override
+  String adjustStockChange(String text) => 'Change: $text';
+
+  @override
+  String adjustReason() => 'Reason';
+
+  @override
+  String adjustReasonCount() => 'Count correction';
+
+  @override
+  String adjustReasonDamage() => 'Damage or loss';
+
+  @override
+  String adjustReasonReceived() => 'Stock received';
+
+  @override
+  String adjustReasonOther() => 'Other';
+
+  @override
+  String adjustNote() => 'Note';
+
+  @override
+  String adjustErrReason() => 'Add a note for this reason';
+
+  @override
+  String adjustErrNoChange() => 'The quantity has not changed';
+
+  @override
+  String adjustErrBlocked(String available) =>
+      'Stock cannot go below zero (available $available)';
+
+  @override
+  String adjustConfirm() => 'Adjust';
+
+  @override
+  String toastStockAdjusted() => 'Stock adjusted';
+
+  @override
+  String helpNewProduct() => 'New product (Products page)';
+
+  @override
+  String newProductShortcutMac() => '⌘I';
+
+  @override
+  String newProductShortcutOther() => 'Ctrl+I';
+
+  @override
+  String productHintCancel() => 'to cancel';
+
+  @override
+  String productHintSave() => 'to save';
+
+  @override
+  String productStockEntryHint() => 'Whole packages, then loose units';
+
+  @override
+  String productAdjustHint() => 'Stock changes are recorded as an adjustment';
 }

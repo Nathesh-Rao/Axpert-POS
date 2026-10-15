@@ -80,6 +80,10 @@ class DemoSeeder {
     final seededBefore = current != null || legacy != null;
     await db.durableTransaction(() async {
       if (seededBefore && (reseed || current != null)) {
+        // User rows (products, categories) may point at seeded stores and
+        // categories whose ids come back with the re-insert: check the
+        // foreign keys at commit, not row by row (DEC-152).
+        await db.customStatement('PRAGMA defer_foreign_keys = ON');
         await _wipe();
         await _insert(data);
       } else if (legacy != null) {

@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 
+import '../../../features/products/presentation/widgets/product_form_dialog.dart';
+import '../../../features/products/presentation/widgets/stock_adjust_dialog.dart';
 import '../../customers/widgets/add_customer_dialog.dart';
 import '../../customers/widgets/customer_picker_dialog.dart';
 import '../../pos/widgets/dialogs/discount_drawer.dart';
@@ -35,6 +37,8 @@ abstract final class DialogRegistry {
         'settings': () => const SettingsDialog(),
         'profile': () => const ProfileDialog(),
         'close': () => const ShiftCloseDialog(),
+        'productForm': () => const ProductFormDialog(),
+        'adjustStock': () => const StockAdjustDialog(),
       };
 
   static Widget? build(String id) => builders[id]?.call();
